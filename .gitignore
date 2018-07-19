@@ -9,6 +9,7 @@
 
 ### Properties ###
 application-datasource.properties
+application-jwt.properties
 
 ### Maven ###
 /.mvn/
