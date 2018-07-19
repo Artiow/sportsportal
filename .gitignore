@@ -1,0 +1,17 @@
+/target/
+/files/
+
+### IntelliJ IDEA ###
+/.idea/
+*.iws
+*.iml
+*.ipr
+
+### Properties ###
+application-datasource.properties
+
+### Maven ###
+/.mvn/
+pom.xml
+mvnw.cmd
+mvnw
