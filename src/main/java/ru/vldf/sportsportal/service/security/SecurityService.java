@@ -23,6 +23,7 @@ public class SecurityService {
         this.mapper = mapper;
     }
 
+
     /**
      * Getting used token type from token service.
      *
@@ -31,6 +32,7 @@ public class SecurityService {
     public String getTokenType() {
         return tokenService.getTokenType();
     }
+
 
     /**
      * Returns JWT by UserDetails.

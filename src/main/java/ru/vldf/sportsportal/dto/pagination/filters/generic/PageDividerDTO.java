@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.pagination;
+package ru.vldf.sportsportal.dto.pagination.filters.generic;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 

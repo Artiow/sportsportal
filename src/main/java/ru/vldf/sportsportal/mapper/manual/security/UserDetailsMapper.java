@@ -34,7 +34,7 @@ public class UserDetailsMapper {
 
     private static class IdentifiedUserDetailsDTO implements IdentifiedUserDetails {
 
-        private Integer id;
+        private int id;
         private String password;
         private String username;
         private Collection<GrantedAuthorityDTO> authorities;
@@ -44,7 +44,7 @@ public class UserDetailsMapper {
         private boolean enabled;
 
         @Override
-        public Integer getId() {
+        public int getId() {
             return id;
         }
 

@@ -50,8 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Righ
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).and()
 
-                .authorizeRequests() // todo: put here rights differentiation configuration
-                .anyRequest().permitAll()
+                .authorizeRequests()
+                .requestMatchers(ADMIN_API_URLS).hasRole("ADMIN")
                 .and()
 
                 .httpBasic().disable()

@@ -16,25 +16,9 @@ public class TokenService implements Clock {
 
     private static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
-    // todo: setters for properties!
-
-    @Value("${jwt.token-type}")
     private String tokenType;
-
-    @Value("${jwt.issuer}")
     private String issuer;
-
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-
-
-    /**
-     * Secret key Base64 encoding.
-     */
-    @PostConstruct
-    private void init() {
-        secretKey = TextCodec.BASE64.encode(secretKey);
-    }
+    private String sign;
 
 
     /**
@@ -45,6 +29,31 @@ public class TokenService implements Clock {
     public String getTokenType() {
         return tokenType;
     }
+
+    @Value("${jwt.token-type}")
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    @Value("${jwt.issuer}")
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    @Value("${jwt.sign}")
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+
+    /**
+     * Secret key Base64 encoding.
+     */
+    @PostConstruct
+    private void init() {
+        sign = TextCodec.BASE64.encode(sign);
+    }
+
 
     /**
      * Returns JWT.
@@ -61,7 +70,7 @@ public class TokenService implements Clock {
         return Jwts
                 .builder()
                 .setClaims(claims)
-                .signWith(signatureAlgorithm, secretKey)
+                .signWith(signatureAlgorithm, sign)
                 .compact();
     }
 
@@ -75,7 +84,7 @@ public class TokenService implements Clock {
         return Jwts
                 .parser()
                 .requireIssuer(issuer)
-                .setSigningKey(secretKey)
+                .setSigningKey(sign)
                 .parseClaimsJws(token)
                 .getBody();
     }

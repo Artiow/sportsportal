@@ -15,7 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.vldf.sportsportal.config.MessagesConfig;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.generic.*;
@@ -30,11 +30,10 @@ public class AdviseController implements ErrorController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdviseController.class);
 
-    private final MessagesConfig messages;
-
+    private final MessageContainer messages;
 
     @Autowired
-    public AdviseController(MessagesConfig messages) {
+    public AdviseController(MessageContainer messages) {
         this.messages = messages;
     }
 
@@ -51,9 +50,9 @@ public class AdviseController implements ErrorController {
         return errorDTO(ex, "JWT Read/Write Error.");
     }
 
-    @ExceptionHandler(LocalResourceNotFoundException.class)
+    @ExceptionHandler(ResourceFileNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDTO handleFileNotFoundException(LocalResourceNotFoundException ex) {
+    public ErrorDTO handleFileNotFoundException(ResourceFileNotFoundException ex) {
         return errorDTO(ex, "Requested File Not Found.");
     }
 

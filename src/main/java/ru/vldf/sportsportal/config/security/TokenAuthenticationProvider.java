@@ -8,18 +8,18 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import ru.vldf.sportsportal.config.MessagesConfig;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.service.security.SecurityService;
 
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-    private MessagesConfig messages;
+    private MessageContainer messages;
 
     private SecurityService security;
 
     @Autowired
-    public void setMessages(MessagesConfig messages) {
+    public void setMessages(MessageContainer messages) {
         this.messages = messages;
     }
 

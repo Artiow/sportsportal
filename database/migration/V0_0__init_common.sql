@@ -1,4 +1,35 @@
------------------------------------
+-- picture
+
+create table common.picture
+(
+  id       serial    not null
+    constraint picture_pk
+    primary key,
+
+  size     bigint    not null,
+  uploaded timestamp not null
+);
+
+-- user
+
+create table common."user"
+(
+  id         serial      not null
+    constraint user_pk
+    primary key,
+
+  login      varchar(45) not null,
+  password   varchar(90) not null,
+  name       varchar(45) not null,
+  surname    varchar(45) not null,
+  patronymic varchar(45) not null,
+  address    varchar(90) not null,
+  phone      varchar(16) not null
+);
+
+create unique index user_login_uindex
+  on common."user" (login);
+
 -- role
 
 create table common.role
@@ -17,22 +48,6 @@ create unique index role_code_uindex
 
 create unique index role_name_uindex
   on common.role (name);
-
------------------------------------
--- user
-
-create table common."user"
-(
-  id       serial      not null
-    constraint user_pk
-    primary key,
-
-  login    varchar(45) not null,
-  password varchar(90) not null
-);
-
-create unique index user_login_uindex
-  on common."user" (login);
 
 -- authority
 

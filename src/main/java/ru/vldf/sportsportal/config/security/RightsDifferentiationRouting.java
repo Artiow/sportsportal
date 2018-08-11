@@ -19,8 +19,17 @@ public interface RightsDifferentiationRouting {
             new AntPathRequestMatcher("/v2/api-docs")
     );
 
+    RequestMatcher ADMIN_API_URLS = new AndRequestMatcher(
+            new OrRequestMatcher(
+                    new AntPathRequestMatcher("/api/*", "POST"),
+                    new AntPathRequestMatcher("/api/*/*", "PUT"),
+                    new AntPathRequestMatcher("/api/*/*", "DELETE")
+            )
+    );
+
     RequestMatcher PUBLIC_API_URLS = new AndRequestMatcher(
-            new AntPathRequestMatcher("/api/**")
+            new AntPathRequestMatcher("/api/**"),
+            new NegatedRequestMatcher(ADMIN_API_URLS)
     );
 
     RequestMatcher PUBLIC_URLS = new OrRequestMatcher(

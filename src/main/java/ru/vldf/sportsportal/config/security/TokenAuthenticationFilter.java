@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import ru.vldf.sportsportal.config.MessagesConfig;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private MessagesConfig messages;
+    private MessageContainer messages;
 
     private String tokenType;
 
@@ -34,7 +34,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
 
     @Autowired
-    public void setMessages(MessagesConfig messages) {
+    public void setMessages(MessageContainer messages) {
         this.messages = messages;
     }
 

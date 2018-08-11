@@ -27,7 +27,7 @@ public class IdentifiedUser extends User implements IdentifiedUserDetails {
 
 
     @Override
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 }
