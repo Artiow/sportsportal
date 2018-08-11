@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.service;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
+import ru.vldf.sportsportal.domain.RoleEntity;
 import ru.vldf.sportsportal.domain.UserEntity;
 import ru.vldf.sportsportal.dto.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
@@ -23,9 +25,14 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUser;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Service
 public class UserService {
+
+    @Value("${code.role.user}")
+    private String userRoleCode;
 
     private MessageContainer messages;
 
@@ -101,13 +108,19 @@ public class UserService {
         try {
             user = userRepository.findByLogin(login);
             if (user == null) {
-                throw new EntityNotFoundException(messages.get("sportsportal.auth.service.repository.message"));
+                throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userRepository.message"));
             } else if (!passwordEncoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException(messages.get("sportsportal.auth.service.encoder.message"));
+                throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
             }
 
         } catch (EntityNotFoundException | BadCredentialsException e) {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
+        }
+
+        Collection<RoleEntity> roleEntityCollection = user.getRoles();
+        ArrayList<String> roles = new ArrayList<>(roleEntityCollection.size());
+        for (RoleEntity roleEntity : roleEntityCollection) {
+            roles.add(roleEntity.getCode().toUpperCase());
         }
 
         return new TokenDTO()
@@ -120,10 +133,7 @@ public class UserService {
                                         User.builder()
                                                 .username(user.getLogin())
                                                 .password(user.getPassword())
-
-                                                // todo: multiple roles!
-                                                .roles(user.getRoles().iterator().next().getCode().toUpperCase())
-
+                                                .roles(roles.toArray(new String[0]))
                                                 .build()
                                 )
                         )
@@ -139,22 +149,16 @@ public class UserService {
      */
     @Transactional
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
-        // todo: multiple roles!
-        Integer roleId = userDTO.getRoles().iterator().next().getId();
         String login = userDTO.getLogin();
-
-        if (!roleRepository.existsById(roleId)) {
-            throw new ResourceCannotCreateException(messages.getAndFormat(
-                    "sportsportal.Role.notExistById.message", roleId
-            ));
-        } else if (userRepository.existsByLogin(login)) {
+        if (userRepository.existsByLogin(login)) {
             throw new ResourceCannotCreateException(messages.getAndFormat(
                     "sportsportal.User.alreadyExistByLogin.message", login
             ));
         }
 
-        return userRepository.save(userMapper.toEntity(userDTO)).getId();
+        UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
+        user.setRoles(roleRepository.findAllByCode(userRoleCode));
+
+        return userRepository.save(user).getId();
     }
 }

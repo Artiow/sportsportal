@@ -3,7 +3,6 @@ package ru.vldf.sportsportal.dto;
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -43,8 +42,6 @@ public class UserDTO extends AbstractIdentifiedDTO {
     @Phone(groups = FieldCheck.class)
     private String phone;
 
-    @Valid
-    @NotNull(groups = FieldCheck.class)
     private List<RoleDTO> roles;
 
 
@@ -136,7 +133,7 @@ public class UserDTO extends AbstractIdentifiedDTO {
 
     }
 
-    public interface FieldCheck extends RoleDTO.IdCheck {
+    public interface FieldCheck {
 
     }
 }

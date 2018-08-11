@@ -1,6 +1,5 @@
+/webapps/
 /target/
-/files/
-/logs/
 
 ### IntelliJ IDEA ###
 /.idea/
@@ -11,7 +10,7 @@
 ### Demo Data ###
 database/demo.sql
 
-### Properties ###
+### Secure Properties ###
 application-secure.properties
 
 ### Maven ###

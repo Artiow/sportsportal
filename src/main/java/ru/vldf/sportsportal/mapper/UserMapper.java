@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.RoleEntity;
 import ru.vldf.sportsportal.domain.UserEntity;
 import ru.vldf.sportsportal.dto.UserDTO;
@@ -22,6 +23,9 @@ public interface UserMapper extends AbstractMapper<UserEntity, UserDTO> {
         return entity.getCode();
     }
 
-    @Mapping(target = "id", ignore = true)
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "roles", ignore = true)
+    })
     UserEntity toEntity(UserDTO dto);
 }

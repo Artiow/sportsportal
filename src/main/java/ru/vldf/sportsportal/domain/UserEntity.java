@@ -39,6 +39,7 @@ public class UserEntity extends AbstractIdentifiedEntity {
 
     @ManyToMany
     @JoinTable(
+            schema = "common",
             name = "authority",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
