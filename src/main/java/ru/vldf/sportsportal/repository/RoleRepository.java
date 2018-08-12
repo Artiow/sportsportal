@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import ru.vldf.sportsportal.domain.RoleEntity;
+import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 
 import java.util.Collection;
 

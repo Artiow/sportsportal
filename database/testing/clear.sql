@@ -1,6 +1,13 @@
 truncate table
+common.role,
 common.picture,
 common."user",
-common.role,
-common.authority
+common.authority,
+lease.sport,
+lease.feature,
+lease.playground,
+lease.photo,
+lease.ownership,
+lease.specialization,
+lease.capability
 cascade;

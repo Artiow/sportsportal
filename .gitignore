@@ -1,11 +1,12 @@
-/webapps/
-/target/
-
 ### IntelliJ IDEA ###
 /.idea/
 *.iws
 *.iml
 *.ipr
+
+### Deployment Data ###
+/webapps/
+/target/
 
 ### Demo Data ###
 database/demo.sql

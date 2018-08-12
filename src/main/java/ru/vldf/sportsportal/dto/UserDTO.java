@@ -6,6 +6,7 @@ import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.net.URI;
 import java.util.List;
 
 public class UserDTO extends AbstractIdentifiedDTO {
@@ -41,6 +42,10 @@ public class UserDTO extends AbstractIdentifiedDTO {
     @NotNull(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;
+
+    private URI uri;
+
+    private PictureDTO avatar;
 
     private List<RoleDTO> roles;
 
@@ -116,6 +121,24 @@ public class UserDTO extends AbstractIdentifiedDTO {
 
     public UserDTO setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public UserDTO setUri(URI uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    public PictureDTO getAvatar() {
+        return avatar;
+    }
+
+    public UserDTO setAvatar(PictureDTO avatar) {
+        this.avatar = avatar;
         return this;
     }
 

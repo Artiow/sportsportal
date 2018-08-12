@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.shortcut;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
+import java.net.URI;
 import java.util.List;
 
 public class UserShortDTO extends AbstractIdentifiedDTO {
@@ -13,6 +14,8 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
     private String patronymic;
     private String address;
     private String phone;
+    private URI userURI;
+    private URI avatarURI;
     private List<String> roles;
 
 
@@ -78,6 +81,24 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
 
     public UserShortDTO setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public URI getUserURI() {
+        return userURI;
+    }
+
+    public UserShortDTO setUserURI(URI userURI) {
+        this.userURI = userURI;
+        return this;
+    }
+
+    public URI getAvatarURI() {
+        return avatarURI;
+    }
+
+    public UserShortDTO setAvatarURI(URI avatarURI) {
+        this.avatarURI = avatarURI;
         return this;
     }
 

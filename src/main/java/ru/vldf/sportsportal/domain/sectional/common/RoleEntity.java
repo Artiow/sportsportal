@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.domain;
+package ru.vldf.sportsportal.domain.sectional.common;
 
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
 

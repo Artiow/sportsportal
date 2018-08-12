@@ -1,6 +1,7 @@
-package ru.vldf.sportsportal.domain;
+package ru.vldf.sportsportal.domain.sectional.common;
 
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -37,6 +38,10 @@ public class UserEntity extends AbstractIdentifiedEntity {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @OneToOne
+    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
+    private PictureEntity avatar;
+
     @ManyToMany
     @JoinTable(
             schema = "common",
@@ -45,6 +50,9 @@ public class UserEntity extends AbstractIdentifiedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<RoleEntity> roles;
+
+    @ManyToMany(mappedBy = "owners")
+    private Collection<PlaygroundEntity> playgrounds;
 
 
     public String getLogin() {
@@ -103,11 +111,27 @@ public class UserEntity extends AbstractIdentifiedEntity {
         this.phone = phone;
     }
 
+    public PictureEntity getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(PictureEntity avatar) {
+        this.avatar = avatar;
+    }
+
     public Collection<RoleEntity> getRoles() {
         return roles;
     }
 
     public void setRoles(Collection<RoleEntity> roles) {
         this.roles = roles;
+    }
+
+    public Collection<PlaygroundEntity> getPlaygrounds() {
+        return playgrounds;
+    }
+
+    public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
+        this.playgrounds = playgrounds;
     }
 }

@@ -9,6 +9,7 @@ public class LoginDTO implements DataTransferObject {
 
     private String login;
     private URI userURI;
+    private URI avatarURI;
     private List<String> roles;
 
 
@@ -27,6 +28,15 @@ public class LoginDTO implements DataTransferObject {
 
     public LoginDTO setUserURI(URI userURI) {
         this.userURI = userURI;
+        return this;
+    }
+
+    public URI getAvatarURI() {
+        return avatarURI;
+    }
+
+    public LoginDTO setAvatarURI(URI avatarURI) {
+        this.avatarURI = avatarURI;
         return this;
     }
 

@@ -4,29 +4,25 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.domain.RoleEntity;
-import ru.vldf.sportsportal.domain.UserEntity;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
 import ru.vldf.sportsportal.dto.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.mapper.UserMapper;
+import ru.vldf.sportsportal.mapper.security.LoginMapper;
 import ru.vldf.sportsportal.repository.RoleRepository;
 import ru.vldf.sportsportal.repository.UserRepository;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.security.SecurityService;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUser;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Service
 public class UserService {
@@ -43,6 +39,7 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
 
+    private LoginMapper loginMapper;
     private UserMapper userMapper;
 
     @Autowired
@@ -68,6 +65,11 @@ public class UserService {
     @Autowired
     public void setRoleRepository(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
+    }
+
+    @Autowired
+    public void setLoginMapper(LoginMapper loginMapper) {
+        this.loginMapper = loginMapper;
     }
 
     @Autowired
@@ -117,27 +119,10 @@ public class UserService {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
         }
 
-        Collection<RoleEntity> roleEntityCollection = user.getRoles();
-        ArrayList<String> roles = new ArrayList<>(roleEntityCollection.size());
-        for (RoleEntity roleEntity : roleEntityCollection) {
-            roles.add(roleEntity.getCode().toUpperCase());
-        }
-
         return new TokenDTO()
-                .setLogin(userMapper.toLoginDTO(user))
+                .setLogin(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
-                .setAccessToken(
-                        securityService.login(
-                                new IdentifiedUser(
-                                        user.getId(),
-                                        User.builder()
-                                                .username(user.getLogin())
-                                                .password(user.getPassword())
-                                                .roles(roles.toArray(new String[0]))
-                                                .build()
-                                )
-                        )
-                );
+                .setAccessToken(securityService.login(loginMapper.toIdentifiedUser(user)));
     }
 
     /**

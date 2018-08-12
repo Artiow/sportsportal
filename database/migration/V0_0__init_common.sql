@@ -1,3 +1,30 @@
+create schema if not exists common;
+
+------------------------------------------------------------------------------------------------------------------------
+-- DICTIONARY
+
+-- role
+
+create table common.role
+(
+  id          serial      not null
+    constraint role_pk
+    primary key,
+
+  code        varchar(45) not null,
+  name        varchar(45) not null,
+  description varchar(90)
+);
+
+create unique index role_code_uindex
+  on common.role (code);
+
+create unique index role_name_uindex
+  on common.role (name);
+
+------------------------------------------------------------------------------------------------------------------------
+-- REPOSITORY
+
 -- picture
 
 create table common.picture
@@ -18,6 +45,10 @@ create table common."user"
     constraint user_pk
     primary key,
 
+  avatar_id  integer     not null
+    constraint user_avatar_id_fk
+    references common.picture,
+
   login      varchar(45) not null,
   password   varchar(90) not null,
   name       varchar(45) not null,
@@ -29,25 +60,6 @@ create table common."user"
 
 create unique index user_login_uindex
   on common."user" (login);
-
--- role
-
-create table common.role
-(
-  id          serial      not null
-    constraint role_pk
-    primary key,
-
-  code        varchar(45) not null,
-  name        varchar(45) not null,
-  description varchar(90)
-);
-
-create unique index role_code_uindex
-  on common.role (code);
-
-create unique index role_name_uindex
-  on common.role (name);
 
 -- authority
 

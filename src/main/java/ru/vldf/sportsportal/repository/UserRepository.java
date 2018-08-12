@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import ru.vldf.sportsportal.domain.UserEntity;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Integer>, JpaSpecificationExecutor<UserEntity> {
 
