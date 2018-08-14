@@ -3,7 +3,6 @@ package ru.vldf.sportsportal.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ParameterBuilder;
@@ -47,14 +46,6 @@ public class ApplicationConfig implements WebMvcConfigurer {
         );
     }
 
-
-    /**
-     * Suffix pattern matching disabling.
-     */
-    @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.setUseSuffixPatternMatch(false);
-    }
 
     /**
      * Resource handlers configuration.
