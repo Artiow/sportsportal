@@ -13,6 +13,8 @@ database/demo.sql
 
 ### Secure Properties ###
 application-secure.properties
+application-demo.secure.properties
+application-test.secure.properties
 
 ### Maven ###
 /.mvn/

@@ -27,7 +27,10 @@
         <java.version>1.8</java.version>
         <javax.servlet.version>3.0.1</javax.servlet.version>
 
-        <db.url>xxxxx</db.url>
+        <db.url>jdbc:postgresql://185.249.255.73:5432/sportsportal</db.url>
+        <db.url.demo>jdbc:postgresql://185.249.255.73:5432/sportsportal.demo</db.url.demo>
+        <db.url.test>jdbc:postgresql://185.249.255.73:5432/sportsportal.test</db.url.test>
+
         <db.user>xxxxx</db.user>
         <db.password>xxxxx</db.password>
 
@@ -192,6 +195,41 @@
                         <schema>lease</schema>
                     </schemas>
                 </configuration>
+
+                <executions>
+
+                    <!-- DEMO EXECUTION -->
+                    <execution>
+                        <id>demo</id>
+                        <configuration>
+                            <url>${db.url.demo}</url>
+                            <user>${db.user}</user>
+                            <password>${db.password}</password>
+                            <locations>filesystem:database/migration</locations>
+                            <schemas>
+                                <schema>flyway</schema>
+                                <schema>common</schema>
+                                <schema>lease</schema>
+                            </schemas>
+                        </configuration>
+                    </execution>
+
+                    <!-- TEST EXECUTION -->
+                    <execution>
+                        <id>test</id>
+                        <configuration>
+                            <url>${db.url.test}</url>
+                            <user>${db.user}</user>
+                            <password>${db.password}</password>
+                            <locations>filesystem:database/migration</locations>
+                            <schemas>
+                                <schema>flyway</schema>
+                                <schema>common</schema>
+                                <schema>lease</schema>
+                            </schemas>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- MAVEN COMPILER PLUGIN -->
