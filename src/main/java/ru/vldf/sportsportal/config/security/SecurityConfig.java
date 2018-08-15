@@ -52,7 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Righ
 
                 .authorizeRequests()
                 .requestMatchers(ADMIN_API_URLS).hasRole("ADMIN")
-                .requestMatchers(USER_API_URLS).hasRole("USER")
                 .and()
 
                 .httpBasic().disable()
