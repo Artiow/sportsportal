@@ -12,7 +12,12 @@ public interface RightsDifferentiationRouting {
             new AntPathRequestMatcher("/api/*/*", "DELETE")
     );
 
+    RequestMatcher USER_API_URLS = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/user/*", "GET")
+    );
+
     RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            ADMIN_API_URLS
+            ADMIN_API_URLS,
+            USER_API_URLS
     );
 }
