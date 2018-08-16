@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
 <head>
     <meta charset="UTF-8">
     <title>404</title>
+
+    <!-- LIBRARIES -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="../../static/css/404.css" th:href="@{/css/404.css}"/>
 </head>
 <body>
-<h1 style="margin-left: 50px;">404: Page Not Found</h1>
+<div class="page-wrap d-flex flex-row align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+                <span class="d-block display-1">404</span>
+                <div class="mb-4 lead">Страница, которую вы ищите, не найдена.</div>
+                <a href="/" class="btn btn-link">На домашнюю страницу</a>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

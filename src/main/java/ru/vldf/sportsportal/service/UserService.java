@@ -136,9 +136,7 @@ public class UserService {
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String login = userDTO.getLogin();
         if (userRepository.existsByLogin(login)) {
-            throw new ResourceCannotCreateException(messages.getAndFormat(
-                    "sportsportal.User.alreadyExistByLogin.message", login
-            ));
+            throw new ResourceCannotCreateException(messages.getAndFormat("sportsportal.User.alreadyExistByLogin.message", login));
         }
 
         UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));

@@ -14,7 +14,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-public abstract class AbstractService<T extends DataTransferObject> {
+public abstract class AbstractCRUDService<T extends DataTransferObject> {
 
     public abstract T get(Integer id) throws
             ResourceNotFoundException;
