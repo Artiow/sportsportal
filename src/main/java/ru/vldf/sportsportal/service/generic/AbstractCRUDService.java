@@ -4,11 +4,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
+import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractMapper;
+import ru.vldf.sportsportal.mapper.generic.AbstractIdentifiedMapper;
 import ru.vldf.sportsportal.repository.AbstractRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,12 +19,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 
-public abstract class AbstractCRUDService<ID extends Serializable, E extends DomainObject, D extends DataTransferObject> {
+public abstract class AbstractCRUDService<ID extends Serializable, E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
     private MessageContainer messages;
 
     private AbstractRepository<E, ID> repository;
-    private AbstractMapper<E, D> mapper;
+    private AbstractIdentifiedMapper<E, D> mapper;
 
 
     protected MessageContainer getMessages() {
@@ -44,13 +45,13 @@ public abstract class AbstractCRUDService<ID extends Serializable, E extends Dom
         this.repository = repository;
     }
 
-    protected AbstractMapper<E, D> getAbstractMapper() {
+    protected AbstractIdentifiedMapper<E, D> getAbstractMapper() {
         return mapper;
     }
 
-    protected abstract <T extends AbstractMapper<E, D>> T getMapper();
+    protected abstract <T extends AbstractIdentifiedMapper<E, D>> T getMapper();
 
-    protected <T extends AbstractMapper<E, D>> void setMapper(T mapper) {
+    protected <T extends AbstractIdentifiedMapper<E, D>> void setMapper(T mapper) {
         this.mapper = mapper;
     }
 

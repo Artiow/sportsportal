@@ -6,30 +6,33 @@ import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractMapper;
+import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.uri.common.PictureURIMapper;
 import ru.vldf.sportsportal.mapper.manual.uri.common.UserURIMapper;
+
+import javax.persistence.OptimisticLockException;
 
 @Mapper(
         componentModel = "spring",
         uses = {UserURIMapper.class, PictureURIMapper.class, PictureMapper.class, RoleMapper.class}
 )
-public interface UserMapper extends AbstractMapper<UserEntity, UserDTO> {
+public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO> {
 
     @Mappings({
-            @Mapping(target = "userURI", source = "id", qualifiedByName = {"UserURIMapper", "toUserURI"}),
-            @Mapping(target = "avatarURI", source = "avatar.id", qualifiedByName = {"PictureURIMapper", "toPictureURI"}),
-            @Mapping(target = "roles", source = "roles")
+            @Mapping(target = "userURI", source = "id", qualifiedByName = {"toUserURI", "fromId"}),
+            @Mapping(target = "avatarURI", source = "avatar", qualifiedByName = {"toPictureURI", "fromEntity"})
     })
     UserShortDTO toShortDTO(UserEntity entity);
 
-    @Mapping(target = "uri", source = "id", qualifiedByName = {"UserURIMapper", "toUserURI"})
+    @Mapping(target = "uri", source = "id", qualifiedByName = {"toUserURI", "fromId"})
     UserDTO toDTO(UserEntity entity);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "avatar", ignore = true),
-            @Mapping(target = "roles", ignore = true)
-    })
+    @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDTO dto);
+
+    @Override
+    default UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {
+        // todo: merge!
+        return acceptor;
+    }
 }

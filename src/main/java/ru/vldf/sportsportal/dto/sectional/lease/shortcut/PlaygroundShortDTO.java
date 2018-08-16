@@ -10,10 +10,10 @@ public class PlaygroundShortDTO {
     private String address;
     private String phone;
     private Integer rate;
-    private URI playgroundURI;
     private List<String> specializations;
     private List<String> capabilities;
-    private List<URI> photos;
+    private URI playgroundURI;
+    private List<URI> photoURIs;
 
     public Integer getId() {
         return id;
@@ -87,12 +87,12 @@ public class PlaygroundShortDTO {
         return this;
     }
 
-    public List<URI> getPhotos() {
-        return photos;
+    public List<URI> getPhotoURIs() {
+        return photoURIs;
     }
 
-    public PlaygroundShortDTO setPhotos(List<URI> photos) {
-        this.photos = photos;
+    public PlaygroundShortDTO setPhotoURIs(List<URI> photoURIs) {
+        this.photoURIs = photoURIs;
         return this;
     }
 }
