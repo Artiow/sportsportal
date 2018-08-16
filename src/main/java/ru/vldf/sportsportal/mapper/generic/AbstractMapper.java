@@ -15,4 +15,8 @@ public interface AbstractMapper<E extends DomainObject, D extends DataTransferOb
     E toEntity(D dto);
 
     Collection<E> toEntity(List<D> dtoCollection);
+
+    default E merge(E acceptor, E donor) {
+        return acceptor;
+    }
 }

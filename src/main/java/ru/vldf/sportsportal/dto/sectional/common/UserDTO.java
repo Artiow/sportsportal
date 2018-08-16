@@ -1,19 +1,26 @@
-package ru.vldf.sportsportal.dto;
+package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.net.URI;
 import java.util.List;
 
-public class UserDTO extends AbstractIdentifiedDTO {
+public class UserDTO extends AbstractVersionedDTO {
 
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
+
+    @NotNull(groups = VersionCheck.class)
+    @Min(value = 1, groups = VersionCheck.class)
+    private Long version;
 
     @NotNull(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
@@ -43,10 +50,15 @@ public class UserDTO extends AbstractIdentifiedDTO {
     @Phone(groups = FieldCheck.class)
     private String phone;
 
+    @Null(groups = FieldCheck.class)
     private URI uri;
 
+    @Valid
+    @NotNull(groups = FieldCheck.class)
     private PictureDTO avatar;
 
+    @Valid
+    @NotNull(groups = FieldCheck.class)
     private List<RoleDTO> roles;
 
 
@@ -58,6 +70,17 @@ public class UserDTO extends AbstractIdentifiedDTO {
     @Override
     public UserDTO setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public Long getVersion() {
+        return version;
+    }
+
+    @Override
+    public AbstractIdentifiedDTO setVersion(Long version) {
+        this.version = version;
         return this;
     }
 
@@ -152,11 +175,24 @@ public class UserDTO extends AbstractIdentifiedDTO {
     }
 
 
-    public interface IdCheck {
+    public interface IdCheck extends VersionCheck {
 
     }
 
-    public interface FieldCheck {
+    public interface CreateCheck extends FieldCheck {
+
+    }
+
+    public interface UpdateCheck extends VersionCheck, FieldCheck {
+
+    }
+
+    public interface VersionCheck {
+
+    }
+
+    public interface FieldCheck extends
+            PictureDTO.IdCheck, RoleDTO.CodeCheck {
 
     }
 }

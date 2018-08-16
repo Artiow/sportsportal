@@ -20,7 +20,7 @@ import java.io.IOException;
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURI;
 
 @RestController
-@RequestMapping("${api-path.picture}")
+@RequestMapping("${api-path.common.picture}")
 public class PictureController {
 
     private static final Logger logger = LoggerFactory.getLogger(PictureController.class);

@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
-import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 
 import javax.persistence.*;
@@ -8,7 +8,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "user", schema = "common")
-public class UserEntity extends AbstractIdentifiedEntity {
+public class UserEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "login", nullable = false)

@@ -1,14 +1,14 @@
-package ru.vldf.sportsportal.mapper;
+package ru.vldf.sportsportal.mapper.sectional.common;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.dto.UserDTO;
-import ru.vldf.sportsportal.dto.shortcut.UserShortDTO;
+import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.PictureURIMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.UserURIMapper;
+import ru.vldf.sportsportal.mapper.manual.uri.common.PictureURIMapper;
+import ru.vldf.sportsportal.mapper.manual.uri.common.UserURIMapper;
 
 @Mapper(
         componentModel = "spring",

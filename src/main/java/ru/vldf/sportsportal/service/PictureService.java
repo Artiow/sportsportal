@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
-import ru.vldf.sportsportal.repository.PictureRepository;
+import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;

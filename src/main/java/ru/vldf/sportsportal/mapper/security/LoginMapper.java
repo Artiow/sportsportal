@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.User;
 import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.security.LoginDTO;
-import ru.vldf.sportsportal.mapper.RoleMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.PictureURIMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.UserURIMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.RoleMapper;
+import ru.vldf.sportsportal.mapper.manual.uri.common.PictureURIMapper;
+import ru.vldf.sportsportal.mapper.manual.uri.common.UserURIMapper;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUser;
 
 import java.util.ArrayList;

@@ -3,8 +3,8 @@ package ru.vldf.sportsportal.service.generic;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.repository.RoleRepository;
-import ru.vldf.sportsportal.repository.UserRepository;
+import ru.vldf.sportsportal.repository.common.RoleRepository;
+import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 public abstract class AbstractSecurityService {

@@ -1,26 +1,27 @@
-package ru.vldf.sportsportal.dto;
+package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractDictionaryDTO;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
-public class RoleDTO extends AbstractDictionaryDTO {
+public class SportDTO extends AbstractDictionaryDTO {
 
+    @Null(groups = CodeCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
 
-    @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @NotNull(groups = CodeCheck.class)
+    @Size(min = 1, max = 45, groups = CodeCheck.class)
     private String code;
 
-    @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Null(groups = CodeCheck.class)
     private String name;
 
-    @Size(min = 1, max = 90, groups = FieldCheck.class)
+    @Null(groups = CodeCheck.class)
     private String description;
 
 
@@ -30,7 +31,7 @@ public class RoleDTO extends AbstractDictionaryDTO {
     }
 
     @Override
-    public RoleDTO setId(Integer id) {
+    public SportDTO setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -41,7 +42,7 @@ public class RoleDTO extends AbstractDictionaryDTO {
     }
 
     @Override
-    public RoleDTO setCode(String code) {
+    public SportDTO setCode(String code) {
         this.code = code;
         return this;
     }
@@ -52,7 +53,7 @@ public class RoleDTO extends AbstractDictionaryDTO {
     }
 
     @Override
-    public RoleDTO setName(String name) {
+    public SportDTO setName(String name) {
         this.name = name;
         return this;
     }
@@ -63,7 +64,7 @@ public class RoleDTO extends AbstractDictionaryDTO {
     }
 
     @Override
-    public RoleDTO setDescription(String description) {
+    public SportDTO setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -73,7 +74,7 @@ public class RoleDTO extends AbstractDictionaryDTO {
 
     }
 
-    public interface FieldCheck {
+    public interface CodeCheck {
 
     }
 }

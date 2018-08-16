@@ -1,9 +1,10 @@
-package ru.vldf.sportsportal.dto;
+package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.net.URI;
 import java.time.LocalDateTime;
 
@@ -13,8 +14,13 @@ public class PictureDTO extends AbstractIdentifiedDTO {
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
 
+    @Null(groups = FieldCheck.class)
     private URI uri;
+
+    @Null(groups = FieldCheck.class)
     private Long size;
+
+    @Null(groups = FieldCheck.class)
     private LocalDateTime uploaded;
 
 
@@ -58,6 +64,10 @@ public class PictureDTO extends AbstractIdentifiedDTO {
 
 
     public interface IdCheck {
+
+    }
+
+    public interface FieldCheck {
 
     }
 }

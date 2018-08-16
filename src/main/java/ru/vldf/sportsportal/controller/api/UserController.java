@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.vldf.sportsportal.dto.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.dto.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.service.UserService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
@@ -17,10 +17,10 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURI;
 
 @RestController
-@RequestMapping("${api-path.user}")
+@RequestMapping("${api-path.common.user}")
 public class UserController {
 
-    @Value("${api-path.user}")
+    @Value("${api-path.common.user}")
     private String apiPath;
 
     private UserService userService;

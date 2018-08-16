@@ -3,41 +3,80 @@ package ru.vldf.sportsportal.service.generic;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
+import ru.vldf.sportsportal.mapper.generic.AbstractMapper;
+import ru.vldf.sportsportal.repository.AbstractRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import java.io.Serializable;
 
-public abstract class AbstractCRUDService<T extends DataTransferObject> {
+public abstract class AbstractCRUDService<ID extends Serializable, E extends DomainObject, D extends DataTransferObject> {
 
-    public abstract T get(Integer id) throws
+    private MessageContainer messages;
+
+    private AbstractRepository<E, ID> repository;
+    private AbstractMapper<E, D> mapper;
+
+
+    protected MessageContainer getMessages() {
+        return messages;
+    }
+
+    protected void setMessages(MessageContainer messages) {
+        this.messages = messages;
+    }
+
+    protected AbstractRepository<E, ID> getAbstractRepository() {
+        return repository;
+    }
+
+    protected abstract <T extends AbstractRepository<E, ID>> T getRepository();
+
+    protected <T extends AbstractRepository<E, ID>> void setRepository(T repository) {
+        this.repository = repository;
+    }
+
+    protected AbstractMapper<E, D> getAbstractMapper() {
+        return mapper;
+    }
+
+    protected abstract <T extends AbstractMapper<E, D>> T getMapper();
+
+    protected <T extends AbstractMapper<E, D>> void setMapper(T mapper) {
+        this.mapper = mapper;
+    }
+
+
+    protected abstract D get(Integer id) throws
             ResourceNotFoundException;
 
-    public abstract Integer create(T t) throws
+    protected abstract ID create(D t) throws
             ResourceCannotCreateException;
 
-    public abstract void update(Integer id, T t) throws
+    protected abstract void update(ID id, D t) throws
             ResourceNotFoundException,
             ResourceCannotUpdateException,
             ResourceOptimisticLockException;
 
-    public abstract void delete(Integer id) throws
+    protected abstract void delete(ID id) throws
             ResourceNotFoundException;
 
 
-    public static class StringSearcher<T extends DomainObject> extends PageDivider implements Specification<T> {
+    public static class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
 
         private String searchString;
-        private SingularAttribute<? super T, String> attribute;
+        private SingularAttribute<? super E, String> attribute;
 
 
-        public StringSearcher(StringSearcherDTO dto, SingularAttribute<? super T, String> attribute) {
+        public StringSearcher(StringSearcherDTO dto, SingularAttribute<? super E, String> attribute) {
             super(dto);
 
             this.attribute = attribute;
@@ -53,7 +92,7 @@ public abstract class AbstractCRUDService<T extends DataTransferObject> {
 
 
         @Override
-        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             if (searchString != null) {
                 return searchByStringPredicate(root, query, cb);
             } else {
@@ -61,7 +100,7 @@ public abstract class AbstractCRUDService<T extends DataTransferObject> {
             }
         }
 
-        private Predicate searchByStringPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        private Predicate searchByStringPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             return cb.like(cb.lower(root.get(attribute)), searchString);
         }
     }

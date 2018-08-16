@@ -7,15 +7,10 @@ import javax.persistence.OptimisticLockException;
 
 public interface AbstractVersionedMapper<E extends AbstractVersionedEntity, D extends AbstractVersionedDTO> extends AbstractMapper<E, D> {
 
+    @Override
     default E merge(E acceptor, E donor) throws OptimisticLockException {
-        Long oldVersion = acceptor.getVersion();
-        Long newVersion = donor.getVersion();
-
-        if (!oldVersion.equals(newVersion)) {
-            throw new OptimisticLockException(acceptor.getClass().getName());
-        }
-
-        acceptor.setVersion(newVersion);
+        check(acceptor, donor);
+        acceptor.setVersion(donor.getVersion());
         return acceptor;
     }
 

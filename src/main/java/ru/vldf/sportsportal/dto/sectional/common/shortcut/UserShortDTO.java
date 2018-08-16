@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.shortcut;
+package ru.vldf.sportsportal.dto.sectional.common.shortcut;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
