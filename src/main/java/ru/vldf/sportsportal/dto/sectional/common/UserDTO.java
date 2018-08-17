@@ -23,11 +23,11 @@ public class UserDTO extends AbstractVersionedDTO {
     private Long version;
 
     @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String login;
 
     @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 90, groups = FieldCheck.class)
+    @Size(min = 4, max = 90, groups = FieldCheck.class)
     private String password;
 
     @NotNull(groups = FieldCheck.class)
@@ -54,11 +54,9 @@ public class UserDTO extends AbstractVersionedDTO {
     private URI uri;
 
     @Valid
-    @NotNull(groups = FieldCheck.class)
     private PictureDTO avatar;
 
-    @Valid
-    @NotNull(groups = FieldCheck.class)
+    @Null(groups = FieldCheck.class)
     private List<RoleDTO> roles;
 
 
@@ -187,12 +185,11 @@ public class UserDTO extends AbstractVersionedDTO {
 
     }
 
-    public interface VersionCheck {
+    private interface VersionCheck {
 
     }
 
-    public interface FieldCheck extends
-            PictureDTO.IdCheck, RoleDTO.CodeCheck {
+    private interface FieldCheck extends PictureDTO.IdCheck {
 
     }
 }

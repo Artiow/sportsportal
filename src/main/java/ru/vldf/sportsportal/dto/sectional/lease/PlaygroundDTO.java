@@ -159,11 +159,11 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
 
     }
 
-    public interface VersionCheck {
+    private interface VersionCheck {
 
     }
 
-    public interface FieldCheck extends
+    private interface FieldCheck extends
             SportDTO.CodeCheck, FeatureDTO.CodeCheck, PictureDTO.IdCheck {
 
     }

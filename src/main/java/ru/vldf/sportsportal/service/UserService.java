@@ -120,7 +120,7 @@ public class UserService {
         }
 
         return new TokenDTO()
-                .setLogin(loginMapper.toLoginDTO(user))
+                .setInfo(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
                 .setAccessToken(securityService.login(loginMapper.toIdentifiedUser(user)));
     }

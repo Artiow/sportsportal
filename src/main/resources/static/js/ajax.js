@@ -11,22 +11,35 @@ const DEFAULT_FAIL_REDIRECT = '/login';
 const DEFAULT_SUCCESSFUL_REDIRECT = '/home';
 
 /**
- * Logout user.
+ * Register user and redirects to a {@link DEFAULT_FAIL_REDIRECT}.
+ * @param userData{object} - users data
+ * @param errorHandler{function(object)} - error handler
  */
-function ajaxLogout() {
-    localStorage.clear();
-    window.location.replace(DEFAULT_FAIL_REDIRECT);
+function ajaxRegistration(userData, errorHandler) {
+    $.ajax({
+        type: 'POST',
+        url: '/api/user/register',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify(userData),
+        success: function (data, textStatus, jqXHR) {
+            const userURI = jqXHR.getResponseHeader("Location");
+            console.log('Accepted User URI:', userURI);
+            localStorage.setItem('userURI', userURI);
+            window.location.replace(DEFAULT_FAIL_REDIRECT);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            errorHandler(jqXHR.responseJSON);
+        }
+    })
 }
 
 /**
- * Logged user and redirects to a particular address.
+ * Logged user and redirects to a {@link DEFAULT_SUCCESSFUL_REDIRECT}.
  * @param login{string} - user login
  * @param password{string} - user password
- * @param errorHandler{function(number)} - error handler
+ * @param errorHandler{function(object)} - error handler
  */
 function ajaxLogin(login, password, errorHandler) {
-    event.preventDefault();
-
     let redirect = localStorage.getItem('redirect');
     if (redirect === null) {
         redirect = DEFAULT_SUCCESSFUL_REDIRECT;
@@ -39,7 +52,7 @@ function ajaxLogin(login, password, errorHandler) {
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
             const token = data.tokenType + ' ' + data.accessToken;
-            const userURI = data.user.userURI;
+            const userURI = data.info.userURI;
 
             console.log('Accepted Token:', token);
             localStorage.setItem('token', token);
@@ -48,7 +61,7 @@ function ajaxLogin(login, password, errorHandler) {
             window.location.replace(redirect);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            errorHandler(jqXHR.status);
+            errorHandler(jqXHR.responseJSON);
         }
     })
 }
@@ -57,9 +70,10 @@ function ajaxLogin(login, password, errorHandler) {
  * Logging and getting user data by storied token and userURI.
  *
  * @param {string} securedURL - requested secured URL
- * @param {function(Object)} successEvent - function that is called in case of successful verification.
+ * @param {function(object)} successEvent - function that is called in case of successful verification.
+ * @param errorHandler{function(object)} - error handler
  */
-function ajaxVerify(securedURL, successEvent) {
+function ajaxVerify(securedURL, successEvent, errorHandler) {
     const token = localStorage.getItem('token');
     if ((token === null) || (securedURL === null)) {
         localStorage.setItem('redirect', window.location.href);
@@ -78,8 +92,16 @@ function ajaxVerify(securedURL, successEvent) {
                 successEvent(data)
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Unexpected Error:', jqXHR.statusCode);
+                errorHandler(jqXHR.responseJSON);
             }
         })
     }
+}
+
+/**
+ * Logout user.
+ */
+function ajaxLogout() {
+    localStorage.clear();
+    window.location.replace(DEFAULT_FAIL_REDIRECT);
 }

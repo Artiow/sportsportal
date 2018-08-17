@@ -62,10 +62,10 @@ public class AdviseController {
         BindingResult bindingResult = ex.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
 
-        String message = messages.getAndFormat("sportsportal.handle.MethodArgumentNotValidException.message", bindingResult.getObjectName());
+        String message = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
         Map<String, String> errors = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            errors.put(((DefaultMessageSourceResolvable) error.getArguments()[0]).getCodes()[0], error.getDefaultMessage());
+            errors.put(((DefaultMessageSourceResolvable) error.getArguments()[0]).getCode(), error.getDefaultMessage());
         }
 
         return new ErrorMapDTO(warnUUID("Sent Argument Not Valid."), ex.getClass().getName(), message, errors);

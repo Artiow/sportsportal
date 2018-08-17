@@ -13,19 +13,30 @@ public abstract class AbstractURIMapper<T extends AbstractIdentifiedEntity> {
 
 
     public URI toURI(Integer id) {
-        return ResourceLocationBuilder.buildURI(getApiPath(), id);
+        if (id != null) {
+            return ResourceLocationBuilder.buildURI(getApiPath(), id);
+        } else {
+            return null;
+        }
     }
 
     public URI toURI(T entity) {
-        return toURI(entity.getId());
+        if (entity != null) {
+            return toURI(entity.getId());
+        } else {
+            return null;
+        }
     }
 
     public Collection<URI> toURI(Collection<T> entityCollection) {
-        Collection<URI> uriCollection = new ArrayList<>(entityCollection.size());
-        for (T entity : entityCollection) {
-            uriCollection.add(toURI(entity));
+        if (entityCollection != null) {
+            Collection<URI> uriCollection = new ArrayList<>(entityCollection.size());
+            for (T entity : entityCollection) {
+                uriCollection.add(toURI(entity));
+            }
+            return uriCollection;
+        } else {
+            return null;
         }
-
-        return uriCollection;
     }
 }

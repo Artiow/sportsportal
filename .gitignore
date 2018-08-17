@@ -8,9 +8,6 @@
 /webapps/
 /target/
 
-### Demo Data ###
-database/demo.sql
-
 ### Secure Properties ###
 application-secure.properties
 application-secure-demo.properties

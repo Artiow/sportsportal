@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+
+    <!-- LIBRARIES -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href='//fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+
+    <link rel="stylesheet" href="../static/css/registration.css" th:href="@{/css/registration.css}"/>
+    <script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
+    <script src="../static/js/registration.js" th:src="@{/js/registration.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row main">
+        <div class="main-login">
+            <form class="form-horizontal" id="registration">
+                <div class="form-group" style="text-align: center">
+                    <p id="message"></p>
+                    <div id="map" style="text-align: left; font-size: 12px">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" required="required" id="name" placeholder="Имя"/>
+                    <input type="text" class="form-control" required="required" id="surname" placeholder="Фамилия"/>
+                    <input type="text" class="form-control" required="required" id="patronymic" placeholder="Отчество"/>
+                    <input type="text" class="form-control" required="required" id="address" placeholder="Адрес"/>
+                    <input type="text" class="form-control" required="required" id="phone" placeholder="Телефон"/>
+                    <script>$("#phone").mask("+7(999)999-99-99");</script>
+                    <input type="password" class="form-control" required="required" id="login"
+                           placeholder="Логин"/>
+                    <input type="password" class="form-control" required="required" id="password"
+                           placeholder="Пароль"/>
+                    <input type="password" class="form-control" required="required" id="confirm"
+                           placeholder="Подтвердите пароль"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block login-button">Регистрация</button>
+                </div>
+                <div class="login-register">
+                    <a href="/login">Авторизация</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

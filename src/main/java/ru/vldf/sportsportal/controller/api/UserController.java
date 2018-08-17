@@ -63,7 +63,7 @@ public class UserController {
      * @return new user location
      */
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.FieldCheck.class) UserDTO userDTO)
+    public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURI(apiPath, userService.register(userDTO))).build();
     }
