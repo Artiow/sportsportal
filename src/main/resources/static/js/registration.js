@@ -1,19 +1,26 @@
-const PASSWORD_DO_NOT_MATCH_MESSAGE = 'Введенные пароли не совпадают!';
+const PASSWORD_DO_NOT_MATCH = 'Введенные пароли не совпадают!';
 
 $(function () {
-    $('#registration').on("submit", function () {
+    $('#register-form').on("submit", function () {
         event.preventDefault();
 
-        const mapField = $('#map').empty();
-        const messageField = $('#message').empty();
-        $('input').each(function () {
-            $(this).css("color", "green");
+        const messageField = $('#message-field')
+            .css('display', 'none')
+            .empty();
+
+        $('.form-control').each(function () {
+            $(this).removeClass("is-invalid");
+            $(this).removeClass("is-valid");
+        });
+        $('.invalid-feedback').each(function () {
+            $(this).empty();
         });
 
         const passwordField = $('#password');
         const password = passwordField.val();
         const confirmField = $('#confirm');
         const confirm = confirmField.val();
+
         if (password === confirm) {
             ajaxRegistration({
                 name: $('#name').val(),
@@ -26,20 +33,32 @@ $(function () {
             }, function (response) {
                 const errorMessage = response.message;
                 const errorMap = response.errors;
+                messageField
+                    .css('display', 'block')
+                    .append(errorMessage);
 
-                messageField.append(errorMessage);
                 Object.keys(errorMap).forEach(function (key) {
-                    const inputField = $('#' + key);
+                    let errorInput;
+                    let errorField;
                     const message = errorMap[key];
-
-                    inputField.css("color", "red");
-                    mapField.append('<p>').append(inputField.attr("placeholder")).append(': ').append(message).append('</p>');
+                    if (key !== 'password') {
+                        errorInput = $('#' + key).addClass("is-invalid");
+                        errorField = $('#' + key + ' + .invalid-feedback');
+                    } else {
+                        errorInput = $('#password');
+                        errorField = $('#confirm + .invalid-feedback');
+                    }
+                    errorField.empty()
+                        .append('Значение поля \"')
+                        .append(errorInput.attr("placeholder").toLowerCase())
+                        .append('\" ').append(message).append('!');
                 });
             });
         } else {
-            messageField.append(PASSWORD_DO_NOT_MATCH_MESSAGE);
-            passwordField.css("color", "red");
-            confirmField.css("color", "red");
+            passwordField.addClass("is-invalid");
+            confirmField.addClass("is-invalid");
+            $('#confirm + .invalid-feedback')
+                .append(PASSWORD_DO_NOT_MATCH);
         }
     })
 });

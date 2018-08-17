@@ -6,51 +6,89 @@
     <title>Регистрация</title>
 
     <!-- LIBRARIES -->
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet">
-    <link href='//fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
 
-    <link rel="stylesheet" href="../static/css/registration.css" th:href="@{/css/registration.css}"/>
     <script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
     <script src="../static/js/registration.js" th:src="@{/js/registration.js}"></script>
+    <link href="../static/css/registration.css" th:href="@{/css/registration.css}" rel="stylesheet"/>
 </head>
 <body>
 <div class="container">
-    <div class="row main">
-        <div class="main-login">
-            <form class="form-horizontal" id="registration">
-                <div class="form-group" style="text-align: center">
-                    <p id="message"></p>
-                    <div id="map" style="text-align: left; font-size: 12px">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" required="required" id="name" placeholder="Имя"/>
-                    <input type="text" class="form-control" required="required" id="surname" placeholder="Фамилия"/>
-                    <input type="text" class="form-control" required="required" id="patronymic" placeholder="Отчество"/>
-                    <input type="text" class="form-control" required="required" id="address" placeholder="Адрес"/>
-                    <input type="text" class="form-control" required="required" id="phone" placeholder="Телефон"/>
-                    <script>$("#phone").mask("+7(999)999-99-99");</script>
-                    <input type="password" class="form-control" required="required" id="login"
-                           placeholder="Логин"/>
-                    <input type="password" class="form-control" required="required" id="password"
-                           placeholder="Пароль"/>
-                    <input type="password" class="form-control" required="required" id="confirm"
-                           placeholder="Подтвердите пароль"/>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-lg btn-block login-button">Регистрация</button>
-                </div>
-                <div class="login-register">
-                    <a href="/login">Авторизация</a>
-                </div>
-            </form>
+    <form id="register-form">
+        <h1>Регистрация</h1>
+        <div id="message-field" class="alert alert-warning"></div>
+        <div class="form-row">
+            <label for="name" class="col-sm-3 col-form-label">Имя</label>
+            <div class="col-sm-9">
+                <input type="text" id="name" class="form-control" placeholder="Имя" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
         </div>
-    </div>
+        <div class="form-row">
+            <label for="surname" class="col-sm-3 col-form-label">Фамилия</label>
+            <div class="col-sm-9">
+                <input type="text" id="surname" class="form-control" placeholder="Фамилия" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="patronymic" class="col-sm-3 col-form-label">Отчество</label>
+            <div class="col-sm-9">
+                <input type="text" id="patronymic" class="form-control" placeholder="Отчество" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="address" class="col-sm-3 col-form-label">Адрес</label>
+            <div class="col-sm-9">
+                <input type="text" id="address" class="form-control" placeholder="Адрес" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="phone" class="col-sm-3 col-form-label">Телефон</label>
+            <div class="col-sm-9">
+                <input type="text" id="phone" class="form-control" placeholder="Телефон" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="login" class="col-sm-3 col-form-label">Логин</label>
+            <div class="col-sm-9">
+                <input type="text" id="login" class="form-control" placeholder="Логин" required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="password" class="col-sm-3 col-form-label">Пароль</label>
+            <div class="col-sm-9">
+                <input type="password" id="password" class="form-control" placeholder="Пароль" required="required">
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="confirm" class="col-sm-3 col-form-label"></label>
+            <div class="col-sm-9">
+                <input type="password" id="confirm" class="form-control" placeholder="Подтвердите пароль"
+                       required="required">
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 offset-sm-3">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Регистрация</button>
+                <div class="login-link-box" style="text-align: center">
+                    <a class="btn btn-link btn-sm" href="/login">Авторизация</a>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+<script>
+    $("#phone").mask("+7(999)999-99-99");
+</script>
 </body>
 </html>

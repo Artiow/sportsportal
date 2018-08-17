@@ -11,7 +11,7 @@ public class CommonController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/home";
+        return "index";
     }
 
     @GetMapping("/login")

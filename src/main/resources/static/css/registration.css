@@ -1,68 +1,58 @@
 body, html {
-    height: 100%;
     background: #d3d3d3 no-repeat;
-    font-family: 'Oxygen', sans-serif;
 }
 
-.main {
-    margin-top: 70px;
+form {
+    max-width: 630px;
+    margin: 15px auto;
+    padding: 15px 25px;
+    border-radius: 0.25em;
+    background-color: #f2f2f2;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group input {
-    margin-bottom: 5px;
-}
-
-.form-group input:last-child {
-    margin-bottom: 0;
-}
-
-input, input::-webkit-input-placeholder {
-    font-size: 14px;
-    padding-top: 3px;
-}
-
-input:valid {
-    color: green;
-}
-
-input:invalid {
-    color: red;
-}
-
-.main-login {
-    margin: 0 auto;
-    min-width: 330px;
-    max-width: 330px;
-
-    padding: 5px 40px 40px;
-    background-color: #fff;
-
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-
-    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-
-}
-
-p#message {
-    height: 25px;
-    padding-top: 10px;
-    padding-bottom: 20px;
-    font-size: 15px;
-}
-
-.login-button {
-    margin-top: 5px;
-}
-
-.login-register {
-    font-size: 11px;
+form h1 {
+    margin-top: 5%;
+    margin-bottom: 2.5%;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #000000;
+    font-size: 32px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+}
+
+form .alert {
+    display: none;
+    padding: 5px;
+    text-align: center;
+}
+
+.form-row {
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.form-row .col-sm-3 {
+    padding-right: 2.5%;
+    text-align: right;
+}
+
+.row {
+    margin-top: 5%;
+}
+
+.row .btn-primary {
+    background: #f0ad4e none repeat scroll 0 0;
+    border-color: #f0ad4e;
+}
+
+.row .btn-link {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.login-link-box {
+    margin-top: 10px;
 }
