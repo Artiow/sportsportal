@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.service.UserService;
+import ru.vldf.sportsportal.service.sectional.common.UserService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 

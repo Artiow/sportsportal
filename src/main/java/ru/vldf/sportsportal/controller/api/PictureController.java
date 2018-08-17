@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.vldf.sportsportal.service.PictureService;
+import ru.vldf.sportsportal.service.sectional.common.PictureService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;

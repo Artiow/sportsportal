@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service;
+package ru.vldf.sportsportal.service.sectional.common;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;

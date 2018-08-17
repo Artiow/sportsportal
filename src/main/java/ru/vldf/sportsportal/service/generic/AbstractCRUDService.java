@@ -35,21 +35,17 @@ public abstract class AbstractCRUDService<ID extends Serializable, E extends Abs
         this.messages = messages;
     }
 
-    protected AbstractRepository<E, ID> getAbstractRepository() {
+    protected AbstractRepository<E, ID> getRepository() {
         return repository;
     }
-
-    protected abstract <T extends AbstractRepository<E, ID>> T getRepository();
 
     protected <T extends AbstractRepository<E, ID>> void setRepository(T repository) {
         this.repository = repository;
     }
 
-    protected AbstractIdentifiedMapper<E, D> getAbstractMapper() {
+    protected AbstractIdentifiedMapper<E, D> getMapper() {
         return mapper;
     }
-
-    protected abstract <T extends AbstractIdentifiedMapper<E, D>> T getMapper();
 
     protected <T extends AbstractIdentifiedMapper<E, D>> void setMapper(T mapper) {
         this.mapper = mapper;
