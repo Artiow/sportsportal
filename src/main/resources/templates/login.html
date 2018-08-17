@@ -10,30 +10,29 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
 
-    <link rel="stylesheet" href="../static/css/login.css" th:href="@{/css/login.css}"/>
     <script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
     <script src="../static/js/login.js" th:src="@{/js/login.js}"></script>
+    <link rel="stylesheet" href="../static/css/login.css" th:href="@{/css/login.css}"/>
 </head>
-<body class="login-body">
+<body>
 <div class="container">
     <div class="login-form">
-        <div class="main-div">
-            <div class="panel">
-                <h2>Авторизация</h2>
-                <p>Введите логин и пароль</p>
+        <div class="panel panel-top">
+            <h2>Авторизация</h2>
+            <p>Введите логин и пароль</p>
+        </div>
+        <form id="login-form">
+            <div>
+                <input type="text" class="form-control" id="login" placeholder="Логин"/>
+                <input type="password" class="form-control" id="password" placeholder="Пароль"/>
             </div>
-            <form id="login">
-                <div class="form-group">
-                    <input type="text" class="form-control" id="inputLogin" placeholder="Login"/>
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control" id="inputPassword" placeholder="Password"/>
-                </div>
+            <div class="control-group">
                 <div class="forgot"><a href="/registration">Нет аккаунта?</a></div>
-                <button type="submit" class="btn btn-primary">Авторизация</button>
-                <div id="result"></div>
-            </form>
-            <p id="message" style="margin-top: 10px; color: grey; font-weight: bold">Неверный логин или пароль!</p>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Авторизация</button>
+            </div>
+        </form>
+        <div class="panel panel-bottom">
+            <p id="message">Неверный логин или пароль!</p>
         </div>
     </div>
 </div>
