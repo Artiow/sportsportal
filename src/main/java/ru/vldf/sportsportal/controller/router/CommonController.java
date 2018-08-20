@@ -9,9 +9,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 public class CommonController {
 
-    @GetMapping("/")
+    @GetMapping({"/", "/index"}) // todo: remove temporary redirect
     public String index() {
-        return "index";
+        return "lease";
     }
 
     @GetMapping("/login")

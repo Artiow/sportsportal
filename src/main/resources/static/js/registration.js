@@ -38,20 +38,18 @@ $(function () {
                     .append(errorMessage);
 
                 Object.keys(errorMap).forEach(function (key) {
-                    let errorInput;
-                    let errorField;
                     const message = errorMap[key];
-                    if (key !== 'password') {
-                        errorInput = $('#' + key).addClass("is-invalid");
-                        errorField = $('#' + key + ' + .invalid-feedback');
-                    } else {
-                        errorInput = $('#password');
-                        errorField = $('#confirm + .invalid-feedback');
+                    let errorInputId = '#' + key;
+                    const field = $(errorInputId)
+                        .addClass("is-invalid")
+                        .attr("placeholder")
+                        .toLowerCase();
+                    if (key === 'password') {
+                        errorInputId = '#confirm';
+                        $(errorInputId).addClass("is-invalid");
                     }
-                    errorField.empty()
-                        .append('Значение поля \"')
-                        .append(errorInput.attr("placeholder").toLowerCase())
-                        .append('\" ').append(message).append('!');
+                    $(errorInputId + ' + .invalid-feedback').empty()
+                        .append('Значение поля').append(" \"" + field + "\" ").append(message + '!');
                 });
             });
         } else {
