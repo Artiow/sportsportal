@@ -3,67 +3,32 @@ package ru.vldf.sportsportal.service.generic;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractIdentifiedMapper;
-import ru.vldf.sportsportal.repository.AbstractRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
-import java.io.Serializable;
 
-public abstract class AbstractCRUDService<ID extends Serializable, E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
+public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
-    private MessageContainer messages;
-
-    private AbstractRepository<E, ID> repository;
-    private AbstractIdentifiedMapper<E, D> mapper;
-
-
-    protected MessageContainer getMessages() {
-        return messages;
-    }
-
-    protected void setMessages(MessageContainer messages) {
-        this.messages = messages;
-    }
-
-    protected AbstractRepository<E, ID> getRepository() {
-        return repository;
-    }
-
-    protected <T extends AbstractRepository<E, ID>> void setRepository(T repository) {
-        this.repository = repository;
-    }
-
-    protected AbstractIdentifiedMapper<E, D> getMapper() {
-        return mapper;
-    }
-
-    protected <T extends AbstractIdentifiedMapper<E, D>> void setMapper(T mapper) {
-        this.mapper = mapper;
-    }
-
-
-    protected abstract D get(Integer id) throws
+    public abstract D get(Integer id) throws
             ResourceNotFoundException;
 
-    protected abstract ID create(D t) throws
+    public abstract Integer create(D t) throws
             ResourceCannotCreateException;
 
-    protected abstract void update(ID id, D t) throws
+    public abstract void update(Integer id, D t) throws
             ResourceNotFoundException,
             ResourceCannotUpdateException,
             ResourceOptimisticLockException;
 
-    protected abstract void delete(ID id) throws
+    public abstract void delete(Integer id) throws
             ResourceNotFoundException;
 
 

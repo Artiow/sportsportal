@@ -80,12 +80,12 @@ public class PictureService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistByFile.message", id));
+                throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistByFile.message", id));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistById.message", id), e);
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
         } catch (MalformedURLException e) {
-            throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistByFile.message", id), e);
+            throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistByFile.message", id), e);
         }
     }
 
@@ -99,7 +99,7 @@ public class PictureService {
     @Transactional
     public Integer create(@NotNull MultipartFile picture) throws ResourceCannotCreateException {
         if (!picture.getContentType().equals(MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResourceCannotCreateException(messages.get("sportsportal.Picture.couldNotStore.message"));
+            throw new ResourceCannotCreateException(messages.get("sportsportal.common.Picture.couldNotStore.message"));
         } else {
 
             PictureEntity pictureEntity = new PictureEntity();
@@ -112,7 +112,7 @@ public class PictureService {
                 Files.copy(picture.getInputStream(), this.fileStorageLocation.resolve(getFilename(newId)), StandardCopyOption.REPLACE_EXISTING);
                 return newId;
             } catch (IOException e) {
-                throw new ResourceCannotCreateException(messages.get("sportsportal.Picture.couldNotStore.message"), e);
+                throw new ResourceCannotCreateException(messages.get("sportsportal.common.Picture.couldNotStore.message"), e);
             }
         }
     }
@@ -126,7 +126,7 @@ public class PictureService {
     @Transactional
     public void delete(@NotNull Integer id) throws ResourceNotFoundException {
         if (!pictureRepository.existsById(id)) {
-            throw new ResourceNotFoundException(messages.getAndFormat("reksoft.demo.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistById.message", id));
         } else {
             pictureRepository.deleteById(id);
 

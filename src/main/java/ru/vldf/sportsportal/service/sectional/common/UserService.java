@@ -90,7 +90,7 @@ public class UserService {
         try {
             return userMapper.toShortDTO(userRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.User.notExistById.message", id), e);
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.User.notExistById.message", id), e);
         }
     }
 
@@ -136,7 +136,7 @@ public class UserService {
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String login = userDTO.getLogin();
         if (userRepository.existsByLogin(login)) {
-            throw new ResourceCannotCreateException(messages.getAndFormat("sportsportal.User.alreadyExistByLogin.message", login));
+            throw new ResourceCannotCreateException(messages.getAndFormat("sportsportal.common.User.alreadyExistByLogin.message", login));
         }
 
         UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
