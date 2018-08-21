@@ -15,7 +15,7 @@ public class PictureDTO extends AbstractIdentifiedDTO {
     private Integer id;
 
     @Null(groups = FieldCheck.class)
-    private URI uri;
+    private URI url;
 
     @Null(groups = FieldCheck.class)
     private Long size;
@@ -35,12 +35,12 @@ public class PictureDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public URI getUri() {
-        return uri;
+    public URI getUrl() {
+        return url;
     }
 
-    public PictureDTO setUri(URI uri) {
-        this.uri = uri;
+    public PictureDTO setUrl(URI url) {
+        this.url = url;
         return this;
     }
 

@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.sectional.lease;
+package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -9,6 +9,7 @@ import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.service.generic.AbstractCRUDService;
@@ -45,19 +46,19 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     /**
      * Returns requested page with playgrounds.
      *
-     * @param pageDividerDTO pagination data
-     * @return {@link PageDTO} with {@link PlaygroundDTO}
+     * @param dividerDTO {@link PageDividerDTO} pagination data
+     * @return {@link PageDTO} with {@link PlaygroundShortDTO}
      */
     @Transactional(readOnly = true)
-    public PageDTO<PlaygroundDTO> getList(PageDividerDTO pageDividerDTO) {
-        PageDivider divider = new PageDivider(pageDividerDTO); // todo: add filter!
-        return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toDTO));
+    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO dividerDTO) {
+        PageDivider divider = new PageDivider(dividerDTO);
+        return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
     /**
      * Returns requested playground.
      *
-     * @param id playground identifier
+     * @param id {@link Integer} playground identifier
      * @return {@link PlaygroundDTO}
      * @throws ResourceNotFoundException if singer not found
      */
@@ -74,7 +75,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     /**
      * Saves new playground.
      *
-     * @param playgroundDTO playground data
+     * @param playgroundDTO {@link PlaygroundDTO} with playground data
      * @return new playground {@link Integer} identifier
      */
     @Override
@@ -86,8 +87,8 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     /**
      * Update playground data.
      *
-     * @param id            playground identifier
-     * @param playgroundDTO new playground data
+     * @param id            {@link Integer} playground identifier
+     * @param playgroundDTO {@link PlaygroundDTO} with new playground data
      * @throws ResourceNotFoundException       if playground not found
      * @throws ResourceOptimisticLockException if playground was already updated
      */
@@ -106,7 +107,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     /**
      * Delete playground.
      *
-     * @param id playground identifier
+     * @param id {@link Integer} playground identifier
      * @throws ResourceNotFoundException if playground not found
      */
     @Override

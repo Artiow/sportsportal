@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.service.sectional.common.UserService;
+import ru.vldf.sportsportal.service.UserService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
-import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURI;
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @RequestMapping("${api-path.common.user}")
@@ -65,6 +65,6 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
-        return ResponseEntity.created(buildURI(apiPath, userService.register(userDTO))).build();
+        return ResponseEntity.created(buildURL(apiPath, userService.register(userDTO))).build();
     }
 }

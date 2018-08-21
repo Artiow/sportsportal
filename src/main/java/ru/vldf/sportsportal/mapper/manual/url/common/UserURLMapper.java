@@ -1,17 +1,17 @@
-package ru.vldf.sportsportal.mapper.manual.uri.common;
+package ru.vldf.sportsportal.mapper.manual.url.common;
 
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.mapper.manual.uri.AbstractURIMapper;
+import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 
 import java.net.URI;
 import java.util.Collection;
 
 @Component
-@Named("toUserURI")
-public class UserURIMapper extends AbstractURIMapper<UserEntity> {
+@Named("toUserURL")
+public class UserURLMapper extends AbstractURLMapper<UserEntity> {
 
     @Value("${api-path.common.user}")
     private String apiPath;
@@ -23,17 +23,17 @@ public class UserURIMapper extends AbstractURIMapper<UserEntity> {
 
 
     @Named("fromId")
-    public URI toURI(Integer id) {
-        return super.toURI(id);
+    public URI toURL(Integer id) {
+        return super.toURL(id);
     }
 
     @Named("fromEntity")
-    public URI toURI(UserEntity entity) {
-        return super.toURI(entity);
+    public URI toURL(UserEntity entity) {
+        return super.toURL(entity);
     }
 
     @Named("fromCollection")
-    public Collection<URI> toURI(Collection<UserEntity> entityCollection) {
-        return super.toURI(entityCollection);
+    public Collection<URI> toURL(Collection<UserEntity> entityCollection) {
+        return super.toURL(entityCollection);
     }
 }

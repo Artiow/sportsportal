@@ -1,17 +1,17 @@
-package ru.vldf.sportsportal.mapper.manual.uri.lease;
+package ru.vldf.sportsportal.mapper.manual.url.lease;
 
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
-import ru.vldf.sportsportal.mapper.manual.uri.AbstractURIMapper;
+import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 
 import java.net.URI;
 import java.util.Collection;
 
 @Component
-@Named("toPlaygroundURI")
-public class PlaygroundURIMapper extends AbstractURIMapper<PlaygroundEntity> {
+@Named("toPlaygroundURL")
+public class PlaygroundURLMapper extends AbstractURLMapper<PlaygroundEntity> {
 
     @Value("${api-path.lease.playground}")
     private String apiPath;
@@ -23,17 +23,17 @@ public class PlaygroundURIMapper extends AbstractURIMapper<PlaygroundEntity> {
 
 
     @Named("fromId")
-    public URI toURI(Integer id) {
-        return super.toURI(id);
+    public URI toURL(Integer id) {
+        return super.toURL(id);
     }
 
     @Named("fromEntity")
-    public URI toURI(PlaygroundEntity entity) {
-        return super.toURI(entity);
+    public URI toURL(PlaygroundEntity entity) {
+        return super.toURL(entity);
     }
 
     @Named("fromCollection")
-    public Collection<URI> toURI(Collection<PlaygroundEntity> entityCollection) {
-        return super.toURI(entityCollection);
+    public Collection<URI> toURL(Collection<PlaygroundEntity> entityCollection) {
+        return super.toURL(entityCollection);
     }
 }

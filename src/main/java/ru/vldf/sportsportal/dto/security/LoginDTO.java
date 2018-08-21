@@ -8,8 +8,8 @@ import java.util.List;
 public class LoginDTO implements DataTransferObject {
 
     private String login;
-    private URI userURI;
-    private URI avatarURI;
+    private URI userURL;
+    private URI avatarURL;
     private List<String> roles;
 
 
@@ -22,21 +22,21 @@ public class LoginDTO implements DataTransferObject {
         return this;
     }
 
-    public URI getUserURI() {
-        return userURI;
+    public URI getUserURL() {
+        return userURL;
     }
 
-    public LoginDTO setUserURI(URI userURI) {
-        this.userURI = userURI;
+    public LoginDTO setUserURL(URI userURL) {
+        this.userURL = userURL;
         return this;
     }
 
-    public URI getAvatarURI() {
-        return avatarURI;
+    public URI getAvatarURL() {
+        return avatarURL;
     }
 
-    public LoginDTO setAvatarURI(URI avatarURI) {
-        this.avatarURI = avatarURI;
+    public LoginDTO setAvatarURL(URI avatarURL) {
+        this.avatarURL = avatarURL;
         return this;
     }
 

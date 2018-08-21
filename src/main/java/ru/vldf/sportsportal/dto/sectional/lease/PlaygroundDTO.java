@@ -16,8 +16,11 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     private Integer id;
 
     @NotNull(groups = VersionCheck.class)
-    @Min(value = 1, groups = VersionCheck.class)
+    @Min(value = 0, groups = VersionCheck.class)
     private Long version;
+
+    @Null(groups = FieldCheck.class)
+    private URI url;
 
     @NotNull(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
@@ -35,9 +38,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Min(value = 1, groups = FieldCheck.class)
     @Max(value = 10, groups = FieldCheck.class)
     private Integer rate;
-
-    @Null(groups = FieldCheck.class)
-    private URI uri;
 
     @Valid
     @NotNull(groups = FieldCheck.class)
@@ -74,6 +74,15 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    public URI getUrl() {
+        return url;
+    }
+
+    public PlaygroundDTO setUrl(URI url) {
+        this.url = url;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -107,15 +116,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
 
     public PlaygroundDTO setRate(Integer rate) {
         this.rate = rate;
-        return this;
-    }
-
-    public URI getUri() {
-        return uri;
-    }
-
-    public PlaygroundDTO setUri(URI uri) {
-        this.uri = uri;
         return this;
     }
 
@@ -164,7 +164,7 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     }
 
     private interface FieldCheck extends
-            SportDTO.CodeCheck, FeatureDTO.CodeCheck, PictureDTO.IdCheck {
+            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
 
     }
 }

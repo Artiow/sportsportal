@@ -7,25 +7,25 @@ import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.common.PictureURIMapper;
-import ru.vldf.sportsportal.mapper.manual.uri.lease.PlaygroundURIMapper;
+import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
+import ru.vldf.sportsportal.mapper.manual.url.lease.PlaygroundURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 
 import javax.persistence.OptimisticLockException;
 
 @Mapper(
         componentModel = "spring",
-        uses = {PlaygroundURIMapper.class, PictureURIMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
+        uses = {PlaygroundURLMapper.class, PictureURLMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
 )
 public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
 
     @Mappings({
-            @Mapping(target = "playgroundURI", source = "id", qualifiedByName = {"toPlaygroundURI", "fromId"}),
-            @Mapping(target = "photoURIs", source = "photos", qualifiedByName = {"toPictureURI", "fromCollection"})
+            @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
+            @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
     PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
-    @Mapping(target = "uri", source = "id", qualifiedByName = {"toPlaygroundURI", "fromId"})
+    @Mapping(target = "url", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"})
     PlaygroundDTO toDTO(PlaygroundEntity entity);
 
     @Mapping(target = "id", ignore = true)
@@ -33,7 +33,16 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
     @Override
     default PlaygroundEntity merge(PlaygroundEntity acceptor, PlaygroundEntity donor) throws OptimisticLockException {
-        // todo: merge!
+        AbstractVersionedMapper.super.merge(acceptor, donor);
+
+        acceptor.setName(donor.getName());
+        acceptor.setAddress(donor.getAddress());
+        acceptor.setPhone(donor.getPhone());
+        acceptor.setRate(donor.getRate());
+        acceptor.setSpecializations(donor.getSpecializations());
+        acceptor.setCapabilities(donor.getCapabilities());
+        acceptor.setPhotos(donor.getPhotos());
+
         return acceptor;
     }
 }

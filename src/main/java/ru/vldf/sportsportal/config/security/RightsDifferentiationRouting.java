@@ -11,7 +11,10 @@ public interface RightsDifferentiationRouting {
     RequestMatcher ADMIN_API_URLS = new OrRequestMatcher(
             new AntPathRequestMatcher("/api/*", "POST"),
             new AntPathRequestMatcher("/api/*/*", "PUT"),
-            new AntPathRequestMatcher("/api/*/*", "DELETE")
+            new AntPathRequestMatcher("/api/*/*", "DELETE"),
+            new AntPathRequestMatcher("/api/lease/*", "POST"),
+            new AntPathRequestMatcher("/api/lease/*/*", "PUT"),
+            new AntPathRequestMatcher("/api/lease/*/*", "DELETE")
     );
 
     RequestMatcher USER_API_URLS = new OrRequestMatcher(

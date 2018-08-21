@@ -14,8 +14,8 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
     private String patronymic;
     private String address;
     private String phone;
-    private URI userURI;
-    private URI avatarURI;
+    private URI userURL;
+    private URI avatarURL;
     private List<String> roles;
 
 
@@ -84,21 +84,21 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public URI getUserURI() {
-        return userURI;
+    public URI getUserURL() {
+        return userURL;
     }
 
-    public UserShortDTO setUserURI(URI userURI) {
-        this.userURI = userURI;
+    public UserShortDTO setUserURL(URI userURL) {
+        this.userURL = userURL;
         return this;
     }
 
-    public URI getAvatarURI() {
-        return avatarURI;
+    public URI getAvatarURL() {
+        return avatarURL;
     }
 
-    public UserShortDTO setAvatarURI(URI avatarURI) {
-        this.avatarURI = avatarURI;
+    public UserShortDTO setAvatarURL(URI avatarURL) {
+        this.avatarURL = avatarURL;
         return this;
     }
 

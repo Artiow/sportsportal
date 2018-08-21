@@ -12,8 +12,8 @@ public class PlaygroundShortDTO {
     private Integer rate;
     private List<String> specializations;
     private List<String> capabilities;
-    private URI playgroundURI;
-    private List<URI> photoURIs;
+    private URI playgroundURL;
+    private List<URI> photoURLs;
 
     public Integer getId() {
         return id;
@@ -60,12 +60,12 @@ public class PlaygroundShortDTO {
         return this;
     }
 
-    public URI getPlaygroundURI() {
-        return playgroundURI;
+    public URI getPlaygroundURL() {
+        return playgroundURL;
     }
 
-    public PlaygroundShortDTO setPlaygroundURI(URI playgroundURI) {
-        this.playgroundURI = playgroundURI;
+    public PlaygroundShortDTO setPlaygroundURL(URI playgroundURL) {
+        this.playgroundURL = playgroundURL;
         return this;
     }
 
@@ -87,12 +87,12 @@ public class PlaygroundShortDTO {
         return this;
     }
 
-    public List<URI> getPhotoURIs() {
-        return photoURIs;
+    public List<URI> getPhotoURLs() {
+        return photoURLs;
     }
 
-    public PlaygroundShortDTO setPhotoURIs(List<URI> photoURIs) {
-        this.photoURIs = photoURIs;
+    public PlaygroundShortDTO setPhotoURLs(List<URI> photoURLs) {
+        this.photoURLs = photoURLs;
         return this;
     }
 }

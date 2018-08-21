@@ -9,15 +9,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.vldf.sportsportal.service.sectional.common.PictureService;
+import ru.vldf.sportsportal.service.PictureService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURI;
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @RequestMapping("${api-path.common.picture}")
@@ -71,7 +72,7 @@ public class PictureController {
     @PostMapping
     public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws ResourceCannotCreateException {
         return ResponseEntity
-                .created(buildURI(pictureService.create(picture)))
+                .created(ResourceLocationBuilder.buildURL(pictureService.create(picture)))
                 .build();
     }
 
