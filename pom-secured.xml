@@ -27,7 +27,7 @@
         <java.version>1.8</java.version>
         <javax.servlet.version>3.0.1</javax.servlet.version>
 
-        <db.url>jdbc:postgresql://185.249.255.73:5432/sportsportal</db.url>
+        <db.url.prod>jdbc:postgresql://185.249.255.73:5432/sportsportal</db.url.prod>
         <db.url.demo>jdbc:postgresql://185.249.255.73:5432/sportsportal.demo</db.url.demo>
         <db.url.test>jdbc:postgresql://185.249.255.73:5432/sportsportal.test</db.url.test>
 
@@ -185,7 +185,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>${org.flywaydb.version}</version>
                 <configuration>
-                    <url>${db.url}</url>
+                    <url>${db.url.prod}</url>
                     <user>${db.user}</user>
                     <password>${db.password}</password>
                     <locations>filesystem:database/migration</locations>

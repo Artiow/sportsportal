@@ -10,8 +10,6 @@
 
 ### Secure Properties ###
 application-secure.properties
-application-secure-demo.properties
-application-secure-test.properties
 
 ### Maven ###
 /.mvn/
