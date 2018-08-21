@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
-import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "playground", schema = "lease")
-public class PlaygroundEntity extends AbstractIdentifiedEntity {
+public class PlaygroundEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "name", nullable = false)

@@ -45,7 +45,7 @@ create table common."user"
     constraint user_pk
     primary key,
 
-  avatar_id  integer     not null
+  avatar_id  integer
     constraint user_avatar_id_fk
     references common.picture,
 

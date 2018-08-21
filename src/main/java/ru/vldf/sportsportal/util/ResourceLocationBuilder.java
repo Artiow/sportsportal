@@ -8,19 +8,19 @@ import java.net.URI;
 
 public class ResourceLocationBuilder {
 
-    public static URI buildURI() {
+    public static URI buildURL() {
         return buildComponent().toUri();
     }
 
-    public static URI buildURI(@NotNull String prefix) {
+    public static URI buildURL(@NotNull String prefix) {
         return buildComponent(prefix).toUri();
     }
 
-    public static URI buildURI(@NotNull Integer identifier) {
+    public static URI buildURL(@NotNull Integer identifier) {
         return buildComponent(identifier).toUri();
     }
 
-    public static URI buildURI(@NotNull String prefix, @NotNull Integer identifier) {
+    public static URI buildURL(@NotNull String prefix, @NotNull Integer identifier) {
         return buildComponent(prefix, identifier).toUri();
     }
 

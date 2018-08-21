@@ -1,0 +1,58 @@
+body, html {
+    background: #d3d3d3 no-repeat;
+}
+
+form {
+    max-width: 630px;
+    margin: 15px auto;
+    padding: 15px 25px;
+    border-radius: 0.25em;
+    background-color: #f2f2f2;
+}
+
+form h1 {
+    margin-top: 5%;
+    margin-bottom: 2.5%;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #000000;
+    font-size: 32px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+}
+
+form .alert {
+    display: none;
+    padding: 5px;
+    text-align: center;
+}
+
+.form-row {
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.form-row .col-sm-3 {
+    padding-right: 2.5%;
+    text-align: right;
+}
+
+.row {
+    margin-top: 5%;
+}
+
+.row .btn-primary {
+    background: #f0ad4e;
+    border-color: #d99a4a;
+}
+
+.row .btn-link {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.login-link-box {
+    margin-top: 10px;
+}

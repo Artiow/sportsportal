@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
-import ru.vldf.sportsportal.repository.PictureRepository;
+import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
@@ -66,12 +66,12 @@ public class PictureService {
 
 
     /**
-     * Returns resource by id.
+     * Returns picture by id.
      *
-     * @param id - resource id
-     * @return resource
-     * @throws ResourceNotFoundException     - if record not found in database
-     * @throws ResourceFileNotFoundException - if file not found on disk
+     * @param id {@link Integer} resource identifier
+     * @return picture {@link Resource}
+     * @throws ResourceNotFoundException     if record not found in database
+     * @throws ResourceFileNotFoundException if file not found on disk
      */
     @Transactional(readOnly = true)
     public Resource get(@NotNull Integer id) throws ResourceNotFoundException, ResourceFileNotFoundException {
@@ -80,26 +80,26 @@ public class PictureService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistByFile.message", id));
+                throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistByFile.message", id));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistById.message", id), e);
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
         } catch (MalformedURLException e) {
-            throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.Picture.notExistByFile.message", id), e);
+            throw new ResourceFileNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistByFile.message", id), e);
         }
     }
 
     /**
-     * Returns new resource id.
+     * Create new picture and returns its resource id.
      *
-     * @param picture - resource
-     * @return resource id
-     * @throws ResourceCannotCreateException - if resource cannot create
+     * @param picture picture {@link MultipartFile}
+     * @return {@link Integer} resource identifier
+     * @throws ResourceCannotCreateException if resource cannot create
      */
     @Transactional
     public Integer create(@NotNull MultipartFile picture) throws ResourceCannotCreateException {
         if (!picture.getContentType().equals(MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResourceCannotCreateException(messages.get("sportsportal.Picture.couldNotStore.message"));
+            throw new ResourceCannotCreateException(messages.get("sportsportal.common.Picture.couldNotStore.message"));
         } else {
 
             PictureEntity pictureEntity = new PictureEntity();
@@ -112,21 +112,21 @@ public class PictureService {
                 Files.copy(picture.getInputStream(), this.fileStorageLocation.resolve(getFilename(newId)), StandardCopyOption.REPLACE_EXISTING);
                 return newId;
             } catch (IOException e) {
-                throw new ResourceCannotCreateException(messages.get("sportsportal.Picture.couldNotStore.message"), e);
+                throw new ResourceCannotCreateException(messages.get("sportsportal.common.Picture.couldNotStore.message"), e);
             }
         }
     }
 
     /**
-     * Delete resource by id.
+     * Delete picture by id.
      *
-     * @param id - resource id
-     * @throws ResourceNotFoundException - if record not found in database
+     * @param id {@link Integer} picture identifier
+     * @throws ResourceNotFoundException if record not found in database
      */
     @Transactional
     public void delete(@NotNull Integer id) throws ResourceNotFoundException {
         if (!pictureRepository.existsById(id)) {
-            throw new ResourceNotFoundException(messages.getAndFormat("reksoft.demo.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.Picture.notExistById.message", id));
         } else {
             pictureRepository.deleteById(id);
 
@@ -139,10 +139,10 @@ public class PictureService {
 
 
     /**
-     * Form picture filename.
+     * Form picture filename on disk.
      *
-     * @param identifier - picture id
-     * @return picture filename
+     * @param identifier {@link Integer} picture identifier
+     * @return {@link String} picture filename
      */
     private String getFilename(@NotNull Integer identifier) {
         return String.format(pattern, identifier);

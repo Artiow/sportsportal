@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.dto.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.dto.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.mapper.UserMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.mapper.security.LoginMapper;
-import ru.vldf.sportsportal.repository.RoleRepository;
-import ru.vldf.sportsportal.repository.UserRepository;
+import ru.vldf.sportsportal.repository.common.RoleRepository;
+import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.security.SecurityService;
@@ -79,29 +79,29 @@ public class UserService {
 
 
     /**
-     * Returns user data by user id.
+     * Returns users short data by user id.
      *
-     * @param id - user id
-     * @return user's data
-     * @throws ResourceNotFoundException - if user with sent id not found
+     * @param id {@link Integer} user identifier
+     * @return {@link UserShortDTO} users data
+     * @throws ResourceNotFoundException if user with sent id not found
      */
     @Transactional(readOnly = true)
     public UserShortDTO get(@NotNull Integer id) throws ResourceNotFoundException {
         try {
             return userMapper.toShortDTO(userRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.User.notExistById.message", id), e);
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.common.User.notExistById.message", id), e);
         }
     }
 
     /**
-     * Login user and returns TokenDTO.
+     * Logging user and returns his token.
      *
-     * @param login    - user's login
-     * @param password - users's password
-     * @return token info
-     * @throws UsernameNotFoundException - if user not found
-     * @throws JwtException              - if could not parse jwt
+     * @param login    - {@link String} users login
+     * @param password - {@link String} users password
+     * @return {@link TokenDTO} token info
+     * @throws UsernameNotFoundException if user not found
+     * @throws JwtException              if could not parse jwt
      */
     @Transactional(readOnly = true)
     public TokenDTO login(@NotNull String login, @NotNull String password) throws UsernameNotFoundException, JwtException {
@@ -120,7 +120,7 @@ public class UserService {
         }
 
         return new TokenDTO()
-                .setLogin(loginMapper.toLoginDTO(user))
+                .setInfo(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
                 .setAccessToken(securityService.login(loginMapper.toIdentifiedUser(user)));
     }
@@ -128,17 +128,15 @@ public class UserService {
     /**
      * Register new user and returns his id.
      *
-     * @param userDTO - user data
-     * @return user id
-     * @throws ResourceCannotCreateException - if user could not create
+     * @param userDTO {@link UserDTO} full user data
+     * @return {@link Integer} user identifier
+     * @throws ResourceCannotCreateException if user could not create
      */
     @Transactional
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String login = userDTO.getLogin();
         if (userRepository.existsByLogin(login)) {
-            throw new ResourceCannotCreateException(messages.getAndFormat(
-                    "sportsportal.User.alreadyExistByLogin.message", login
-            ));
+            throw new ResourceCannotCreateException(messages.getAndFormat("sportsportal.common.User.alreadyExistByLogin.message", login));
         }
 
         UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));

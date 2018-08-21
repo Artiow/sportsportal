@@ -106,7 +106,7 @@ create table lease.specialization
   primary key (sport_id, playground_id)
 );
 
--- capabilitiy
+-- capability
 
 create table lease.capability
 (

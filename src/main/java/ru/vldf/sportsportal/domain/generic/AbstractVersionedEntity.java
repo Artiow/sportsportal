@@ -9,7 +9,7 @@ public abstract class AbstractVersionedEntity extends AbstractIdentifiedEntity {
 
     @Version
     @Column(name = "version")
-    private Long version = 1L;
+    private Long version = 0L;
 
 
     public Long getVersion() {
