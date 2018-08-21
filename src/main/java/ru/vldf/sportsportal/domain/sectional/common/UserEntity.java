@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 
 import javax.persistence.*;
@@ -41,6 +42,9 @@ public class UserEntity extends AbstractVersionedEntity {
     @OneToOne
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
+
+    @OneToMany(mappedBy = "customer")
+    private Collection<OrderEntity> orders;
 
     @ManyToMany
     @JoinTable(
@@ -117,6 +121,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setAvatar(PictureEntity avatar) {
         this.avatar = avatar;
+    }
+
+    public Collection<OrderEntity> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Collection<OrderEntity> orders) {
+        this.orders = orders;
     }
 
     public Collection<RoleEntity> getRoles() {
