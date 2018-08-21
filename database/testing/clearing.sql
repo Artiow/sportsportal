@@ -9,5 +9,7 @@ lease.playground,
 lease.photo,
 lease.ownership,
 lease.specialization,
-lease.capability
+lease.capability,
+lease.order,
+lease.reservation
 cascade;
