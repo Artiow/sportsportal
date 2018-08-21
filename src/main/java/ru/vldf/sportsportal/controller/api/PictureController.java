@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.controller.api;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,8 @@ import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
-
 @RestController
+@Api(tags = {"Picture"})
 @RequestMapping("${api-path.common.picture}")
 public class PictureController {
 
@@ -37,13 +38,14 @@ public class PictureController {
     /**
      * Download picture by id.
      *
-     * @param id      - picture id
-     * @param request - http request
-     * @return picture resource
-     * @throws ResourceNotFoundException     - if record not found in database
-     * @throws ResourceFileNotFoundException - if file not found on disk
+     * @param id      {@link Integer} picture identifier
+     * @param request {@link HttpServletRequest} http request
+     * @return picture {@link Resource}
+     * @throws ResourceNotFoundException     if record not found in database
+     * @throws ResourceFileNotFoundException if file not found on disk
      */
     @GetMapping("/{id}")
+    @ApiOperation("получить ресурс")
     public ResponseEntity<Resource> download(@PathVariable int id, HttpServletRequest request)
             throws ResourceNotFoundException, ResourceFileNotFoundException {
         Resource resource = pictureService.get(id);
@@ -63,13 +65,14 @@ public class PictureController {
     }
 
     /**
-     * Upload picture and returns new resource URI.
+     * Upload picture and returns its URL.
      *
-     * @param picture - picture file
+     * @param picture picture {@link MultipartFile} file
      * @return uploaded picture location
-     * @throws ResourceCannotCreateException - if resource cannot create
+     * @throws ResourceCannotCreateException if resource cannot create
      */
     @PostMapping
+    @ApiOperation("загрузить ресурс")
     public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws ResourceCannotCreateException {
         return ResponseEntity
                 .created(ResourceLocationBuilder.buildURL(pictureService.create(picture)))
@@ -79,11 +82,12 @@ public class PictureController {
     /**
      * Delete picture by id.
      *
-     * @param id - picture id
+     * @param id {@link Integer} picture identifier
      * @return no content
-     * @throws ResourceNotFoundException - if record not found in database
+     * @throws ResourceNotFoundException if record not found in database
      */
     @DeleteMapping("/{id}")
+    @ApiOperation("удалить ресурс")
     public ResponseEntity<Void> delete(@PathVariable int id) throws ResourceNotFoundException {
         pictureService.delete(id);
         return ResponseEntity
@@ -95,8 +99,8 @@ public class PictureController {
     /**
      * Build content disposition.
      *
-     * @param filename - filename
-     * @return content disposition line
+     * @param filename {@link String} filename
+     * @return {@link String} content disposition line
      */
     private String getContentDisposition(String filename) {
         return "inline; filename=\"" + filename + "\"";

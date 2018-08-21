@@ -66,12 +66,12 @@ public class PictureService {
 
 
     /**
-     * Returns resource by id.
+     * Returns picture by id.
      *
-     * @param id - resource id
-     * @return resource
-     * @throws ResourceNotFoundException     - if record not found in database
-     * @throws ResourceFileNotFoundException - if file not found on disk
+     * @param id {@link Integer} resource identifier
+     * @return picture {@link Resource}
+     * @throws ResourceNotFoundException     if record not found in database
+     * @throws ResourceFileNotFoundException if file not found on disk
      */
     @Transactional(readOnly = true)
     public Resource get(@NotNull Integer id) throws ResourceNotFoundException, ResourceFileNotFoundException {
@@ -90,11 +90,11 @@ public class PictureService {
     }
 
     /**
-     * Returns new resource id.
+     * Create new picture and returns its resource id.
      *
-     * @param picture - resource
-     * @return resource id
-     * @throws ResourceCannotCreateException - if resource cannot create
+     * @param picture picture {@link MultipartFile}
+     * @return {@link Integer} resource identifier
+     * @throws ResourceCannotCreateException if resource cannot create
      */
     @Transactional
     public Integer create(@NotNull MultipartFile picture) throws ResourceCannotCreateException {
@@ -118,10 +118,10 @@ public class PictureService {
     }
 
     /**
-     * Delete resource by id.
+     * Delete picture by id.
      *
-     * @param id - resource id
-     * @throws ResourceNotFoundException - if record not found in database
+     * @param id {@link Integer} picture identifier
+     * @throws ResourceNotFoundException if record not found in database
      */
     @Transactional
     public void delete(@NotNull Integer id) throws ResourceNotFoundException {
@@ -139,10 +139,10 @@ public class PictureService {
 
 
     /**
-     * Form picture filename.
+     * Form picture filename on disk.
      *
-     * @param identifier - picture id
-     * @return picture filename
+     * @param identifier {@link Integer} picture identifier
+     * @return {@link String} picture filename
      */
     private String getFilename(@NotNull Integer identifier) {
         return String.format(pattern, identifier);
