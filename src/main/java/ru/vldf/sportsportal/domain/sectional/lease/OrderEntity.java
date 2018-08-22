@@ -31,6 +31,10 @@ public class OrderEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private UserEntity customer;
 
+    @ManyToOne
+    @JoinColumn(name = "playground_id", referencedColumnName = "id")
+    private PlaygroundEntity playground;
+
     @OneToMany(mappedBy = "pk.order")
     private Collection<ReservationEntity> reservations;
 
@@ -73,6 +77,14 @@ public class OrderEntity extends AbstractIdentifiedEntity {
 
     public void setCustomer(UserEntity customer) {
         this.customer = customer;
+    }
+
+    public PlaygroundEntity getPlayground() {
+        return playground;
+    }
+
+    public void setPlayground(PlaygroundEntity playground) {
+        this.playground = playground;
     }
 
     public Collection<ReservationEntity> getReservations() {

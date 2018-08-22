@@ -48,8 +48,8 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @Column(name = "cost", nullable = false)
     private Integer cost;
 
-    @OneToMany(mappedBy = "pk.playground")
-    private Collection<ReservationEntity> reservations;
+    @OneToMany(mappedBy = "playground")
+    private Collection<OrderEntity> orders;
 
     @ManyToMany
     @JoinTable(
@@ -161,12 +161,12 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
         this.cost = cost;
     }
 
-    public Collection<ReservationEntity> getReservations() {
-        return reservations;
+    public Collection<OrderEntity> getOrders() {
+        return orders;
     }
 
-    public void setReservations(Collection<ReservationEntity> reservations) {
-        this.reservations = reservations;
+    public void setOrders(Collection<OrderEntity> orders) {
+        this.orders = orders;
     }
 
     public Collection<SportEntity> getSpecializations() {

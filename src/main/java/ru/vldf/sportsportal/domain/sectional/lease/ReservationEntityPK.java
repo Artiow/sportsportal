@@ -1,8 +1,11 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Embeddable
 public class ReservationEntityPK implements Serializable {
@@ -10,8 +13,13 @@ public class ReservationEntityPK implements Serializable {
     @ManyToOne
     private OrderEntity order;
 
-    @ManyToOne
-    private PlaygroundEntity playground;
+    @Basic
+    @Column(name = "reserved_date")
+    private Timestamp reservedDate;
+
+    @Basic
+    @Column(name = "reserved_time")
+    private Timestamp reservedTime;
 
 
     public OrderEntity getOrder() {
@@ -22,11 +30,19 @@ public class ReservationEntityPK implements Serializable {
         this.order = order;
     }
 
-    public PlaygroundEntity getPlayground() {
-        return playground;
+    public Timestamp getReservedDate() {
+        return reservedDate;
     }
 
-    public void setPlayground(PlaygroundEntity playground) {
-        this.playground = playground;
+    public void setReservedDate(Timestamp reservedDate) {
+        this.reservedDate = reservedDate;
+    }
+
+    public Timestamp getReservedTime() {
+        return reservedTime;
+    }
+
+    public void setReservedTime(Timestamp reservedTime) {
+        this.reservedTime = reservedTime;
     }
 }

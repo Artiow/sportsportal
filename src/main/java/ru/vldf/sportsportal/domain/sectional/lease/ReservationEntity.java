@@ -8,8 +8,11 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "reservation", schema = "lease")
 @AssociationOverrides({
-        @AssociationOverride(name = "pk.order", joinColumns = @JoinColumn(name = "order_id")),
-        @AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))
+        @AssociationOverride(name = "pk.order", joinColumns = @JoinColumn(name = "order_id"))
+})
+@AttributeOverrides({
+        @AttributeOverride(name = "pk.reservedDate", column = @Column(name = "reserved_date")),
+        @AttributeOverride(name = "pk.reservedTime", column = @Column(name = "reserved_time"))
 })
 public class ReservationEntity implements DomainObject {
 
@@ -17,8 +20,8 @@ public class ReservationEntity implements DomainObject {
     private ReservationEntityPK pk;
 
     @Basic
-    @Column(name = "datetime", nullable = false)
-    private Timestamp datetime;
+    @Column(name = "cost")
+    private Integer cost;
 
 
     public ReservationEntity() {
@@ -34,12 +37,12 @@ public class ReservationEntity implements DomainObject {
         this.pk = pk;
     }
 
-    public Timestamp getDatetime() {
-        return datetime;
+    public Integer getCost() {
+        return cost;
     }
 
-    public void setDatetime(Timestamp datetime) {
-        this.datetime = datetime;
+    public void setCost(Integer cost) {
+        this.cost = cost;
     }
 
     @Transient
@@ -52,11 +55,20 @@ public class ReservationEntity implements DomainObject {
     }
 
     @Transient
-    public PlaygroundEntity getPlayground() {
-        return pk.getPlayground();
+    public Timestamp getReservedDate() {
+        return pk.getReservedDate();
     }
 
-    public void setPlayground(PlaygroundEntity playground) {
-        pk.setPlayground(playground);
+    public void setReservedDate(Timestamp reservedDate) {
+        pk.setReservedDate(reservedDate);
+    }
+
+    @Transient
+    public Timestamp getReservedTime() {
+        return pk.getReservedTime();
+    }
+
+    public void setReservedTime(Timestamp reservedTime) {
+        pk.setReservedTime(reservedTime);
     }
 }

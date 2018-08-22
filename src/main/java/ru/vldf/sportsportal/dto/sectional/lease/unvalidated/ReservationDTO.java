@@ -1,19 +1,19 @@
 package ru.vldf.sportsportal.dto.sectional.lease.unvalidated;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
-import ru.vldf.sportsportal.dto.util.DayInfoDTO;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 public class ReservationDTO implements DataTransferObject {
 
     private URI playgroundURL;
+    private Integer cost;
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
-    private List<TimegridCell> schedule;
-    private List<ReservationLine> lines;
+    private ReservationGridDTO grid;
 
 
     public URI getPlaygroundURL() {
@@ -22,6 +22,15 @@ public class ReservationDTO implements DataTransferObject {
 
     public ReservationDTO setPlaygroundURL(URI playgroundURL) {
         this.playgroundURL = playgroundURL;
+        return this;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public ReservationDTO setCost(Integer cost) {
+        this.cost = cost;
         return this;
     }
 
@@ -43,74 +52,119 @@ public class ReservationDTO implements DataTransferObject {
         return this;
     }
 
-    public List<TimegridCell> getSchedule() {
-        return schedule;
+    public ReservationGridDTO getGrid() {
+        return grid;
     }
 
-    public ReservationDTO setSchedule(List<TimegridCell> schedule) {
-        this.schedule = schedule;
-        return this;
-    }
-
-    public List<ReservationLine> getLines() {
-        return lines;
-    }
-
-    public ReservationDTO setLines(List<ReservationLine> lines) {
-        this.lines = lines;
+    public ReservationDTO setGrid(ReservationGridDTO grid) {
+        this.grid = grid;
         return this;
     }
 
 
-    public static class ReservationLine implements DataTransferObject {
+    public static class ReservationGridDTO implements DataTransferObject {
 
-        private DayInfoDTO day;
-        private List<ReservationCell> cells;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private Integer totalDays;
+        private Integer totalTimes;
+        private List<TimegridCellDTO> schedule;
+        private List<ReservationLineDTO> days;
 
-        public DayInfoDTO getDay() {
-            return day;
+        public LocalDate getStartDate() {
+            return startDate;
         }
 
-        public ReservationLine setDay(DayInfoDTO day) {
-            this.day = day;
+        public ReservationGridDTO setStartDate(LocalDate startDate) {
+            this.startDate = startDate;
             return this;
         }
 
-        public List<ReservationCell> getCells() {
+        public LocalDate getEndDate() {
+            return endDate;
+        }
+
+        public ReservationGridDTO setEndDate(LocalDate endDate) {
+            this.endDate = endDate;
+            return this;
+        }
+
+        public Integer getTotalDays() {
+            return totalDays;
+        }
+
+        public ReservationGridDTO setTotalDays(Integer totalDays) {
+            this.totalDays = totalDays;
+            return this;
+        }
+
+        public Integer getTotalTimes() {
+            return totalTimes;
+        }
+
+        public ReservationGridDTO setTotalTimes(Integer totalTimes) {
+            this.totalTimes = totalTimes;
+            return this;
+        }
+
+        public List<TimegridCellDTO> getSchedule() {
+            return schedule;
+        }
+
+        public ReservationGridDTO setSchedule(List<TimegridCellDTO> schedule) {
+            this.schedule = schedule;
+            return this;
+        }
+
+        public List<ReservationLineDTO> getDays() {
+            return days;
+        }
+
+        public ReservationGridDTO setDays(List<ReservationLineDTO> days) {
+            this.days = days;
+            return this;
+        }
+    }
+
+    public static class ReservationLineDTO implements DataTransferObject {
+
+        private LocalDate date;
+        private List<ReservationCellDTO> cells;
+
+        public LocalDate getDate() {
+            return date;
+        }
+
+        public ReservationLineDTO setDate(LocalDate date) {
+            this.date = date;
+            return this;
+        }
+
+        public List<ReservationCellDTO> getCells() {
             return cells;
         }
 
-        public ReservationLine setCells(List<ReservationCell> cells) {
+        public ReservationLineDTO setCells(List<ReservationCellDTO> cells) {
             this.cells = cells;
             return this;
         }
     }
 
-    public static class ReservationCell implements DataTransferObject {
+    public static class ReservationCellDTO implements DataTransferObject {
 
-        private Integer cost;
         private Boolean available;
-
-        public Integer getCost() {
-            return cost;
-        }
-
-        public ReservationCell setCost(Integer cost) {
-            this.cost = cost;
-            return this;
-        }
 
         public Boolean getAvailable() {
             return available;
         }
 
-        public ReservationCell setAvailable(Boolean available) {
+        public ReservationCellDTO setAvailable(Boolean available) {
             this.available = available;
             return this;
         }
     }
 
-    public static class TimegridCell implements DataTransferObject {
+    public static class TimegridCellDTO implements DataTransferObject {
 
         private LocalTime startTime;
         private LocalTime endTime;
@@ -119,7 +173,7 @@ public class ReservationDTO implements DataTransferObject {
             return startTime;
         }
 
-        public TimegridCell setStartTime(LocalTime startTime) {
+        public TimegridCellDTO setStartTime(LocalTime startTime) {
             this.startTime = startTime;
             return this;
         }
@@ -128,7 +182,7 @@ public class ReservationDTO implements DataTransferObject {
             return endTime;
         }
 
-        public TimegridCell setEndTime(LocalTime endTime) {
+        public TimegridCellDTO setEndTime(LocalTime endTime) {
             this.endTime = endTime;
             return this;
         }

@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
-import ru.vldf.sportsportal.dto.util.validation.annotations.Phone;
+import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
