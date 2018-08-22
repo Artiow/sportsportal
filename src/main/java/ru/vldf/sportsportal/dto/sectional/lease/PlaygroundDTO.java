@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.net.URI;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PlaygroundDTO extends AbstractVersionedDTO {
@@ -38,6 +39,22 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Min(value = 1, groups = FieldCheck.class)
     @Max(value = 10, groups = FieldCheck.class)
     private Integer rate;
+
+    @NotNull(groups = FieldCheck.class)
+    private LocalTime opening;
+
+    @NotNull(groups = FieldCheck.class)
+    private LocalTime closing;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean halfHourAvailable;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean fullHourRequired;
+
+    @NotNull(groups = FieldCheck.class)
+    @Min(value = 0, groups = FieldCheck.class)
+    private Integer cost;
 
     @Valid
     @NotNull(groups = FieldCheck.class)
@@ -116,6 +133,51 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
 
     public PlaygroundDTO setRate(Integer rate) {
         this.rate = rate;
+        return this;
+    }
+
+    public LocalTime getOpening() {
+        return opening;
+    }
+
+    public PlaygroundDTO setOpening(LocalTime opening) {
+        this.opening = opening;
+        return this;
+    }
+
+    public LocalTime getClosing() {
+        return closing;
+    }
+
+    public PlaygroundDTO setClosing(LocalTime closing) {
+        this.closing = closing;
+        return this;
+    }
+
+    public Boolean getHalfHourAvailable() {
+        return halfHourAvailable;
+    }
+
+    public PlaygroundDTO setHalfHourAvailable(Boolean halfHourAvailable) {
+        this.halfHourAvailable = halfHourAvailable;
+        return this;
+    }
+
+    public Boolean getFullHourRequired() {
+        return fullHourRequired;
+    }
+
+    public PlaygroundDTO setFullHourRequired(Boolean fullHourRequired) {
+        this.fullHourRequired = fullHourRequired;
+        return this;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public PlaygroundDTO setCost(Integer cost) {
+        this.cost = cost;
         return this;
     }
 

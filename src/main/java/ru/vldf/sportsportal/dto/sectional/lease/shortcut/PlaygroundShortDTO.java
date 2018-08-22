@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import java.net.URI;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PlaygroundShortDTO {
@@ -10,6 +11,11 @@ public class PlaygroundShortDTO {
     private String address;
     private String phone;
     private Integer rate;
+    private LocalTime opening;
+    private LocalTime closing;
+    private Boolean halfHourAvailable;
+    private Boolean fullHourRequired;
+    private Integer cost;
     private List<String> specializations;
     private List<String> capabilities;
     private URI playgroundURL;
@@ -57,6 +63,51 @@ public class PlaygroundShortDTO {
 
     public PlaygroundShortDTO setRate(Integer rate) {
         this.rate = rate;
+        return this;
+    }
+
+    public LocalTime getOpening() {
+        return opening;
+    }
+
+    public PlaygroundShortDTO setOpening(LocalTime opening) {
+        this.opening = opening;
+        return this;
+    }
+
+    public LocalTime getClosing() {
+        return closing;
+    }
+
+    public PlaygroundShortDTO setClosing(LocalTime closing) {
+        this.closing = closing;
+        return this;
+    }
+
+    public Boolean getHalfHourAvailable() {
+        return halfHourAvailable;
+    }
+
+    public PlaygroundShortDTO setHalfHourAvailable(Boolean halfHourAvailable) {
+        this.halfHourAvailable = halfHourAvailable;
+        return this;
+    }
+
+    public Boolean getFullHourRequired() {
+        return fullHourRequired;
+    }
+
+    public PlaygroundShortDTO setFullHourRequired(Boolean fullHourRequired) {
+        this.fullHourRequired = fullHourRequired;
+        return this;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public PlaygroundShortDTO setCost(Integer cost) {
+        this.cost = cost;
         return this;
     }
 

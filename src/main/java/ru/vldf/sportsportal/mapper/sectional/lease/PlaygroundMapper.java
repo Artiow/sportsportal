@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.PlaygroundURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
@@ -15,7 +16,7 @@ import javax.persistence.OptimisticLockException;
 
 @Mapper(
         componentModel = "spring",
-        uses = {PlaygroundURLMapper.class, PictureURLMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
+        uses = {JavaTimeMapper.class, PlaygroundURLMapper.class, PictureURLMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
 )
 public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
 
@@ -39,6 +40,11 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         acceptor.setAddress(donor.getAddress());
         acceptor.setPhone(donor.getPhone());
         acceptor.setRate(donor.getRate());
+        acceptor.setOpening(donor.getOpening());
+        acceptor.setClosing(donor.getClosing());
+        acceptor.setHalfHourAvailable(donor.getHalfHourAvailable());
+        acceptor.setFullHourRequired(donor.getFullHourRequired());
+        acceptor.setCost(donor.getCost());
         acceptor.setSpecializations(donor.getSpecializations());
         acceptor.setCapabilities(donor.getCapabilities());
         acceptor.setPhotos(donor.getPhotos());
