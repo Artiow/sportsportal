@@ -1,6 +1,6 @@
-package ru.vldf.sportsportal.dto.validation.annotations;
+package ru.vldf.sportsportal.dto.util.validation.annotations;
 
-import ru.vldf.sportsportal.dto.validation.validators.PhoneValidator;
+import ru.vldf.sportsportal.dto.util.validation.validators.PhoneValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

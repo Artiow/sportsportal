@@ -1,10 +1,12 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
+import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.List;
 
-public class PlaygroundShortDTO {
+public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
     private String name;
