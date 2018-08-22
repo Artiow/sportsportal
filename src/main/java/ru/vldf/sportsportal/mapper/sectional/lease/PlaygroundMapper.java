@@ -9,27 +9,30 @@ import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
+import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.PlaygroundURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
 
 @Mapper(
         componentModel = "spring",
-        uses = {JavaTimeMapper.class, PlaygroundURLMapper.class, PictureURLMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
+        uses = {JavaTimeMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, UserMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
 )
 public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
+            @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
             @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
     PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
-    @Mapping(target = "url", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"})
-    PlaygroundDTO toDTO(PlaygroundEntity entity);
-
-    @Mapping(target = "id", ignore = true)
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "owners", ignore = true) // todo: remove!
+    })
     PlaygroundEntity toEntity(PlaygroundDTO dto);
 
     @Override

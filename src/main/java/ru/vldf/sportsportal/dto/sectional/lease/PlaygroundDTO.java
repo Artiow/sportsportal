@@ -2,11 +2,11 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
+import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.net.URI;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -19,9 +19,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @NotNull(groups = VersionCheck.class)
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
-
-    @Null(groups = FieldCheck.class)
-    private URI url;
 
     @NotNull(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
@@ -68,6 +65,10 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @NotNull(groups = FieldCheck.class)
     private List<PictureDTO> photos;
 
+    // todo: not null, valid!
+    @Null(groups = FieldCheck.class)
+    private List<UserLinkDTO> owners;
+
 
     @Override
     public Integer getId() {
@@ -88,15 +89,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Override
     public PlaygroundDTO setVersion(Long version) {
         this.version = version;
-        return this;
-    }
-
-    public URI getUrl() {
-        return url;
-    }
-
-    public PlaygroundDTO setUrl(URI url) {
-        this.url = url;
         return this;
     }
 
@@ -208,6 +200,14 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    public List<UserLinkDTO> getOwners() {
+        return owners;
+    }
+
+    public PlaygroundDTO setOwners(List<UserLinkDTO> owners) {
+        this.owners = owners;
+        return this;
+    }
 
     public interface IdCheck extends VersionCheck {
 

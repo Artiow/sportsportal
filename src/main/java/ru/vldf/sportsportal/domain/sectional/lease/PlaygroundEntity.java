@@ -72,21 +72,20 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @ManyToMany
     @JoinTable(
             schema = "lease",
-            name = "photo",
-            joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = false)
-    )
-    private Collection<PictureEntity> photos;
-
-
-    @ManyToMany
-    @JoinTable(
-            schema = "lease",
             name = "ownership",
             joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<UserEntity> owners;
+
+    @ManyToMany
+    @JoinTable(
+            schema = "lease",
+            name = "photo",
+            joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = false)
+    )
+    private Collection<PictureEntity> photos;
 
 
     public String getName() {
@@ -185,19 +184,19 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
         this.capabilities = capabilities;
     }
 
-    public Collection<PictureEntity> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(Collection<PictureEntity> photos) {
-        this.photos = photos;
-    }
-
     public Collection<UserEntity> getOwners() {
         return owners;
     }
 
     public void setOwners(Collection<UserEntity> owners) {
         this.owners = owners;
+    }
+
+    public Collection<PictureEntity> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(Collection<PictureEntity> photos) {
+        this.photos = photos;
     }
 }
