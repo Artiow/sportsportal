@@ -12,7 +12,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
     private Integer cost;
-    private Boolean paid = false;
+    private Boolean paid;
     private LocalDateTime datetime;
     private LocalDateTime expiration;
     private UserLinkDTO customer;
