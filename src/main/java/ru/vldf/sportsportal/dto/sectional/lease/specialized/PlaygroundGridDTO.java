@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.sectional.lease.unvalidated;
+package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class ReservationDTO implements DataTransferObject {
+public class PlaygroundGridDTO implements DataTransferObject {
 
     private URI playgroundURL;
     private Integer cost;
@@ -20,7 +20,7 @@ public class ReservationDTO implements DataTransferObject {
         return playgroundURL;
     }
 
-    public ReservationDTO setPlaygroundURL(URI playgroundURL) {
+    public PlaygroundGridDTO setPlaygroundURL(URI playgroundURL) {
         this.playgroundURL = playgroundURL;
         return this;
     }
@@ -29,7 +29,7 @@ public class ReservationDTO implements DataTransferObject {
         return cost;
     }
 
-    public ReservationDTO setCost(Integer cost) {
+    public PlaygroundGridDTO setCost(Integer cost) {
         this.cost = cost;
         return this;
     }
@@ -38,7 +38,7 @@ public class ReservationDTO implements DataTransferObject {
         return halfHourAvailable;
     }
 
-    public ReservationDTO setHalfHourAvailable(Boolean halfHourAvailable) {
+    public PlaygroundGridDTO setHalfHourAvailable(Boolean halfHourAvailable) {
         this.halfHourAvailable = halfHourAvailable;
         return this;
     }
@@ -47,7 +47,7 @@ public class ReservationDTO implements DataTransferObject {
         return fullHourRequired;
     }
 
-    public ReservationDTO setFullHourRequired(Boolean fullHourRequired) {
+    public PlaygroundGridDTO setFullHourRequired(Boolean fullHourRequired) {
         this.fullHourRequired = fullHourRequired;
         return this;
     }
@@ -56,7 +56,7 @@ public class ReservationDTO implements DataTransferObject {
         return grid;
     }
 
-    public ReservationDTO setGrid(ReservationGridDTO grid) {
+    public PlaygroundGridDTO setGrid(ReservationGridDTO grid) {
         this.grid = grid;
         return this;
     }

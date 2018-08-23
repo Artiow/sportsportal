@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.sectional.lease.unvalidated;
+package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public class OrderDTO extends AbstractIdentifiedDTO {
+public class OrderShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
     private Integer cost;
@@ -27,7 +27,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
     }
 
     @Override
-    public OrderDTO setId(Integer id) {
+    public OrderShortDTO setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -36,7 +36,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return cost;
     }
 
-    public OrderDTO setCost(Integer cost) {
+    public OrderShortDTO setCost(Integer cost) {
         this.cost = cost;
         return this;
     }
@@ -45,7 +45,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return paid;
     }
 
-    public OrderDTO setPaid(Boolean paid) {
+    public OrderShortDTO setPaid(Boolean paid) {
         this.paid = paid;
         return this;
     }
@@ -54,7 +54,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return datetime;
     }
 
-    public OrderDTO setDatetime(LocalDateTime datetime) {
+    public OrderShortDTO setDatetime(LocalDateTime datetime) {
         this.datetime = datetime;
         return this;
     }
@@ -63,7 +63,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return expiration;
     }
 
-    public OrderDTO setExpiration(LocalDateTime expiration) {
+    public OrderShortDTO setExpiration(LocalDateTime expiration) {
         this.expiration = expiration;
         return this;
     }
@@ -72,7 +72,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return playgroundURL;
     }
 
-    public OrderDTO setPlaygroundURL(URI playgroundURL) {
+    public OrderShortDTO setPlaygroundURL(URI playgroundURL) {
         this.playgroundURL = playgroundURL;
         return this;
     }
@@ -81,7 +81,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return customerURL;
     }
 
-    public OrderDTO setCustomerURL(URI customerURL) {
+    public OrderShortDTO setCustomerURL(URI customerURL) {
         this.customerURL = customerURL;
         return this;
     }
@@ -90,7 +90,7 @@ public class OrderDTO extends AbstractIdentifiedDTO {
         return positions;
     }
 
-    public OrderDTO setPositions(List<OrderPositionDTO> positions) {
+    public OrderShortDTO setPositions(List<OrderPositionDTO> positions) {
         this.positions = positions;
         return this;
     }
