@@ -6,7 +6,10 @@ import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -65,8 +68,8 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @NotNull(groups = FieldCheck.class)
     private List<PictureDTO> photos;
 
-    // todo: not null, valid!
-    @Null(groups = FieldCheck.class)
+    @Valid
+    @NotNull(groups = FieldCheck.class)
     private List<UserLinkDTO> owners;
 
 
@@ -226,7 +229,7 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     }
 
     private interface FieldCheck extends
-            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
+            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck, UserLinkDTO.IdCheck {
 
     }
 }

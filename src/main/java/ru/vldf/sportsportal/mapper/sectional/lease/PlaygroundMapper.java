@@ -29,10 +29,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
     })
     PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "owners", ignore = true) // todo: remove!
-    })
+    @Mapping(target = "id", ignore = true)
     PlaygroundEntity toEntity(PlaygroundDTO dto);
 
     @Override
@@ -50,6 +47,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         acceptor.setCost(donor.getCost());
         acceptor.setSpecializations(donor.getSpecializations());
         acceptor.setCapabilities(donor.getCapabilities());
+        acceptor.setOwners(donor.getOwners());
         acceptor.setPhotos(donor.getPhotos());
 
         return acceptor;

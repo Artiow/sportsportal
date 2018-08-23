@@ -31,6 +31,14 @@ public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO>
     })
     UserLinkDTO toLinkDTO(UserEntity entity);
 
+    @Mappings({
+            @Mapping(target = "login", ignore = true),
+            @Mapping(target = "name", ignore = true),
+            @Mapping(target = "surname", ignore = true),
+            @Mapping(target = "patronymic", ignore = true)
+    })
+    UserEntity toEntity(UserLinkDTO dto);
+
     @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDTO dto);
 

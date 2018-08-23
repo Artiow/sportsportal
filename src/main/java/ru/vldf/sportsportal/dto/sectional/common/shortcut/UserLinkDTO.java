@@ -1,11 +1,14 @@
 package ru.vldf.sportsportal.dto.sectional.common.shortcut;
 
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 
-public class UserLinkDTO implements DataTransferObject {
+public class UserLinkDTO extends AbstractIdentifiedDTO {
 
+    @NotNull(groups = IdCheck.class)
+    private Integer id;
     private String login;
     private String name;
     private String surname;
@@ -13,6 +16,17 @@ public class UserLinkDTO implements DataTransferObject {
     private URI userURL;
     private URI avatarURL;
 
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public UserLinkDTO setId(Integer id) {
+        this.id = id;
+        return this;
+    }
 
     public String getLogin() {
         return login;
@@ -66,5 +80,10 @@ public class UserLinkDTO implements DataTransferObject {
     public UserLinkDTO setAvatarURL(URI avatarURL) {
         this.avatarURL = avatarURL;
         return this;
+    }
+
+
+    public interface IdCheck {
+
     }
 }
