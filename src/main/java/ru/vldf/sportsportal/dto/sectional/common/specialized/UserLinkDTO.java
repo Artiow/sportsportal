@@ -7,8 +7,9 @@ import java.net.URI;
 
 public class UserLinkDTO extends AbstractIdentifiedDTO {
 
-    @NotNull(groups = IdCheck.class)
+    @NotNull
     private Integer id;
+
     private String login;
     private String name;
     private String surname;
@@ -80,10 +81,5 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
     public UserLinkDTO setAvatarURL(URI avatarURL) {
         this.avatarURL = avatarURL;
         return this;
-    }
-
-
-    public interface IdCheck {
-
     }
 }

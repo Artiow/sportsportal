@@ -35,7 +35,8 @@ public class OrderEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "playground_id", referencedColumnName = "id")
     private PlaygroundEntity playground;
 
-    @OneToMany(mappedBy = "pk.order")
+    @OrderBy("pk.datetime")
+    @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ReservationEntity> reservations;
 
 

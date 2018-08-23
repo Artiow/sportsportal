@@ -11,8 +11,7 @@ import java.sql.Timestamp;
         @AssociationOverride(name = "pk.order", joinColumns = @JoinColumn(name = "order_id"))
 })
 @AttributeOverrides({
-        @AttributeOverride(name = "pk.reservedDate", column = @Column(name = "reserved_date")),
-        @AttributeOverride(name = "pk.reservedTime", column = @Column(name = "reserved_time"))
+        @AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))
 })
 public class ReservationEntity implements DomainObject {
 
@@ -55,20 +54,11 @@ public class ReservationEntity implements DomainObject {
     }
 
     @Transient
-    public Timestamp getReservedDate() {
-        return pk.getReservedDate();
+    public Timestamp getDatetime() {
+        return pk.getDatetime();
     }
 
-    public void setReservedDate(Timestamp reservedDate) {
-        pk.setReservedDate(reservedDate);
-    }
-
-    @Transient
-    public Timestamp getReservedTime() {
-        return pk.getReservedTime();
-    }
-
-    public void setReservedTime(Timestamp reservedTime) {
-        pk.setReservedTime(reservedTime);
+    public void setDatetime(Timestamp datetime) {
+        pk.setDatetime(datetime);
     }
 }

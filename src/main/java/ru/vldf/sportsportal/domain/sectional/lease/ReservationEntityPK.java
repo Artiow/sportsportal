@@ -14,12 +14,8 @@ public class ReservationEntityPK implements Serializable {
     private OrderEntity order;
 
     @Basic
-    @Column(name = "reserved_date")
-    private Timestamp reservedDate;
-
-    @Basic
-    @Column(name = "reserved_time")
-    private Timestamp reservedTime;
+    @Column(name = "datetime")
+    private Timestamp datetime;
 
 
     public OrderEntity getOrder() {
@@ -30,19 +26,11 @@ public class ReservationEntityPK implements Serializable {
         this.order = order;
     }
 
-    public Timestamp getReservedDate() {
-        return reservedDate;
+    public Timestamp getDatetime() {
+        return datetime;
     }
 
-    public void setReservedDate(Timestamp reservedDate) {
-        this.reservedDate = reservedDate;
-    }
-
-    public Timestamp getReservedTime() {
-        return reservedTime;
-    }
-
-    public void setReservedTime(Timestamp reservedTime) {
-        this.reservedTime = reservedTime;
+    public void setDatetime(Timestamp reservedDate) {
+        this.datetime = reservedDate;
     }
 }

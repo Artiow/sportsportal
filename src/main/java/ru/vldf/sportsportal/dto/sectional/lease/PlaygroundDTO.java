@@ -229,7 +229,7 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     }
 
     private interface FieldCheck extends
-            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck, UserLinkDTO.IdCheck {
+            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
 
     }
 }

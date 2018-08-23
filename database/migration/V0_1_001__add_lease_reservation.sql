@@ -27,14 +27,13 @@ create table lease.order
 
 create table lease.reservation
 (
-  order_id      integer   not null
+  order_id integer   not null
     constraint reservation_order_id_fk
     references lease.order,
 
-  reserved_date timestamp not null,
-  reserved_time timestamp not null,
-  cost          integer   not null,
+  datetime timestamp not null,
+  cost     integer   not null,
 
   constraint reservation_pk
-  primary key (order_id, reserved_date, reserved_time)
+  primary key (order_id, datetime)
 );
