@@ -52,7 +52,7 @@ public class SwaggerConfig {
         Contact CONTACT = new Contact(
                 "Artiow",
                 "https://github.com/Artiow",
-                "namednev_a@mail.ru"
+                "namednev.artem@gmail.com"
         );
 
         return new ApiInfoBuilder()

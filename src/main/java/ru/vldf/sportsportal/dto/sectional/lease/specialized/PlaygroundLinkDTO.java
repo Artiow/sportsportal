@@ -2,12 +2,15 @@ package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
 public class PlaygroundLinkDTO extends AbstractIdentifiedDTO {
 
+    @NotNull
     private Integer id;
+
     private String name;
     private String address;
     private String phone;
@@ -17,10 +20,12 @@ public class PlaygroundLinkDTO extends AbstractIdentifiedDTO {
     private List<URI> photoURLs;
 
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public PlaygroundLinkDTO setId(Integer id) {
         this.id = id;
         return this;

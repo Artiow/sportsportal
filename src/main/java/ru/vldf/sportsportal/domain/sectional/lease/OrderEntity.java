@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
-import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "order", schema = "lease")
-public class OrderEntity extends AbstractIdentifiedEntity {
+public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "cost", nullable = false)
