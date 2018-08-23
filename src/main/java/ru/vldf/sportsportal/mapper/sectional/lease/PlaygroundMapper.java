@@ -29,6 +29,9 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
     })
     PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
+    // todo: map grid!
+    //PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
+
     @Mapping(target = "id", ignore = true)
     PlaygroundEntity toEntity(PlaygroundDTO dto);
 

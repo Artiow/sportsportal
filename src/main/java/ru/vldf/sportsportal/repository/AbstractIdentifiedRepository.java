@@ -4,6 +4,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
 @NoRepositoryBean
-public interface AbstractIdentifiedRepository<T extends AbstractIdentifiedEntity> extends AbstractExecutableRepository<T, Integer> {
+public interface AbstractIdentifiedRepository<T extends AbstractIdentifiedEntity> extends JpaExecutableRepository<T, Integer> {
 
 }
