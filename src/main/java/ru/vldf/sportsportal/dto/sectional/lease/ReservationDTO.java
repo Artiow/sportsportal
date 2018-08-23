@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.validation.annotations.Future;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 public class ReservationDTO implements DataTransferObject {
 
     @NotNull
-    // todo: future datetime check!
+    @Future
     private LocalDateTime datetime;
 
     @NotNull
