@@ -24,6 +24,7 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
     private List<URI> ownersURLs;
     private List<URI> photoURLs;
 
+
     public Integer getId() {
         return id;
     }
@@ -114,15 +115,6 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public URI getPlaygroundURL() {
-        return playgroundURL;
-    }
-
-    public PlaygroundShortDTO setPlaygroundURL(URI playgroundURL) {
-        this.playgroundURL = playgroundURL;
-        return this;
-    }
-
     public List<String> getSpecializations() {
         return specializations;
     }
@@ -138,6 +130,15 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
 
     public PlaygroundShortDTO setCapabilities(List<String> capabilities) {
         this.capabilities = capabilities;
+        return this;
+    }
+
+    public URI getPlaygroundURL() {
+        return playgroundURL;
+    }
+
+    public PlaygroundShortDTO setPlaygroundURL(URI playgroundURL) {
+        this.playgroundURL = playgroundURL;
         return this;
     }
 
