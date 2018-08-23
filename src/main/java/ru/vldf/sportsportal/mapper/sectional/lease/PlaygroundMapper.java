@@ -6,6 +6,7 @@ import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundLinkDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
@@ -32,6 +33,12 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
+            @Mapping(target = "grid", ignore = true) // todo: remove!
+    })
+    PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
+
+    @Mappings({
+            @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
             @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
             @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
@@ -44,9 +51,6 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             @Mapping(target = "rate", ignore = true)
     })
     PlaygroundEntity toEntity(PlaygroundLinkDTO dto);
-
-    // todo: map grid!
-    //PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
 
     @Mapping(target = "id", ignore = true)
     PlaygroundEntity toEntity(PlaygroundDTO dto);
