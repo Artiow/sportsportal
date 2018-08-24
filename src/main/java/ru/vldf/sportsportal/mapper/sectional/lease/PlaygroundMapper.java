@@ -19,6 +19,7 @@ import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -86,18 +87,21 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             return null;
         }
 
+        // integer time value init
         boolean halfHourAvailable = entity.getHalfHourAvailable();
         int openTimeHour = entity.getOpening().toLocalDateTime().toLocalTime().getHour();
         int openTimeMinute = entity.getOpening().toLocalDateTime().toLocalTime().getMinute();
         int closeTimeHour = entity.getClosing().toLocalDateTime().toLocalTime().getHour();
         int closeTimeMinute = entity.getClosing().toLocalDateTime().toLocalTime().getMinute();
 
+        // total times calculate
         int totalTimes = (closeTimeHour - openTimeHour);
         totalTimes = (totalTimes < 0) ? (totalTimes + 24) : totalTimes;
         totalTimes = (halfHourAvailable) ? (totalTimes * 2) : totalTimes;
         int minuteDiff = (closeTimeMinute - openTimeMinute);
         totalTimes = (minuteDiff != 0) ? ((minuteDiff > 0) ? (totalTimes + 1) : (totalTimes - 1)) : totalTimes;
 
+        // close time hour and minute calculate
         if (!halfHourAvailable) {
             closeTimeHour -= 1;
         } else {
@@ -108,6 +112,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             }
         }
 
+        // grid build
         return new PlaygroundGridDTO.ReservationGridDTO()
                 .setTotalTimes(totalTimes)
                 .setStartTime(LocalTime.of(openTimeHour, openTimeMinute))
@@ -115,17 +120,50 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
     }
 
     default PlaygroundGridDTO setGrid(PlaygroundGridDTO grid, Collection<ReservationEntity> reservations) {
+        if ((grid == null) || (reservations == null)) {
+            return null;
+        }
+
+        // sorting
         List<ReservationEntity> list = new ArrayList<>(reservations);
         list.sort(Comparator.comparing(ReservationEntity::getDatetime));
+
+        // date info definition
         LocalDate startDate = list.get(0).getDatetime().toLocalDateTime().toLocalDate();
         LocalDate endDate = list.get(list.size() - 1).getDatetime().toLocalDateTime().toLocalDate();
         int totalDays = (int) ChronoUnit.DAYS.between(startDate, endDate);
 
-        Map<LocalDate, Map<LocalTime, Boolean>> schedule;
-        // todo: insert map logic here!
+        // line template init
+        Map<LocalTime, Boolean> lineTemplate = new HashMap<>();
+        LocalTime iter = grid.getGrid().getStartTime();
+        LocalTime end = grid.getGrid().getEndTime();
+        while (end.isAfter(iter)) {
+            lineTemplate.put(iter, true);
+            iter = iter.plusMinutes(30);
+        }
 
+        // schedule build
+        LocalDate current = null;
+        Map<LocalTime, Boolean> line = null;
+        Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
+        for (ReservationEntity item : list) {
+            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
+            LocalDate date = datetime.toLocalDate();
+            LocalTime time = datetime.toLocalTime();
+            if (!date.equals(current)) {
+                if (current != null) {
+                    schedule.put(current, line);
+                }
+                schedule.put(current, line);
+                line = new HashMap<>(lineTemplate);
+                current = date;
+            }
+            line.put(time, false);
+        }
+
+        // grid setting
         grid.getGrid()
-                .setSchedule(null)
+                .setSchedule(schedule)
                 .setTotalDays(totalDays)
                 .setStartDate(startDate)
                 .setEndDate(endDate);

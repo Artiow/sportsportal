@@ -70,7 +70,6 @@ public class PlaygroundGridDTO implements DataTransferObject {
         private LocalTime startTime;
         private LocalTime endTime;
         private Integer totalTimes;
-        // todo: custom Object, not Boolean probably required
         private Map<LocalDate, Map<LocalTime, Boolean>> schedule;
 
 
