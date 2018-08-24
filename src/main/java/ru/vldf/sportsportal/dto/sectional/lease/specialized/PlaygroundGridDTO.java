@@ -5,7 +5,7 @@ import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Map;
 
 public class PlaygroundGridDTO implements DataTransferObject {
 
@@ -67,9 +67,11 @@ public class PlaygroundGridDTO implements DataTransferObject {
         private LocalDate startDate;
         private LocalDate endDate;
         private Integer totalDays;
+        private LocalTime startTime;
+        private LocalTime endTime;
         private Integer totalTimes;
-        private List<TimegridCellDTO> schedule;
-        private List<ReservationLineDTO> days;
+        // todo: custom Object, not Boolean probably required
+        private Map<LocalDate, Map<LocalTime, Boolean>> schedule;
 
 
         public LocalDate getStartDate() {
@@ -99,6 +101,24 @@ public class PlaygroundGridDTO implements DataTransferObject {
             return this;
         }
 
+        public LocalTime getStartTime() {
+            return startTime;
+        }
+
+        public ReservationGridDTO setStartTime(LocalTime startTime) {
+            this.startTime = startTime;
+            return this;
+        }
+
+        public LocalTime getEndTime() {
+            return endTime;
+        }
+
+        public ReservationGridDTO setEndTime(LocalTime endTime) {
+            this.endTime = endTime;
+            return this;
+        }
+
         public Integer getTotalTimes() {
             return totalTimes;
         }
@@ -108,86 +128,12 @@ public class PlaygroundGridDTO implements DataTransferObject {
             return this;
         }
 
-        public List<TimegridCellDTO> getSchedule() {
+        public Map<LocalDate, Map<LocalTime, Boolean>> getSchedule() {
             return schedule;
         }
 
-        public ReservationGridDTO setSchedule(List<TimegridCellDTO> schedule) {
+        public ReservationGridDTO setSchedule(Map<LocalDate, Map<LocalTime, Boolean>> schedule) {
             this.schedule = schedule;
-            return this;
-        }
-
-        public List<ReservationLineDTO> getDays() {
-            return days;
-        }
-
-        public ReservationGridDTO setDays(List<ReservationLineDTO> days) {
-            this.days = days;
-            return this;
-        }
-    }
-
-    public static class ReservationLineDTO implements DataTransferObject {
-
-        private LocalDate date;
-        private List<ReservationCellDTO> cells;
-
-
-        public LocalDate getDate() {
-            return date;
-        }
-
-        public ReservationLineDTO setDate(LocalDate date) {
-            this.date = date;
-            return this;
-        }
-
-        public List<ReservationCellDTO> getCells() {
-            return cells;
-        }
-
-        public ReservationLineDTO setCells(List<ReservationCellDTO> cells) {
-            this.cells = cells;
-            return this;
-        }
-    }
-
-    public static class ReservationCellDTO implements DataTransferObject {
-
-        private Boolean available;
-
-
-        public Boolean getAvailable() {
-            return available;
-        }
-
-        public ReservationCellDTO setAvailable(Boolean available) {
-            this.available = available;
-            return this;
-        }
-    }
-
-    public static class TimegridCellDTO implements DataTransferObject {
-
-        private LocalTime startTime;
-        private LocalTime endTime;
-
-
-        public LocalTime getStartTime() {
-            return startTime;
-        }
-
-        public TimegridCellDTO setStartTime(LocalTime startTime) {
-            this.startTime = startTime;
-            return this;
-        }
-
-        public LocalTime getEndTime() {
-            return endTime;
-        }
-
-        public TimegridCellDTO setEndTime(LocalTime endTime) {
-            this.endTime = endTime;
             return this;
         }
     }
