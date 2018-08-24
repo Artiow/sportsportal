@@ -11,7 +11,7 @@ public class CommonController {
 
     @GetMapping({"/", "/index"}) // todo: remove temporary redirect
     public String index() {
-        return "lease";
+        return "home";
     }
 
     @GetMapping("/login")

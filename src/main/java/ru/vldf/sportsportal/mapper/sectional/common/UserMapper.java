@@ -6,6 +6,7 @@ import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
@@ -24,8 +25,19 @@ public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO>
     })
     UserShortDTO toShortDTO(UserEntity entity);
 
-    @Mapping(target = "url", source = "id", qualifiedByName = {"toUserURL", "fromId"})
-    UserDTO toDTO(UserEntity entity);
+    @Mappings({
+            @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
+            @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
+    })
+    UserLinkDTO toLinkDTO(UserEntity entity);
+
+    @Mappings({
+            @Mapping(target = "login", ignore = true),
+            @Mapping(target = "name", ignore = true),
+            @Mapping(target = "surname", ignore = true),
+            @Mapping(target = "patronymic", ignore = true)
+    })
+    UserEntity toEntity(UserLinkDTO dto);
 
     @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDTO dto);

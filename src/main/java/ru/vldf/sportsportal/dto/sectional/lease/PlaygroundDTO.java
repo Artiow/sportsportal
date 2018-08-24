@@ -2,11 +2,15 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
-import java.net.URI;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalTime;
 import java.util.List;
 
 public class PlaygroundDTO extends AbstractVersionedDTO {
@@ -18,9 +22,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @NotNull(groups = VersionCheck.class)
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
-
-    @Null(groups = FieldCheck.class)
-    private URI url;
 
     @NotNull(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
@@ -39,6 +40,22 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Max(value = 10, groups = FieldCheck.class)
     private Integer rate;
 
+    @NotNull(groups = FieldCheck.class)
+    private LocalTime opening;
+
+    @NotNull(groups = FieldCheck.class)
+    private LocalTime closing;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean halfHourAvailable;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean fullHourRequired;
+
+    @NotNull(groups = FieldCheck.class)
+    @Min(value = 0, groups = FieldCheck.class)
+    private Integer cost;
+
     @Valid
     @NotNull(groups = FieldCheck.class)
     private List<SportDTO> specializations;
@@ -50,6 +67,10 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Valid
     @NotNull(groups = FieldCheck.class)
     private List<PictureDTO> photos;
+
+    @Valid
+    @NotNull(groups = FieldCheck.class)
+    private List<UserLinkDTO> owners;
 
 
     @Override
@@ -71,15 +92,6 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Override
     public PlaygroundDTO setVersion(Long version) {
         this.version = version;
-        return this;
-    }
-
-    public URI getUrl() {
-        return url;
-    }
-
-    public PlaygroundDTO setUrl(URI url) {
-        this.url = url;
         return this;
     }
 
@@ -119,6 +131,51 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    public LocalTime getOpening() {
+        return opening;
+    }
+
+    public PlaygroundDTO setOpening(LocalTime opening) {
+        this.opening = opening;
+        return this;
+    }
+
+    public LocalTime getClosing() {
+        return closing;
+    }
+
+    public PlaygroundDTO setClosing(LocalTime closing) {
+        this.closing = closing;
+        return this;
+    }
+
+    public Boolean getHalfHourAvailable() {
+        return halfHourAvailable;
+    }
+
+    public PlaygroundDTO setHalfHourAvailable(Boolean halfHourAvailable) {
+        this.halfHourAvailable = halfHourAvailable;
+        return this;
+    }
+
+    public Boolean getFullHourRequired() {
+        return fullHourRequired;
+    }
+
+    public PlaygroundDTO setFullHourRequired(Boolean fullHourRequired) {
+        this.fullHourRequired = fullHourRequired;
+        return this;
+    }
+
+    public Integer getCost() {
+        return cost;
+    }
+
+    public PlaygroundDTO setCost(Integer cost) {
+        this.cost = cost;
+        return this;
+    }
+
     public List<SportDTO> getSpecializations() {
         return specializations;
     }
@@ -146,6 +203,14 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    public List<UserLinkDTO> getOwners() {
+        return owners;
+    }
+
+    public PlaygroundDTO setOwners(List<UserLinkDTO> owners) {
+        this.owners = owners;
+        return this;
+    }
 
     public interface IdCheck extends VersionCheck {
 

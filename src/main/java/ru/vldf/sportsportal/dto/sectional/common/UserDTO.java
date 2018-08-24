@@ -9,7 +9,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
-import java.net.URI;
 import java.util.List;
 
 public class UserDTO extends AbstractVersionedDTO {
@@ -21,9 +20,6 @@ public class UserDTO extends AbstractVersionedDTO {
     @NotNull(groups = VersionCheck.class)
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
-
-    @Null(groups = FieldCheck.class)
-    private URI url;
 
     @NotNull(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
@@ -79,15 +75,6 @@ public class UserDTO extends AbstractVersionedDTO {
     @Override
     public AbstractIdentifiedDTO setVersion(Long version) {
         this.version = version;
-        return this;
-    }
-
-    public URI getUrl() {
-        return url;
-    }
-
-    public UserDTO setUrl(URI url) {
-        this.url = url;
         return this;
     }
 

@@ -1,9 +1,8 @@
 package ru.vldf.sportsportal.repository.common;
 
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
-import ru.vldf.sportsportal.repository.AbstractRepository;
+import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
 
-public interface PictureRepository extends AbstractRepository<PictureEntity, Integer> {
+public interface PictureRepository extends AbstractIdentifiedRepository<PictureEntity> {
 
-    boolean existsById(Integer id);
 }

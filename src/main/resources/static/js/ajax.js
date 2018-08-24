@@ -22,9 +22,9 @@ function ajaxRegistration(userData, errorHandler) {
         contentType: 'application/json;charset=UTF-8',
         data: JSON.stringify(userData),
         success: function (data, textStatus, jqXHR) {
-            const userURI = jqXHR.getResponseHeader("Location");
-            console.log('Accepted User URI:', userURI);
-            localStorage.setItem('userURI', userURI);
+            const userURL = jqXHR.getResponseHeader("Location");
+            console.log('Accepted User URL:', userURL);
+            localStorage.setItem('userURL', userURL);
             window.location.replace(DEFAULT_FAIL_REDIRECT);
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -52,11 +52,11 @@ function ajaxLogin(login, password, errorHandler) {
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
             const token = data.tokenType + ' ' + data.accessToken;
-            const userURI = data.info.userURI;
+            const userURL = data.info.userURL;
 
             console.log('Accepted Token:', token);
             localStorage.setItem('token', token);
-            localStorage.setItem('userURI', userURI);
+            localStorage.setItem('userURL', userURL);
             localStorage.removeItem('redirect');
             window.location.replace(redirect);
         },
@@ -67,11 +67,11 @@ function ajaxLogin(login, password, errorHandler) {
 }
 
 /**
- * Logging and getting user data by storied token and userURI.
+ * Logging and getting user data by storied token and userURL.
  *
  * @param {string} securedURL - requested secured URL
  * @param {function(object)} successEvent - function that is called in case of successful verification.
- * @param errorHandler{function(object)} - error handler
+ * @param {function(object)} errorHandler - error handler
  */
 function ajaxVerify(securedURL, successEvent, errorHandler) {
     const token = localStorage.getItem('token');
