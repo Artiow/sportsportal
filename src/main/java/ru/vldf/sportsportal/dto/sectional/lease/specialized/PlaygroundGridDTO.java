@@ -71,6 +71,7 @@ public class PlaygroundGridDTO implements DataTransferObject {
         private List<TimegridCellDTO> schedule;
         private List<ReservationLineDTO> days;
 
+
         public LocalDate getStartDate() {
             return startDate;
         }
@@ -131,6 +132,7 @@ public class PlaygroundGridDTO implements DataTransferObject {
         private LocalDate date;
         private List<ReservationCellDTO> cells;
 
+
         public LocalDate getDate() {
             return date;
         }
@@ -154,6 +156,7 @@ public class PlaygroundGridDTO implements DataTransferObject {
 
         private Boolean available;
 
+
         public Boolean getAvailable() {
             return available;
         }
@@ -168,6 +171,7 @@ public class PlaygroundGridDTO implements DataTransferObject {
 
         private LocalTime startTime;
         private LocalTime endTime;
+
 
         public LocalTime getStartTime() {
             return startTime;
