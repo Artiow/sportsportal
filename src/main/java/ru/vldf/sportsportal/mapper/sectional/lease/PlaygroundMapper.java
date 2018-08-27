@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Mapper(
         componentModel = "spring",
@@ -161,27 +162,42 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             amountToAdd = 1;
         }
 
-        // todo: handle current datetime!
+        LocalDate currentDate = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime();
+        LocalTime startTime = playgroundGridDTO.getGrid().getStartTime();
+        LocalTime endTime = playgroundGridDTO.getGrid().getEndTime();
 
-        // line init
-        Map<LocalTime, Boolean> trueLine = new HashMap<>();
-        LocalTime timeIter = playgroundGridDTO.getGrid().getStartTime();
-        LocalTime timeEnd = playgroundGridDTO.getGrid().getEndTime();
-        while (timeEnd.isAfter(timeIter)) {
-            trueLine.put(timeIter, true);
-            timeIter = timeIter.plus(amountToAdd, unitToAdd);
-        }
-        trueLine.put(timeIter, true);
+        // bool-solid line
+        Function<Boolean, Map<LocalTime, Boolean>> solidMap = param -> {
+            Map<LocalTime, Boolean> result = new HashMap<>();
+            LocalTime timeIter = startTime;
+            while (timeIter.isBefore(endTime)) {
+                result.put(timeIter, param);
+                timeIter = timeIter.plus(amountToAdd, unitToAdd);
+            }
+            result.put(timeIter, true);
+            return result;
+        };
+
+        // bool-modular line
+        Function<LocalTime, Map<LocalTime, Boolean>> modularMap = param -> {
+            Map<LocalTime, Boolean> result = new HashMap<>();
+            LocalTime timeIter = startTime;
+
+            // todo: realize!
+
+            return result;
+        };
 
         // schedule init
         Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
         LocalDate dayIter = startDate;
         LocalDate dayEnd = endDate;
         while (dayEnd.isAfter(dayIter)) {
-            schedule.put(dayIter, new HashMap<>(trueLine));
+            schedule.put(dayIter, solidMap.apply(true));
             dayIter = dayIter.plusDays(1);
         }
-        schedule.put(dayIter, new HashMap<>(trueLine));
+        schedule.put(dayIter, new HashMap<>(solidMap.apply(true)));
 
         // grid setting
         playgroundGridDTO.getGrid()
