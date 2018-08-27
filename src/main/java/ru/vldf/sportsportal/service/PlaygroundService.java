@@ -2,27 +2,40 @@ package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntityPK_;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity_;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
+import ru.vldf.sportsportal.repository.lease.ReservationRepository;
 import ru.vldf.sportsportal.service.generic.AbstractCRUDService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.criteria.*;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
 
     private MessageContainer messages;
+
+    private ReservationRepository reservationRepository;
 
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
@@ -30,6 +43,11 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     @Autowired
     public void setMessages(MessageContainer messages) {
         this.messages = messages;
+    }
+
+    @Autowired
+    public void setReservationRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     @Autowired
@@ -56,11 +74,32 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     }
 
     /**
+     * Returns requested playground with time grid info.
+     *
+     * @param id        {@link Integer} playground identifier
+     * @param startDate {@link LocalDate} first date of grid
+     * @param endDate   {@link LocalDate} last date of grid
+     * @return {@link PlaygroundGridDTO}
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Transactional(readOnly = true)
+    public PlaygroundGridDTO getGrid(Integer id, LocalDate startDate, LocalDate endDate) throws ResourceNotFoundException {
+        try {
+            return playgroundMapper.setGrid(
+                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), startDate, endDate,
+                    reservationRepository.findAll(new ReservationFilter(startDate, endDate))
+            );
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
+    }
+
+    /**
      * Returns requested playground.
      *
      * @param id {@link Integer} playground identifier
      * @return {@link PlaygroundDTO}
-     * @throws ResourceNotFoundException if singer not found
+     * @throws ResourceNotFoundException if playground not found
      */
     @Override
     @Transactional(readOnly = true)
@@ -118,5 +157,35 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
         }
 
         playgroundRepository.deleteById(id);
+    }
+
+
+    public static class ReservationFilter implements Specification<ReservationEntity> {
+
+        private Timestamp start;
+        private Timestamp end;
+
+
+        public ReservationFilter(LocalDate startDate, LocalDate endDate) {
+            if (startDate.isBefore(endDate)) {
+                this.start = toTimestamp(startDate);
+                this.end = toTimestamp(endDate);
+            } else {
+                this.start = toTimestamp(endDate);
+                this.end = toTimestamp(startDate);
+            }
+        }
+
+
+        private Timestamp toTimestamp(LocalDate localDate) {
+            return Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN));
+        }
+
+
+        @Override
+        public Predicate toPredicate(Root<ReservationEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Path<Timestamp> datetime = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.datetime);
+            return cb.and(cb.greaterThanOrEqualTo(datetime, start), cb.lessThanOrEqualTo(datetime, end));
+        }
     }
 }
