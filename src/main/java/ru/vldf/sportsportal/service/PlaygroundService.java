@@ -89,12 +89,12 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
      */
     @Transactional(readOnly = true)
     public PlaygroundGridDTO getGrid(Integer id, Date from, Date to) throws ResourceNotFoundException {
-        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate startDate = javaTimeMapper.toLocalDate(from);
         LocalDate endDate = javaTimeMapper.toLocalDate(to);
         try {
-            return playgroundMapper.setGrid(
-                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), currentDate, startDate, endDate,
+            return playgroundMapper.makeSchedule(
+                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), currentDateTime, startDate, endDate,
                     reservationRepository.findAll(new ReservationFilter(id, startDate, endDate))
             );
         } catch (EntityNotFoundException e) {

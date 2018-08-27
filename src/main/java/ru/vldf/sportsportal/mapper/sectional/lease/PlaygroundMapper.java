@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Mapper(
         componentModel = "spring",
@@ -41,7 +42,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
-            @Mapping(target = "grid", expression = "java(buildGrid(entity))")
+            @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
     })
     PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
 
@@ -84,7 +85,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         return acceptor;
     }
 
-    default PlaygroundGridDTO.ReservationGridDTO buildGrid(PlaygroundEntity entity) {
+    default PlaygroundGridDTO.ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -134,8 +135,8 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
                 .setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
     }
 
-    default PlaygroundGridDTO setGrid(PlaygroundGridDTO playgroundGridDTO, LocalDate currentDate, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
-        if ((playgroundGridDTO == null) || (reservations == null)) {
+    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate) {
+        if (playgroundGridDTO == null) {
             return null;
         }
 
@@ -149,21 +150,26 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         // day count info definition
         int totalDays = ((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
 
-        // todo: handle current date!
+        // step increment definition
+        int amountToAdd;
+        ChronoUnit unitToAdd;
+        if (playgroundGridDTO.getHalfHourAvailable()) {
+            unitToAdd = ChronoUnit.MINUTES;
+            amountToAdd = 30;
+        } else {
+            unitToAdd = ChronoUnit.HOURS;
+            amountToAdd = 1;
+        }
+
+        // todo: handle current datetime!
+
         // line init
         Map<LocalTime, Boolean> trueLine = new HashMap<>();
         LocalTime timeIter = playgroundGridDTO.getGrid().getStartTime();
         LocalTime timeEnd = playgroundGridDTO.getGrid().getEndTime();
-        if (playgroundGridDTO.getHalfHourAvailable()) {
-            while (timeEnd.isAfter(timeIter)) {
-                trueLine.put(timeIter, true);
-                timeIter = timeIter.plusMinutes(30);
-            }
-        } else {
-            while (timeEnd.isAfter(timeIter)) {
-                trueLine.put(timeIter, true);
-                timeIter = timeIter.plusHours(1);
-            }
+        while (timeEnd.isAfter(timeIter)) {
+            trueLine.put(timeIter, true);
+            timeIter = timeIter.plus(amountToAdd, unitToAdd);
         }
         trueLine.put(timeIter, true);
 
@@ -177,21 +183,31 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         }
         schedule.put(dayIter, new HashMap<>(trueLine));
 
-        // schedule update
-        for (ReservationEntity item : reservations) {
-            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
-            LocalDate dateKey = datetime.toLocalDate();
-            Map<LocalTime, Boolean> currentLine = schedule.remove(dateKey);
-            currentLine.put(datetime.toLocalTime(), false);
-            schedule.put(dateKey, currentLine);
-        }
-
         // grid setting
         playgroundGridDTO.getGrid()
                 .setSchedule(schedule)
                 .setTotalDays(totalDays)
                 .setStartDate(startDate)
                 .setEndDate(endDate);
+
+        return playgroundGridDTO;
+    }
+
+    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
+        if ((playgroundGridDTO == null) || (reservations == null)) {
+            return null;
+        }
+
+        Map<LocalDate, Map<LocalTime, Boolean>> schedule =
+                makeSchedule(playgroundGridDTO, now, startDate, endDate).getGrid().getSchedule();
+
+        // schedule updating
+        for (ReservationEntity item : reservations) {
+            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
+            Optional
+                    .ofNullable(schedule.get(datetime.toLocalDate()))
+                    .map(line -> line.put(datetime.toLocalTime(), false));
+        }
 
         return playgroundGridDTO;
     }
