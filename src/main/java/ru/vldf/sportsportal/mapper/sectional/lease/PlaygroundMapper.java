@@ -148,6 +148,14 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             endDate = tmp;
         }
 
+        // times and dates info init
+        // WARING: startTime must be less than endTime!
+        // todo: add night schedules support!
+        LocalDate currentDate = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime();
+        LocalTime startTime = playgroundGridDTO.getGrid().getStartTime();
+        LocalTime endTime = playgroundGridDTO.getGrid().getEndTime();
+
         // day count info definition
         int totalDays = ((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
 
@@ -162,38 +170,44 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             amountToAdd = 1;
         }
 
-        LocalDate currentDate = now.toLocalDate();
-        LocalTime currentTime = now.toLocalTime();
-        LocalTime startTime = playgroundGridDTO.getGrid().getStartTime();
-        LocalTime endTime = playgroundGridDTO.getGrid().getEndTime();
-
-        // bool-solid line
+        // bool-solid time line
         Function<Boolean, Map<LocalTime, Boolean>> solidMap = param -> {
             Map<LocalTime, Boolean> result = new HashMap<>();
             LocalTime timeIter = startTime;
-            while (timeIter.isBefore(endTime)) {
+            while (!timeIter.isAfter(endTime)) {
                 result.put(timeIter, param);
                 timeIter = timeIter.plus(amountToAdd, unitToAdd);
             }
-            result.put(timeIter, true);
             return result;
         };
 
-        // bool-modular line
+        // bool-modular time line
         Function<LocalTime, Map<LocalTime, Boolean>> modularMap = param -> {
             Map<LocalTime, Boolean> result = new HashMap<>();
             LocalTime timeIter = startTime;
-
-            // todo: realize!
-
+            while ((!timeIter.isAfter(param)) && (!timeIter.isAfter(endTime))) {
+                result.put(timeIter, false);
+                timeIter = timeIter.plus(amountToAdd, unitToAdd);
+            }
+            while (!timeIter.isAfter(endTime)) {
+                result.put(timeIter, true);
+                timeIter = timeIter.plus(amountToAdd, unitToAdd);
+            }
             return result;
         };
 
         // schedule init
         Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
         LocalDate dayIter = startDate;
-        LocalDate dayEnd = endDate;
-        while (dayEnd.isAfter(dayIter)) {
+        while ((dayIter.isBefore(currentDate)) && (!dayIter.isAfter(endDate))) {
+            schedule.put(dayIter, solidMap.apply(false));
+            dayIter = dayIter.plusDays(1);
+        }
+        if ((dayIter.equals(currentDate)) && (!dayIter.isAfter(endDate))) {
+            schedule.put(dayIter, modularMap.apply(currentTime));
+            dayIter = dayIter.plusDays(1);
+        }
+        while (!dayIter.isAfter(endDate)) {
             schedule.put(dayIter, solidMap.apply(true));
             dayIter = dayIter.plusDays(1);
         }
@@ -214,6 +228,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             return null;
         }
 
+        // schedule making
         Map<LocalDate, Map<LocalTime, Boolean>> schedule =
                 makeSchedule(playgroundGridDTO, now, startDate, endDate).getGrid().getSchedule();
 

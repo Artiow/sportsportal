@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -249,6 +250,31 @@ public class PlaygroundMapperTests {
         Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(13, 0, 0)));
         Assert.assertEquals(true, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(14, 0, 0)));
         Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(15, 0, 0)));
+    }
+
+    @Test
+    public void setGrid_dividedByCurrentDataTime() {
+
+        // arrange
+        LocalDateTime now = LocalDateTime.of(2000, 1, 1, 15, 30);
+        LocalDate startDate = LocalDate.of(1999, 12, 30);
+        LocalDate endDate = LocalDate.of(2000, 1, 2);
+
+        PlaygroundGridDTO playgroundGridDTO = new PlaygroundGridDTO()
+                .setHalfHourAvailable(false)
+                .setGrid(new PlaygroundGridDTO.ReservationGridDTO()
+                        .setStartTime(LocalTime.of(9, 0))
+                        .setEndTime(LocalTime.of(20, 0))
+                );
+
+        // act
+        playgroundMapper.makeSchedule(playgroundGridDTO, now, startDate, endDate, Collections.emptyList());
+
+        // assert
+        Map<LocalDate, Map<LocalTime, Boolean>> result = playgroundGridDTO.getGrid().getSchedule();
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(14, 0)));
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(15, 0)));
+        Assert.assertEquals(true, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(16, 0)));
     }
 
 
