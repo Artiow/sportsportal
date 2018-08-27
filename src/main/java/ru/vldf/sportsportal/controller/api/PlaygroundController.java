@@ -3,6 +3,8 @@ package ru.vldf.sportsportal.controller.api;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,14 +12,16 @@ import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
 import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;
-
-import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @RestController
 @Api(tags = {"Playground"})
@@ -38,9 +42,9 @@ public class PlaygroundController {
      * @param divider {@link PageDividerDTO} with pagination params
      * @return {@link PageDTO<PlaygroundShortDTO>}
      */
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
-    public PageDTO<PlaygroundShortDTO> getList(@RequestBody PageDividerDTO divider) {
+    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO divider) {
         return playgroundService.getList(divider);
     }
 
@@ -48,13 +52,32 @@ public class PlaygroundController {
      * Returns playground by identifier with full information.
      *
      * @param id {@link int} playground identifier
-     * @return {@link PlaygroundDTO}
+     * @return {@link PlaygroundDTO} requested playground
      * @throws ResourceNotFoundException if requested playground not found
      */
     @GetMapping("/{id}")
     @ApiOperation("получить площадку")
     public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
         return playgroundService.get(id);
+    }
+
+    /**
+     * Returns requested playground with time grid by start date and end date.
+     *
+     * @param id    {@link int} playground identifier
+     * @param start {@link LocalDate} first date of grid
+     * @param end   {@link LocalDate} last date of grid
+     * @return {@link PlaygroundGridDTO} requested time grid
+     * @throws ResourceNotFoundException if requested playground not found
+     */
+    @GetMapping("/{id}/grid")
+    @ApiOperation("получить сетку времени для площадки")
+    public PlaygroundGridDTO getGrid(
+            @PathVariable int id,
+            @RequestParam("from") @DateTimeFormat(iso = ISO.DATE) Date start,
+            @RequestParam("to") @DateTimeFormat(iso = ISO.DATE) Date end
+    ) throws ResourceNotFoundException {
+        return playgroundService.getGrid(id, start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     /**

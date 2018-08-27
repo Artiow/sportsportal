@@ -6,10 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntityPK_;
-import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity_;
+import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
@@ -69,7 +66,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
      */
     @Transactional(readOnly = true)
     public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO dividerDTO) {
-        PageDivider divider = new PageDivider(dividerDTO);
+        PageDivider divider = new PageDivider(dividerDTO); // todo: set filter here!
         return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
@@ -87,7 +84,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
         try {
             return playgroundMapper.setGrid(
                     playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), startDate, endDate,
-                    reservationRepository.findAll(new ReservationFilter(startDate, endDate))
+                    reservationRepository.findAll(new ReservationFilter(id, startDate, endDate))
             );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
@@ -162,11 +159,13 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
 
     public static class ReservationFilter implements Specification<ReservationEntity> {
 
+        private Integer playgroundId;
         private Timestamp start;
         private Timestamp end;
 
 
-        public ReservationFilter(LocalDate startDate, LocalDate endDate) {
+        public ReservationFilter(Integer playgroundId, LocalDate startDate, LocalDate endDate) {
+            this.playgroundId = playgroundId;
             if (startDate.isBefore(endDate)) {
                 this.start = toTimestamp(startDate);
                 this.end = toTimestamp(endDate);
@@ -184,8 +183,13 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
 
         @Override
         public Predicate toPredicate(Root<ReservationEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Path<Integer> playgroundId = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.order).get(OrderEntity_.playground).get(PlaygroundEntity_.id);
             Path<Timestamp> datetime = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.datetime);
-            return cb.and(cb.greaterThanOrEqualTo(datetime, start), cb.lessThanOrEqualTo(datetime, end));
+            return query.where(cb.and(
+                    cb.equal(playgroundId, this.playgroundId),
+                    cb.greaterThanOrEqualTo(datetime, start),
+                    cb.lessThanOrEqualTo(datetime, end)
+            )).distinct(true).getRestriction();
         }
     }
 }

@@ -85,9 +85,9 @@ public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D 
 
             if (!def) {
                 if (pageSize == null) {
-                    throw new IllegalArgumentException("Page size must not be null! If you want to set the default value, set \"pageNum\" to null also.");
+                    throw new IllegalArgumentException("Page size must not be null! If you want to set the default value, set page index to null also.");
                 } else if (pageNum == null) {
-                    throw new IllegalArgumentException("Page index must not be null! If you want to set the default value, set \"pageSize\" to null also.");
+                    throw new IllegalArgumentException("Page index must not be null! If you want to set the default value, set page size to null also.");
                 } else if (pageSize > LIMIT) {
                     throw new IllegalArgumentException("Page size must not be more than the limit value! ");
                 } else if (pageSize < 1) {
