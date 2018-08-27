@@ -9,11 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
@@ -37,7 +42,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(false);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(9, 0), gridDTO.getStartTime());
@@ -55,7 +60,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(9, 0), gridDTO.getStartTime());
@@ -73,7 +78,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(false);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(9, 15), gridDTO.getStartTime());
@@ -91,7 +96,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(9, 15), gridDTO.getStartTime());
@@ -109,7 +114,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(false);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(21, 15), gridDTO.getStartTime());
@@ -127,7 +132,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(21, 15), gridDTO.getStartTime());
@@ -145,7 +150,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(false);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(21, 35), gridDTO.getStartTime());
@@ -163,7 +168,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.prepareGrid(playgroundEntity);
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.buildGrid(playgroundEntity);
 
         // assert
         Assert.assertEquals(LocalTime.of(21, 35), gridDTO.getStartTime());
@@ -172,13 +177,77 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void setGrid() {
+    public void setGrid_correctDateSequence() {
 
         // arrange
+        LocalDate startDate = LocalDate.of(1999, 12, 30);
+        LocalDate endDate = LocalDate.of(2000, 1, 2);
+
+        ReservationEntity reservationEntity;
+        List<ReservationEntity> reservationEntities = new ArrayList<>(3);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 12:00:00"));
+        reservationEntities.add(reservationEntity);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 15:00:00"));
+        reservationEntities.add(reservationEntity);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 13:00:00"));
+        reservationEntities.add(reservationEntity);
+
+        PlaygroundGridDTO playgroundGridDTO = new PlaygroundGridDTO()
+                .setHalfHourAvailable(false)
+                .setGrid(new PlaygroundGridDTO.ReservationGridDTO()
+                        .setStartTime(LocalTime.of(9, 0))
+                        .setEndTime(LocalTime.of(20, 0))
+                );
 
         // act
+        playgroundMapper.setGrid(playgroundGridDTO, startDate, endDate, reservationEntities);
 
         // assert
+        Map<LocalDate, Map<LocalTime, Boolean>> result = playgroundGridDTO.getGrid().getSchedule();
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(12, 0, 0)));
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(13, 0, 0)));
+        Assert.assertEquals(true, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(14, 0, 0)));
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(15, 0, 0)));
+    }
+
+    @Test
+    public void setGrid_incorrectDateSequence() {
+
+        // arrange
+        LocalDate startDate = LocalDate.of(2000, 1, 2);
+        LocalDate endDate = LocalDate.of(1999, 12, 30);
+
+        ReservationEntity reservationEntity;
+        List<ReservationEntity> reservationEntities = new ArrayList<>(3);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 12:00:00"));
+        reservationEntities.add(reservationEntity);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 15:00:00"));
+        reservationEntities.add(reservationEntity);
+        reservationEntity = new ReservationEntity();
+        reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 13:00:00"));
+        reservationEntities.add(reservationEntity);
+
+        PlaygroundGridDTO playgroundGridDTO = new PlaygroundGridDTO()
+                .setHalfHourAvailable(false)
+                .setGrid(new PlaygroundGridDTO.ReservationGridDTO()
+                        .setStartTime(LocalTime.of(9, 0))
+                        .setEndTime(LocalTime.of(20, 0))
+                );
+
+        // act
+        playgroundMapper.setGrid(playgroundGridDTO, startDate, endDate, reservationEntities);
+
+        // assert
+        Map<LocalDate, Map<LocalTime, Boolean>> result = playgroundGridDTO.getGrid().getSchedule();
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(12, 0, 0)));
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(13, 0, 0)));
+        Assert.assertEquals(true, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(14, 0, 0)));
+        Assert.assertEquals(false, result.get(LocalDate.of(2000, 1, 1)).get(LocalTime.of(15, 0, 0)));
     }
 
 

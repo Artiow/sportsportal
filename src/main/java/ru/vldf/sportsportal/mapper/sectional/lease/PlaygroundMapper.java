@@ -22,7 +22,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Mapper(
         componentModel = "spring",
@@ -39,7 +41,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
-            @Mapping(target = "grid", expression = "java(prepareGrid(entity))")
+            @Mapping(target = "grid", expression = "java(buildGrid(entity))")
     })
     PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
 
@@ -82,7 +84,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         return acceptor;
     }
 
-    default PlaygroundGridDTO.ReservationGridDTO prepareGrid(PlaygroundEntity entity) {
+    default PlaygroundGridDTO.ReservationGridDTO buildGrid(PlaygroundEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -132,55 +134,64 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
                 .setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
     }
 
-    default PlaygroundGridDTO setGrid(PlaygroundGridDTO grid, Collection<ReservationEntity> reservations) {
-        if ((grid == null) || (reservations == null)) {
+    default PlaygroundGridDTO setGrid(PlaygroundGridDTO playgroundGridDTO, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
+        if ((playgroundGridDTO == null) || (reservations == null)) {
             return null;
         }
 
-        // sorting
-        List<ReservationEntity> list = new ArrayList<>(reservations);
-        list.sort(Comparator.comparing(ReservationEntity::getDatetime));
-
-        // date info definition
-        LocalDate startDate = list.get(0).getDatetime().toLocalDateTime().toLocalDate();
-        LocalDate endDate = list.get(list.size() - 1).getDatetime().toLocalDateTime().toLocalDate();
-        int totalDays = (int) ChronoUnit.DAYS.between(startDate, endDate);
-
-        // line template init
-        Map<LocalTime, Boolean> lineTemplate = new HashMap<>();
-        LocalTime iter = grid.getGrid().getStartTime();
-        LocalTime end = grid.getGrid().getEndTime();
-        while (end.isAfter(iter)) {
-            lineTemplate.put(iter, true);
-            iter = iter.plusMinutes(30);
+        // start and end dates normalize
+        if (startDate.isAfter(endDate)) {
+            LocalDate tmp = startDate;
+            startDate = endDate;
+            endDate = tmp;
         }
 
-        // schedule build
-        LocalDate current = null;
-        Map<LocalTime, Boolean> line = null;
-        Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
-        for (ReservationEntity item : list) {
-            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
-            LocalDate date = datetime.toLocalDate();
-            LocalTime time = datetime.toLocalTime();
-            if (!date.equals(current)) {
-                if (current != null) {
-                    schedule.put(current, line);
-                }
-                schedule.put(current, line);
-                line = new HashMap<>(lineTemplate);
-                current = date;
+        // day count info definition
+        int totalDays = ((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
+
+        // line init
+        Map<LocalTime, Boolean> trueLine = new HashMap<>();
+        LocalTime timeIter = playgroundGridDTO.getGrid().getStartTime();
+        LocalTime timeEnd = playgroundGridDTO.getGrid().getEndTime();
+        if (playgroundGridDTO.getHalfHourAvailable()) {
+            while (timeEnd.isAfter(timeIter)) {
+                trueLine.put(timeIter, true);
+                timeIter = timeIter.plusMinutes(30);
             }
-            line.put(time, false);
+        } else {
+            while (timeEnd.isAfter(timeIter)) {
+                trueLine.put(timeIter, true);
+                timeIter = timeIter.plusHours(1);
+            }
+        }
+        trueLine.put(timeIter, true);
+
+        // schedule init
+        Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
+        LocalDate dayIter = startDate;
+        LocalDate dayEnd = endDate;
+        while (dayEnd.isAfter(dayIter)) {
+            schedule.put(dayIter, new HashMap<>(trueLine));
+            dayIter = dayIter.plusDays(1);
+        }
+        schedule.put(dayIter, new HashMap<>(trueLine));
+
+        // schedule update
+        for (ReservationEntity item : reservations) {
+            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
+            LocalDate dateKey = datetime.toLocalDate();
+            Map<LocalTime, Boolean> currentLine = schedule.remove(dateKey);
+            currentLine.put(datetime.toLocalTime(), false);
+            schedule.put(dateKey, currentLine);
         }
 
         // grid setting
-        grid.getGrid()
+        playgroundGridDTO.getGrid()
                 .setSchedule(schedule)
                 .setTotalDays(totalDays)
                 .setStartDate(startDate)
                 .setEndDate(endDate);
 
-        return grid;
+        return playgroundGridDTO;
     }
 }
