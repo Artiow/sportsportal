@@ -203,7 +203,7 @@ public class PlaygroundMapperTests {
                 );
 
         // act
-        playgroundMapper.setGrid(playgroundGridDTO, startDate, endDate, reservationEntities);
+        playgroundMapper.setGrid(playgroundGridDTO, LocalDate.MIN, startDate, endDate, reservationEntities);
 
         // assert
         Map<LocalDate, Map<LocalTime, Boolean>> result = playgroundGridDTO.getGrid().getSchedule();
@@ -240,7 +240,7 @@ public class PlaygroundMapperTests {
                 );
 
         // act
-        playgroundMapper.setGrid(playgroundGridDTO, startDate, endDate, reservationEntities);
+        playgroundMapper.setGrid(playgroundGridDTO, LocalDate.MIN, startDate, endDate, reservationEntities);
 
         // assert
         Map<LocalDate, Map<LocalTime, Boolean>> result = playgroundGridDTO.getGrid().getSchedule();

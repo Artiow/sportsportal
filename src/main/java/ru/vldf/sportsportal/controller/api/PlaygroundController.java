@@ -19,8 +19,6 @@ import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
 import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 @RestController
@@ -49,6 +47,38 @@ public class PlaygroundController {
     }
 
     /**
+     * Returns requested playground with time grid by start date and end date.
+     *
+     * @param id   {@link int} playground identifier
+     * @param from {@link Date} first date of grid
+     * @param to   {@link Date} last date of grid
+     * @return {@link PlaygroundGridDTO} requested time grid
+     * @throws ResourceNotFoundException if requested playground not found
+     */
+    @GetMapping("/{id}/grid")
+    @ApiOperation("получить сетку времени для площадки")
+    public PlaygroundGridDTO getGrid(
+            @PathVariable int id,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) Date from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) Date to
+    ) throws ResourceNotFoundException {
+        return playgroundService.getGrid(id, from, to);
+    }
+
+    /**
+     * Returns playground by identifier with short information.
+     *
+     * @param id {@link int} playground identifier
+     * @return {@link PlaygroundShortDTO} requested playground
+     * @throws ResourceNotFoundException if requested playground not found
+     */
+    @GetMapping("/{id}/short")
+    @ApiOperation("получить площадку c краткой информацией")
+    public PlaygroundShortDTO getShort(@PathVariable int id) throws ResourceNotFoundException {
+        return playgroundService.getShort(id);
+    }
+
+    /**
      * Returns playground by identifier with full information.
      *
      * @param id {@link int} playground identifier
@@ -59,25 +89,6 @@ public class PlaygroundController {
     @ApiOperation("получить площадку")
     public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
         return playgroundService.get(id);
-    }
-
-    /**
-     * Returns requested playground with time grid by start date and end date.
-     *
-     * @param id    {@link int} playground identifier
-     * @param start {@link LocalDate} first date of grid
-     * @param end   {@link LocalDate} last date of grid
-     * @return {@link PlaygroundGridDTO} requested time grid
-     * @throws ResourceNotFoundException if requested playground not found
-     */
-    @GetMapping("/{id}/grid")
-    @ApiOperation("получить сетку времени для площадки")
-    public PlaygroundGridDTO getGrid(
-            @PathVariable int id,
-            @RequestParam("from") @DateTimeFormat(iso = ISO.DATE) Date start,
-            @RequestParam("to") @DateTimeFormat(iso = ISO.DATE) Date end
-    ) throws ResourceNotFoundException {
-        return playgroundService.getGrid(id, start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     /**

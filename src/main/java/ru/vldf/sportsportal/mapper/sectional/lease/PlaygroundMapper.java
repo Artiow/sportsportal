@@ -134,7 +134,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
                 .setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
     }
 
-    default PlaygroundGridDTO setGrid(PlaygroundGridDTO playgroundGridDTO, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
+    default PlaygroundGridDTO setGrid(PlaygroundGridDTO playgroundGridDTO, LocalDate currentDate, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
         if ((playgroundGridDTO == null) || (reservations == null)) {
             return null;
         }
@@ -149,6 +149,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         // day count info definition
         int totalDays = ((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
 
+        // todo: handle current date!
         // line init
         Map<LocalTime, Boolean> trueLine = new HashMap<>();
         LocalTime timeIter = playgroundGridDTO.getGrid().getStartTime();

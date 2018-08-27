@@ -12,6 +12,7 @@ import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
@@ -26,20 +27,27 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 
 @Service
 public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
 
     private MessageContainer messages;
 
-    private ReservationRepository reservationRepository;
+    private JavaTimeMapper javaTimeMapper;
 
+    private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
 
     @Autowired
     public void setMessages(MessageContainer messages) {
         this.messages = messages;
+    }
+
+    @Autowired
+    public void setJavaTimeMapper(JavaTimeMapper javaTimeMapper) {
+        this.javaTimeMapper = javaTimeMapper;
     }
 
     @Autowired
@@ -73,19 +81,38 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     /**
      * Returns requested playground with time grid info.
      *
-     * @param id        {@link Integer} playground identifier
-     * @param startDate {@link LocalDate} first date of grid
-     * @param endDate   {@link LocalDate} last date of grid
+     * @param id   {@link Integer} playground identifier
+     * @param from {@link Date} first date of grid
+     * @param to   {@link Date} last date of grid
      * @return {@link PlaygroundGridDTO}
      * @throws ResourceNotFoundException if playground not found
      */
     @Transactional(readOnly = true)
-    public PlaygroundGridDTO getGrid(Integer id, LocalDate startDate, LocalDate endDate) throws ResourceNotFoundException {
+    public PlaygroundGridDTO getGrid(Integer id, Date from, Date to) throws ResourceNotFoundException {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = javaTimeMapper.toLocalDate(from);
+        LocalDate endDate = javaTimeMapper.toLocalDate(to);
         try {
             return playgroundMapper.setGrid(
-                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), startDate, endDate,
+                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), currentDate, startDate, endDate,
                     reservationRepository.findAll(new ReservationFilter(id, startDate, endDate))
             );
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
+    }
+
+    /**
+     * Returns requested playground with short information.
+     *
+     * @param id {@link Integer} playground identifier
+     * @return {@link PlaygroundShortDTO}
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Transactional(readOnly = true)
+    public PlaygroundShortDTO getShort(Integer id) throws ResourceNotFoundException {
+        try {
+            return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
