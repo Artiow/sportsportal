@@ -15,24 +15,24 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
+public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
-    public abstract D get(Integer id) throws
+    D get(Integer id) throws
             ResourceNotFoundException;
 
-    public abstract Integer create(D t) throws
+    Integer create(D t) throws
             ResourceCannotCreateException;
 
-    public abstract void update(Integer id, D t) throws
+    void update(Integer id, D t) throws
             ResourceNotFoundException,
             ResourceCannotUpdateException,
             ResourceOptimisticLockException;
 
-    public abstract void delete(Integer id) throws
+    void delete(Integer id) throws
             ResourceNotFoundException;
 
 
-    public static class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
+    class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
 
         private String searchString;
         private SingularAttribute<? super E, String> attribute;
@@ -68,7 +68,7 @@ public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D 
     }
 
 
-    public static class PageDivider {
+    class PageDivider {
 
         private Integer LIMIT = 150;
         private Integer pageSize;

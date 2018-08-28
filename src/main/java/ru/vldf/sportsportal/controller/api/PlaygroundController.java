@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.controller.api;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +18,20 @@ import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
-import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Date;
 
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
+
 @RestController
 @Api(tags = {"Playground"})
 @RequestMapping("${api-path.lease.playground}")
 public class PlaygroundController {
+
+    @Value("${api-path.lease.order}")
+    private String orderApiPath;
 
     private PlaygroundService playgroundService;
 
@@ -104,7 +109,7 @@ public class PlaygroundController {
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
     public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO) throws ResourceNotFoundException {
-        return ResponseEntity.created(URI.create("")).build(); // todo: reserve!
+        return ResponseEntity.created(buildURL(orderApiPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
     /**
@@ -116,7 +121,7 @@ public class PlaygroundController {
     @PostMapping
     @ApiOperation("создать площадку")
     public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO) {
-        return ResponseEntity.created(ResourceLocationBuilder.buildURL(playgroundService.create(playgroundDTO))).build();
+        return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
     /**

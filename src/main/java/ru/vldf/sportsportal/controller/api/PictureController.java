@@ -15,10 +15,11 @@ import ru.vldf.sportsportal.service.PictureService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Picture"})
@@ -75,7 +76,7 @@ public class PictureController {
     @ApiOperation("загрузить ресурс")
     public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws ResourceCannotCreateException {
         return ResponseEntity
-                .created(ResourceLocationBuilder.buildURL(pictureService.create(picture)))
+                .created(buildURL(pictureService.create(picture)))
                 .build();
     }
 

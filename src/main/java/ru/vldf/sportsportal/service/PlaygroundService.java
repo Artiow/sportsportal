@@ -12,10 +12,12 @@ import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
 import ru.vldf.sportsportal.service.generic.AbstractCRUDService;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
 
@@ -29,9 +31,7 @@ import java.time.LocalTime;
 import java.util.Date;
 
 @Service
-public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
-
-    private MessageContainer messages;
+public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
 
     private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
@@ -39,7 +39,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
 
     @Autowired
     public void setMessages(MessageContainer messages) {
-        this.messages = messages;
+        super.setMessages(messages);
     }
 
     @Autowired
@@ -87,7 +87,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
                     reservationRepository.findAll(new ReservationFilter(id, from, to))
             );
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -103,7 +103,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
         try {
             return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -120,7 +120,24 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
         try {
             return playgroundMapper.toDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
+    }
+
+    /**
+     * Reserve sent datetimes and returns new order id.
+     *
+     * @param id                 {@link Integer} playground identifier
+     * @param reservationListDTO {@link ReservationListDTO} reservation info
+     * @return new order {@link Integer} identifier
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Transactional
+    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws ResourceNotFoundException {
+        try {
+            return 0; // todo: reserve!
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -150,9 +167,9 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
         try {
             playgroundRepository.saveAndFlush(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id));
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            throw new ResourceOptimisticLockException(messages.get("sportsportal.lease.Playground.optimisticLock.message"), e);
+            throw new ResourceOptimisticLockException(mGet("sportsportal.lease.Playground.optimisticLock.message"), e);
         }
     }
 
@@ -166,7 +183,7 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     @Transactional
     public void delete(Integer id) throws ResourceNotFoundException {
         if (!playgroundRepository.existsById(id)) {
-            throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id));
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
         }
 
         playgroundRepository.deleteById(id);
