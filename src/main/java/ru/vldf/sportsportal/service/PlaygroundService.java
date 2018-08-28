@@ -12,7 +12,6 @@ import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
-import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
@@ -34,8 +33,6 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
 
     private MessageContainer messages;
 
-    private JavaTimeMapper javaTimeMapper;
-
     private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
@@ -43,11 +40,6 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
     @Autowired
     public void setMessages(MessageContainer messages) {
         this.messages = messages;
-    }
-
-    @Autowired
-    public void setJavaTimeMapper(JavaTimeMapper javaTimeMapper) {
-        this.javaTimeMapper = javaTimeMapper;
     }
 
     @Autowired
@@ -88,14 +80,11 @@ public class PlaygroundService extends AbstractCRUDService<PlaygroundEntity, Pla
      * @throws ResourceNotFoundException if playground not found
      */
     @Transactional(readOnly = true)
-    public PlaygroundGridDTO getGrid(Integer id, Date from, Date to) throws ResourceNotFoundException {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        LocalDate startDate = javaTimeMapper.toLocalDate(from);
-        LocalDate endDate = javaTimeMapper.toLocalDate(to);
+    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException {
         try {
             return playgroundMapper.makeSchedule(
-                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), currentDateTime, startDate, endDate,
-                    reservationRepository.findAll(new ReservationFilter(id, startDate, endDate))
+                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,
+                    reservationRepository.findAll(new ReservationFilter(id, from, to))
             );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(messages.getAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);

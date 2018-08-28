@@ -211,7 +211,6 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             schedule.put(dayIter, solidMap.apply(true));
             dayIter = dayIter.plusDays(1);
         }
-        schedule.put(dayIter, new HashMap<>(solidMap.apply(true)));
 
         // grid setting
         playgroundGridDTO.getGrid()

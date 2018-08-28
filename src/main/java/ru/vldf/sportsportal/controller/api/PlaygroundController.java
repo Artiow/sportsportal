@@ -13,12 +13,14 @@ import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
 import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Date;
 
 @RestController
@@ -59,8 +61,8 @@ public class PlaygroundController {
     @ApiOperation("получить сетку времени для площадки")
     public PlaygroundGridDTO getGrid(
             @PathVariable int id,
-            @RequestParam @DateTimeFormat(iso = ISO.DATE) Date from,
-            @RequestParam @DateTimeFormat(iso = ISO.DATE) Date to
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) throws ResourceNotFoundException {
         return playgroundService.getGrid(id, from, to);
     }
@@ -89,6 +91,20 @@ public class PlaygroundController {
     @ApiOperation("получить площадку")
     public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
         return playgroundService.get(id);
+    }
+
+    /**
+     * Reserve playground for authorize user by sent datetime and returns order location.
+     *
+     * @param id                 {@link int} playground identifier
+     * @param reservationListDTO {@link ReservationListDTO} reservation info
+     * @return new order {@link URI}
+     * @throws ResourceNotFoundException if requested playground not found
+     */
+    @PostMapping("/{id}/reserve")
+    @ApiOperation("забронировать площадку")
+    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO) throws ResourceNotFoundException {
+        return ResponseEntity.created(URI.create("")).build(); // todo: reserve!
     }
 
     /**
