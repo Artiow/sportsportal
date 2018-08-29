@@ -162,6 +162,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setCustomer(getCurrentUserEntity());
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
+            order = orderRepository.saveAndFlush(order);
 
             int sumCost = 0;
             int cost = playground.getCost();
@@ -175,6 +176,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
                 sumCost += cost;
                 reservations.add(reservation);
+                reservationRepository.saveAndFlush(reservation);
             }
 
             order.setPaid(false);
@@ -263,10 +265,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         public Predicate toPredicate(Root<ReservationEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Path<Integer> playgroundId = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.order).get(OrderEntity_.playground).get(PlaygroundEntity_.id);
             Path<Timestamp> datetime = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.datetime);
+            // todo: fix predicate building!
             return query.where(cb.and(
-                    cb.equal(playgroundId, this.playgroundId),
-                    cb.greaterThanOrEqualTo(datetime, start),
-                    cb.lessThanOrEqualTo(datetime, end)
+                    cb.equal(playgroundId, this.playgroundId)
+//                    cb.greaterThanOrEqualTo(datetime, start),
+//                    cb.lessThanOrEqualTo(datetime, end)
             )).distinct(true).getRestriction();
         }
     }

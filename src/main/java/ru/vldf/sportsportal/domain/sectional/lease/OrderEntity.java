@@ -36,7 +36,7 @@ public class OrderEntity extends AbstractVersionedEntity {
     private PlaygroundEntity playground;
 
     @OrderBy("pk.datetime")
-    @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pk.order")
     private Collection<ReservationEntity> reservations;
 
 
