@@ -13,7 +13,7 @@ public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "cost", nullable = false)
-    private Integer cost;
+    private Integer cost = 0;
 
     @Basic
     @Column(name = "paid", nullable = false)

@@ -14,12 +14,12 @@ import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
+import ru.vldf.sportsportal.repository.common.RoleRepository;
+import ru.vldf.sportsportal.repository.common.UserRepository;
+import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
-import ru.vldf.sportsportal.service.generic.AbstractCRUDService;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
+import ru.vldf.sportsportal.service.generic.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
@@ -28,11 +28,14 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 @Service
 public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
 
+    private OrderRepository orderRepository;
     private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
@@ -40,6 +43,21 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     @Autowired
     public void setMessages(MessageContainer messages) {
         super.setMessages(messages);
+    }
+
+    @Autowired
+    protected void setUserRepository(UserRepository userRepository) {
+        super.setUserRepository(userRepository);
+    }
+
+    @Autowired
+    protected void setRoleRepository(RoleRepository roleRepository) {
+        super.setRoleRepository(roleRepository);
+    }
+
+    @Autowired
+    public void setOrderRepository(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
     @Autowired
@@ -133,9 +151,36 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Transactional
-    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws ResourceNotFoundException {
+    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws ResourceNotFoundException, AuthorizationRequiredException {
         try {
-            return 0; // todo: reserve!
+            PlaygroundEntity playground = playgroundRepository.getOne(id);
+
+            int expMinutes = 15;
+            LocalDateTime now = LocalDateTime.now();
+            OrderEntity order = new OrderEntity();
+            order.setPlayground(playground);
+            order.setCustomer(getCurrentUserEntity());
+            order.setDatetime(Timestamp.valueOf(now));
+            order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
+
+            int sumCost = 0;
+            int cost = playground.getCost();
+            Collection<LocalDateTime> datetimes = reservationListDTO.getReservations();
+            Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
+            for (LocalDateTime datetime : datetimes) {
+                ReservationEntity reservation = new ReservationEntity();
+                reservation.setDatetime(Timestamp.valueOf(datetime)); // todo: datetime support check!
+                reservation.setOrder(order);
+                reservation.setCost(cost);
+
+                sumCost += cost;
+                reservations.add(reservation);
+            }
+
+            order.setPaid(false);
+            order.setCost(sumCost);
+            order.setReservations(reservations);
+            return orderRepository.saveAndFlush(order).getId();
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
