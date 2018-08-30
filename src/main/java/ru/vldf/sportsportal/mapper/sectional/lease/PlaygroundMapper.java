@@ -98,24 +98,13 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         int closeTimeHour = entity.getClosing().toLocalDateTime().toLocalTime().getHour();
         int closeTimeMinute = entity.getClosing().toLocalDateTime().toLocalTime().getMinute();
 
-        // total time minute normalize
-        int step = halfHourAvailable ? 30 : 60;
-        int minuteDiff = (closeTimeMinute - openTimeMinute);
-        if ((minuteDiff % 30) != 0) {
-            closeTimeMinute -= ((minuteDiff < 0) ? (minuteDiff + step) : minuteDiff);
-            if (closeTimeMinute < 0) {
-                closeTimeMinute += 60;
-                closeTimeHour -= 1;
-            }
-            minuteDiff = (closeTimeMinute - openTimeMinute);
-        }
-
         // total times hour pre-calculate
         int totalTimes = (closeTimeHour - openTimeHour);
         totalTimes = (totalTimes < 0) ? (totalTimes + 24) : totalTimes;
         totalTimes = (halfHourAvailable) ? (totalTimes * 2) : totalTimes;
 
         // total times minute final calculate
+        int minuteDiff = (closeTimeMinute - openTimeMinute);
         totalTimes = (minuteDiff != 0) ? ((minuteDiff > 0) ? (totalTimes + 1) : (totalTimes - 1)) : totalTimes;
 
         // close time hour and minute calculate

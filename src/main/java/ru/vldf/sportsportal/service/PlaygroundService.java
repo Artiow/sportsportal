@@ -20,6 +20,7 @@ import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
 import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.util.LocalDateTimeNormalizer;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
@@ -151,7 +152,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Transactional
-    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws ResourceNotFoundException, AuthorizationRequiredException {
+    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
 
@@ -162,28 +163,36 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setCustomer(getCurrentUserEntity());
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
-            order = orderRepository.saveAndFlush(order);
+            // todo: fix void order saving!
+            order = orderRepository.save(order);
 
             int sumCost = 0;
             int cost = playground.getCost();
             Collection<LocalDateTime> datetimes = reservationListDTO.getReservations();
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
+            if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable())) {
+                throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
+            }
             for (LocalDateTime datetime : datetimes) {
+                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
+                if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
+                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
+                }
+
                 ReservationEntity reservation = new ReservationEntity();
-                // todo: datetime support check!
                 reservation.setDatetime(Timestamp.valueOf(datetime));
                 reservation.setOrder(order);
                 reservation.setCost(cost);
 
                 sumCost += cost;
                 reservations.add(reservation);
-                reservationRepository.saveAndFlush(reservation);
+                reservationRepository.save(reservation);
             }
 
             order.setPaid(false);
             order.setCost(sumCost);
             order.setReservations(reservations);
-            return orderRepository.saveAndFlush(order).getId();
+            return orderRepository.save(order).getId();
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
