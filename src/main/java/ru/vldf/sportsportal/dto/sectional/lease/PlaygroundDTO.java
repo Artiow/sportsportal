@@ -24,11 +24,11 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     private Long version;
 
     @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String name;
 
     @NotNull(groups = FieldCheck.class)
-    @Size(min = 1, max = 90, groups = FieldCheck.class)
+    @Size(min = 4, max = 90, groups = FieldCheck.class)
     private String address;
 
     @NotNull(groups = FieldCheck.class)

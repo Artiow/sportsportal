@@ -31,7 +31,7 @@
         <db.url.demo>jdbc:postgresql://185.249.255.73:5432/sportsportal.demo</db.url.demo>
         <db.url.test>jdbc:postgresql://185.249.255.73:5432/sportsportal.test</db.url.test>
 
-        <db.user>xxxxx</db.user>
+        <db.username>xxxxx</db.username>
         <db.password>xxxxx</db.password>
 
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
@@ -186,7 +186,7 @@
                 <version>${org.flywaydb.version}</version>
                 <configuration>
                     <url>${db.url.prod}</url>
-                    <user>${db.user}</user>
+                    <user>${db.username}</user>
                     <password>${db.password}</password>
                     <locations>filesystem:database/migration</locations>
                     <schemas>
@@ -203,7 +203,7 @@
                         <id>demo</id>
                         <configuration>
                             <url>${db.url.demo}</url>
-                            <user>${db.user}</user>
+                            <user>${db.username}</user>
                             <password>${db.password}</password>
                             <locations>filesystem:database/migration</locations>
                             <schemas>
@@ -219,7 +219,7 @@
                         <id>test</id>
                         <configuration>
                             <url>${db.url.test}</url>
-                            <user>${db.user}</user>
+                            <user>${db.username}</user>
                             <password>${db.password}</password>
                             <locations>filesystem:database/migration</locations>
                             <schemas>
@@ -246,7 +246,7 @@
                         <path>
                             <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${hibernate.version}</version>
+                            <version>${org.hibernate.version}</version>
                         </path>
 
                         <!-- MAPSTRUCT MAPPER GENERATION -->
@@ -262,6 +262,58 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <!-- SQL MAVEN PLUGIN -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>1.5</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${org.postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                    <driver>org.postgresql.Driver</driver>
+                    <username>${db.username}</username>
+                    <password>${db.password}</password>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>prod</id>
+                        <configuration>
+                            <url>${db.url.prod}</url>
+                            <srcFiles>
+                                <srcFile>database/boot/boot.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>demo</id>
+                        <configuration>
+                            <url>${db.url.demo}</url>
+                            <srcFiles>
+                                <srcFile>database/boot/boot.sql</srcFile>
+                                <srcFile>database/boot/demo.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test</id>
+                        <configuration>
+                            <url>${db.url.test}</url>
+                            <srcFiles>
+                                <srcFile>database/boot/boot.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

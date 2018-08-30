@@ -84,7 +84,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      */
     @Transactional(readOnly = true)
     public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO dividerDTO) {
-        PageDivider divider = new PageDivider(dividerDTO); // todo: set filter here!
+        PageDivider divider = new PageDivider(dividerDTO);
         return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
@@ -170,7 +170,8 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
                 ReservationEntity reservation = new ReservationEntity();
-                reservation.setDatetime(Timestamp.valueOf(datetime)); // todo: datetime support check!
+                // todo: datetime support check!
+                reservation.setDatetime(Timestamp.valueOf(datetime));
                 reservation.setOrder(order);
                 reservation.setCost(cost);
 
@@ -246,12 +247,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
         public ReservationFilter(Integer playgroundId, LocalDate startDate, LocalDate endDate) {
             this.playgroundId = playgroundId;
-            if (startDate.isBefore(endDate)) {
+            if (!startDate.isAfter(endDate)) {
                 this.start = toTimestamp(startDate);
-                this.end = toTimestamp(endDate);
+                this.end = toTimestamp(endDate.plusDays(1));
             } else {
                 this.start = toTimestamp(endDate);
-                this.end = toTimestamp(startDate);
+                this.end = toTimestamp(startDate.plusDays(1));
             }
         }
 
@@ -265,11 +266,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         public Predicate toPredicate(Root<ReservationEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Path<Integer> playgroundId = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.order).get(OrderEntity_.playground).get(PlaygroundEntity_.id);
             Path<Timestamp> datetime = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.datetime);
-            // todo: fix predicate building!
             return query.where(cb.and(
-                    cb.equal(playgroundId, this.playgroundId)
-//                    cb.greaterThanOrEqualTo(datetime, start),
-//                    cb.lessThanOrEqualTo(datetime, end)
+                    cb.equal(playgroundId, this.playgroundId),
+                    cb.greaterThanOrEqualTo(datetime, start),
+                    cb.lessThanOrEqualTo(datetime, end)
             )).distinct(true).getRestriction();
         }
     }
