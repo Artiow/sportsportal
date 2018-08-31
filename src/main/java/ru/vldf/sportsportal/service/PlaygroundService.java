@@ -157,9 +157,8 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException      if playground not found
      * @throws ResourceCannotCreateException  if playground cannot create
      */
+    @Transactional
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
-        // todo: debug method!
-
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
 
@@ -183,9 +182,13 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
                     throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
                 }
+                Timestamp reservedDatetime = Timestamp.valueOf(datetime);
+                if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playground, reservedDatetime)) {
+                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.alreadyReservedTime.message"));
+                }
 
                 ReservationEntity reservation = new ReservationEntity();
-                reservation.setDatetime(Timestamp.valueOf(datetime));
+                reservation.setDatetime(reservedDatetime);
                 reservation.setPlayground(playground);
                 reservation.setOrder(order);
                 reservation.setCost(cost);
