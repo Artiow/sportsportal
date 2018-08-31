@@ -16,10 +16,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
-import ru.vldf.sportsportal.service.generic.AuthorizationRequiredException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
+import ru.vldf.sportsportal.service.generic.*;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -70,7 +67,7 @@ public class PlaygroundController {
             @PathVariable int id,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
-    ) throws ResourceNotFoundException {
+    ) throws ResourceNotFoundException, ResourceCorruptedException {
         return playgroundService.getGrid(id, from, to);
     }
 

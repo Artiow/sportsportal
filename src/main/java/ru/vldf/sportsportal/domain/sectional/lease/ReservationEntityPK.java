@@ -11,19 +11,19 @@ import java.sql.Timestamp;
 public class ReservationEntityPK implements Serializable {
 
     @ManyToOne
-    private OrderEntity order;
+    private PlaygroundEntity playground;
 
     @Basic
     @Column(name = "datetime")
     private Timestamp datetime;
 
 
-    public OrderEntity getOrder() {
-        return order;
+    public PlaygroundEntity getPlayground() {
+        return playground;
     }
 
-    public void setOrder(OrderEntity order) {
-        this.order = order;
+    public void setPlayground(PlaygroundEntity playground) {
+        this.playground = playground;
     }
 
     public Timestamp getDatetime() {

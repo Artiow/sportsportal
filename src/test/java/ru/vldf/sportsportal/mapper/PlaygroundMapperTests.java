@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 
 import java.sql.Timestamp;
@@ -35,7 +36,7 @@ public class PlaygroundMapperTests {
 
 
     @Test
-    public void prepareGrid_from0900to2100HHAFalse() {
+    public void prepareGrid_from0900to2100HHAFalse() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
@@ -53,7 +54,7 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void prepareGrid_from0900to2100HHATrue() {
+    public void prepareGrid_from0900to2100HHATrue() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
@@ -71,12 +72,12 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void prepareGrid_from0915to2135HHAFalse() {
+    public void prepareGrid_from0915to2115HHAFalse() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
         playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 09:15:00"));
-        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 21:35:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 21:15:00"));
         playgroundEntity.setHalfHourAvailable(false);
 
         // act
@@ -89,12 +90,12 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void prepareGrid_from0915to2135HHATrue() {
+    public void prepareGrid_from0915to2115HHATrue() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
         playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 09:15:00"));
-        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 21:35:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 21:15:00"));
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
@@ -106,80 +107,38 @@ public class PlaygroundMapperTests {
         Assert.assertEquals(24, (int) gridDTO.getTotalTimes());
     }
 
-    @Test
-    public void prepareGrid_from2115to0935HHAFalse() {
+    @Test(expected = DataCorruptedException.class)
+    public void prepareGrid_from0915to2135HHATrue_DataCorrupted() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
-        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 21:15:00"));
-        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 09:35:00"));
-        playgroundEntity.setHalfHourAvailable(false);
-
-        // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
-
-        // assert
-        Assert.assertEquals(LocalTime.of(21, 15), gridDTO.getStartTime());
-        Assert.assertEquals(LocalTime.of(8, 15), gridDTO.getEndTime());
-        Assert.assertEquals(12, (int) gridDTO.getTotalTimes());
-    }
-
-    @Test
-    public void prepareGrid_from2115to0935HHATrue() {
-
-        // arrange
-        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
-        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 21:15:00"));
-        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 09:35:00"));
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 09:15:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 21:35:00"));
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
         PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
 
-        // assert
-        Assert.assertEquals(LocalTime.of(21, 15), gridDTO.getStartTime());
-        Assert.assertEquals(LocalTime.of(8, 45), gridDTO.getEndTime());
-        Assert.assertEquals(24, (int) gridDTO.getTotalTimes());
+        // no assert
     }
 
-    @Test
-    public void prepareGrid_from2135to0915HHAFalse() {
+    @Test(expected = DataCorruptedException.class)
+    public void prepareGrid_from2115to0915HHATrue_DataCorrupted() throws DataCorruptedException {
 
         // arrange
         PlaygroundEntity playgroundEntity = new PlaygroundEntity();
-        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 21:35:00"));
-        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 09:15:00"));
-        playgroundEntity.setHalfHourAvailable(false);
-
-        // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
-
-        // assert
-        Assert.assertEquals(LocalTime.of(21, 35), gridDTO.getStartTime());
-        Assert.assertEquals(LocalTime.of(7, 35), gridDTO.getEndTime());
-        Assert.assertEquals(11, (int) gridDTO.getTotalTimes());
-    }
-
-    @Test
-    public void prepareGrid_from2135to0915HHATrue() {
-
-        // arrange
-        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
-        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 21:35:00"));
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 21:15:00"));
         playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 09:15:00"));
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
         PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
 
-        // assert
-        Assert.assertEquals(LocalTime.of(21, 35), gridDTO.getStartTime());
-        Assert.assertEquals(LocalTime.of(8, 35), gridDTO.getEndTime());
-        Assert.assertEquals(23, (int) gridDTO.getTotalTimes());
+        // no assert
     }
 
     @Test
-    public void setGrid_correctDateSequence() {
+    public void setGrid_correctDateSequence() throws DataCorruptedException {
 
         // arrange
         LocalDate startDate = LocalDate.of(1999, 12, 30);
@@ -216,7 +175,7 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void setGrid_incorrectDateSequence() {
+    public void setGrid_incorrectDateSequence() throws DataCorruptedException {
 
         // arrange
         LocalDate startDate = LocalDate.of(2000, 1, 2);
@@ -253,7 +212,7 @@ public class PlaygroundMapperTests {
     }
 
     @Test
-    public void setGrid_dividedByCurrentDataTime() {
+    public void setGrid_dividedByCurrentDataTime() throws DataCorruptedException {
 
         // arrange
         LocalDateTime now = LocalDateTime.of(2000, 1, 1, 15, 30);

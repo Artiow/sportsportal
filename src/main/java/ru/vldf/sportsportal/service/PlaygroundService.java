@@ -13,6 +13,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
+import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -96,10 +97,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
      * @return {@link PlaygroundGridDTO}
-     * @throws ResourceNotFoundException if playground not found
+     * @throws ResourceNotFoundException  if playground not found
+     * @throws ResourceCorruptedException if playground data corrupted
      */
     @Transactional(readOnly = true)
-    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException {
+    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
             return playgroundMapper.makeSchedule(
                     playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,
@@ -107,6 +109,8 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        } catch (DataCorruptedException e) {
+            throw new ResourceCorruptedException(mGetAndFormat("sportsportal.lease.Playground.dataCorrupted.message", id), e);
         }
     }
 
@@ -149,30 +153,31 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id                 {@link Integer} playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation info
      * @return new order {@link Integer} identifier
-     * @throws ResourceNotFoundException if playground not found
+     * @throws AuthorizationRequiredException if authorization is missing
+     * @throws ResourceNotFoundException      if playground not found
+     * @throws ResourceCannotCreateException  if playground cannot create
      */
-    @Transactional
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
+        // todo: debug method!
+
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
 
             int expMinutes = 15;
             LocalDateTime now = LocalDateTime.now();
             OrderEntity order = new OrderEntity();
-            order.setPlayground(playground);
             order.setCustomer(getCurrentUserEntity());
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
-            // todo: fix void order saving!
-            order = orderRepository.save(order);
 
             int sumCost = 0;
             int cost = playground.getCost();
             Collection<LocalDateTime> datetimes = reservationListDTO.getReservations();
-            Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable())) {
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
             }
+
+            Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
                 Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
@@ -181,12 +186,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
                 ReservationEntity reservation = new ReservationEntity();
                 reservation.setDatetime(Timestamp.valueOf(datetime));
+                reservation.setPlayground(playground);
                 reservation.setOrder(order);
                 reservation.setCost(cost);
 
                 sumCost += cost;
                 reservations.add(reservation);
-                reservationRepository.save(reservation);
             }
 
             order.setPaid(false);
@@ -273,12 +278,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
         @Override
         public Predicate toPredicate(Root<ReservationEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            Path<Integer> playgroundId = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.order).get(OrderEntity_.playground).get(PlaygroundEntity_.id);
+            Path<Integer> playgroundId = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.playground).get(PlaygroundEntity_.id);
             Path<Timestamp> datetime = root.get(ReservationEntity_.pk).get(ReservationEntityPK_.datetime);
             return query.where(cb.and(
                     cb.equal(playgroundId, this.playgroundId),
                     cb.greaterThanOrEqualTo(datetime, start),
-                    cb.lessThanOrEqualTo(datetime, end)
+                    cb.lessThan(datetime, end)
             )).distinct(true).getRestriction();
         }
     }

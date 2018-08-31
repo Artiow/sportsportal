@@ -10,6 +10,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundLinkDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
@@ -45,7 +46,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
             @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
     })
-    PlaygroundGridDTO toGridDTO(PlaygroundEntity entity);
+    PlaygroundGridDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
@@ -86,25 +87,31 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         return acceptor;
     }
 
-    default PlaygroundGridDTO.ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) {
+    default PlaygroundGridDTO.ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) throws DataCorruptedException {
         if (entity == null) {
             return null;
         }
 
+        // data integrity check
+        LocalTime openTime = entity.getOpening().toLocalDateTime().toLocalTime();
+        LocalTime closeTime = entity.getClosing().toLocalDateTime().toLocalTime();
+        if (!openTime.isBefore(closeTime)) {
+            throw new DataCorruptedException("PlaygroundEntity data corrupted: openTime must be less than closeTime!");
+        }
+
         // integer time value init
+        int openTimeHour = openTime.getHour();
+        int openTimeMinute = openTime.getMinute();
+        int closeTimeHour = closeTime.getHour();
+        int closeTimeMinute = closeTime.getMinute();
         boolean halfHourAvailable = entity.getHalfHourAvailable();
-        int openTimeHour = entity.getOpening().toLocalDateTime().toLocalTime().getHour();
-        int openTimeMinute = entity.getOpening().toLocalDateTime().toLocalTime().getMinute();
-        int closeTimeHour = entity.getClosing().toLocalDateTime().toLocalTime().getHour();
-        int closeTimeMinute = entity.getClosing().toLocalDateTime().toLocalTime().getMinute();
 
-        // total times hour pre-calculate
-        int totalTimes = (closeTimeHour - openTimeHour);
-        totalTimes = (totalTimes < 0) ? (totalTimes + 24) : totalTimes;
-        totalTimes = (halfHourAvailable) ? (totalTimes * 2) : totalTimes;
-
-        // total times minute final calculate
+        // total times calculate
+        int totalTimes = (halfHourAvailable) ? (2 * (closeTimeHour - openTimeHour)) : (closeTimeHour - openTimeHour);
         int minuteDiff = (closeTimeMinute - openTimeMinute);
+        if ((minuteDiff % 30) != 0) {
+            throw new DataCorruptedException("PlaygroundEntity data corrupted: minuteDiff not a multiple of 30!");
+        }
         totalTimes = (minuteDiff != 0) ? ((minuteDiff > 0) ? (totalTimes + 1) : (totalTimes - 1)) : totalTimes;
 
         // close time hour and minute calculate
@@ -125,7 +132,8 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
                 .setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
     }
 
-    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate) {
+    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate)
+            throws DataCorruptedException {
         if (playgroundGridDTO == null) {
             return null;
         }
@@ -138,12 +146,11 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         }
 
         // times and dates info init
-        // WARING: startTime must be less than endTime!
-        // todo: add night schedules support!
-        LocalDate currentDate = now.toLocalDate();
-        LocalTime currentTime = now.toLocalTime();
         LocalTime startTime = playgroundGridDTO.getGrid().getStartTime();
         LocalTime endTime = playgroundGridDTO.getGrid().getEndTime();
+        if (!startTime.isBefore(endTime)) {
+            throw new DataCorruptedException("PlaygroundGridDTO data corrupted: startTime must be less than endTime!");
+        }
 
         // day count info definition
         int totalDays = ((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
@@ -186,6 +193,8 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         };
 
         // schedule init
+        LocalDate currentDate = now.toLocalDate();
+        LocalTime currentTime = now.toLocalTime();
         Map<LocalDate, Map<LocalTime, Boolean>> schedule = new HashMap<>();
         LocalDate dayIter = startDate;
         while ((dayIter.isBefore(currentDate)) && (!dayIter.isAfter(endDate))) {
@@ -211,7 +220,8 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         return playgroundGridDTO;
     }
 
-    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) {
+    default PlaygroundGridDTO makeSchedule(PlaygroundGridDTO playgroundGridDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations)
+            throws DataCorruptedException {
         if ((playgroundGridDTO == null) || (reservations == null)) {
             return null;
         }
@@ -223,9 +233,17 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         // schedule updating
         for (ReservationEntity item : reservations) {
             LocalDateTime datetime = item.getDatetime().toLocalDateTime();
-            Optional
-                    .ofNullable(schedule.get(datetime.toLocalDate()))
-                    .map(line -> line.put(datetime.toLocalTime(), false));
+            LocalDate date = datetime.toLocalDate();
+            LocalTime time = datetime.toLocalTime();
+
+            Map<LocalTime, Boolean> line = Optional
+                    .ofNullable(schedule.get(date))
+                    .orElseThrow(() -> new DataCorruptedException("Reservation date not supported!"));
+
+            if (Optional.ofNullable(line.get(time))
+                    .orElseThrow(() -> new DataCorruptedException("Reservation time not supported!"))) {
+                line.put(time, false);
+            }
         }
 
         return playgroundGridDTO;
