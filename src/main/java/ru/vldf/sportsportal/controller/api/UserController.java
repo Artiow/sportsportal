@@ -20,7 +20,6 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"User"})
-@RequestMapping("${api-path.common.user}")
 public class UserController {
 
     @Value("${api-path.common.user}")
@@ -41,7 +40,7 @@ public class UserController {
      * @return {@link UserShortDTO} user dto
      * @throws ResourceNotFoundException if user not found
      */
-    @GetMapping("/{id}")
+    @GetMapping("${api-path.common.user}/{id}")
     @ApiOperation("получить пользователя")
     public UserShortDTO get(@PathVariable Integer id) throws ResourceNotFoundException {
         return userService.get(id);
@@ -54,7 +53,7 @@ public class UserController {
      * @param password {@link String} users password
      * @return {@link TokenDTO} token data
      */
-    @GetMapping("/login")
+    @GetMapping("${api-path.common.auth}/login")
     @ApiOperation("получить токен")
     public TokenDTO login(@RequestParam String login, @RequestParam String password)
             throws UsernameNotFoundException, JwtException {
@@ -67,7 +66,7 @@ public class UserController {
      * @param userDTO new user data
      * @return new user location
      */
-    @PostMapping("/register")
+    @PostMapping("${api-path.common.auth}/register")
     @ApiOperation("регистрация")
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {

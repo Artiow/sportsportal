@@ -51,8 +51,14 @@ public class AdviseController {
 
     @ExceptionHandler(ResourceFileNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDTO handleFileNotFoundException(ResourceFileNotFoundException ex) {
+    public ErrorDTO handleResourceFileNotFoundException(ResourceFileNotFoundException ex) {
         return errorDTO(ex, "Requested File Not Found.");
+    }
+
+    @ExceptionHandler(ResourceCorruptedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDTO handleResourceCorruptedException(ResourceCorruptedException ex) {
+        return errorDTO(ex, "Requested Resource Corrupted.");
     }
 
 

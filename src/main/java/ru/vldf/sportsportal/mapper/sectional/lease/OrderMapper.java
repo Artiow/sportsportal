@@ -27,7 +27,6 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
         acceptor.setDatetime(donor.getDatetime());
         acceptor.setExpiration(donor.getExpiration());
         acceptor.setCustomer(donor.getCustomer());
-        acceptor.setPlayground(donor.getPlayground());
 
         Collection<ReservationEntity> reservations = acceptor.getReservations();
         if (!reservations.isEmpty()) {

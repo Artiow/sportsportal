@@ -5,7 +5,8 @@ import org.springframework.security.web.util.matcher.*;
 public interface RightsDifferentiationRouting {
 
     RequestMatcher PUBLIC_API_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/user/login", "GET")
+            new AntPathRequestMatcher("/api/auth/login", "GET"),
+            new AntPathRequestMatcher("/api/auth/register", "POST")
     );
 
     RequestMatcher ADMIN_API_URLS = new OrRequestMatcher(
@@ -18,7 +19,8 @@ public interface RightsDifferentiationRouting {
     );
 
     RequestMatcher USER_API_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/user/*", "GET")
+            new AntPathRequestMatcher("/api/user/*", "GET"),
+            new AntPathRequestMatcher("/api/lease/**/reserve", "POST")
     );
 
     RequestMatcher PROTECTED_URLS = new AndRequestMatcher(

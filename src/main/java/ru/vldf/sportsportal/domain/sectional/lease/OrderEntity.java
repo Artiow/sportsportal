@@ -13,7 +13,7 @@ public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "cost", nullable = false)
-    private Integer cost;
+    private Integer cost = 0;
 
     @Basic
     @Column(name = "paid", nullable = false)
@@ -31,12 +31,8 @@ public class OrderEntity extends AbstractVersionedEntity {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private UserEntity customer;
 
-    @ManyToOne
-    @JoinColumn(name = "playground_id", referencedColumnName = "id")
-    private PlaygroundEntity playground;
-
     @OrderBy("pk.datetime")
-    @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pk.playground", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ReservationEntity> reservations;
 
 
@@ -78,14 +74,6 @@ public class OrderEntity extends AbstractVersionedEntity {
 
     public void setCustomer(UserEntity customer) {
         this.customer = customer;
-    }
-
-    public PlaygroundEntity getPlayground() {
-        return playground;
-    }
-
-    public void setPlayground(PlaygroundEntity playground) {
-        this.playground = playground;
     }
 
     public Collection<ReservationEntity> getReservations() {

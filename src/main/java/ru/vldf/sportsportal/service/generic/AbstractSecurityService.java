@@ -1,25 +1,16 @@
 package ru.vldf.sportsportal.service.generic;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
-public abstract class AbstractSecurityService {
+public abstract class AbstractSecurityService extends AbstractMessageService {
 
-    private MessageContainer messages;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
 
-    protected MessageContainer getMessages() {
-        return messages;
-    }
-
-    protected void setMessages(MessageContainer messages) {
-        this.messages = messages;
-    }
 
     protected UserRepository getUserRepository() {
         return userRepository;
@@ -48,7 +39,7 @@ public abstract class AbstractSecurityService {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         } catch (ClassCastException | NullPointerException e) {
-            throw new AuthorizationRequiredException(messages.get("reksoft.demo.auth.filter.credentialsNotFound.message"), e);
+            throw new AuthorizationRequiredException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
 

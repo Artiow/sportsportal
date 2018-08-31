@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "reservation", schema = "lease")
 @AssociationOverrides({
-        @AssociationOverride(name = "pk.order", joinColumns = @JoinColumn(name = "order_id"))
+        @AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))
 })
 @AttributeOverrides({
         @AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))
@@ -21,6 +21,10 @@ public class ReservationEntity implements DomainObject {
     @Basic
     @Column(name = "cost")
     private Integer cost;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private OrderEntity order;
 
 
     public ReservationEntity() {
@@ -44,13 +48,21 @@ public class ReservationEntity implements DomainObject {
         this.cost = cost;
     }
 
-    @Transient
     public OrderEntity getOrder() {
-        return pk.getOrder();
+        return order;
     }
 
     public void setOrder(OrderEntity order) {
-        pk.setOrder(order);
+        this.order = order;
+    }
+
+    @Transient
+    public PlaygroundEntity getPlayground() {
+        return pk.getPlayground();
+    }
+
+    public void setPlayground(PlaygroundEntity playground) {
+        pk.setPlayground(playground);
     }
 
     @Transient

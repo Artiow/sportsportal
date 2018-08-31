@@ -7,33 +7,36 @@ alter table lease.playground
 
 create table lease.order
 (
-  id            serial    not null
+  id          serial    not null
     constraint order_pk
     primary key,
 
-  customer_id   integer   not null
+  customer_id integer   not null
     constraint order_customer_id_fk
     references common."user",
 
-  playground_id integer   not null
-    constraint order_playground_id_fk
-    references lease.playground,
-
-  cost          integer   not null,
-  paid          boolean   not null default false,
-  datetime      timestamp not null,
-  expiration    timestamp
+  cost        integer   not null,
+  paid        boolean   not null default false,
+  datetime    timestamp not null,
+  expiration  timestamp
 );
 
 create table lease.reservation
 (
-  order_id integer   not null
+  order_id      integer   not null
     constraint reservation_order_id_fk
     references lease.order,
 
-  datetime timestamp not null,
-  cost     integer   not null,
+  playground_id integer   not null
+    constraint reservation_playground_id_fk
+    references lease.playground,
+
+  datetime      timestamp not null,
+  cost          integer   not null,
 
   constraint reservation_pk
-  primary key (order_id, datetime)
+  primary key (playground_id, datetime)
 );
+
+create unique index user_login_uindex
+  on lease.reservation (order_id, playground_id, datetime);

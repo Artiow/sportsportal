@@ -18,7 +18,7 @@ const DEFAULT_SUCCESSFUL_REDIRECT = '/home';
 function ajaxRegistration(userData, errorHandler) {
     $.ajax({
         type: 'POST',
-        url: '/api/user/register',
+        url: '/api/auth/register',
         contentType: 'application/json;charset=UTF-8',
         data: JSON.stringify(userData),
         success: function (data, textStatus, jqXHR) {
@@ -47,7 +47,7 @@ function ajaxLogin(login, password, errorHandler) {
 
     $.ajax({
         type: 'GET',
-        url: '/api/user/login',
+        url: '/api/auth/login',
         data: {login: login, password: password},
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {

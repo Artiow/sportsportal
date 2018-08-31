@@ -10,6 +10,22 @@ import java.time.LocalTime;
 @Component
 public class JavaTimeMapper {
 
+    public LocalDate toLocalDate(Timestamp timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+
+        return timestamp.toLocalDateTime().toLocalDate();
+    }
+
+    public Timestamp toTimestamp(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+
+        return Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN));
+    }
+
     public LocalTime toLocalTime(Timestamp timestamp) {
         if (timestamp == null) {
             return null;

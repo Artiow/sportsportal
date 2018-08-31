@@ -15,24 +15,24 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
+public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
-    public abstract D get(Integer id) throws
+    D get(Integer id) throws
             ResourceNotFoundException;
 
-    public abstract Integer create(D t) throws
+    Integer create(D t) throws
             ResourceCannotCreateException;
 
-    public abstract void update(Integer id, D t) throws
+    void update(Integer id, D t) throws
             ResourceNotFoundException,
             ResourceCannotUpdateException,
             ResourceOptimisticLockException;
 
-    public abstract void delete(Integer id) throws
+    void delete(Integer id) throws
             ResourceNotFoundException;
 
 
-    public static class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
+    class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
 
         private String searchString;
         private SingularAttribute<? super E, String> attribute;
@@ -68,7 +68,7 @@ public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D 
     }
 
 
-    public static class PageDivider {
+    class PageDivider {
 
         private Integer LIMIT = 150;
         private Integer pageSize;
@@ -85,9 +85,9 @@ public abstract class AbstractCRUDService<E extends AbstractIdentifiedEntity, D 
 
             if (!def) {
                 if (pageSize == null) {
-                    throw new IllegalArgumentException("Page size must not be null! If you want to set the default value, set \"pageNum\" to null also.");
+                    throw new IllegalArgumentException("Page size must not be null! If you want to set the default value, set page index to null also.");
                 } else if (pageNum == null) {
-                    throw new IllegalArgumentException("Page index must not be null! If you want to set the default value, set \"pageSize\" to null also.");
+                    throw new IllegalArgumentException("Page index must not be null! If you want to set the default value, set page size to null also.");
                 } else if (pageSize > LIMIT) {
                     throw new IllegalArgumentException("Page size must not be more than the limit value! ");
                 } else if (pageSize < 1) {
