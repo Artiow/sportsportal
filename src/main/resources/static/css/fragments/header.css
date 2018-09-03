@@ -1,0 +1,38 @@
+header.header-main {
+    background-color: #24292e;
+    min-height: 60px;
+}
+
+header.header-main a {
+    color: #dddddd;
+}
+
+header.header-main .fa {
+    margin-right: 5px;
+}
+
+header.header-main a:hover {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+header.header-main h3 {
+    font-size: 20px;
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 20px;
+}
+
+header.header-main h6 {
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 10px;
+}
+
+header h3 i.fa-home {
+    margin-right: 5px;
+}
+
+header .button-login {
+    font-size: 21px;
+    float: right;
+    margin-top: 14px;
+}

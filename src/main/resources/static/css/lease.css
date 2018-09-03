@@ -1,0 +1,10 @@
+@import "fragments/header.css";
+
+main.container.container-lease {
+    margin-top: 25px;
+}
+
+main.container.container-lease .card-deck {
+    margin: 0;
+    padding: 0;
+}
