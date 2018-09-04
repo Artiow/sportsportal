@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 public class TokenService implements Clock {
@@ -40,18 +41,20 @@ public class TokenService implements Clock {
         this.issuer = issuer;
     }
 
-    @Value("${jwt.sign}")
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
 
     /**
-     * Secret key Base64 encoding.
+     * Secret key Base64 generate and encoding.
      */
     @PostConstruct
     private void init() {
-        sign = TextCodec.BASE64.encode(sign);
+        int len = 16; // sign length
+        StringBuilder signBuilder = new StringBuilder(len);
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        for (int i = 0; i < len; i++) {
+            signBuilder.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        sign = TextCodec.BASE64.encode(signBuilder.toString());
     }
 
 

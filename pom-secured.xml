@@ -31,8 +31,8 @@
         <db.url.demo>jdbc:postgresql://185.249.255.73:5432/sportsportal.demo</db.url.demo>
         <db.url.test>jdbc:postgresql://185.249.255.73:5432/sportsportal.test</db.url.test>
 
-        <db.username>xxxxx</db.username>
-        <db.password>xxxxx</db.password>
+        <dbUsername>xxxxx</dbUsername>
+        <dbPassword>xxxxx</dbPassword>
 
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
         <org.postgresql.version>42.2.2</org.postgresql.version>
@@ -173,6 +173,13 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -186,8 +193,8 @@
                 <version>${org.flywaydb.version}</version>
                 <configuration>
                     <url>${db.url.prod}</url>
-                    <user>${db.username}</user>
-                    <password>${db.password}</password>
+                    <user>${dbUsername}</user>
+                    <password>${dbPassword}</password>
                     <locations>filesystem:database/migration</locations>
                     <schemas>
                         <schema>flyway</schema>
@@ -203,8 +210,8 @@
                         <id>demo</id>
                         <configuration>
                             <url>${db.url.demo}</url>
-                            <user>${db.username}</user>
-                            <password>${db.password}</password>
+                            <user>${dbUsername}</user>
+                            <password>${dbPassword}</password>
                             <locations>filesystem:database/migration</locations>
                             <schemas>
                                 <schema>flyway</schema>
@@ -219,8 +226,8 @@
                         <id>test</id>
                         <configuration>
                             <url>${db.url.test}</url>
-                            <user>${db.username}</user>
-                            <password>${db.password}</password>
+                            <user>${dbUsername}</user>
+                            <password>${dbPassword}</password>
                             <locations>filesystem:database/migration</locations>
                             <schemas>
                                 <schema>flyway</schema>
@@ -280,8 +287,8 @@
 
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <username>${db.username}</username>
-                    <password>${db.password}</password>
+                    <username>${dbUsername}</username>
+                    <password>${dbPassword}</password>
                 </configuration>
 
                 <executions>
