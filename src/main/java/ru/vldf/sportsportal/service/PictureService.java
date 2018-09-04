@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.service;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,8 +19,11 @@ import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -109,11 +113,25 @@ public class PictureService extends AbstractMessageService {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setSize(picture.getSize());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
+            Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
                 StandardCopyOption option = StandardCopyOption.REPLACE_EXISTING;
-                Integer newId = pictureRepository.save(pictureEntity).getId();
+                Files.copy(picture.getInputStream(), resolveFilename(newId, null), option);
                 for (PictureSize size : PictureSize.values()) {
-                    Files.copy(picture.getInputStream(), resolveFilename(newId, size), option);
+                    // todo: crop image correctly!
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    ImageIO.write(Scalr.resize(
+                            ImageIO.read(picture.getInputStream()),
+                            Scalr.Method.QUALITY,
+                            Scalr.Mode.AUTOMATIC,
+                            size.getWidth(),
+                            size.getHeight()
+                    ), "jpeg", os);
+                    Files.copy(
+                            new ByteArrayInputStream(os.toByteArray()),
+                            resolveFilename(newId, size),
+                            option
+                    );
                 }
                 return newId;
             } catch (IOException e) {
@@ -164,31 +182,41 @@ public class PictureService extends AbstractMessageService {
      */
     private String getFilename(@NotNull Integer identifier, PictureSize size) {
         return String.format(
-                pattern, (identifier + Optional.ofNullable(size).map(PictureSize::toString).orElse(""))
+                pattern, Optional.ofNullable(size).map((s) -> (identifier + s.toString())).orElse(identifier.toString())
         );
     }
 
     public enum PictureSize {
-        ORIGINAL(null),
-        SMALL("sm"),
-        MIDDLE("md"),
-        LARGE("lg");
+        SMALL("sm", 250, 125),
+        MIDDLE("md", 500, 250),
+        LARGE("lg", 1000, 500);
 
         @JsonValue
         private final String value;
+        private final int height;
+        private final int width;
 
-        PictureSize(String value) {
+        PictureSize(@NotNull String value, int height, int width) {
             this.value = value;
+            this.height = height;
+            this.width = width;
         }
 
-        public static PictureSize fromValue(String value) {
-            if (value == null) return ORIGINAL;
+        public static PictureSize fromValue(@NotNull String value) {
             for (PictureSize v : values()) {
-                if (value.equalsIgnoreCase(v.value)) {
+                if (v.value.equalsIgnoreCase(value)) {
                     return v;
                 }
             }
             throw new IllegalArgumentException();
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public int getWidth() {
+            return width;
         }
 
         @Override

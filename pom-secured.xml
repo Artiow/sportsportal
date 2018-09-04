@@ -34,12 +34,13 @@
         <dbUsername>xxxxx</dbUsername>
         <dbPassword>xxxxx</dbPassword>
 
+        <io.springfox.version>2.9.2</io.springfox.version>
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
+        <org.imgscalr.version>4.2</org.imgscalr.version>
+        <org.flywaydb.version>5.1.1</org.flywaydb.version>
         <org.postgresql.version>42.2.2</org.postgresql.version>
         <org.hibernate.version>5.3.2.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
-        <org.flywaydb.version>5.1.1</org.flywaydb.version>
-        <io.springfox.version>2.9.2</io.springfox.version>
         <org.apache.maven.plugins.version>3.5.1</org.apache.maven.plugins.version>
         <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
     </properties>
@@ -157,6 +158,13 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${io.springfox.version}</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- IMG SCALR -->
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>${org.imgscalr.version}</version>
         </dependency>
 
         <!-- TESTING -->
