@@ -22,9 +22,11 @@ import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -118,17 +120,8 @@ public class PictureService extends AbstractMessageService {
                 StandardCopyOption option = StandardCopyOption.REPLACE_EXISTING;
                 Files.copy(picture.getInputStream(), resolveFilename(newId, null), option);
                 for (PictureSize size : PictureSize.values()) {
-                    // todo: crop image correctly!
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    ImageIO.write(Scalr.resize(
-                            ImageIO.read(picture.getInputStream()),
-                            Scalr.Method.QUALITY,
-                            Scalr.Mode.AUTOMATIC,
-                            size.getWidth(),
-                            size.getHeight()
-                    ), "jpeg", os);
                     Files.copy(
-                            new ByteArrayInputStream(os.toByteArray()),
+                            resizePicture(picture.getInputStream(), size),
                             resolveFilename(newId, size),
                             option
                     );
@@ -163,6 +156,49 @@ public class PictureService extends AbstractMessageService {
 
 
     /**
+     * Returns resized picture.
+     *
+     * @param inputStream {@link InputStream} picture bytes
+     * @param size        {@link PictureSize} size
+     * @return {@link InputStream} resized picture bytes
+     * @throws IOException if something goes wrong
+     */
+    private InputStream resizePicture(InputStream inputStream, PictureSize size) throws IOException {
+        BufferedImage img = ImageIO.read(inputStream);
+        int newWidth = size.getWidth();
+        int newHeight = size.getHeight();
+        double requestedFactor = size.getFactor();
+
+        // calculate resize mode
+        Scalr.Mode mode;
+        double factor = ((double) img.getWidth()) / ((double) img.getHeight());
+        if (factor < requestedFactor) {
+            mode = Scalr.Mode.FIT_TO_WIDTH;
+        } else if (factor > requestedFactor) {
+            mode = Scalr.Mode.FIT_TO_HEIGHT;
+        } else {
+            mode = Scalr.Mode.AUTOMATIC;
+        }
+
+        // resize
+        img = Scalr.resize(img, Scalr.Method.QUALITY, mode, newWidth, newHeight);
+
+        // calculate crop params
+        int xStart, yStart;
+        xStart = (img.getWidth() - newWidth) / 2;
+        xStart = (xStart < 0) ? 0 : xStart;
+        yStart = (img.getHeight() - newHeight) / 2;
+        yStart = (yStart < 0) ? 0 : yStart;
+
+        // crop
+        img = Scalr.crop(img, xStart, yStart, newWidth, newHeight);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(img, "jpeg", outputStream);
+        return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    /**
      * Resolve picture path.
      *
      * @param identifier {@link Integer} picture identifier
@@ -193,13 +229,15 @@ public class PictureService extends AbstractMessageService {
 
         @JsonValue
         private final String value;
-        private final int height;
         private final int width;
+        private final int height;
+        private final double factor;
 
         PictureSize(@NotNull String value, int height, int width) {
             this.value = value;
-            this.height = height;
             this.width = width;
+            this.height = height;
+            this.factor = ((double) this.width) / ((double) this.height);
         }
 
         public static PictureSize fromValue(@NotNull String value) {
@@ -211,12 +249,16 @@ public class PictureService extends AbstractMessageService {
             throw new IllegalArgumentException();
         }
 
+        public int getWidth() {
+            return width;
+        }
+
         public int getHeight() {
             return height;
         }
 
-        public int getWidth() {
-            return width;
+        public double getFactor() {
+            return factor;
         }
 
         @Override
