@@ -1,4 +1,5 @@
 $(function () {
+    $('body').hide();
     $('#logout').on("click", ajaxLogout);
     ajaxVerify(localStorage.getItem('userURL'), function (data) {
         $('#login').empty()
@@ -7,7 +8,7 @@ $(function () {
             .append(data.name).append(' ')
             .append(data.surname).append(' ')
             .append(data.patronymic);
-        $('body').fadeIn(0);
+        $('body').show();
     }, function (error) {
         $('#login')
             .empty()
@@ -15,6 +16,6 @@ $(function () {
         $('#full-name').empty()
             .append('Ошибка: ')
             .append(error.message);
-        $('body').fadeIn(0);
+        $('body').show();
     });
 });
