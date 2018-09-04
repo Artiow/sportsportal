@@ -49,7 +49,7 @@ public class PictureController {
     @ApiOperation("получить ресурс")
     public ResponseEntity<Resource> download(@PathVariable int id, HttpServletRequest request)
             throws ResourceNotFoundException, ResourceFileNotFoundException {
-        Resource resource = pictureService.get(id);
+        Resource resource = pictureService.get(id, null);
         MediaType contentType;
 
         try {
