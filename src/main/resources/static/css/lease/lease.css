@@ -1,4 +1,4 @@
-@import "fragments/header.css";
+@import "../fragments/header.css";
 
 main.container.container-lease {
     margin-top: 25px;

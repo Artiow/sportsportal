@@ -1,6 +1,11 @@
 const NO_IMAGE_URL = "/img/no-image-sm.jpg";
 
-const NOT_FOUND_CARD_LIST_COMPONENT = "";
+const NOT_FOUND_CARD_LIST_COMPONENT =
+    "<div class=\"col-xs-12 col-sm-12 mb-12\">\n" +
+    "<div class=\"alert alert-primary\">\n" +
+    "Ничего не найдено!\n" +
+    "</div>\n" +
+    "</div>\n";
 
 /**
  * @param {number} rate
@@ -49,29 +54,99 @@ function compCard(playground) {
 }
 
 /**
- * @param content {object[]}
+ * @param {object[]} content
+ * @return {string} html
  */
-function compCardList(content) {
-    let result;
+function compCardPanel(content) {
+    let result = "";
     if (content.length > 0) {
         content.forEach(function (item, i, arr) {
             result += compCard(item);
         });
     } else {
-        container.append(NOT_FOUND_CARD_LIST_COMPONENT);
+        result += NOT_FOUND_CARD_LIST_COMPONENT;
     }
+    return result;
+}
+
+/**
+ * @param {object[]} content
+ */
+function renderCardPanel(content) {
+    $('#container-lease-panel').html(compCardPanel(content));
+}
+
+/**
+ * @param {number} number
+ * @param {number} total
+ */
+function renderPagination(number, total) {
+
+}
+
+/**
+ * @param divider {object}
+ * @param successEvent {function(object)}
+ * @param errorHandler {function(object)}
+ */
+function loadPage(divider, successEvent, errorHandler) {
+    $.ajax({
+        type: 'GET',
+        url: '/api/lease/playground/list',
+        contentType: 'application/json;charset=UTF-8',
+        data: {pageSize: divider.pageSize, pageNum: divider.pageNum},
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            console.log('Accepted Data:', data);
+            successEvent(data)
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Accepted Error Data:', jqXHR.responseJSON);
+            errorHandler(jqXHR.responseJSON);
+        }
+    });
+}
+
+const DEFAULT_PAGE_SIZE = 10;
+
+let currentPage = 0;
+
+/**
+ * @param {number} index
+ * @param {function()} callbackfn
+ */
+function renderPage(index, callbackfn) {
+    currentPage = index;
+
+    const queryJson = {
+        pageSize: DEFAULT_PAGE_SIZE,
+        pageNum: index
+    };
+
+    loadPage(queryJson, function (response) {
+        renderCardPanel(response.content);
+        renderPagination(response.pageNumber, response.totalPages);
+        callbackfn();
+    }, function (response) {
+
+    });
 }
 
 $(function () {
-    $('body').hide();
+    const header = $('header.header-main').hide();
     ajaxAuth(function (data) {
         setMainHeader(data.login);
-        $('body').show();
+        header.show();
     }, function () {
         setMainHeader();
-        $('body').show();
+        header.show();
     }, function (error) {
         setMainHeader();
-        $('body').show();
+        header.show();
+    });
+
+    const container = $('main.container.container-lease').hide();
+    renderPage(0, function () {
+        container.show();
     });
 });
