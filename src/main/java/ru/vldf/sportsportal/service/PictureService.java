@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
+import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
+import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
+import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.generic.AbstractMessageService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
@@ -46,6 +49,9 @@ public class PictureService extends AbstractMessageService {
 
     private Path pictureDirectory;
     private PictureRepository pictureRepository;
+    private PictureSizeRepository pictureSizeRepository;
+
+    private PictureSizeMapper pictureSizeMapper;
 
     @Autowired
     public void setMessages(MessageContainer messages) {
@@ -57,6 +63,15 @@ public class PictureService extends AbstractMessageService {
         this.pictureRepository = pictureRepository;
     }
 
+    @Autowired
+    public void setPictureSizeRepository(PictureSizeRepository pictureSizeRepository) {
+        this.pictureSizeRepository = pictureSizeRepository;
+    }
+
+    @Autowired
+    public void setPictureSizeMapper(PictureSizeMapper pictureSizeMapper) {
+        this.pictureSizeMapper = pictureSizeMapper;
+    }
 
     @PostConstruct
     public void setFileStorageLocation() {
@@ -118,7 +133,8 @@ public class PictureService extends AbstractMessageService {
             try {
                 StandardCopyOption option = StandardCopyOption.REPLACE_EXISTING;
                 Files.copy(picture.getInputStream(), resolveFilename(newId, null), option);
-                for (PictureSize size : PictureSize.values()) {
+                for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
+                    PictureSize size = pictureSizeMapper.toSize(sizeEntity);
                     Files.copy(
                             resizePicture(picture.getInputStream(), size),
                             resolveFilename(newId, size),
@@ -144,9 +160,9 @@ public class PictureService extends AbstractMessageService {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
         } else {
             pictureRepository.deleteById(id);
-            for (PictureSize size : PictureSize.values()) {
+            for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
                 try {
-                    Files.delete(resolveFilename(id, size));
+                    Files.delete(resolveFilename(id, pictureSizeMapper.toSize(sizeEntity)));
                 } catch (IOException ignored) {
                 }
             }
@@ -222,30 +238,25 @@ public class PictureService extends AbstractMessageService {
         );
     }
 
-    public enum PictureSize {
-        SMALL("sm", 500, 250),
-        MIDDLE("md", 800, 600),
-        LARGE("lg", 1280, 1024);
+
+    public static class PictureSize {
 
         private final String value;
-        private final int width;
-        private final int height;
+        private final short width;
+        private final short height;
         private final double factor;
 
-        PictureSize(@NotNull String value, int width, int height) {
+
+        public PictureSize(@NotNull String value, short width, short height) {
             this.value = value;
             this.width = width;
             this.height = height;
             this.factor = ((double) this.width) / ((double) this.height);
         }
 
-        public static PictureSize fromValue(@NotNull String value) {
-            for (PictureSize v : values()) {
-                if (v.value.equalsIgnoreCase(value)) {
-                    return v;
-                }
-            }
-            throw new IllegalArgumentException();
+
+        public String getValue() {
+            return value;
         }
 
         public int getWidth() {
@@ -262,7 +273,7 @@ public class PictureService extends AbstractMessageService {
 
         @Override
         public String toString() {
-            return value;
+            return getValue();
         }
     }
 }
