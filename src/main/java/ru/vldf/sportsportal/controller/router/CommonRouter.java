@@ -26,7 +26,7 @@ public class CommonRouter {
 
     @GetMapping("/home")
     public ModelAndView home() {
-        return new ModelAndView("lease/lease")
+        return new ModelAndView("home")
                 .addObject("header_title_text", "ЛИЧНЫЙ КАБИНЕТ")
                 .addObject("header_title_href", "/home")
                 .addObject("header_back_text", "НА ГЛАВНУЮ")

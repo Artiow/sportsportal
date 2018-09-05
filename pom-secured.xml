@@ -41,7 +41,8 @@
         <org.postgresql.version>42.2.2</org.postgresql.version>
         <org.hibernate.version>5.3.2.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
-        <org.apache.maven.plugins.version>3.5.1</org.apache.maven.plugins.version>
+        <org.apache.maven.plugins.compiler.version>3.5.1</org.apache.maven.plugins.compiler.version>
+        <org.apache.maven.plugins.resources.version>3.1.0</org.apache.maven.plugins.resources.version>
         <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
     </properties>
 
@@ -194,6 +195,20 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${org.apache.maven.plugins.resources.version}</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
+
             <!-- FLYWAY MAVEN PLUGIN -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
@@ -251,7 +266,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${org.apache.maven.plugins.version}</version>
+                <version>${org.apache.maven.plugins.compiler.version}</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
