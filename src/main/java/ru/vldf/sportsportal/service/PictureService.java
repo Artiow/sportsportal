@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.service;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -171,6 +170,7 @@ public class PictureService extends AbstractMessageService {
 
         // calculate resize mode
         Scalr.Mode mode;
+        Scalr.Method quality = Scalr.Method.ULTRA_QUALITY;
         double factor = ((double) img.getWidth()) / ((double) img.getHeight());
         if (factor < requestedFactor) {
             mode = Scalr.Mode.FIT_TO_WIDTH;
@@ -181,7 +181,7 @@ public class PictureService extends AbstractMessageService {
         }
 
         // resize
-        img = Scalr.resize(img, Scalr.Method.QUALITY, mode, newWidth, newHeight);
+        img = Scalr.resize(img, quality, mode, newWidth, newHeight);
 
         // calculate crop params
         int xStart, yStart;
@@ -223,17 +223,16 @@ public class PictureService extends AbstractMessageService {
     }
 
     public enum PictureSize {
-        SMALL("sm", 250, 125),
-        MIDDLE("md", 500, 250),
-        LARGE("lg", 1000, 500);
+        SMALL("sm", 500, 250),
+        MIDDLE("md", 800, 600),
+        LARGE("lg", 1280, 1024);
 
-        @JsonValue
         private final String value;
         private final int width;
         private final int height;
         private final double factor;
 
-        PictureSize(@NotNull String value, int height, int width) {
+        PictureSize(@NotNull String value, int width, int height) {
             this.value = value;
             this.width = width;
             this.height = height;
