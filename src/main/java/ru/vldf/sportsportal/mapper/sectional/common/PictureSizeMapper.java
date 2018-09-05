@@ -10,7 +10,11 @@ import ru.vldf.sportsportal.service.PictureService;
 public interface PictureSizeMapper extends AbstractDictionaryMapper<PictureSizeEntity, PictureSizeDTO> {
 
     default PictureService.PictureSize toSize(PictureSizeEntity entity) {
-        return new PictureService.PictureSize(entity.getCode(), entity.getWidth(), entity.getHeight());
+        if (entity == null) {
+            return null;
+        } else {
+            return new PictureService.PictureSize(entity.getCode(), entity.getWidth(), entity.getHeight());
+        }
     }
 
     default PictureSizeEntity merge(PictureSizeEntity acceptor, PictureSizeEntity donor) {

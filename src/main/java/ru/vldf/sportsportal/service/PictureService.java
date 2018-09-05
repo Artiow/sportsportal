@@ -86,21 +86,26 @@ public class PictureService extends AbstractMessageService {
 
 
     /**
-     * Returns picture by id.
+     * Returns picture by id and size code.
      *
-     * @param id   {@link Integer} resource identifier
-     * @param size {@link PictureSize} resource size
+     * @param id       {@link Integer} resource identifier
+     * @param sizeCode {@link String} resource size code
      * @return picture {@link Resource}
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk
      */
     @Transactional(readOnly = true)
-    public Resource get(@NotNull Integer id, PictureSize size) throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
+        } else if ((sizeCode != null) && !pictureSizeRepository.existsByCode(sizeCode)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
-                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), size).toUri());
+                Resource resource = new UrlResource(resolveFilename(
+                        pictureRepository.getOne(id).getId(),
+                        pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))
+                ).toUri());
                 if (resource.exists()) {
                     return resource;
                 } else {

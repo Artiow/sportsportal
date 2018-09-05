@@ -16,7 +16,7 @@ import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletContext;
 import java.io.IOException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
@@ -28,7 +28,14 @@ public class PictureController {
 
     private static final Logger logger = LoggerFactory.getLogger(PictureController.class);
 
+    private ServletContext context;
+
     private PictureService pictureService;
+
+    @Autowired
+    public void setContext(ServletContext context) {
+        this.context = context;
+    }
 
     @Autowired
     public void setPictureService(PictureService pictureService) {
@@ -39,26 +46,23 @@ public class PictureController {
     /**
      * Download picture by id.
      *
-     * @param id      {@link Integer} picture identifier
-     * @param request {@link HttpServletRequest} http request
+     * @param id {@link Integer} picture identifier
      * @return picture {@link Resource}
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk
      */
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
-    public ResponseEntity<Resource> download(@PathVariable int id, HttpServletRequest request)
+    public ResponseEntity<Resource> download(@PathVariable int id, @RequestParam(name = "size", required = false) String size)
             throws ResourceNotFoundException, ResourceFileNotFoundException {
-        Resource resource = pictureService.get(id, null);
+        Resource resource = pictureService.get(id, size);
         MediaType contentType;
-
         try {
-            contentType = MediaType.parseMediaType(request.getServletContext().getMimeType(resource.getFile().getAbsolutePath()));
+            contentType = MediaType.parseMediaType(context.getMimeType(resource.getFile().getAbsolutePath()));
         } catch (IOException e) {
             contentType = MediaType.APPLICATION_JSON;
             logger.info("Could Not Determine Requested File Type.");
         }
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(resource.getFilename()))
                 .contentType(contentType)
