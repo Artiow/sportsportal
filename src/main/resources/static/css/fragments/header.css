@@ -27,12 +27,18 @@ header.header-main h6 {
     margin-bottom: 10px;
 }
 
-header h3 i.fa-home {
-    margin-right: 5px;
+header.header-main ul.auth-block {
+    text-align: right;
+    margin-bottom: 0;
 }
 
-header .button-login {
-    font-size: 21px;
+header.header-main ul.auth-block li.auth {
     float: right;
-    margin-top: 14px;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+header.header-main ul.auth-block li.auth a {
+    display: block;
+    text-align: left;
 }

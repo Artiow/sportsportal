@@ -13,7 +13,8 @@
     <link href="../static/libs/css/font-awesome-4.7.0.min.css" th:href="@{/libs/css/font-awesome-4.7.0.min.css}"
           rel="stylesheet">
 
-    <script src="../static/js/ajax.js" th:src="@{/js/ajax.js}"></script>
+    <script src="../static/js/generic/ajax.js" th:src="@{/js/generic/ajax.js}"></script>
+    <script src="../static/js/fragments/header.js" th:src="@{/js/fragments/header.js}"></script>
     <script src="../static/js/home.js" th:src="@{/js/home.js}"></script>
     <link href="../static/css/home.css" th:href="@{/css/home.css}"
           rel="stylesheet">
@@ -23,11 +24,7 @@
 <main class="container container-home">
     <div class="row">
         <div class="col-md-12">
-            <h1 class="display-4" id="fullname">NAME SURNAME PATRONYMIC</h1>
-            <div class="btn-group">
-                <a class="btn btn-outline-primary btn-lg disabled" id="nickname">nickname</a>
-                <a class="btn btn-outline-danger btn-lg" id="logout">выйти</a>
-            </div>
+            <h1 id="name">NAME SURNAME PATRONYMIC</h1>
         </div>
     </div>
 </main>

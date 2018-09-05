@@ -24,6 +24,17 @@
                     <small th:text="${header_back_text}">BACK</small>
                 </a></h6>
             </div>
+            <ul class="auth-block offset-md-6 col-md-3">
+                <li id="auth-failed" class="auth">
+                    <a href="/login"><i class="fa fa-sign-in"></i>ВОЙТИ</a>
+                </li>
+                <li id="auth-succeed" class="auth">
+                    <a href="/home"><i class="fa fa-user"></i>
+                        <span id="header-nickname">NICKNAME</span>
+                    </a>
+                    <a id="header-logout" href="/logout"><i class="fa fa-sign-out"></i>ВЫЙТИ</a>
+                </li>
+            </ul>
         </div>
     </div>
 </header>

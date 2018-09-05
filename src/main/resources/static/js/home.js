@@ -1,20 +1,14 @@
 $(function () {
     $('body').hide();
-    $('#logout').on("click", ajaxLogout);
-    ajaxVerify(localStorage.getItem('userURL'), function (data) {
-        $('#nickname').empty()
-            .append(data.login);
-        $('#fullname').empty()
+    ajaxAuth(function (data) {
+        setMainHeader(data.login);
+        $('#name').empty()
             .append(data.name).append(' ')
             .append(data.surname).append(' ')
             .append(data.patronymic);
         $('body').show();
     }, function (error) {
-        $('#nickname').empty()
-            .remove();
-        $('#fullname').empty()
-            .append('Ошибка: ')
-            .append(error.message);
-        $('body').show();
+        localStorage.setItem('redirect', window.location.href);
+        window.location.replace(DEFAULT_FAIL_REDIRECT);
     });
 });

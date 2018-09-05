@@ -1,7 +1,13 @@
 const token = localStorage.getItem('token');
 const userURL = localStorage.getItem('userURL');
 if ((token !== null) && (userURL !== null)) {
-    window.location.replace(DEFAULT_SUCCESSFUL_REDIRECT);
+    ajaxAuth(function (data) {
+        window.location.replace(DEFAULT_SUCCESSFUL_REDIRECT);
+    }, function (data) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userURL');
+        window.location.replace(DEFAULT_FAIL_REDIRECT);
+    })
 }
 
 $(function () {
