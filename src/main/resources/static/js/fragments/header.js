@@ -8,7 +8,10 @@ function setMainHeader(login) {
     if (login) {
         login = login.charAt(0).toUpperCase() + login.slice(1);
         $('#header-nickname').text(login);
-        $('#header-logout').on("click", ajaxLogout);
+        $('#header-logout').on("click", function () {
+            event.preventDefault();
+            ajaxLogout();
+        });
         succeedBlock.show();
     } else {
         failedBlock.show();

@@ -7,8 +7,9 @@ $(function () {
             .append(data.surname).append(' ')
             .append(data.patronymic);
         $('body').show();
+    }, function () {
+        defaultFailedAuthorizationRedirect();
     }, function (error) {
-        localStorage.setItem('redirect', window.location.href);
-        window.location.replace(DEFAULT_FAIL_REDIRECT);
+        defaultFailedAuthorizationRedirect();
     });
 });

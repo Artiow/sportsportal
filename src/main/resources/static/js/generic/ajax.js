@@ -5,6 +5,14 @@
 const DEFAULT_FAIL_REDIRECT = '/login';
 
 /**
+ * Redirect in case of failed authorization.
+ */
+function defaultFailedAuthorizationRedirect() {
+    localStorage.setItem('redirect', window.location.href);
+    window.location.replace(DEFAULT_FAIL_REDIRECT);
+}
+
+/**
  * Default redirect in case of successful logging.
  * @type {string}
  */
@@ -72,14 +80,15 @@ function ajaxLogin(login, password, errorHandler) {
 /**
  * Logging and getting user data by storied token and userURL.
  * @param {function(object)} successEvent - function that is called in case of successful authentication.
+ * @param {function()} failEvent - function that is called in case of failed authentication.
  * @param {function(object)} errorHandler - error handler
  */
-function ajaxAuth(successEvent, errorHandler) {
+function ajaxAuth(successEvent, failEvent, errorHandler) {
     const token = localStorage.getItem('token');
     const userURL = localStorage.getItem('userURL');
     if ((token === null) || (userURL === null)) {
-        localStorage.setItem('redirect', window.location.href);
-        window.location.replace(DEFAULT_FAIL_REDIRECT);
+        console.log('Credentials Not Found!');
+        failEvent();
     } else {
         $.ajax({
             type: 'GET',

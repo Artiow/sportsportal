@@ -36,7 +36,7 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     private String phone;
 
     @NotNull(groups = FieldCheck.class)
-    @Min(value = 1, groups = FieldCheck.class)
+    @Min(value = 0, groups = FieldCheck.class)
     @Max(value = 10, groups = FieldCheck.class)
     private Integer rate;
 
