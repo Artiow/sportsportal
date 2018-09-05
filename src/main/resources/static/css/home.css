@@ -1,5 +1,7 @@
-body .container .row {
-    margin-top: 50px
+@import "fragments/header.css";
+
+main.container.container-home {
+    margin-top: 25px;
 }
 
 body .container .row .btn-group {

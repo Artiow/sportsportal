@@ -8,6 +8,8 @@ import java.util.Collection;
 @NoRepositoryBean
 public interface AbstractWordbookRepository<T extends AbstractWordbookEntity> extends AbstractIdentifiedRepository<T> {
 
+    boolean existsByCode(String code);
+
     Collection<T> findAllByCode(String code);
 
     T findByCode(String code);

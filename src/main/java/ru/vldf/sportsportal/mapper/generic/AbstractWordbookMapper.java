@@ -12,4 +12,10 @@ public interface AbstractWordbookMapper<E extends AbstractWordbookEntity, D exte
     default String toString(D dto) {
         return dto.getCode();
     }
+
+    default E merge(E acceptor, E donor) {
+        acceptor.setCode(donor.getCode());
+        acceptor.setName(donor.getName());
+        return acceptor;
+    }
 }

@@ -23,11 +23,13 @@ function ajaxRegistration(userData, errorHandler) {
         data: JSON.stringify(userData),
         success: function (data, textStatus, jqXHR) {
             const userURL = jqXHR.getResponseHeader("Location");
+
             console.log('Accepted User URL:', userURL);
             localStorage.setItem('userURL', userURL);
             window.location.replace(DEFAULT_FAIL_REDIRECT);
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error. Status:', textStatus);
             errorHandler(jqXHR.responseJSON);
         }
     })
@@ -61,6 +63,7 @@ function ajaxLogin(login, password, errorHandler) {
             window.location.replace(redirect);
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error. Status:', textStatus);
             errorHandler(jqXHR.responseJSON);
         }
     })
@@ -68,23 +71,22 @@ function ajaxLogin(login, password, errorHandler) {
 
 /**
  * Logging and getting user data by storied token and userURL.
- *
- * @param {string} securedURL - requested secured URL
- * @param {function(object)} successEvent - function that is called in case of successful verification.
+ * @param {function(object)} successEvent - function that is called in case of successful authentication.
  * @param {function(object)} errorHandler - error handler
  */
-function ajaxVerify(securedURL, successEvent, errorHandler) {
+function ajaxAuth(successEvent, errorHandler) {
     const token = localStorage.getItem('token');
-    if ((token === null) || (securedURL === null)) {
+    const userURL = localStorage.getItem('userURL');
+    if ((token === null) || (userURL === null)) {
         localStorage.setItem('redirect', window.location.href);
         window.location.replace(DEFAULT_FAIL_REDIRECT);
     } else {
         $.ajax({
             type: 'GET',
-            url: securedURL,
+            url: userURL,
             dataType: 'json',
             beforeSend: function (jqXHR, settings) {
-                console.log('Setting the Authorization Header:', token);
+                console.log('Using Authorization Header:', token);
                 jqXHR.setRequestHeader('Authorization', token);
             },
             success: function (data, textStatus, jqXHR) {
@@ -92,6 +94,7 @@ function ajaxVerify(securedURL, successEvent, errorHandler) {
                 successEvent(data)
             },
             error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error. Status:', textStatus);
                 errorHandler(jqXHR.responseJSON);
             }
         })

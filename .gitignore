@@ -8,9 +8,6 @@
 /webapps/
 /target/
 
-### Secure Properties ###
-application-secure.properties
-
 ### Maven ###
 /.mvn/
 pom.xml

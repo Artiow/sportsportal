@@ -1,6 +1,7 @@
 truncate table
 common.role,
 common.picture,
+common.picture_size,
 common."user",
 common.authority,
 lease.sport,

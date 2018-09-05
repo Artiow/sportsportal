@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
+@TestPropertySource("classpath:application-test.properties")
 public class PlaygroundMapperTests {
 
     private PlaygroundMapper playgroundMapper;
