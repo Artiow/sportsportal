@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.controller.api;
+package ru.vldf.sportsportal.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

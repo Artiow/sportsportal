@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
@@ -88,6 +89,12 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleHttpMessageNotReadableException(AuthorizationRequiredException ex) {
         return warnDTO(ex, "Unexpected Unauthorized Access Attempt.");
+    }
+
+    @ExceptionHandler({NoHandlerFoundException.class, HandlerNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDTO handleNoHandlerFoundException(Exception ex) {
+        return warnDTO(ex, "No Handler Found For Request.");
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
