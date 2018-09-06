@@ -1,4 +1,4 @@
-const NO_IMAGE_URL = "/img/no-image-sm.jpg";
+const NO_IMAGE_URL = "/resources/img/no-image-sm.jpg";
 
 const NOT_FOUND_CARD_LIST_COMPONENT =
     "<div class=\"col-xs-12 col-sm-12 mb-12\">\n" +
@@ -35,7 +35,7 @@ function compRate(rate) {
  */
 function compCard(playground) {
     const photoURLs = playground.photoURLs;
-    const photoURL = (photoURLs.length > 0) ? (photoURLs[0] + "?size=sm") : NO_IMAGE_URL;
+    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + "?size=sm") : NO_IMAGE_URL);
     return "<div class=\"col-xs-12 col-sm-6 mb-4\">\n" +
         "<div class=\"card\">\n" +
         "<img class=\"card-img\" src=\"" + photoURL + "\">\n" +
@@ -92,7 +92,7 @@ function renderPagination(number, total) {
 function loadPage(divider, successEvent, errorHandler) {
     $.ajax({
         type: 'GET',
-        url: '/api/lease/playground/list',
+        url: '/api/leaseapi/playground/list',
         contentType: 'application/json;charset=UTF-8',
         data: {pageSize: divider.pageSize, pageNum: divider.pageNum},
         dataType: "json",
@@ -128,7 +128,7 @@ function renderPage(index, callbackfn) {
         renderPagination(response.pageNumber, response.totalPages);
         callbackfn();
     }, function (response) {
-
+        callbackfn();
     });
 }
 

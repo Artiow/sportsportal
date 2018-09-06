@@ -1,0 +1,42 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org"-->
+      <!--lang="en">-->
+<!--<head>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>HEADER</title>-->
+    <!--<script src="../../static/libs/js/jquery-3.3.1.min.js"></script>-->
+    <!--<script src="../../static/libs/js/bootstrap-4.1.3.min.js"></script>-->
+    <!--<link href="../../static/libs/css/bootstrap-4.1.3.min.css" rel="stylesheet">-->
+    <!--<link href="../../static/libs/css/font-awesome-4.7.0.min.css" rel="stylesheet">-->
+    <!--<link href="../../static/css/fragments/header.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash;/*@thymesVar id="header_title_href" type="String"*/&ndash;&gt;-->
+<!--&lt;!&ndash;/*@thymesVar id="header_title_text" type="String"*/&ndash;&gt;-->
+<!--&lt;!&ndash;/*@thymesVar id="header_back_href" type="String"*/&ndash;&gt;-->
+<!--&lt;!&ndash;/*@thymesVar id="header_back_text" type="String"*/&ndash;&gt;-->
+<!--<header class="header-main" th:fragment="header">-->
+    <!--<div class="container">-->
+        <!--<div class="row">-->
+            <!--<div class="col-md-3">-->
+                <!--<h3><a href="#" th:href="${header_title_href}" th:text="${header_title_text}">TITLE</a></h3>-->
+                <!--<h6><a href="#" th:href="${header_back_href}"><i class="fa fa-angle-double-left"></i>-->
+                    <!--<small th:text="${header_back_text}">BACK</small>-->
+                <!--</a></h6>-->
+            <!--</div>-->
+            <!--<ul class="auth-block offset-md-6 col-md-3">-->
+                <!--<li id="auth-failed" class="auth">-->
+                    <!--<a href="/login"><i class="fa fa-sign-in"></i>ВОЙТИ</a>-->
+                <!--</li>-->
+                <!--<li id="auth-succeed" class="auth">-->
+                    <!--<a href="/home"><i class="fa fa-user"></i>-->
+                        <!--<span id="header-nickname">NICKNAME</span>-->
+                    <!--</a>-->
+                    <!--<a id="header-logout" href="/logout"><i class="fa fa-sign-out"></i>ВЫЙТИ</a>-->
+                <!--</li>-->
+            <!--</ul>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</header>-->
+<!--</body>-->
+<!--</html>-->
