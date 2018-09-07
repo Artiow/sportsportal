@@ -9,23 +9,23 @@ publicRoutePaths:
 protectedRoutePaths:
   ADMIN:
     - pattern: /*/*
-      httpMethod: PUT
-    - pattern: /*/*/*
       httpMethod: POST
+    - pattern: /*/*/*
+      httpMethod: PUT
     - pattern: /*/*/*
       httpMethod: DELETE
 
   USER:
     - pattern: /user
-      httpMethod: PUT
-    - pattern: /user/*
       httpMethod: POST
+    - pattern: /user/*
+      httpMethod: PUT
     - pattern: /user/*
       httpMethod: DELETE
     - pattern: /picture
-      httpMethod: PUT
-    - pattern: /picture/*
       httpMethod: POST
+    - pattern: /picture/*
+      httpMethod: PUT
     - pattern: /picture/*
       httpMethod: DELETE
     - pattern: /leaseapi/playground/*/reserve
