@@ -1,0 +1,32 @@
+# secure routing
+
+publicRoutePaths:
+  - pattern: /auth/login
+    httpMethod: GET
+  - pattern: /auth/register
+    httpMethod: POST
+
+protectedRoutePaths:
+  ADMIN:
+    - pattern: /*/*
+      httpMethod: PUT
+    - pattern: /*/*/*
+      httpMethod: POST
+    - pattern: /*/*/*
+      httpMethod: DELETE
+
+  USER:
+    - pattern: /user
+      httpMethod: PUT
+    - pattern: /user/*
+      httpMethod: POST
+    - pattern: /user/*
+      httpMethod: DELETE
+    - pattern: /picture
+      httpMethod: PUT
+    - pattern: /picture/*
+      httpMethod: POST
+    - pattern: /picture/*
+      httpMethod: DELETE
+    - pattern: /leaseapi/playground/*/reserve
+      httpMethod: POST

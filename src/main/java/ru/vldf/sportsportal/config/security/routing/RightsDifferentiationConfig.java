@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.config.security.routing;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,15 +11,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.web.util.matcher.*;
 
 import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.util.*;
 
 @Configuration
 public class RightsDifferentiationConfig implements RightsDifferentiationRouter {
 
-    @Value("classpath:routing.xml")
+    @Value("classpath:secure-routing.yaml")
     private Resource routeResource;
 
     private RequestMatcher publicRequests;
@@ -28,11 +27,11 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
     @Autowired
     @PostConstruct
     private void setRouteParams() throws Exception {
-        Unmarshaller unmarshaller = routeUnmarshaller();
-        RouteParams params = (RouteParams) unmarshaller.unmarshal(routeResource.getInputStream());
+        ObjectMapper mapper = yamlMapper();
+        RouteParams params = mapper.readValue(routeResource.getInputStream(), RouteParams.class);
 
         // public path config
-        List<RoutePath> publicPaths = params.getPublicRoutePathsList().getRoutePathList();
+        List<RoutePath> publicPaths = params.getPublicRoutePaths();
         List<RequestMatcher> publicRequests = new ArrayList<>(publicPaths.size());
         for (RoutePath path : publicPaths) {
             publicRequests.add(new AntPathRequestMatcher(path.getPattern(), path.getHttpMethod()));
@@ -40,16 +39,16 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
         this.publicRequests = new OrRequestMatcher(publicRequests);
 
         // protected path config
-        Map<String, RouteParams.RoutePathList> protectedPaths = params.getProtectedRoutePathsMap();
-        Set<Map.Entry<String, RouteParams.RoutePathList>> protectedPathEntrySet = protectedPaths.entrySet();
+        Map<String, List<RoutePath>> protectedPaths = params.getProtectedRoutePaths();
+        Set<Map.Entry<String, List<RoutePath>>> protectedPathEntrySet = protectedPaths.entrySet();
         this.routeMap = new HashMap<>(protectedPathEntrySet.size());
-        for (Map.Entry<String, RouteParams.RoutePathList> entry : protectedPaths.entrySet()) {
-            List<RoutePath> rolePaths = entry.getValue().getRoutePathList();
+        for (Map.Entry<String, List<RoutePath>> entry : protectedPaths.entrySet()) {
+            List<RoutePath> rolePaths = entry.getValue();
             List<RequestMatcher> roleRequests = new ArrayList<>(rolePaths.size());
             for (RoutePath path : rolePaths) {
                 roleRequests.add(new AntPathRequestMatcher(path.getPattern(), path.getHttpMethod()));
             }
-            this.routeMap.put(entry.getKey(), new OrRequestMatcher(roleRequests));
+            this.routeMap.put(entry.getKey().toUpperCase(), new OrRequestMatcher(roleRequests));
         }
 
         // protected path config
@@ -61,10 +60,8 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
 
 
     @Bean
-    public Unmarshaller routeUnmarshaller() throws JAXBException {
-        return JAXBContext.newInstance(
-                RouteParams.class, RouteParams.RoutePathList.class, RoutePath.class
-        ).createUnmarshaller();
+    public ObjectMapper yamlMapper() {
+        return new ObjectMapper(new YAMLFactory());
     }
 
     @Override

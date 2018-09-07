@@ -1,56 +1,29 @@
 package ru.vldf.sportsportal.config.security.routing;
 
-import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@XmlRootElement(name = "routeParams")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class RouteParams {
 
-    @XmlElement(name = "publicRoutePaths")
-    private RoutePathList publicRoutePathsList;
-
-    @XmlElementWrapper(name = "protectedRoutePaths")
-    private Map<String, RoutePathList> protectedRoutePathsMap = new HashMap<>();
+    private List<RoutePath> publicRoutePaths;
+    private Map<String, List<RoutePath>> protectedRoutePaths;
 
 
-    public RoutePathList getPublicRoutePathsList() {
-        return publicRoutePathsList;
+    public List<RoutePath> getPublicRoutePaths() {
+        return publicRoutePaths;
     }
 
-    public RouteParams setPublicRoutePathsList(RoutePathList publicRoutePathsList) {
-        this.publicRoutePathsList = publicRoutePathsList;
+    public RouteParams setPublicRoutePaths(List<RoutePath> publicRoutePaths) {
+        this.publicRoutePaths = publicRoutePaths;
         return this;
     }
 
-    public Map<String, RoutePathList> getProtectedRoutePathsMap() {
-        return protectedRoutePathsMap;
+    public Map<String, List<RoutePath>> getProtectedRoutePaths() {
+        return protectedRoutePaths;
     }
 
-    public RouteParams setProtectedRoutePathsMap(Map<String, RoutePathList> protectedRoutePathsMap) {
-        this.protectedRoutePathsMap = protectedRoutePathsMap;
+    public RouteParams setProtectedRoutePaths(Map<String, List<RoutePath>> protectedRoutePaths) {
+        this.protectedRoutePaths = protectedRoutePaths;
         return this;
-    }
-
-
-    @XmlType(name = "routePathList")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class RoutePathList {
-
-        @XmlElement(name = "routePath")
-        private List<RoutePath> routePathList = new ArrayList<>();
-
-
-        public List<RoutePath> getRoutePathList() {
-            return routePathList;
-        }
-
-        public RoutePathList setRoutePathList(List<RoutePath> routePathList) {
-            this.routePathList = routePathList;
-            return this;
-        }
     }
 }
