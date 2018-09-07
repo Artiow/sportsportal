@@ -41,9 +41,10 @@
         <org.postgresql.version>42.2.2</org.postgresql.version>
         <org.hibernate.version>5.3.2.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
+        <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
         <org.apache.maven.plugins.compiler.version>3.5.1</org.apache.maven.plugins.compiler.version>
         <org.apache.maven.plugins.resources.version>3.1.0</org.apache.maven.plugins.resources.version>
-        <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
+        <com.fasterxml.jackson.dataformat.yaml>2.9.6</com.fasterxml.jackson.dataformat.yaml>
     </properties>
 
     <dependencies>
@@ -145,6 +146,13 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>${io.jsonwebtoken.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${com.fasterxml.jackson.dataformat.yaml}</version>
         </dependency>
 
         <!-- SWAGGER -->
