@@ -5,7 +5,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.security.web.util.matcher.*;
@@ -27,8 +26,10 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
     @Autowired
     @PostConstruct
     private void setRouteParams() throws Exception {
-        ObjectMapper mapper = yamlMapper();
-        RouteParams params = mapper.readValue(routeResource.getInputStream(), RouteParams.class);
+
+        // yaml mapper init
+        RouteParams params = new ObjectMapper(new YAMLFactory())
+                .readValue(routeResource.getInputStream(), RouteParams.class);
 
         // public path config
         List<RoutePath> publicPaths = params.getPublicRoutePaths();
@@ -48,7 +49,7 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
             for (RoutePath path : rolePaths) {
                 roleRequests.add(new AntPathRequestMatcher(path.getPattern(), path.getHttpMethod()));
             }
-            this.routeMap.put(entry.getKey().toUpperCase(), new OrRequestMatcher(roleRequests));
+            this.routeMap.put(entry.getKey(), new OrRequestMatcher(roleRequests));
         }
 
         // protected path config
@@ -58,11 +59,6 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
         );
     }
 
-
-    @Bean
-    public ObjectMapper yamlMapper() {
-        return new ObjectMapper(new YAMLFactory());
-    }
 
     @Override
     public Map<String, RequestMatcher> getSecurityRouteMap() {
