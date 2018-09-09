@@ -19,14 +19,25 @@ import java.util.Optional;
 @Controller
 public class RouterController implements ErrorController {
 
+    /**
+     * Returns redirect to swagger page from associated paths.
+     *
+     * @return redirect to swagger page
+     */
     @GetMapping({"/", "/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
     public String toSwagger() {
         return "redirect:/swagger-ui.html";
     }
 
+    /**
+     * Unexpected error handler.
+     *
+     * @param request {@link HttpServletRequest} that contains error status
+     * @throws Exception that corresponds to an error
+     */
     @ResponseBody
     @GetMapping("/error")
-    public ErrorDTO handleError(HttpServletRequest request) throws Exception {
+    public void handleError(HttpServletRequest request) throws Exception {
         HttpStatus status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
                 .map(Object::toString)
                 .map(Integer::valueOf)
@@ -50,6 +61,11 @@ public class RouterController implements ErrorController {
         }
     }
 
+    /**
+     * Returns error api path.
+     *
+     * @return {@link String} error path
+     */
     @Override
     public String getErrorPath() {
         return "/error";
