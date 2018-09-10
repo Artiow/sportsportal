@@ -1,0 +1,59 @@
+.Login {
+    max-width: 330px;
+    margin: 5.5% auto 0;
+    padding: 15px 15px;
+}
+
+.Login .panel {
+    text-align: center;
+}
+
+.Login .panel.panel-top {
+    margin-bottom: 25px;
+}
+
+.Login .panel.panel-bottom {
+    margin-top: 15px;
+}
+
+.Login .panel h2 {
+    color: #444444;
+    font-size: 18px;
+}
+
+.Login .panel p {
+    color: #777777;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.Login .form-control {
+    height: 45px;
+    font-size: 14px;
+    border: 1px solid #d4d4d4;
+    background: #f7f7f7;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.Login .btn.btn-primary {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f0ad4e;
+    border-color: #d99a4a;
+}
+
+.Login .forgot {
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.Login .forgot a {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}

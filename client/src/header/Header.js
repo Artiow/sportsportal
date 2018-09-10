@@ -35,7 +35,6 @@ class MainBlock extends Component {
 }
 
 class AuthBlock extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
