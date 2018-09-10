@@ -1,18 +1,18 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
-import './Application.css';
+import '../../node_modules/jquery/dist/jquery.min';
+import '../../node_modules/popper.js/dist/umd/popper';
+import '../../node_modules/bootstrap/dist/js/bootstrap.min';
+import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../../node_modules/font-awesome/css/font-awesome.min.css';
+import Header from '../header/Header';
+import Main from '../main/Main';
 
 class Application extends Component {
     render() {
         return (
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo"/>
-                    <h1 className="App-title">Welcome to React</h1>
-                </header>
-                <p className="App-intro">
-                    To get started, edit <code>src/boot/Application.js</code> and save to reload.
-                </p>
+            <div>
+                <Header/>
+                <Main/>
             </div>
         );
     }
