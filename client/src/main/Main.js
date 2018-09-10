@@ -1,13 +1,51 @@
 import React, {Component} from "react";
+import axios from 'axios';
 import './Main.css';
+import noImageSm from '../util/img/no-image-sm.jpg';
 
 class Main extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            content: null,
+            pageNumber: null,
+            totalPages: null,
+            filter: {
+                pageNum: 0,
+                pageSize: 6
+            }
+        };
+
+        this.query();
+    }
+
+    updateData() {
+
+    }
+
+    query() {
+        const self = this;
+        axios.get('http://localhost:8080/leaseapi/playground/list', {params: this.state.filter})
+            .then(function (response) {
+                console.log('Response:', response);
+                const data = response.data;
+                self.setState({
+                    content: data.content,
+                    pageNumber: data.pageNumber,
+                    totalPages: data.totalPages
+                });
+            })
+            .catch(function (error) {
+                console.log('Error:', error);
+            })
+    }
+
     render() {
         return (
             <main className="Main container">
                 <div className="row">
                     <PlaygroundFilter/>
-                    <PageablePlaygroundContainer content={{}}/>
+                    <PageablePlaygroundContainer content={this.state.content}/>
                 </div>
             </main>
         );
@@ -26,7 +64,8 @@ function PlaygroundFilter(props) {
 
 function PageablePlaygroundContainer(props) {
     const content = props.content;
-    if (content.length > 0) {
+    console.log('New Content:', content);
+    if ((content !== null) && (content.length > 0)) {
         return (
             <div className="col-xs-12 col-sm-8">
                 <PlaygroundContainer content={content}/>
@@ -61,7 +100,7 @@ function PlaygroundContainer(props) {
     let container = [];
     if (content.length > 0) {
         content.forEach(function (item, i, arr) {
-            container.push(<PlaygroundCard playground={item}/>);
+            container.push(<PlaygroundCard key={i} playground={item}/>);
         });
     } else {
         container.push(
@@ -76,7 +115,7 @@ function PlaygroundContainer(props) {
 function PlaygroundCard(props) {
     const playground = props.playground;
     const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : '%PUBLIC_URL%/resources/img/no-image-sm');
+    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImageSm);
     return (
         <div className="col-xs-12 col-sm-6 mb-4">
             <div className="card">
@@ -100,39 +139,29 @@ function PlaygroundCard(props) {
     );
 }
 
-class Rate extends Component {
-    constructor(props) {
-        super(props);
+function Rate(props) {
+    const rate = props.rate;
+    let stars = [];
+
+    let i = 0;
+    while (i <= (rate - 2)) {
+        stars.push(<i key={i} className="fa fa-star"/>);
+        i += 2;
+    }
+    if (i < rate) {
+        stars.push(<i key={i} className="fa fa-star-half-o"/>);
+        i += 2;
+    }
+    while (i < 10) {
+        stars.push(<i key={i} className="fa fa-star-o"/>);
+        i += 2;
     }
 
-    static buildRate(rate) {
-
-    }
-
-    render() {
-        const rate = this.props.rate;
-        let stars = [];
-        let i = 0;
-
-        while (i <= (rate - 2)) {
-            stars.push(<i className="fa fa-star"/>);
-            i += 2;
-        }
-        if (i < rate) {
-            stars.push(<i className="fa fa-star-half-o"/>);
-            i += 2;
-        }
-        while (i < 10) {
-            stars.push(<i className="fa fa-star-o"/>);
-            i += 2;
-        }
-
-        return (
-            <h6 className="card-title">
-                <small className="card-rate">{stars}</small>
-            </h6>
-        );
-    }
+    return (
+        <h6 className="card-title">
+            <small className="card-rate">{stars}</small>
+        </h6>
+    );
 }
 
 export default Main;
