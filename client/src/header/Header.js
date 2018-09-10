@@ -7,7 +7,7 @@ class Header extends Component {
             <header className="Header">
                 <div className="container">
                     <div className="row">
-                        <MainBlock titleLabel={'TITLE'}/>
+                        <MainBlock titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
                         <AuthBlock/>
                     </div>
                 </div>
@@ -21,10 +21,10 @@ class MainBlock extends Component {
         return (
             <div className="col-md-3">
                 <h3>
-                    <a href="#">{this.props.titleLabel}</a>
+                    <a href={this.props.titleHref}>{this.props.titleLabel}</a>
                 </h3>
                 <h6>
-                    <a href="#">
+                    <a href="/">
                         <i className="fa fa-angle-double-left"/>
                         <small>НА ГЛАВНУЮ</small>
                     </a>
@@ -55,10 +55,10 @@ class AuthBlock extends Component {
         if (this.state.isAuthorized) {
             return (
                 <div className="auth">
-                    <a href="#"><i className="fa fa-user"/>
+                    <a href="/home"><i className="fa fa-user"/>
                         <span>{this.state.nickname}</span>
                     </a>
-                    <a href="#">
+                    <a href="/logout">
                         <i className="fa fa-sign-out"/>
                         <span>ВЫЙТИ</span>
                     </a>
@@ -67,7 +67,7 @@ class AuthBlock extends Component {
         } else {
             return (
                 <div className="auth">
-                    <a href="#"><i className="fa fa-sign-in"/>ВОЙТИ</a>
+                    <a href="/login"><i className="fa fa-sign-in"/>ВОЙТИ</a>
                 </div>
             );
         }
