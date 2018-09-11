@@ -3,7 +3,6 @@ import InputMask from 'react-input-mask';
 import 'jquery';
 import './Registration.css';
 
-// todo: merge InputField and PhoneInputField in one class!
 class Registration extends Component {
     render() {
         return (

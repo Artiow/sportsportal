@@ -4,17 +4,17 @@ import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
 public class TokenDTO implements DataTransferObject {
 
-    private String accessToken;
+    private String tokenHash;
     private String tokenType;
-    private LoginDTO info;
+    private LoginDTO userInfo;
 
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getTokenHash() {
+        return tokenHash;
     }
 
-    public TokenDTO setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public TokenDTO setTokenHash(String tokenHash) {
+        this.tokenHash = tokenHash;
         return this;
     }
 
@@ -27,12 +27,12 @@ public class TokenDTO implements DataTransferObject {
         return this;
     }
 
-    public LoginDTO getInfo() {
-        return info;
+    public LoginDTO getUserInfo() {
+        return userInfo;
     }
 
-    public TokenDTO setInfo(LoginDTO info) {
-        this.info = info;
+    public TokenDTO setUserInfo(LoginDTO userInfo) {
+        this.userInfo = userInfo;
         return this;
     }
 }

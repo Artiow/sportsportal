@@ -119,9 +119,9 @@ public class UserService extends AbstractMessageService {
         }
 
         return new TokenDTO()
-                .setInfo(loginMapper.toLoginDTO(user))
+                .setUserInfo(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
-                .setAccessToken(securityService.login(loginMapper.toIdentifiedUser(user)));
+                .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
     }
 
     /**
