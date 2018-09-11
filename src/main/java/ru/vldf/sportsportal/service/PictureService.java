@@ -8,6 +8,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
@@ -147,6 +148,8 @@ public class PictureService extends AbstractMessageService {
                     );
                 }
                 return newId;
+            } catch (MaxUploadSizeExceededException e) {
+                throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
             } catch (IOException e) {
                 throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"), e);
             }

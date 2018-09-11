@@ -135,7 +135,6 @@ public class UserService extends AbstractMessageService {
      */
     @Transactional(readOnly = true)
     public TokenDTO verify(String accessToken) throws UsernameNotFoundException, JwtException {
-        // todo: debug!
         final String tokenType = securityService.getTokenType();
         if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
             throw new BadCredentialsException(mGet("sportsportal.auth.filter.credentialsNotValid.message"));

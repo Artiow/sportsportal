@@ -20,10 +20,6 @@ class Main extends Component {
         this.query();
     }
 
-    updateData() {
-
-    }
-
     query() {
         const self = this;
         axios.get('http://localhost:8080/leaseapi/playground/list', {params: this.state.filter})
@@ -128,7 +124,7 @@ function PlaygroundCard(props) {
                     <Rate className="card-title" rate={playground.rate}/>
                     <p className="card-text">
                         <span className="badge badge-dark">
-                            {'от' + ((playground.cost / 100).toFixed())}<i className="fa fa-rub"/>/час
+                            {'от ' + ((playground.cost / 100).toFixed())}<i className="fa fa-rub"/>/час
                         </span>
                     </p>
                     <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
