@@ -4,6 +4,7 @@ import InputMask from 'react-input-mask';
 import 'jquery';
 import './Registration.css';
 
+// todo: look validation here: https://github.com/Artiow/SPORTSPORTAL/commit/7795e03bd69da1390050d7c9b3b3db166ecf105a#diff-cd3c7ffc29eedb5555cda9c8b564a457
 class Registration extends Component {
     constructor(props) {
         super(props);
@@ -48,35 +49,28 @@ class InputField extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorMessage: ''
+            error: false,
+            errorMessage: null
         };
     }
 
     render() {
-        const input = [];
-        const mask = this.props.mask;
-        const maskChar = this.props.maskChar;
-        if ((mask !== null) && (maskChar !== null)) {
-            input.push(
-                <InputMask type="text" id={this.props.identifier} className="form-control"
-                           placeholder={this.props.placeholder}
-                           maskChar={maskChar} mask={mask}
-                           required="required"/>
-            )
-        } else {
-            input.push(
-                <input type="text" id={this.props.identifier} className="form-control"
-                       placeholder={this.props.placeholder}
-                       required="required"/>
-            )
-        }
-        input.push(<div className="invalid-feedback">{this.state.errorMessage}</div>);
         return (
             <div className="form-row">
                 <label htmlFor={this.props.identifier} className="col-sm-3 col-form-label">
                     {this.props.placeholder}
                 </label>
-                <div className="col-sm-9">{input}</div>
+                <div className="col-sm-9">
+                    <InputMask type="text" id={this.props.identifier}
+                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
+                               placeholder={this.props.placeholder}
+                               maskChar={this.props.maskChar} mask={this.props.mask}
+                               required="required"/>
+                    <div style={(!this.state.error) ? {display: 'none'} : {display: 'block'}}
+                         className="invalid-feedback">
+                        {this.state.errorMessage}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -86,7 +80,8 @@ class DoubleInputField extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorMessage: ''
+            error: false,
+            errorMessage: null
         };
     }
 
@@ -98,7 +93,8 @@ class DoubleInputField extends Component {
                         {this.props.firstPlaceholder}
                     </label>
                     <div className="col-sm-9">
-                        <input type="password" id={this.props.firstIdentifier} className="form-control"
+                        <input type="password" id={this.props.firstIdentifier}
+                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
                                placeholder={this.props.firstPlaceholder}
                                required="required"/>
                     </div>
@@ -106,10 +102,14 @@ class DoubleInputField extends Component {
                 <div className="form-row">
                     <label htmlFor={this.props.secondIdentifier} className="col-sm-3 col-form-label"/>
                     <div className="col-sm-9">
-                        <input type="password" id={this.props.secondIdentifier} className="form-control"
+                        <input type="password" id={this.props.secondIdentifier}
+                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
                                placeholder={this.props.secondPlaceholder}
                                required="required"/>
-                        <div className="invalid-feedback">{this.state.errorMessage}</div>
+                        <div style={(!this.state.error) ? {display: 'none'} : {display: 'block'}}
+                             className="invalid-feedback">
+                            {this.state.errorMessage}
+                        </div>
                     </div>
                 </div>
             </div>
