@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import './Login.css';
-import axios from "axios/index";
+import axios from "axios";
 
 class Login extends Component {
     constructor(props) {
@@ -11,9 +11,26 @@ class Login extends Component {
             passwordValue: '',
             errorMessage: ''
         };
+
+        this.queryVerify();
     }
 
-    query() {
+    queryVerify() {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken !== null) {
+            axios
+                .get('http://localhost:8080/auth/verify', {params: {accessToken: accessToken}})
+                .then(function (response) {
+                    console.log('Response:', response);
+                    const data = response.data;
+                    localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
+                    localStorage.setItem('user', data.userInfo);
+                    window.location.replace('/');
+                })
+        }
+    }
+
+    queryLogin() {
         const self = this;
         axios
             .get('http://localhost:8080/auth/login', {
@@ -40,7 +57,7 @@ class Login extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        this.query();
+        this.queryLogin();
     }
 
     handleInputChange(event) {

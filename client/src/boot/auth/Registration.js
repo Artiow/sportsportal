@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import InputMask from 'react-input-mask';
 import 'jquery';
 import './Registration.css';
@@ -23,7 +24,7 @@ class Registration extends Component {
                             <div className="col-sm-6 offset-sm-3">
                                 <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
                                 <div className="login-link-box">
-                                    <a className="btn btn-link btn-sm" href="#">Авторизация</a>
+                                    <Link className="btn btn-link btn-sm" to="/login">Авторизация</Link>
                                 </div>
                             </div>
                         </div>

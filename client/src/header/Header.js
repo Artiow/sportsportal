@@ -1,37 +1,35 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import './Header.css';
+import axios from "axios/index";
 
-class Header extends Component {
-    render() {
-        return (
-            <header className="Header">
-                <div className="container">
-                    <div className="row">
-                        <MainBlock titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
-                        <AuthBlock/>
-                    </div>
+function Header(props) {
+    return (
+        <header className="Header">
+            <div className="container">
+                <div className="row">
+                    <MainBlock titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
+                    <AuthBlock/>
                 </div>
-            </header>
-        );
-    }
+            </div>
+        </header>
+    );
 }
 
-class MainBlock extends Component {
-    render() {
-        return (
-            <div className="col-md-3">
-                <h3>
-                    <a href={this.props.titleHref}>{this.props.titleLabel}</a>
-                </h3>
-                <h6>
-                    <a href="/">
-                        <i className="fa fa-angle-double-left"/>
-                        <small>НА ГЛАВНУЮ</small>
-                    </a>
-                </h6>
-            </div>
-        );
-    }
+function MainBlock(props) {
+    return (
+        <div className="col-md-3">
+            <h3>
+                <a href={props.titleHref}>{props.titleLabel}</a>
+            </h3>
+            <h6>
+                <a href="/">
+                    <i className="fa fa-angle-double-left"/>
+                    <small>НА ГЛАВНУЮ</small>
+                </a>
+            </h6>
+        </div>
+    );
 }
 
 class AuthBlock extends Component {
@@ -41,36 +39,73 @@ class AuthBlock extends Component {
             isAuthorized: false,
             nickname: null
         };
+
+        this.queryVerify();
     }
 
-    render() {
-        return (
-            <div className="AuthBlock offset-md-6 col-md-3">
-                {this.content()}
-            </div>
-        );
+    handleLogout(event) {
+        event.preventDefault();
+        this.queryLogout()
     }
 
-    content() {
+    queryLogout() {
+        localStorage.clear();
+        this.setState({
+            isAuthorized: false,
+            nickname: null
+        });
+    }
+
+    queryVerify() {
+        const self = this;
+        const accessToken = localStorage.getItem('token');
+        if (accessToken !== null) {
+            axios
+                .get('http://localhost:8080/auth/verify', {params: {accessToken: accessToken}})
+                .then(function (response) {
+                    console.log('Response:', response);
+                    const data = response.data;
+                    const userInfo = data.userInfo;
+                    const login = userInfo.login;
+                    localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
+                    localStorage.setItem('user', userInfo);
+                    const nickname = login.charAt(0).toUpperCase() + login.slice(1);
+                    self.setState({
+                        isAuthorized: true,
+                        nickname: nickname
+                    })
+                })
+        }
+    }
+
+    authContent() {
         if (this.state.isAuthorized) {
             return (
                 <div className="auth">
-                    <a href="/home"><i className="fa fa-user"/>
+                    <Link to="/home"><i className="fa fa-user"/>
                         <span>{this.state.nickname}</span>
-                    </a>
-                    <a href="/logout">
+                    </Link>
+                    <Link to="/logout" onClick={this.handleLogout.bind(this)}>
                         <i className="fa fa-sign-out"/>
                         <span>ВЫЙТИ</span>
-                    </a>
+                    </Link>
                 </div>
             );
         } else {
             return (
                 <div className="auth">
-                    <a href="/login"><i className="fa fa-sign-in"/>ВОЙТИ</a>
+                    <Link to="/login"><i className="fa fa-sign-in"/>ВОЙТИ</Link>
                 </div>
             );
         }
+    }
+
+    render() {
+        return (
+            <div className="AuthBlock offset-md-6 col-md-3">
+                {this.authContent()}
+            </div>
+        );
     }
 }
 

@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import {Link} from 'react-router-dom';
 import axios from 'axios';
 import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
@@ -119,7 +120,7 @@ function PlaygroundCard(props) {
     return (
         <div className="col-xs-12 col-sm-6 mb-4">
             <div className="card">
-                <img className="card-img" src={photoURL}/>
+                <img className="card-img" src={photoURL} alt={playground.name}/>
                 <div className="card-body">
                     <h4 className="card-title">
                         <small>{playground.name}</small>
@@ -130,9 +131,9 @@ function PlaygroundCard(props) {
                             {'от' + ((playground.cost / 100).toFixed())}<i className="fa fa-rub"/>/час
                         </span>
                     </p>
-                    <a href={"/lease/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
+                    <Link to={"/lease/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
                         Подробнее...
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

@@ -1,9 +1,0 @@
-@import "../fragments/header.css";
-
-main.container.container-lease {
-    margin-top: 25px;
-}
-
-main.container.container-lease .card .card-title {
-    margin-bottom: 8px;
-}

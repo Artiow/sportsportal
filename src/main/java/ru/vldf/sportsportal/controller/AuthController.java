@@ -34,6 +34,8 @@ public class AuthController {
      * @param login    {@link String} users login
      * @param password {@link String} users password
      * @return {@link TokenDTO} token data
+     * @throws UsernameNotFoundException if user not found
+     * @throws JwtException              if could not parse jwt
      */
     @GetMapping("/login")
     @ApiOperation("получить токен")
@@ -43,10 +45,26 @@ public class AuthController {
     }
 
     /**
+     * Returns token by users access token.
+     *
+     * @param accessToken {@link String} users access token
+     * @return {@link TokenDTO} token data
+     * @throws UsernameNotFoundException if user not found
+     * @throws JwtException              if could not parse jwt
+     */
+    @GetMapping("/verify")
+    @ApiOperation("верификация")
+    public TokenDTO verify(@RequestParam String accessToken)
+            throws UsernameNotFoundException, JwtException {
+        return userService.verify(accessToken);
+    }
+
+    /**
      * Register new user.
      *
      * @param userDTO new user data
      * @return new user location
+     * @throws ResourceCannotCreateException if user cannot create
      */
     @PostMapping("/register")
     @ApiOperation("регистрация")
