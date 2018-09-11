@@ -20,13 +20,13 @@ function MainBlock(props) {
     return (
         <div className="col-md-3">
             <h3>
-                <a href={props.titleHref}>{props.titleLabel}</a>
+                <Link to={props.titleHref}>{props.titleLabel}</Link>
             </h3>
             <h6>
-                <a href="/">
+                <Link to="/">
                     <i className="fa fa-angle-double-left"/>
                     <small>НА ГЛАВНУЮ</small>
-                </a>
+                </Link>
             </h6>
         </div>
     );

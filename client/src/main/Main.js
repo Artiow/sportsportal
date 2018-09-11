@@ -131,7 +131,7 @@ function PlaygroundCard(props) {
                             {'от' + ((playground.cost / 100).toFixed())}<i className="fa fa-rub"/>/час
                         </span>
                     </p>
-                    <Link to={"/lease/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
+                    <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
                         Подробнее...
                     </Link>
                 </div>

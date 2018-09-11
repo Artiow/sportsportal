@@ -39,23 +39,21 @@ class InputField extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            identifier: props.identifier,
-            placeholder: props.placeholder
+            errorMessage: ''
         };
     }
 
     render() {
-        const errorMessage = '';
         return (
             <div className="form-row">
-                <label htmlFor={this.state.identifier} className="col-sm-3 col-form-label">
-                    {this.state.placeholder}
+                <label htmlFor={this.props.identifier} className="col-sm-3 col-form-label">
+                    {this.props.placeholder}
                 </label>
                 <div className="col-sm-9">
-                    <input type="text" id={this.state.identifier} className="form-control"
-                           placeholder={this.state.placeholder}
+                    <input type="text" id={this.props.identifier} className="form-control"
+                           placeholder={this.props.placeholder}
                            required="required"/>
-                    <div className="invalid-feedback">{errorMessage}</div>
+                    <div className="invalid-feedback">{this.state.errorMessage}</div>
                 </div>
             </div>
         );
@@ -66,24 +64,22 @@ class PhoneInputField extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            identifier: props.identifier,
-            placeholder: props.placeholder
+            errorMessage: ''
         };
     }
 
     render() {
-        const errorMessage = '';
         return (
             <div className="form-row">
-                <label htmlFor={this.state.identifier} className="col-sm-3 col-form-label">
-                    {this.state.placeholder}
+                <label htmlFor={this.props.identifier} className="col-sm-3 col-form-label">
+                    {this.props.placeholder}
                 </label>
                 <div className="col-sm-9">
-                    <InputMask type="text" id={this.state.identifier} className="form-control"
+                    <InputMask type="text" id={this.props.identifier} className="form-control"
                                maskChar=' ' mask={'+7 (999) 999 99 99'}
-                               placeholder={this.state.placeholder}
+                               placeholder={this.props.placeholder}
                                required="required"/>
-                    <div className="invalid-feedback">{errorMessage}</div>
+                    <div className="invalid-feedback">{this.state.errorMessage}</div>
                 </div>
             </div>
         );
@@ -94,34 +90,30 @@ class DoubleInputField extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id1: props.id1,
-            ph1: props.ph1,
-            id2: props.id2,
-            ph2: props.ph2
+            errorMessage: ''
         };
     }
 
     render() {
-        const errorMessage = '';
         return (
             <div className="form-row-container">
                 <div className="form-row">
-                    <label htmlFor={this.state.id1} className="col-sm-3 col-form-label">
-                        {this.state.ph1}
+                    <label htmlFor={this.props.id1} className="col-sm-3 col-form-label">
+                        {this.props.ph1}
                     </label>
                     <div className="col-sm-9">
-                        <input type="password" id={this.state.id1} className="form-control"
-                               placeholder={this.state.ph1}
+                        <input type="password" id={this.props.id1} className="form-control"
+                               placeholder={this.props.ph1}
                                required="required"/>
                     </div>
                 </div>
                 <div className="form-row">
-                    <label htmlFor={this.state.id2} className="col-sm-3 col-form-label"/>
+                    <label htmlFor={this.props.id2} className="col-sm-3 col-form-label"/>
                     <div className="col-sm-9">
-                        <input type="password" id={this.state.id2} className="form-control"
-                               placeholder={this.state.ph2}
+                        <input type="password" id={this.props.id2} className="form-control"
+                               placeholder={this.props.ph2}
                                required="required"/>
-                        <div className="invalid-feedback">{errorMessage}</div>
+                        <div className="invalid-feedback">{this.state.errorMessage}</div>
                     </div>
                 </div>
             </div>
