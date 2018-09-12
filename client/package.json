@@ -1,6 +1,6 @@
 {
   "name": "sportsportal",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "private": true,
   "dependencies": {
     "react": "^16.5.0",

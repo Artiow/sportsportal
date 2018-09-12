@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
+import {getApiUrl} from '../constants'
+import axios from 'axios';
 import './Login.css';
-import axios from "axios";
 
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loginValue: '',
-            passwordValue: '',
+            login: '',
+            password: '',
             errorMessage: ''
         };
 
@@ -16,31 +17,32 @@ class Login extends Component {
     }
 
     queryVerify() {
+        const url = getApiUrl('/auth/verify');
         const accessToken = localStorage.getItem('token');
         if (accessToken !== null) {
             axios
-                .get('http://localhost:8080/auth/verify', {params: {accessToken: accessToken}})
+                .get(url, {params: {accessToken: accessToken}})
                 .then(function (response) {
-                    console.log('Response:', response);
+                    console.log('Verify Response:', response);
                     const data = response.data;
                     localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
                     localStorage.setItem('user', data.userInfo);
                     window.location.replace('/');
+                })
+                .catch(function (error) {
+                    const response = error.response;
+                    console.log('Verify Error Response:', response);
                 })
         }
     }
 
     queryLogin() {
         const self = this;
+        const url = getApiUrl('/auth/login');
         axios
-            .get('http://localhost:8080/auth/login', {
-                params: {
-                    login: self.state.loginValue,
-                    password: self.state.passwordValue
-                }
-            })
+            .get(url, {params: {login: self.state.login, password: self.state.password}})
             .then(function (response) {
-                console.log('Response:', response);
+                console.log('Login Response:', response);
                 const data = response.data;
                 localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
                 localStorage.setItem('user', data.userInfo);
@@ -48,9 +50,9 @@ class Login extends Component {
             })
             .catch(function (error) {
                 const response = error.response;
-                console.log('Error Response:', response);
+                console.log('Login Error Response:', response);
                 self.setState({
-                    errorMessage: response.data.message
+                    errorMessages: response.data.message
                 });
             })
     }
@@ -63,7 +65,7 @@ class Login extends Component {
     handleInputChange(event) {
         const target = event.target;
         this.setState({
-            [target.name]: target.value
+            [target.id]: target.value
         });
     }
 
@@ -76,12 +78,12 @@ class Login extends Component {
                 </div>
                 <form onSubmit={this.handleSubmit.bind(this)}>
                     <div>
-                        <input type="text" className="form-control" name="loginValue" placeholder="Логин"
-                               required="required" value={this.state.loginValue}
-                               onChange={this.handleInputChange.bind(this)}/>
-                        <input type="password" className="form-control" name="passwordValue" placeholder="Пароль"
-                               required="required" value={this.state.passwordValue}
-                               onChange={this.handleInputChange.bind(this)}/>
+                        <input type="text" className="form-control" id="login" placeholder="Логин"
+                               onChange={this.handleInputChange.bind(this)}
+                               required="required"/>
+                        <input type="password" className="form-control" id="password" placeholder="Пароль"
+                               onChange={this.handleInputChange.bind(this)}
+                               required="required"/>
                     </div>
                     <div>
                         <div className="forgot"><Link to="/registration">Нет аккаунта?</Link></div>

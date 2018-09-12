@@ -3,6 +3,8 @@
 publicRoutePaths:
   - pattern: /auth/login
     httpMethod: GET
+  - pattern: /auth/verify
+    httpMethod: GET
   - pattern: /auth/register
     httpMethod: POST
 

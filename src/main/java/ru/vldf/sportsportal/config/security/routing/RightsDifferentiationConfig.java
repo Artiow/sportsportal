@@ -49,7 +49,10 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
             for (RoutePath path : rolePaths) {
                 roleRequests.add(new AntPathRequestMatcher(path.getPattern(), path.getHttpMethod()));
             }
-            this.routeMap.put(entry.getKey(), new OrRequestMatcher(roleRequests));
+            this.routeMap.put(entry.getKey(), new AndRequestMatcher(
+                    new NegatedRequestMatcher(this.publicRequests),
+                    new OrRequestMatcher(roleRequests))
+            );
         }
 
         // protected path config

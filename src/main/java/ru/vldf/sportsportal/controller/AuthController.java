@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,9 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 @Api(tags = {"Authentication"})
 @RequestMapping("${api-path.common.auth}")
 public class AuthController {
+
+    @Value("${api-path.common.user}")
+    private String userPath;
 
     private UserService userService;
 
@@ -70,6 +74,6 @@ public class AuthController {
     @ApiOperation("регистрация")
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(userService.register(userDTO))).build();
+        return ResponseEntity.created(buildURL(userPath, userService.register(userDTO))).build();
     }
 }

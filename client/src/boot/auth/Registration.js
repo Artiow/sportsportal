@@ -1,17 +1,86 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import InputMask from 'react-input-mask';
-import 'jquery';
+import {Link} from 'react-router-dom';
+import {getApiUrl} from '../constants'
+import axios from "axios/index";
 import './Registration.css';
 
-// todo: look validation here: https://github.com/Artiow/SPORTSPORTAL/commit/7795e03bd69da1390050d7c9b3b3db166ecf105a#diff-cd3c7ffc29eedb5555cda9c8b564a457
 class Registration extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            name: '',
+            surname: '',
+            patronymic: '',
+            address: '',
+            phone: '',
+            login: '',
+            password: '',
+            confirm: '',
+            errorMessage: null,
+            errorMessages: {}
+        }
+    }
+
+    queryRegistration() {
+        const self = this;
+        const p = self.state.phone.trim().split(' ');
+        const validPhoneNumber = (p.length === 5) ? (p[0] + p[1] + p[2] + '-' + p[3] + '-' + p[4]) : ('');
+        const url = getApiUrl('/auth/register');
+        axios
+            .post(url, {
+                name: self.state.name,
+                surname: self.state.surname,
+                patronymic: self.state.patronymic,
+                address: self.state.address,
+                phone: validPhoneNumber,
+                login: self.state.login,
+                password: self.state.password
+            })
+            .then(function (response) {
+                console.log('Registration Response:', response);
+                window.location.replace('/login');
+            })
+            .catch(function (error) {
+                const response = error.response;
+                console.log('Registration Error Response:', response);
+
+                const data = response.data;
+                const message = data.message;
+                const errors = data.errors;
+                if (errors != null) {
+                    self.setState({
+                        errorMessage: message,
+                        errorMessages: errors
+                    });
+                } else {
+                    self.setState({
+                        errorMessage: message
+                    });
+                }
+            })
     }
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({
+            errorMessage: null,
+            errorMessages: {}
+        });
+        if (this.state.password === this.state.confirm) {
+            this.queryRegistration();
+        } else {
+            this.setState({
+                errorMessages: {password: 'Введенные пароли не совпадают!'}
+            });
+        }
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        this.setState({
+            [target.id]: target.value
+        });
     }
 
     render() {
@@ -20,16 +89,33 @@ class Registration extends Component {
                 <div className="container">
                     <form onSubmit={this.handleSubmit.bind(this)}>
                         <h1>Регистрация</h1>
-                        <div className="alert alert-warning"/>
-                        <InputField identifier={'name'} placeholder={'Имя'}/>
-                        <InputField identifier={'surname'} placeholder={'Фамилия'}/>
-                        <InputField identifier={'patronymic'} placeholder={'Отчество'}/>
-                        <InputField identifier={'address'} placeholder={'Адрес'}/>
+                        <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
+                             className="alert alert-warning">
+                            {this.state.errorMessage}
+                        </div>
+                        <InputField identifier={'name'} placeholder={'Имя'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.name}/>
+                        <InputField identifier={'surname'} placeholder={'Фамилия'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.surname}/>
+                        <InputField identifier={'patronymic'} placeholder={'Отчество'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.patronymic}/>
+                        <InputField identifier={'address'} placeholder={'Адрес'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.address}/>
                         <InputField identifier={'phone'} placeholder={'Телефон'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.phone}
                                     maskChar=" " mask="+7 (999) 999 99 99"/>
-                        <InputField identifier={'login'} placeholder={'Логин'}/>
-                        <DoubleInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
-                                          secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}/>
+                        <InputField identifier={'login'} placeholder={'Логин'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.login}/>
+                        <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
+                                            secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
+                                            onChange={this.handleInputChange.bind(this)}
+                                            errorMessage={this.state.errorMessages.password}/>
                         <div className="row">
                             <div className="col-sm-6 offset-sm-3">
                                 <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
@@ -45,76 +131,60 @@ class Registration extends Component {
     }
 }
 
-class InputField extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            error: false,
-            errorMessage: null
-        };
-    }
-
-    render() {
-        return (
-            <div className="form-row">
-                <label htmlFor={this.props.identifier} className="col-sm-3 col-form-label">
-                    {this.props.placeholder}
-                </label>
-                <div className="col-sm-9">
-                    <InputMask type="text" id={this.props.identifier}
-                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
-                               placeholder={this.props.placeholder}
-                               maskChar={this.props.maskChar} mask={this.props.mask}
-                               required="required"/>
-                    <div style={(!this.state.error) ? {display: 'none'} : {display: 'block'}}
-                         className="invalid-feedback">
-                        {this.state.errorMessage}
-                    </div>
+function InputField(props) {
+    const error = ((props.errorMessage != null) && (props.errorMessage !== ''));
+    return (
+        <div className="form-row">
+            <label htmlFor={props.identifier} className="col-sm-3 col-form-label">
+                {props.placeholder}
+            </label>
+            <div className="col-sm-9">
+                <InputMask type="text" id={props.identifier} placeholder={props.placeholder}
+                           className={(!error) ? 'form-control' : 'form-control is-invalid'}
+                           maskChar={props.maskChar} mask={props.mask}
+                           onChange={props.onChange}
+                           required="required"/>
+                <div style={(!error) ? {display: 'none'} : {display: 'block'}}
+                     className="invalid-feedback">
+                    {props.errorMessage}
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+
 }
 
-class DoubleInputField extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            error: false,
-            errorMessage: null
-        };
-    }
-
-    render() {
-        return (
-            <div className="form-row-container">
-                <div className="form-row">
-                    <label htmlFor={this.props.firstIdentifier} className="col-sm-3 col-form-label">
-                        {this.props.firstPlaceholder}
-                    </label>
-                    <div className="col-sm-9">
-                        <input type="password" id={this.props.firstIdentifier}
-                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
-                               placeholder={this.props.firstPlaceholder}
-                               required="required"/>
-                    </div>
+function PasswordInputField(props) {
+    const error = ((props.errorMessage != null) && (props.errorMessage !== ''));
+    return (
+        <div className="form-row-container">
+            <div className="form-row">
+                <label htmlFor={props.firstIdentifier} className="col-sm-3 col-form-label">
+                    {props.firstPlaceholder}
+                </label>
+                <div className="col-sm-9">
+                    <input type="password" id={props.firstIdentifier} placeholder={props.firstPlaceholder}
+                           className={(!error) ? 'form-control' : 'form-control is-invalid'}
+                           onChange={props.onChange}
+                           required="required"/>
                 </div>
-                <div className="form-row">
-                    <label htmlFor={this.props.secondIdentifier} className="col-sm-3 col-form-label"/>
-                    <div className="col-sm-9">
-                        <input type="password" id={this.props.secondIdentifier}
-                               className={(!this.state.error) ? 'form-control' : 'form-control is-invalid'}
-                               placeholder={this.props.secondPlaceholder}
-                               required="required"/>
-                        <div style={(!this.state.error) ? {display: 'none'} : {display: 'block'}}
-                             className="invalid-feedback">
-                            {this.state.errorMessage}
-                        </div>
+            </div>
+            <div className="form-row">
+                <label htmlFor={props.secondIdentifier} className="col-sm-3 col-form-label"/>
+                <div className="col-sm-9">
+                    <input type="password" id={props.secondIdentifier} placeholder={props.secondPlaceholder}
+                           className={(!error) ? 'form-control' : 'form-control is-invalid'}
+                           onChange={props.onChange}
+                           required="required"/>
+                    <div style={(!error) ? {display: 'none'} : {display: 'block'}}
+                         className="invalid-feedback">
+                        {props.errorMessage}
                     </div>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+
 }
 
 export default Registration;

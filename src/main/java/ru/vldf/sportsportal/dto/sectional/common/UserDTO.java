@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
+import ru.vldf.sportsportal.dto.validation.annotations.Login;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ public class UserDTO extends AbstractVersionedDTO {
     private Long version;
 
     @NotNull(groups = FieldCheck.class)
+    @Login(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String login;
 
