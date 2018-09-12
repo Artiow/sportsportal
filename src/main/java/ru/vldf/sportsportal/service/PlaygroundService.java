@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
@@ -81,13 +82,13 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     /**
      * Returns requested page with playgrounds.
      *
-     * @param dividerDTO {@link PageDividerDTO} pagination data
+     * @param filterDTO {@link PlaygroundFilterDTO} filter data
      * @return {@link PageDTO} with {@link PlaygroundShortDTO}
      */
     @Transactional(readOnly = true)
-    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO dividerDTO) {
-        PageDivider divider = new PageDivider(dividerDTO);
-        return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toShortDTO));
+    public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filterDTO) {
+        PlaygroundFilter filter = new PlaygroundFilter(filterDTO);
+        return new PageDTO<>(playgroundRepository.findAll(filter, filter.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
     /**
@@ -254,6 +255,24 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         playgroundRepository.deleteById(id);
     }
 
+
+    public static class PlaygroundFilter extends StringSearcher<PlaygroundEntity> {
+
+        public PlaygroundFilter(StringSearcherDTO dto) {
+            super(dto, PlaygroundEntity_.name);
+        }
+
+        @Override
+        public Predicate toPredicate(Root<PlaygroundEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Collection<Predicate> predicates = new ArrayList<>();
+            Predicate rootPredicate = super.toPredicate(root, query, cb);
+            if (rootPredicate != null) predicates.add(rootPredicate);
+
+            return query
+                    .where(cb.and(predicates.toArray(new Predicate[0])))
+                    .distinct(true).getRestriction();
+        }
+    }
 
     public static class ReservationFilter implements Specification<ReservationEntity> {
 

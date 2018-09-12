@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
@@ -43,13 +43,13 @@ public class PlaygroundController {
     /**
      * Returns requested page with playgrounds for current page divider.
      *
-     * @param divider {@link PageDividerDTO} with pagination params
+     * @param filter {@link PlaygroundFilterDTO} with pagination and filter params
      * @return {@link PageDTO<PlaygroundShortDTO>}
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
-    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO divider) {
-        return playgroundService.getList(divider);
+    public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filter) {
+        return playgroundService.getList(filter);
     }
 
     /**
