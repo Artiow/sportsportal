@@ -26,4 +26,4 @@ insert into lease.playground (id, name, address, phone, rate, opening, closing, 
   (3, 'Площадка-3', 'Адрес-3', '+7(999)999-99-99', 6, '0001-01-01 08:00:00', '0001-01-01 22:00:00', 300000),
   (4, 'Площадка-4', 'Адрес-4', '+7(999)999-99-99', 10, '0001-01-01 08:00:00', '0001-01-01 22:00:00', 190000);
 
-alter sequence common.user_id_seq restart with 5;
+alter sequence lease.playground_id_seq restart with 5;

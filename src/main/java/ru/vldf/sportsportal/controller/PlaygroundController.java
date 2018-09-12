@@ -30,7 +30,7 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 public class PlaygroundController {
 
     @Value("${api-path.lease.order}")
-    private String orderApiPath;
+    private String orderPath;
 
     private PlaygroundService playgroundService;
 
@@ -108,7 +108,7 @@ public class PlaygroundController {
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
     public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(orderApiPath, playgroundService.reserve(id, reservationListDTO))).build();
+        return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
     /**

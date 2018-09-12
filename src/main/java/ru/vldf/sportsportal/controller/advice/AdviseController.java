@@ -72,7 +72,9 @@ public class AdviseController {
         String message = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
         Map<String, String> errors = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            errors.put(((DefaultMessageSourceResolvable) error.getArguments()[0]).getCode(), error.getDefaultMessage());
+            String code = ((DefaultMessageSourceResolvable) error.getArguments()[0]).getCode();
+            if (code.equals("")) code = "class";
+            errors.put(code, error.getDefaultMessage());
         }
 
         return new ErrorMapDTO(warnUUID("Sent Argument Not Valid."), ex.getClass().getName(), message, errors);

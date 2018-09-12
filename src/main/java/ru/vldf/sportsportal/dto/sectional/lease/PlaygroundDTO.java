@@ -1,19 +1,19 @@
 package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
+import ru.vldf.sportsportal.dto.generic.specific.WorkTimeDTO;
 import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
+import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalTime;
 import java.util.List;
 
-public class PlaygroundDTO extends AbstractVersionedDTO {
+@ValidWorkTime(groups = {PlaygroundDTO.CreateCheck.class, PlaygroundDTO.UpdateCheck.class})
+public class PlaygroundDTO extends AbstractVersionedDTO implements WorkTimeDTO {
 
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
@@ -23,15 +23,15 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String name;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 90, groups = FieldCheck.class)
     private String address;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;
 
@@ -131,19 +131,23 @@ public class PlaygroundDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    @Override
     public LocalTime getOpening() {
         return opening;
     }
 
+    @Override
     public PlaygroundDTO setOpening(LocalTime opening) {
         this.opening = opening;
         return this;
     }
 
+    @Override
     public LocalTime getClosing() {
         return closing;
     }
 
+    @Override
     public PlaygroundDTO setClosing(LocalTime closing) {
         this.closing = closing;
         return this;

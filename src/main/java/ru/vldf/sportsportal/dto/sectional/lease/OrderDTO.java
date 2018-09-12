@@ -45,7 +45,6 @@ public class OrderDTO extends AbstractVersionedDTO {
     private PlaygroundLinkDTO playground;
 
     @Valid
-    @NotNull(groups = FieldCheck.class)
     @NotEmpty(groups = FieldCheck.class)
     private List<ReservationDTO> reservations;
 

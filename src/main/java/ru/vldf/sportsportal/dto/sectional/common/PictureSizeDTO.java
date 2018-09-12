@@ -2,10 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractDictionaryDTO;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 public class PictureSizeDTO extends AbstractDictionaryDTO {
 
@@ -14,7 +11,7 @@ public class PictureSizeDTO extends AbstractDictionaryDTO {
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
 
-    @NotNull(groups = CodeCheck.class)
+    @NotBlank(groups = CodeCheck.class)
     @Size(min = 1, max = 45, groups = CodeCheck.class)
     private String code;
 
