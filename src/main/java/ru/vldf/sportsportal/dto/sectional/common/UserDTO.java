@@ -2,13 +2,11 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
+import ru.vldf.sportsportal.dto.validation.annotations.Login;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 public class UserDTO extends AbstractVersionedDTO {
@@ -21,31 +19,32 @@ public class UserDTO extends AbstractVersionedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
+    @Login(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String login;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 90, groups = FieldCheck.class)
     private String password;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
     private String name;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
     private String surname;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
     private String patronymic;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Size(min = 1, max = 90, groups = FieldCheck.class)
     private String address;
 
-    @NotNull(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;
 

@@ -10,6 +10,6 @@ public class PastValidator implements ConstraintValidator<Past, LocalDateTime> {
 
     @Override
     public boolean isValid(LocalDateTime ldt, ConstraintValidatorContext constraintValidatorContext) {
-        return ldt.isBefore(LocalDateTime.now());
+        return ((ldt != null) && ldt.isBefore(LocalDateTime.now()));
     }
 }

@@ -10,6 +10,5 @@
 
 ### Maven ###
 /.mvn/
-pom.xml
 mvnw.cmd
 mvnw

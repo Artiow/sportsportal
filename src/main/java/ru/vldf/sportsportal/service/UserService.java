@@ -21,6 +21,7 @@ import ru.vldf.sportsportal.service.generic.AbstractMessageService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.security.SecurityService;
+import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
@@ -96,8 +97,8 @@ public class UserService extends AbstractMessageService {
     /**
      * Logging user and returns his token.
      *
-     * @param login    - {@link String} users login
-     * @param password - {@link String} users password
+     * @param login    {@link String} users login
+     * @param password {@link String} users password
      * @return {@link TokenDTO} token info
      * @throws UsernameNotFoundException if user not found
      * @throws JwtException              if could not parse jwt
@@ -119,9 +120,41 @@ public class UserService extends AbstractMessageService {
         }
 
         return new TokenDTO()
-                .setInfo(loginMapper.toLoginDTO(user))
+                .setUserInfo(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
-                .setAccessToken(securityService.login(loginMapper.toIdentifiedUser(user)));
+                .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
+    }
+
+    /**
+     * Verify user and returns his token.
+     *
+     * @param accessToken {@link String} access token
+     * @return {@link TokenDTO} token info
+     * @throws UsernameNotFoundException if user not found
+     * @throws JwtException              if could not parse jwt
+     */
+    @Transactional(readOnly = true)
+    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, JwtException {
+        final String tokenType = securityService.getTokenType();
+        if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
+            throw new BadCredentialsException(mGet("sportsportal.auth.filter.credentialsNotValid.message"));
+        } else {
+            IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
+            UserEntity user = userRepository.findById(userDetails.getId()).orElseThrow(
+                    () -> new EntityNotFoundException(mGet("sportsportal.auth.service.userRepository.message"))
+            );
+
+            String login = userDetails.getUsername();
+            String password = userDetails.getPassword();
+            if ((!user.getLogin().equals(login)) || (!user.getPassword().equals(password))) {
+                throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
+            } else {
+                return new TokenDTO()
+                        .setUserInfo(loginMapper.toLoginDTO(user))
+                        .setTokenType(securityService.getTokenType())
+                        .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
+            }
+        }
     }
 
     /**
