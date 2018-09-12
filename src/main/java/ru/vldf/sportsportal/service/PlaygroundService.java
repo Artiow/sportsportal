@@ -9,12 +9,12 @@ import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
+import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -258,19 +258,113 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
     public static class PlaygroundFilter extends StringSearcher<PlaygroundEntity> {
 
-        public PlaygroundFilter(StringSearcherDTO dto) {
+        private Collection<String> featureCodes;
+        private Collection<String> sportCodes;
+        private Timestamp opening;
+        private Timestamp closing;
+        private Integer startCost;
+        private Integer endCost;
+        private Integer minRate;
+
+        public PlaygroundFilter(PlaygroundFilterDTO dto) {
             super(dto, PlaygroundEntity_.name);
+            configureSearchByFeatures(dto);
+            configureSearchBySports(dto);
+            configureSearchByWorkTime(dto);
+            configureSearchByCost(dto);
+            configureSearchByRate(dto);
+        }
+
+        private void configureSearchByFeatures(PlaygroundFilterDTO dto) {
+            Collection<String> featureCodes = dto.getFeatureCodes();
+            if ((featureCodes != null) && (!featureCodes.isEmpty())) {
+                this.featureCodes = new ArrayList<>(featureCodes);
+            }
+        }
+
+        private void configureSearchBySports(PlaygroundFilterDTO dto) {
+            Collection<String> sportCodes = dto.getSportCodes();
+            if ((sportCodes != null) && (!sportCodes.isEmpty())) {
+                this.sportCodes = new ArrayList<>(sportCodes);
+            }
+        }
+
+        private void configureSearchByWorkTime(PlaygroundFilterDTO dto) {
+            LocalTime opening = dto.getOpening();
+            LocalTime closing = dto.getClosing();
+            if ((opening != null) && (closing != null)) {
+                final JavaTimeMapper jtMapper = new JavaTimeMapper();
+                this.opening = jtMapper.toTimestamp(opening);
+                this.closing = jtMapper.toTimestamp(closing);
+            }
+        }
+
+        private void configureSearchByCost(PlaygroundFilterDTO dto) {
+            Integer startCost = dto.getStartCost();
+            Integer endCost = dto.getEndCost();
+            if ((startCost != null) && (endCost != null)) {
+                this.startCost = startCost;
+                this.endCost = endCost;
+            }
+        }
+
+        private void configureSearchByRate(PlaygroundFilterDTO dto) {
+            this.minRate = dto.getMinRate();
         }
 
         @Override
         public Predicate toPredicate(Root<PlaygroundEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             Collection<Predicate> predicates = new ArrayList<>();
             Predicate rootPredicate = super.toPredicate(root, query, cb);
-            if (rootPredicate != null) predicates.add(rootPredicate);
+            if (rootPredicate != null) {
+                predicates.add(rootPredicate);
+            }
+            if (featureCodes != null) {
+                predicates.add(searchByFeaturesPredicate(root, cb));
+            }
+            if (sportCodes != null) {
+                predicates.add(searchBySportsPredicate(root, cb));
+            }
+            if ((opening != null) && (closing != null)) {
+                predicates.add(searchByWorkTimePredicate(root, cb));
+            }
+            if ((startCost != null) && (endCost != null)) {
+                predicates.add(searchByCostPredicate(root, cb));
+            }
+            if (minRate != null) {
+                predicates.add(searchByRatePredicate(root, cb));
+            }
 
             return query
                     .where(cb.and(predicates.toArray(new Predicate[0])))
                     .distinct(true).getRestriction();
+        }
+
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return null; // todo: predicate
+        }
+
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return null; // todo: predicate
+        }
+
+        private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.and(
+                    cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.closing), closing),
+                    cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.opening), opening)
+            );
+        }
+
+        private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            Path<Integer> sought = root.get(PlaygroundEntity_.cost);
+            return cb.and(
+                    cb.greaterThanOrEqualTo(sought, startCost),
+                    cb.lessThanOrEqualTo(sought, endCost)
+            );
+        }
+
+        private Predicate searchByRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.rate), minRate);
         }
     }
 
