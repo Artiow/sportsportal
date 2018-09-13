@@ -2,8 +2,19 @@
     margin-top: 25px;
 }
 
-.Main.container .PlaygroundFilter .card {
+.Main.container .PlaygroundFilter form.card {
     padding: 15px;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-header {
+    padding: 0;
+    background: 0;
+    border: 0;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-header button {
+    text-align: left;
+    width: 100%;
 }
 
 .Main.container .PlaygroundCard .card .card-body h4.card-title {

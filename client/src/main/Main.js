@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
+import {Range} from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import axios from 'axios';
 import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
@@ -62,10 +64,22 @@ class Main extends Component {
 }
 
 class PlaygroundFilter extends Component {
+
+    static MAX_COST = 1000000;
+    updateCostCallback = range => {
+        const MAX = PlaygroundFilter.MAX_COST;
+        this.setState({
+            startCost: (MAX * (range[0] / 100)),
+            endCost: (MAX * (range[1] / 100))
+        });
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             searchString: null,
+            startCost: 0,
+            endCost: PlaygroundFilter.MAX_COST
         }
     }
 
@@ -86,13 +100,31 @@ class PlaygroundFilter extends Component {
     render() {
         return (
             <div className="PlaygroundFilter col-xs-12 col-sm-4 mb-4">
-                <form onSubmit={this.handleSubmit.bind(this)} className="card" style={{minHeight: '500px'}}>
-                    <div className="input-group">
+                <form onSubmit={this.handleSubmit.bind(this)} className="card">
+                    <div className="input-group mb-3">
                         <input id="searchString" onChange={this.handleInputChange.bind(this)}
                                type="text" className="form-control"/>
                         <div className="input-group-append">
                             <button className="btn btn-outline-secondary" type="submit">Найти</button>
                         </div>
+                    </div>
+                    <div>
+                        <h6>Стоимость часа</h6>
+                        <div>
+                            <h6>
+                                <span>от</span>
+                                <span className="badge badge-dark">{(this.state.startCost / 100).toFixed()}<i
+                                    className="fa fa-rub"/>/час</span>
+                            </h6>
+                            <h6>
+                                <span>до</span>
+                                <span className="badge badge-dark">{(this.state.endCost / 100).toFixed()}<i
+                                    className="fa fa-rub"/>/час</span>
+                            </h6>
+                        </div>
+                        <Range allowCross={false} defaultValue={[0, 100]}
+                               onBeforeChange={this.updateCostCallback}
+                               onAfterChange={this.updateCostCallback}/>
                     </div>
                 </form>
             </div>
