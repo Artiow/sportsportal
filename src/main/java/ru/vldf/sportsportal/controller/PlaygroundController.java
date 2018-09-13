@@ -20,6 +20,8 @@ import ru.vldf.sportsportal.service.generic.*;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collection;
 import java.util.Date;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
@@ -43,13 +45,35 @@ public class PlaygroundController {
     /**
      * Returns requested page with playgrounds for current page divider.
      *
-     * @param filter {@link PlaygroundFilterDTO} with pagination and filter params
+     * @param opening      {@link PlaygroundFilterDTO} opening field
+     * @param closing      {@link PlaygroundFilterDTO} closing field
+     * @param featureCodes {@link PlaygroundFilterDTO} featureCodes field
+     * @param sportCodes   {@link PlaygroundFilterDTO} sportCodes field
+     * @param startCost    {@link PlaygroundFilterDTO} startCost field
+     * @param endCost      {@link PlaygroundFilterDTO} endCost field
+     * @param minRate      {@link PlaygroundFilterDTO} minRate field
      * @return {@link PageDTO<PlaygroundShortDTO>}
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
-    public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filter) {
-        return playgroundService.getList(filter);
+    public PageDTO<PlaygroundShortDTO> getList(
+            @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime opening,
+            @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
+            @RequestParam(required = false) Collection<String> featureCodes,
+            @RequestParam(required = false) Collection<String> sportCodes,
+            @RequestParam(required = false) Integer startCost,
+            @RequestParam(required = false) Integer endCost,
+            @RequestParam(required = false) Integer minRate
+    ) {
+        return playgroundService.getList(new PlaygroundFilterDTO()
+                .setFeatureCodes(featureCodes)
+                .setSportCodes(sportCodes)
+                .setStartCost(startCost)
+                .setEndCost(endCost)
+                .setMinRate(minRate)
+                .setOpening(opening)
+                .setClosing(closing)
+        );
     }
 
     /**

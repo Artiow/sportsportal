@@ -266,6 +266,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         private Integer endCost;
         private Integer minRate;
 
+
         public PlaygroundFilter(PlaygroundFilterDTO dto) {
             super(dto, PlaygroundEntity_.name);
             configureSearchByFeatures(dto);
@@ -274,6 +275,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             configureSearchByCost(dto);
             configureSearchByRate(dto);
         }
+
 
         private void configureSearchByFeatures(PlaygroundFilterDTO dto) {
             Collection<String> featureCodes = dto.getFeatureCodes();
@@ -320,10 +322,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 predicates.add(rootPredicate);
             }
             if (featureCodes != null) {
-                predicates.add(searchByFeaturesPredicate(root, cb));
+                predicates.add(searchByFeaturesPredicate(root));
             }
             if (sportCodes != null) {
-                predicates.add(searchBySportsPredicate(root, cb));
+                predicates.add(searchBySportsPredicate(root));
             }
             if ((opening != null) && (closing != null)) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
@@ -340,12 +342,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                     .distinct(true).getRestriction();
         }
 
-        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            return null; // todo: predicate
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root) {
+            return root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
         }
 
-        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            return null; // todo: predicate
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root) {
+            return root.join(PlaygroundEntity_.specializations).get(FeatureEntity_.code).in(sportCodes);
         }
 
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
@@ -377,18 +379,14 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
         public ReservationFilter(Integer playgroundId, LocalDate startDate, LocalDate endDate) {
             this.playgroundId = playgroundId;
+            final JavaTimeMapper jtMapper = new JavaTimeMapper();
             if (!startDate.isAfter(endDate)) {
-                this.start = toTimestamp(startDate);
-                this.end = toTimestamp(endDate.plusDays(1));
+                this.start = jtMapper.toTimestamp(startDate);
+                this.end = jtMapper.toTimestamp(endDate.plusDays(1));
             } else {
-                this.start = toTimestamp(endDate);
-                this.end = toTimestamp(startDate.plusDays(1));
+                this.start = jtMapper.toTimestamp(endDate);
+                this.end = jtMapper.toTimestamp(startDate.plusDays(1));
             }
-        }
-
-
-        private Timestamp toTimestamp(LocalDate localDate) {
-            return Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN));
         }
 
 
