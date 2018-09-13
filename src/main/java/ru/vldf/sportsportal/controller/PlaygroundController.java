@@ -11,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
@@ -52,6 +54,9 @@ public class PlaygroundController {
      * @param startCost    {@link PlaygroundFilterDTO} startCost field
      * @param endCost      {@link PlaygroundFilterDTO} endCost field
      * @param minRate      {@link PlaygroundFilterDTO} minRate field
+     * @param searchString {@link StringSearcherDTO} searchString field
+     * @param pageSize     {@link PageDividerDTO} pageSize field
+     * @param pageNum      {@link PageDividerDTO} pageNum field
      * @return {@link PageDTO<PlaygroundShortDTO>}
      */
     @GetMapping("/list")
@@ -63,9 +68,12 @@ public class PlaygroundController {
             @RequestParam(required = false) Collection<String> sportCodes,
             @RequestParam(required = false) Integer startCost,
             @RequestParam(required = false) Integer endCost,
-            @RequestParam(required = false) Integer minRate
+            @RequestParam(required = false) Integer minRate,
+            @RequestParam(required = false) String searchString,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer pageNum
     ) {
-        return playgroundService.getList(new PlaygroundFilterDTO()
+        return playgroundService.getList((PlaygroundFilterDTO) new PlaygroundFilterDTO()
                 .setFeatureCodes(featureCodes)
                 .setSportCodes(sportCodes)
                 .setStartCost(startCost)
@@ -73,6 +81,9 @@ public class PlaygroundController {
                 .setMinRate(minRate)
                 .setOpening(opening)
                 .setClosing(closing)
+                .setSearchString(searchString)
+                .setPageSize(pageSize)
+                .setPageNum(pageNum)
         );
     }
 

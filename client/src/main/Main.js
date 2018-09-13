@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
-// import {getApiUrl} from '../boot/constants'
+import {getApiUrl} from '../boot/constants'
 import axios from 'axios';
 import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
@@ -12,18 +12,19 @@ class Main extends Component {
             content: null,
             pageNumber: null,
             totalPages: null,
-            filter: {
-                pageNum: 0,
-                pageSize: 6
-            }
+            filter: {}
         };
 
-        this.query();
+        this.updateFilter({
+            pageNum: 0,
+            pageSize: 6
+        });
     }
 
     query() {
         const self = this;
-        axios.get('http://localhost:8080/leaseapi/playground/list', {params: this.state.filter})
+        const url = getApiUrl('/leaseapi/playground/list');
+        axios.get(url, {params: this.state.filter})
             .then(function (response) {
                 console.log('Response:', response);
                 const data = response.data;
@@ -38,11 +39,16 @@ class Main extends Component {
             })
     }
 
+    updateFilter(newFilter) {
+        // todo: assign filter here!
+        this.query();
+    }
+
     render() {
         return (
             <main className="Main container">
                 <div className="row">
-                    <PlaygroundFilter/>
+                    <PlaygroundFilter callback={this.updateFilter}/>
                     <PageablePlaygroundContainer content={this.state.content}/>
                 </div>
             </main>
@@ -54,21 +60,36 @@ class PlaygroundFilter extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            filter: null
+            searchString: null,
         }
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        this.setState({
+            [target.id]: target.value
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        this.props.callback({
+            searchString: this.state.searchString
+        })
     }
 
     render() {
         return (
             <div className="PlaygroundFilter col-xs-12 col-sm-4 mb-4">
-                <div className="card" style={{minHeight: '500px'}}>
+                <form onSubmit={this.handleSubmit.bind(this)} className="card" style={{minHeight: '500px'}}>
                     <div className="input-group">
-                        <input type="text" className="form-control"/>
+                        <input id="searchString" onChange={this.handleInputChange.bind(this)}
+                               type="text" className="form-control"/>
                         <div className="input-group-append">
-                            <button className="btn btn-outline-secondary" type="button">Найти</button>
+                            <button className="btn btn-outline-secondary" type="submit">Найти</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         );
     }
@@ -137,7 +158,7 @@ function PlaygroundCard(props) {
                     <Rate className="card-title" rate={playground.rate}/>
                     <p className="card-text">
                         <span className="badge badge-dark">
-                            {'от ' + ((playground.cost / 100).toFixed())}<i className="fa fa-rub"/>/час
+                            от<span>{((playground.cost / 100).toFixed())}</span><i className="fa fa-rub"/>/час
                         </span>
                     </p>
                     <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
@@ -168,9 +189,7 @@ function Rate(props) {
     }
 
     return (
-        <h6 className="Rate card-title">
-            <small className="card-rate">{stars}</small>
-        </h6>
+        <h6 className="Rate card-title">{stars}</h6>
     );
 }
 

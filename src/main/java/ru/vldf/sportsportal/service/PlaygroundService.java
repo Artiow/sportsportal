@@ -339,6 +339,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
             return query
                     .where(cb.and(predicates.toArray(new Predicate[0])))
+                    .orderBy(cb.desc(root.get(PlaygroundEntity_.rate)))
                     .distinct(true).getRestriction();
         }
 

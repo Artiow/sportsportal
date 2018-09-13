@@ -6,6 +6,10 @@
     padding: 15px;
 }
 
-.Main.container .PlaygroundCard.card .card-title {
-    margin-bottom: 8px;
+.Main.container .PlaygroundCard .card .card-body h4.card-title {
+    margin-bottom: 3px;
+}
+
+.Main.container .PlaygroundCard .card .card-body p.card-text .badge span {
+    margin: 0 3px;
 }

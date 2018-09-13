@@ -18,7 +18,7 @@ function Header(props) {
 
 function MainBlock(props) {
     return (
-        <div className="col-md-3">
+        <div className="MainBlock col-md-6">
             <h3>
                 <Link to={props.titleHref}>{props.titleLabel}</Link>
             </h3>
@@ -102,7 +102,7 @@ class AuthBlock extends Component {
 
     render() {
         return (
-            <div className="AuthBlock offset-md-6 col-md-3">
+            <div className="AuthBlock col-md-6">
                 {this.authContent()}
             </div>
         );
