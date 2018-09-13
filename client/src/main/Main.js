@@ -6,19 +6,28 @@ import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
 
 class Main extends Component {
+
+    static PAGE_SIZE = 10;
+
+    updateFilterCallback = newFilter => {
+        this.setState(prevState => {
+            return {filter: Object.assign(prevState.filter, newFilter)}
+        });
+        this.query();
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             content: null,
-            pageNumber: null,
-            totalPages: null,
-            filter: {}
+            pageNumber: 0,
+            totalPages: 0,
+            filter: {
+                pageNum: 0,
+                pageSize: Main.PAGE_SIZE
+            }
         };
-
-        this.updateFilter({
-            pageNum: 0,
-            pageSize: 6
-        });
+        this.query();
     }
 
     query() {
@@ -39,17 +48,13 @@ class Main extends Component {
             })
     }
 
-    updateFilter(newFilter) {
-        // todo: assign filter here!
-        this.query();
-    }
-
     render() {
         return (
             <main className="Main container">
                 <div className="row">
-                    <PlaygroundFilter callback={this.updateFilter}/>
-                    <PageablePlaygroundContainer content={this.state.content}/>
+                    <PlaygroundFilter callback={this.updateFilterCallback}/>
+                    <PageablePlaygroundContainer pageable={(this.state.totalPages > 1)}
+                                                 content={this.state.content}/>
                 </div>
             </main>
         );
@@ -97,12 +102,12 @@ class PlaygroundFilter extends Component {
 
 function PageablePlaygroundContainer(props) {
     const content = props.content;
-    console.log('New Content:', content);
+    const pageable = props.pageable;
     if ((content !== null) && (content.length > 0)) {
         return (
             <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
                 <PlaygroundContainer content={content}/>
-                <PlaygroundPagination/>
+                {(pageable) ? (<PlaygroundPagination/>) : (null)}
             </div>
         );
     } else {
