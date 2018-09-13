@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
+// import {getApiUrl} from '../boot/constants'
 import axios from 'axios';
 import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
@@ -49,14 +50,28 @@ class Main extends Component {
     }
 }
 
-function PlaygroundFilter(props) {
-    return (
-        <div className="col-xs-12 col-sm-4 mb-4">
-            <div className="card">
-                <div style={{height: '500px'}}/>
+class PlaygroundFilter extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            filter: null
+        }
+    }
+
+    render() {
+        return (
+            <div className="PlaygroundFilter col-xs-12 col-sm-4 mb-4">
+                <div className="card" style={{minHeight: '500px'}}>
+                    <div className="input-group">
+                        <input type="text" className="form-control"/>
+                        <div className="input-group-append">
+                            <button className="btn btn-outline-secondary" type="button">Найти</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 function PageablePlaygroundContainer(props) {
@@ -64,14 +79,14 @@ function PageablePlaygroundContainer(props) {
     console.log('New Content:', content);
     if ((content !== null) && (content.length > 0)) {
         return (
-            <div className="col-xs-12 col-sm-8">
+            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
                 <PlaygroundContainer content={content}/>
                 <PlaygroundPagination/>
             </div>
         );
     } else {
         return (
-            <div className="col-xs-12 col-sm-8">
+            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
                 <div className="col-xs-12 col-sm-12 mb-12">
                     <div className="alert alert-primary">Ничего не найдено!</div>
                 </div>
@@ -82,11 +97,9 @@ function PageablePlaygroundContainer(props) {
 
 function PlaygroundPagination(props) {
     return (
-        <div className="row">
+        <div className="PlaygroundPagination row">
             <div className="col-xs-12 col-sm-12 mb-4">
-                <div className="card">
-                    <div style={{height: '50px'}}/>
-                </div>
+                <div className="card" style={{minHeight: '50px'}}/>
             </div>
         </div>
     );
@@ -106,7 +119,7 @@ function PlaygroundContainer(props) {
             </div>
         );
     }
-    return (<div className="row">{container}</div>);
+    return (<div className="PlaygroundContainer row">{container}</div>);
 }
 
 function PlaygroundCard(props) {
@@ -114,7 +127,7 @@ function PlaygroundCard(props) {
     const photoURLs = playground.photoURLs;
     const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImageSm);
     return (
-        <div className="col-xs-12 col-sm-6 mb-4">
+        <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
                 <img className="card-img" src={photoURL} alt={playground.name}/>
                 <div className="card-body">
@@ -155,7 +168,7 @@ function Rate(props) {
     }
 
     return (
-        <h6 className="card-title">
+        <h6 className="Rate card-title">
             <small className="card-rate">{stars}</small>
         </h6>
     );

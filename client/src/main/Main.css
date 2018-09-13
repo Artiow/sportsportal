@@ -2,6 +2,10 @@
     margin-top: 25px;
 }
 
-.Main.container .card .card-title {
+.Main.container .PlaygroundFilter .card {
+    padding: 15px;
+}
+
+.Main.container .PlaygroundCard.card .card-title {
     margin-bottom: 8px;
 }
