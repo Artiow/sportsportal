@@ -8,12 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
+import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -81,13 +82,13 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     /**
      * Returns requested page with playgrounds.
      *
-     * @param dividerDTO {@link PageDividerDTO} pagination data
+     * @param filterDTO {@link PlaygroundFilterDTO} filter data
      * @return {@link PageDTO} with {@link PlaygroundShortDTO}
      */
     @Transactional(readOnly = true)
-    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO dividerDTO) {
-        PageDivider divider = new PageDivider(dividerDTO);
-        return new PageDTO<>(playgroundRepository.findAll(divider.getPageRequest()).map(playgroundMapper::toShortDTO));
+    public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filterDTO) {
+        PlaygroundFilter filter = new PlaygroundFilter(filterDTO);
+        return new PageDTO<>(playgroundRepository.findAll(filter, filter.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
     /**
@@ -255,6 +256,136 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     }
 
 
+    public static class PlaygroundFilter extends StringSearcher<PlaygroundEntity> {
+
+        private Collection<String> featureCodes;
+        private Collection<String> sportCodes;
+        private Timestamp opening;
+        private Timestamp closing;
+        private Integer startCost;
+        private Integer endCost;
+        private Integer minRate;
+
+
+        public PlaygroundFilter(PlaygroundFilterDTO dto) {
+            super(dto, PlaygroundEntity_.name);
+            configureSearchByFeatures(dto);
+            configureSearchBySports(dto);
+            configureSearchByWorkTime(dto);
+            configureSearchByCost(dto);
+            configureSearchByRate(dto);
+        }
+
+
+        private void configureSearchByFeatures(PlaygroundFilterDTO dto) {
+            Collection<String> featureCodes = dto.getFeatureCodes();
+            if ((featureCodes != null) && (!featureCodes.isEmpty())) {
+                this.featureCodes = new ArrayList<>(featureCodes);
+            }
+        }
+
+        private void configureSearchBySports(PlaygroundFilterDTO dto) {
+            Collection<String> sportCodes = dto.getSportCodes();
+            if ((sportCodes != null) && (!sportCodes.isEmpty())) {
+                this.sportCodes = new ArrayList<>(sportCodes);
+            }
+        }
+
+        private void configureSearchByWorkTime(PlaygroundFilterDTO dto) {
+            LocalTime opening = dto.getOpening();
+            LocalTime closing = dto.getClosing();
+            if ((opening != null) && (closing != null)) {
+                boolean toMidnight = closing.equals(LocalTime.MIN);
+                final JavaTimeMapper jtMapper = new JavaTimeMapper();
+                if ((toMidnight) || (!opening.isAfter(closing))) {
+                    this.opening = jtMapper.toTimestamp(opening);
+                    this.closing = (!toMidnight) ? jtMapper.toTimestamp(closing) : null;
+                } else {
+                    this.opening = jtMapper.toTimestamp(closing);
+                    this.closing = (!opening.equals(LocalTime.MIN)) ? jtMapper.toTimestamp(opening) : null;
+                }
+            }
+        }
+
+        private void configureSearchByCost(PlaygroundFilterDTO dto) {
+            Integer startCost = dto.getStartCost();
+            Integer endCost = dto.getEndCost();
+            if ((startCost != null) && (endCost != null)) {
+                if (startCost <= endCost) {
+                    this.startCost = startCost;
+                    this.endCost = endCost;
+                } else {
+                    this.startCost = endCost;
+                    this.endCost = startCost;
+                }
+            }
+        }
+
+        private void configureSearchByRate(PlaygroundFilterDTO dto) {
+            this.minRate = dto.getMinRate();
+        }
+
+        @Override
+        public Predicate toPredicate(Root<PlaygroundEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Collection<Predicate> predicates = new ArrayList<>();
+            Predicate rootPredicate = super.toPredicate(root, query, cb);
+            if (rootPredicate != null) {
+                predicates.add(rootPredicate);
+            }
+            if (featureCodes != null) {
+                predicates.add(searchByFeaturesPredicate(root));
+            }
+            if (sportCodes != null) {
+                predicates.add(searchBySportsPredicate(root));
+            }
+            if (opening != null) {
+                predicates.add(searchByWorkTimePredicate(root, cb));
+            }
+            if (startCost != null) {
+                predicates.add(searchByCostPredicate(root, cb));
+            }
+            if (minRate != null) {
+                predicates.add(searchByRatePredicate(root, cb));
+            }
+
+            return query
+                    .where(cb.and(predicates.toArray(new Predicate[0])))
+                    .orderBy(cb.desc(root.get(PlaygroundEntity_.rate)))
+                    .distinct(true).getRestriction();
+        }
+
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root) {
+            return root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
+        }
+
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root) {
+            return root.join(PlaygroundEntity_.specializations).get(FeatureEntity_.code).in(sportCodes);
+        }
+
+        private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            final Path<Timestamp> playgroundOpening = root.get(PlaygroundEntity_.opening);
+            final Path<Timestamp> playgroundClosing = root.get(PlaygroundEntity_.closing);
+            final Predicate openingMatch = cb.lessThan(playgroundOpening, closing);
+            final Predicate closingMatch = cb.greaterThan(playgroundClosing, opening);
+            final Predicate closeOnMidnight = cb.equal(playgroundClosing, (new JavaTimeMapper().toTimestamp(LocalTime.MIN)));
+            return (closing != null)
+                    ? cb.or(cb.and(closingMatch, openingMatch), cb.and(closeOnMidnight, openingMatch))
+                    : cb.or(closingMatch, closeOnMidnight);
+        }
+
+        private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            Path<Integer> sought = root.get(PlaygroundEntity_.cost);
+            return cb.and(
+                    cb.greaterThanOrEqualTo(sought, startCost),
+                    cb.lessThanOrEqualTo(sought, endCost)
+            );
+        }
+
+        private Predicate searchByRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.rate), minRate);
+        }
+    }
+
     public static class ReservationFilter implements Specification<ReservationEntity> {
 
         private Integer playgroundId;
@@ -264,18 +395,14 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
         public ReservationFilter(Integer playgroundId, LocalDate startDate, LocalDate endDate) {
             this.playgroundId = playgroundId;
+            final JavaTimeMapper jtMapper = new JavaTimeMapper();
             if (!startDate.isAfter(endDate)) {
-                this.start = toTimestamp(startDate);
-                this.end = toTimestamp(endDate.plusDays(1));
+                this.start = jtMapper.toTimestamp(startDate);
+                this.end = jtMapper.toTimestamp(endDate.plusDays(1));
             } else {
-                this.start = toTimestamp(endDate);
-                this.end = toTimestamp(startDate.plusDays(1));
+                this.start = jtMapper.toTimestamp(endDate);
+                this.end = jtMapper.toTimestamp(startDate.plusDays(1));
             }
-        }
-
-
-        private Timestamp toTimestamp(LocalDate localDate) {
-            return Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN));
         }
 
 

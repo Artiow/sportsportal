@@ -14,6 +14,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
@@ -34,7 +36,7 @@ public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D exten
 
     class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
 
-        private String searchString;
+        private String[] searchWords;
         private SingularAttribute<? super E, String> attribute;
 
 
@@ -47,15 +49,18 @@ public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D exten
 
         private void configureSearchByString(StringSearcherDTO dto) {
             String searchString = dto.getSearchString();
-            if ((searchString != null) && (!searchString.equals(""))) {
-                this.searchString = searchString.trim().toLowerCase() + "%";
+            if (searchString != null) {
+                searchString = searchString.trim();
+                if (!searchString.equals("")) {
+                    this.searchWords = searchString.toLowerCase().split(" ");
+                }
             }
         }
 
 
         @Override
         public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            if (searchString != null) {
+            if (searchWords != null) {
                 return searchByStringPredicate(root, query, cb);
             } else {
                 return null;
@@ -63,14 +68,18 @@ public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D exten
         }
 
         private Predicate searchByStringPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            return cb.like(cb.lower(root.get(attribute)), searchString);
+            Collection<Predicate> occurrences = new ArrayList<>();
+            for (String searchWord : searchWords) {
+                occurrences.add(cb.like(cb.lower(root.get(attribute)), ("%" + searchWord + "%")));
+            }
+            return cb.and(occurrences.toArray(new Predicate[0]));
         }
     }
 
 
     class PageDivider {
 
-        private Integer LIMIT = 150;
+        private Integer LIMIT = 120;
         private Integer pageSize;
         private Integer pageNum;
 

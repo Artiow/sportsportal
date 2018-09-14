@@ -153,19 +153,23 @@ public class PlaygroundDTO extends AbstractVersionedDTO implements WorkTimeDTO {
         return this;
     }
 
+    @Override
     public Boolean getHalfHourAvailable() {
         return halfHourAvailable;
     }
 
+    @Override
     public PlaygroundDTO setHalfHourAvailable(Boolean halfHourAvailable) {
         this.halfHourAvailable = halfHourAvailable;
         return this;
     }
 
+    @Override
     public Boolean getFullHourRequired() {
         return fullHourRequired;
     }
 
+    @Override
     public PlaygroundDTO setFullHourRequired(Boolean fullHourRequired) {
         this.fullHourRequired = fullHourRequired;
         return this;

@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
@@ -20,6 +22,8 @@ import ru.vldf.sportsportal.service.generic.*;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collection;
 import java.util.Date;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
@@ -43,13 +47,44 @@ public class PlaygroundController {
     /**
      * Returns requested page with playgrounds for current page divider.
      *
-     * @param divider {@link PageDividerDTO} with pagination params
+     * @param opening      {@link PlaygroundFilterDTO} opening field
+     * @param closing      {@link PlaygroundFilterDTO} closing field
+     * @param featureCodes {@link PlaygroundFilterDTO} featureCodes field
+     * @param sportCodes   {@link PlaygroundFilterDTO} sportCodes field
+     * @param startCost    {@link PlaygroundFilterDTO} startCost field
+     * @param endCost      {@link PlaygroundFilterDTO} endCost field
+     * @param minRate      {@link PlaygroundFilterDTO} minRate field
+     * @param searchString {@link StringSearcherDTO} searchString field
+     * @param pageSize     {@link PageDividerDTO} pageSize field
+     * @param pageNum      {@link PageDividerDTO} pageNum field
      * @return {@link PageDTO<PlaygroundShortDTO>}
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
-    public PageDTO<PlaygroundShortDTO> getList(PageDividerDTO divider) {
-        return playgroundService.getList(divider);
+    public PageDTO<PlaygroundShortDTO> getList(
+            @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime opening,
+            @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
+            @RequestParam(required = false) Collection<String> featureCodes,
+            @RequestParam(required = false) Collection<String> sportCodes,
+            @RequestParam(required = false) Integer startCost,
+            @RequestParam(required = false) Integer endCost,
+            @RequestParam(required = false) Integer minRate,
+            @RequestParam(required = false) String searchString,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer pageNum
+    ) {
+        return playgroundService.getList((PlaygroundFilterDTO) new PlaygroundFilterDTO()
+                .setFeatureCodes(featureCodes)
+                .setSportCodes(sportCodes)
+                .setStartCost(startCost)
+                .setEndCost(endCost)
+                .setMinRate(minRate)
+                .setOpening(opening)
+                .setClosing(closing)
+                .setSearchString(searchString)
+                .setPageSize(pageSize)
+                .setPageNum(pageNum)
+        );
     }
 
     /**
