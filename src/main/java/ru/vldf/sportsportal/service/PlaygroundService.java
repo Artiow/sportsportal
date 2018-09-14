@@ -363,10 +363,14 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         }
 
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            Predicate openingPredicate = cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.opening), opening);
+            final Path<Timestamp> playgroundOpening = root.get(PlaygroundEntity_.opening);
+            final Path<Timestamp> playgroundClosing = root.get(PlaygroundEntity_.closing);
+            final Predicate openingMatch = cb.lessThan(playgroundOpening, closing);
+            final Predicate closingMatch = cb.greaterThan(playgroundClosing, opening);
+            final Predicate closeOnMidnight = cb.equal(playgroundClosing, (new JavaTimeMapper().toTimestamp(LocalTime.MIN)));
             return (closing != null)
-                    ? cb.and(cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.closing), closing), openingPredicate)
-                    : openingPredicate;
+                    ? cb.or(cb.and(closingMatch, openingMatch), cb.and(closeOnMidnight, openingMatch))
+                    : cb.or(closingMatch, closeOnMidnight);
         }
 
         private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {

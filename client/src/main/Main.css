@@ -22,7 +22,7 @@
     border: 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-header button {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-header a {
     text-decoration: none;
     text-align: left;
     font-weight: 500;

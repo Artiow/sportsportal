@@ -65,6 +65,7 @@ class Main extends Component {
 
 class PlaygroundFilter extends Component {
 
+    static MIN_COST = 0;
     static MAX_COST = 1000000;
 
     updateCostCallback = range => {
@@ -93,8 +94,8 @@ class PlaygroundFilter extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchString: null,
-            startCost: 0,
+            searchString: '',
+            startCost: PlaygroundFilter.MIN_COST,
             endCost: PlaygroundFilter.MAX_COST,
             opening: '00:00',
             closing: '00:00'
@@ -102,16 +103,19 @@ class PlaygroundFilter extends Component {
     }
 
     handleInputChange(event) {
-        const target = event.target;
         this.setState({
-            [target.id]: target.value
+            searchString: event.target.value
         });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         this.props.callback({
-            searchString: this.state.searchString
+            searchString: this.state.searchString,
+            startCost: this.state.startCost,
+            endCost: this.state.endCost,
+            opening: this.state.opening,
+            closing: this.state.closing
         })
     }
 
@@ -130,9 +134,9 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <button className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
                                         Стоимость часа
-                                    </button>
+                                    </a>
                                 </h5>
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
@@ -140,15 +144,18 @@ class PlaygroundFilter extends Component {
                                     <h6>
                                         <span className="badge-sub">от</span>
                                         <span className="badge badge-dark">
-                                            <span
-                                                className="badge-param">{(this.state.startCost / 100).toFixed()}</span>
+                                            <span className="badge-param">
+                                                {(this.state.startCost / 100).toFixed()}
+                                            </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
                                     </h6>
                                     <h6>
                                         <span className="badge-sub">до</span>
                                         <span className="badge badge-dark">
-                                            <span className="badge-param">{(this.state.endCost / 100).toFixed()}</span>
+                                            <span className="badge-param">
+                                                {(this.state.endCost / 100).toFixed()}
+                                            </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
                                     </h6>
@@ -160,9 +167,9 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <button className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
                                         Время работы
-                                    </button>
+                                    </a>
                                 </h5>
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
@@ -179,7 +186,8 @@ class PlaygroundFilter extends Component {
                                             <span className="badge-param">{this.state.closing}</span>
                                         </span>
                                     </h6>
-                                    <Range min={0} max={48} allowCross={false} defaultValue={[0, 48]}
+                                    <Range min={0} max={48}
+                                           allowCross={false} defaultValue={[0, 48]}
                                            onChange={this.updateTimeCallback}/>
                                 </div>
                             </div>
