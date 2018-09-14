@@ -95,21 +95,23 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         // data integrity check
         LocalTime openTime = entity.getOpening().toLocalDateTime().toLocalTime();
         LocalTime closeTime = entity.getClosing().toLocalDateTime().toLocalTime();
-        if (!openTime.isBefore(closeTime)) {
-            throw new DataCorruptedException("PlaygroundEntity data corrupted: openTime must be less than closeTime!");
+        boolean toMidnight = closeTime.equals(LocalTime.MIN);
+        if ((!toMidnight) && (!closeTime.isAfter(openTime))) {
+            throw new DataCorruptedException("PlaygroundEntity data corrupted: open time must be less than close time!");
         }
 
         // integer time value init
         int openTimeHour = openTime.getHour();
         int openTimeMinute = openTime.getMinute();
-        int closeTimeHour = closeTime.getHour();
-        int closeTimeMinute = closeTime.getMinute();
+        int closeTimeHour = (!toMidnight) ? closeTime.getHour() : 24;
+        int closeTimeMinute = (!toMidnight) ? closeTime.getMinute() : 0;
         boolean halfHourAvailable = entity.getHalfHourAvailable();
 
         // total times calculate
-        int totalTimes = (halfHourAvailable) ? (2 * (closeTimeHour - openTimeHour)) : (closeTimeHour - openTimeHour);
+        int hourDiff = (closeTimeHour - openTimeHour);
+        int totalTimes = (halfHourAvailable) ? (2 * hourDiff) : hourDiff;
         int minuteDiff = (closeTimeMinute - openTimeMinute);
-        if ((minuteDiff % 30) != 0) {
+        if ((Math.abs(minuteDiff) % 30) != 0) {
             throw new DataCorruptedException("PlaygroundEntity data corrupted: minuteDiff not a multiple of 30!");
         }
         totalTimes = (minuteDiff != 0) ? ((minuteDiff > 0) ? (totalTimes + 1) : (totalTimes - 1)) : totalTimes;

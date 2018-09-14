@@ -295,9 +295,15 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             LocalTime opening = dto.getOpening();
             LocalTime closing = dto.getClosing();
             if ((opening != null) && (closing != null)) {
+                boolean toMidnight = closing.equals(LocalTime.MIN);
                 final JavaTimeMapper jtMapper = new JavaTimeMapper();
-                this.opening = jtMapper.toTimestamp(opening);
-                this.closing = jtMapper.toTimestamp(closing);
+                if ((toMidnight) || (!opening.isAfter(closing))) {
+                    this.opening = jtMapper.toTimestamp(opening);
+                    this.closing = (!toMidnight) ? jtMapper.toTimestamp(closing) : null;
+                } else {
+                    this.opening = jtMapper.toTimestamp(closing);
+                    this.closing = (!opening.equals(LocalTime.MIN)) ? jtMapper.toTimestamp(opening) : null;
+                }
             }
         }
 
@@ -305,8 +311,13 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             Integer startCost = dto.getStartCost();
             Integer endCost = dto.getEndCost();
             if ((startCost != null) && (endCost != null)) {
-                this.startCost = startCost;
-                this.endCost = endCost;
+                if (startCost <= endCost) {
+                    this.startCost = startCost;
+                    this.endCost = endCost;
+                } else {
+                    this.startCost = endCost;
+                    this.endCost = startCost;
+                }
             }
         }
 
@@ -327,10 +338,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             if (sportCodes != null) {
                 predicates.add(searchBySportsPredicate(root));
             }
-            if ((opening != null) && (closing != null)) {
+            if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
             }
-            if ((startCost != null) && (endCost != null)) {
+            if (startCost != null) {
                 predicates.add(searchByCostPredicate(root, cb));
             }
             if (minRate != null) {
@@ -352,10 +363,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         }
 
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            return cb.and(
-                    cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.closing), closing),
-                    cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.opening), opening)
-            );
+            Predicate openingPredicate = cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.opening), opening);
+            return (closing != null)
+                    ? cb.and(cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.closing), closing), openingPredicate)
+                    : openingPredicate;
         }
 
         private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {

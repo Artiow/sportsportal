@@ -13,4 +13,12 @@ public interface WorkTimeDTO<T extends WorkTimeDTO> extends DataTransferObject {
     LocalTime getClosing();
 
     T setClosing(LocalTime closing);
+
+    Boolean getHalfHourAvailable();
+
+    T setHalfHourAvailable(Boolean halfHourAvailable);
+
+    Boolean getFullHourRequired();
+
+    T setFullHourRequired(Boolean fullHourRequired);
 }

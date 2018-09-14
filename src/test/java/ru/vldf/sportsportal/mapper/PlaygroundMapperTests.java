@@ -38,6 +38,78 @@ public class PlaygroundMapperTests {
 
 
     @Test
+    public void prepareGrid_from0000to0000HHAFalse() throws DataCorruptedException {
+
+        // arrange
+        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 00:00:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 00:00:00"));
+        playgroundEntity.setHalfHourAvailable(false);
+
+        // act
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+
+        // assert
+        Assert.assertEquals(LocalTime.of(0, 0), gridDTO.getStartTime());
+        Assert.assertEquals(LocalTime.of(23, 0), gridDTO.getEndTime());
+        Assert.assertEquals(24, (int) gridDTO.getTotalTimes());
+    }
+
+    @Test
+    public void prepareGrid_from0000to0000HHATrue() throws DataCorruptedException {
+
+        // arrange
+        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 00:00:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 00:00:00"));
+        playgroundEntity.setHalfHourAvailable(true);
+
+        // act
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+
+        // assert
+        Assert.assertEquals(LocalTime.of(0, 0), gridDTO.getStartTime());
+        Assert.assertEquals(LocalTime.of(23, 30), gridDTO.getEndTime());
+        Assert.assertEquals(48, (int) gridDTO.getTotalTimes());
+    }
+
+    @Test
+    public void prepareGrid_from0030to0000HHATrue() throws DataCorruptedException {
+
+        // arrange
+        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 00:30:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 00:00:00"));
+        playgroundEntity.setHalfHourAvailable(true);
+
+        // act
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+
+        // assert
+        Assert.assertEquals(LocalTime.of(0, 30), gridDTO.getStartTime());
+        Assert.assertEquals(LocalTime.of(23, 30), gridDTO.getEndTime());
+        Assert.assertEquals(47, (int) gridDTO.getTotalTimes());
+    }
+
+    @Test
+    public void prepareGrid_from0020to2320HHAFalse() throws DataCorruptedException {
+
+        // arrange
+        PlaygroundEntity playgroundEntity = new PlaygroundEntity();
+        playgroundEntity.setOpening(Timestamp.valueOf("0001-01-01 00:20:00"));
+        playgroundEntity.setClosing(Timestamp.valueOf("0001-01-01 23:20:00"));
+        playgroundEntity.setHalfHourAvailable(false);
+
+        // act
+        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+
+        // assert
+        Assert.assertEquals(LocalTime.of(0, 20), gridDTO.getStartTime());
+        Assert.assertEquals(LocalTime.of(22, 20), gridDTO.getEndTime());
+        Assert.assertEquals(23, (int) gridDTO.getTotalTimes());
+    }
+
+    @Test
     public void prepareGrid_from0900to2100HHAFalse() throws DataCorruptedException {
 
         // arrange
