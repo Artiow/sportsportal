@@ -66,6 +66,7 @@ class Main extends Component {
 class PlaygroundFilter extends Component {
 
     static MAX_COST = 1000000;
+
     updateCostCallback = range => {
         const MAX = PlaygroundFilter.MAX_COST;
         this.setState({
@@ -78,6 +79,7 @@ class PlaygroundFilter extends Component {
         super(props);
         this.state = {
             searchString: null,
+            opening: '00:00',
             startCost: 0,
             endCost: PlaygroundFilter.MAX_COST
         }
@@ -108,23 +110,64 @@ class PlaygroundFilter extends Component {
                             <button className="btn btn-outline-secondary" type="submit">Найти</button>
                         </div>
                     </div>
-                    <div>
-                        <h6>Стоимость часа</h6>
-                        <div>
-                            <h6>
-                                <span>от</span>
-                                <span className="badge badge-dark">{(this.state.startCost / 100).toFixed()}<i
-                                    className="fa fa-rub"/>/час</span>
-                            </h6>
-                            <h6>
-                                <span>до</span>
-                                <span className="badge badge-dark">{(this.state.endCost / 100).toFixed()}<i
-                                    className="fa fa-rub"/>/час</span>
-                            </h6>
+                    <div id="accordion">
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <button className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
+                                        Стоимость часа
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse_1" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    <h6>
+                                        <span className="badge-sub">от</span>
+                                        <span className="badge badge-dark">
+                                            <span
+                                                className="badge-param">{(this.state.startCost / 100).toFixed()}</span>
+                                            <i className="fa fa-rub"/>/час
+                                        </span>
+                                    </h6>
+                                    <h6>
+                                        <span className="badge-sub">до</span>
+                                        <span className="badge badge-dark">
+                                            <span className="badge-param">{(this.state.endCost / 100).toFixed()}</span>
+                                            <i className="fa fa-rub"/>/час
+                                        </span>
+                                    </h6>
+                                    <Range allowCross={false} defaultValue={[0, 100]}
+                                           onBeforeChange={this.updateCostCallback}
+                                           onAfterChange={this.updateCostCallback}/>
+                                </div>
+                            </div>
                         </div>
-                        <Range allowCross={false} defaultValue={[0, 100]}
-                               onBeforeChange={this.updateCostCallback}
-                               onAfterChange={this.updateCostCallback}/>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <button className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                        Время работы
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse_2" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    <h6>
+                                        <span className="badge-sub">от</span>
+                                        <span className="badge badge-dark">
+
+                                        </span>
+                                    </h6>
+                                    <h6>
+                                        <span className="badge-sub">до</span>
+                                        <span className="badge badge-dark">
+
+                                        </span>
+                                    </h6>
+                                    <Range allowCross={false} defaultValue={[0, 100]}/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
