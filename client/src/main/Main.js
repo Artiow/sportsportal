@@ -75,13 +75,29 @@ class PlaygroundFilter extends Component {
         });
     };
 
+    updateTimeCallback = range => {
+        let opening = range[0];
+        opening = (opening !== 48) ? opening : 0;
+        const openingHour = Math.floor(opening / 2);
+        const openingMinute = (30 * (opening % 2));
+        let closing = range[1];
+        closing = (closing !== 48) ? closing : 0;
+        const closingHour = Math.floor(closing / 2);
+        const closingMinute = (30 * (closing % 2));
+        this.setState({
+            opening: ((openingHour < 10) ? '0' : '') + openingHour + ':' + openingMinute + ((openingMinute !== 30) ? '0' : ''),
+            closing: ((closingHour < 10) ? '0' : '') + closingHour + ':' + closingMinute + ((closingMinute !== 30) ? '0' : '')
+        });
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             searchString: null,
-            opening: '00:00',
             startCost: 0,
-            endCost: PlaygroundFilter.MAX_COST
+            endCost: PlaygroundFilter.MAX_COST,
+            opening: '00:00',
+            closing: '00:00'
         }
     }
 
@@ -137,8 +153,7 @@ class PlaygroundFilter extends Component {
                                         </span>
                                     </h6>
                                     <Range allowCross={false} defaultValue={[0, 100]}
-                                           onBeforeChange={this.updateCostCallback}
-                                           onAfterChange={this.updateCostCallback}/>
+                                           onChange={this.updateCostCallback}/>
                                 </div>
                             </div>
                         </div>
@@ -155,16 +170,17 @@ class PlaygroundFilter extends Component {
                                     <h6>
                                         <span className="badge-sub">от</span>
                                         <span className="badge badge-dark">
-
+                                            <span className="badge-param">{this.state.opening}</span>
                                         </span>
                                     </h6>
                                     <h6>
                                         <span className="badge-sub">до</span>
                                         <span className="badge badge-dark">
-
+                                            <span className="badge-param">{this.state.closing}</span>
                                         </span>
                                     </h6>
-                                    <Range allowCross={false} defaultValue={[0, 100]}/>
+                                    <Range min={0} max={48} allowCross={false} defaultValue={[0, 48]}
+                                           onChange={this.updateTimeCallback}/>
                                 </div>
                             </div>
                         </div>
