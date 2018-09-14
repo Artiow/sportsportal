@@ -92,8 +92,8 @@ class PlaygroundFilter extends Component {
         const closingHour = Math.floor(closing / 2);
         const closingMinute = (30 * (closing % 2));
         this.setState({
-            opening: ((openingHour < 10) ? '0' : '') + openingHour + ':' + openingMinute + ((openingMinute !== 30) ? '0' : ''),
-            closing: ((closingHour < 10) ? '0' : '') + closingHour + ':' + closingMinute + ((closingMinute !== 30) ? '0' : '')
+            opening: ((openingHour < 10) ? ('0' + openingHour) : openingHour) + ':' + ((openingMinute !== 30) ? (openingMinute + '0') : openingMinute),
+            closing: ((closingHour < 10) ? ('0' + closingHour) : closingHour) + ':' + ((closingMinute !== 30) ? (closingMinute + '0') : closingMinute)
         });
     };
 
@@ -142,12 +142,40 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
+                                        Виды спорта
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_1" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
                                     <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
-                                        Стоимость часа
+                                        Инфраструктура
                                     </a>
                                 </h5>
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_3">
+                                        Стоимость часа
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_3" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -175,12 +203,12 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_3">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_4">
                                         Время работы
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_3" className="collapse" data-parent="#accordion">
+                            <div id="collapse_4" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -203,12 +231,12 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_4">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_5">
                                         Рейтинг
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_4" className="collapse" data-parent="#accordion">
+                            <div id="collapse_5" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6 className="badge badge-dark">
                                             <span className="badge-param">
