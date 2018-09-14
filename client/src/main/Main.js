@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
-import {Range} from 'rc-slider';
+import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import axios from 'axios';
 import './Main.css';
@@ -68,6 +68,12 @@ class PlaygroundFilter extends Component {
     static MIN_COST = 0;
     static MAX_COST = 1000000;
 
+    updateRateCallback = slider => {
+        this.setState({
+            minRate: slider
+        });
+    };
+
     updateCostCallback = range => {
         const MAX = PlaygroundFilter.MAX_COST;
         this.setState({
@@ -98,7 +104,8 @@ class PlaygroundFilter extends Component {
             startCost: PlaygroundFilter.MIN_COST,
             endCost: PlaygroundFilter.MAX_COST,
             opening: '00:00',
-            closing: '00:00'
+            closing: '00:00',
+            minRate: 0
         }
     }
 
@@ -115,7 +122,8 @@ class PlaygroundFilter extends Component {
             startCost: this.state.startCost,
             endCost: this.state.endCost,
             opening: this.state.opening,
-            closing: this.state.closing
+            closing: this.state.closing,
+            minRate: this.state.minRate
         })
     }
 
@@ -134,12 +142,12 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
                                         Стоимость часа
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_1" className="collapse" data-parent="#accordion">
+                            <div id="collapse_2" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -167,12 +175,12 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_3">
                                         Время работы
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_2" className="collapse" data-parent="#accordion">
+                            <div id="collapse_3" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -189,6 +197,26 @@ class PlaygroundFilter extends Component {
                                     <Range min={0} max={48}
                                            allowCross={false} defaultValue={[0, 48]}
                                            onChange={this.updateTimeCallback}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_4">
+                                        Рейтинг
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_4" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    <h6 className="badge badge-dark">
+                                            <span className="badge-param">
+                                                <Rate rate={this.state.minRate}/>
+                                            </span>
+                                    </h6>
+                                    <Slider min={0} max={10} defaultValue={0}
+                                            onChange={this.updateRateCallback}/>
                                 </div>
                             </div>
                         </div>
@@ -259,7 +287,9 @@ function PlaygroundCard(props) {
                     <h4 className="card-title">
                         <small>{playground.name}</small>
                     </h4>
-                    <Rate className="card-title" rate={playground.rate}/>
+                    <h6 className="card-title">
+                        <Rate rate={playground.rate}/>
+                    </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
                             от<span>{((playground.cost / 100).toFixed())}</span><i className="fa fa-rub"/>/час
@@ -293,7 +323,7 @@ function Rate(props) {
     }
 
     return (
-        <h6 className="Rate card-title">{stars}</h6>
+        <span className="Rate card-title">{stars}</span>
     );
 }
 

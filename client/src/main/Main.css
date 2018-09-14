@@ -39,12 +39,12 @@
     padding-top: 15px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body h6 span.badge-sub {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge-sub {
     display: inline-block;
     min-width: 21px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body h6 span.badge span.badge-param {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge span.badge-param {
     margin: 0 3px 0 0;
 }
 
