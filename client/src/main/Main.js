@@ -340,7 +340,11 @@ function PageablePlaygroundContainer(props) {
         return (
             <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
                 <div className="col-xs-12 col-sm-12 mb-12">
-                    <div className="alert alert-primary">Ничего не найдено!</div>
+                    <div className="alert alert-light">
+                        <h4 className="alert-heading">Ничего не найдено!</h4>
+                        <hr/>
+                        <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
+                    </div>
                 </div>
             </div>
         );
@@ -358,18 +362,12 @@ function PlaygroundPagination(props) {
 }
 
 function PlaygroundContainer(props) {
-    const content = props.content;
     let container = [];
-    if (content.length > 0) {
+    const content = props.content;
+    if ((content !== null) && (content.length > 0)) {
         content.forEach(function (item, i, arr) {
             container.push(<PlaygroundCard key={i} playground={item}/>);
         });
-    } else {
-        container.push(
-            <div className="col-xs-12 col-sm-12 mb-12">
-                <div className="alert alert-primary">Ничего не найдено!</div>
-            </div>
-        );
     }
     return (<div className="PlaygroundContainer row">{container}</div>);
 }
