@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -128,8 +129,8 @@ public class PictureService extends AbstractMessageService {
      * @throws ResourceCannotCreateException if resource cannot create
      */
     @Transactional
-    public Integer create(@NotNull MultipartFile picture) throws ResourceCannotCreateException {
-        if (!picture.getContentType().equals(MediaType.IMAGE_JPEG_VALUE)) {
+    public Integer create(MultipartFile picture) throws ResourceCannotCreateException {
+        if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();

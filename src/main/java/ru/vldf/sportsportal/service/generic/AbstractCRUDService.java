@@ -87,7 +87,7 @@ public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D exten
             Integer pageSize = dto.getPageSize();
             Integer pageNum = dto.getPageNum();
 
-            Boolean def = ((pageSize == null) && (pageNum == null));
+            boolean def = ((pageSize == null) && (pageNum == null));
             if ((!def) && (pageSize != null) && (pageNum != null)) {
                 def = ((pageSize == 0) && (pageNum == 0));
             }
