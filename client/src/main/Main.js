@@ -83,30 +83,56 @@ class PlaygroundFilter extends Component {
     };
 
     updateTimeCallback = range => {
-        let opening = range[0];
-        opening = (opening !== 48) ? opening : 0;
-        const openingHour = Math.floor(opening / 2);
-        const openingMinute = (30 * (opening % 2));
-        let closing = range[1];
-        closing = (closing !== 48) ? closing : 0;
-        const closingHour = Math.floor(closing / 2);
-        const closingMinute = (30 * (closing % 2));
+        const normalize = time => {
+            const normalTime = (time !== 48) ? time : 0;
+            const timeHour = Math.floor(normalTime / 2);
+            const timeMinute = (30 * (normalTime % 2));
+            return ((timeHour < 10) ? ('0' + timeHour) : timeHour) + ':' + ((timeMinute !== 30) ? (timeMinute + '0') : timeMinute)
+        };
         this.setState({
-            opening: ((openingHour < 10) ? ('0' + openingHour) : openingHour) + ':' + ((openingMinute !== 30) ? (openingMinute + '0') : openingMinute),
-            closing: ((closingHour < 10) ? ('0' + closingHour) : closingHour) + ':' + ((closingMinute !== 30) ? (closingMinute + '0') : closingMinute)
+            opening: normalize(range[0]),
+            closing: normalize(range[1])
         });
     };
 
     constructor(props) {
         super(props);
         this.state = {
+            sports: null,
+            sportCodes: [],
+            features: null,
+            featureCodes: [],
             searchString: '',
             startCost: PlaygroundFilter.MIN_COST,
             endCost: PlaygroundFilter.MAX_COST,
             opening: '00:00',
             closing: '00:00',
             minRate: 0
-        }
+        };
+
+        const self = this;
+        this.uploadFilerData("/leaseapi/dict/feature/list", function (list) {
+            self.setState({features: list});
+        });
+        this.uploadFilerData("/leaseapi/dict/sport/list", function (list) {
+            self.setState({sports: list});
+        });
+    }
+
+    /**
+     * Load dictionary and store it in state.
+     * @param uri {string}
+     * @param setting {function(object)}
+     */
+    uploadFilerData(uri, setting) {
+        axios.get(getApiUrl(uri))
+            .then(function (response) {
+                console.log('API Response:', response);
+                setting(response.data.content);
+            })
+            .catch(function (error) {
+                console.log('API Error:', error);
+            })
     }
 
     handleInputChange(event) {
@@ -128,6 +154,25 @@ class PlaygroundFilter extends Component {
     }
 
     render() {
+        const setFilterData = (prefix, content) => {
+            const result = [];
+            const handler = event => {
+                console.log(event.target);
+            };
+            if ((content != null) && (content.length > 0)) {
+                content.forEach(function (item, i, arr) {
+                    const id = prefix + '_' + item.code;
+                    const name = item.name.charAt(0).toUpperCase() + item.name.slice(1);
+                    result.push(
+                        <div key={i} className="custom-control custom-checkbox">
+                            <input type="checkbox" className="custom-control-input" onChange={handler} id={id}/>
+                            <label className="custom-control-label" htmlFor={id}>{name}</label>
+                        </div>
+                    );
+                });
+            }
+            return result;
+        };
         return (
             <div className="PlaygroundFilter col-xs-12 col-sm-4 mb-4">
                 <form onSubmit={this.handleSubmit.bind(this)} className="card">
@@ -149,7 +194,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-
+                                    {setFilterData('sport', this.state.sports)}
                                 </div>
                             </div>
                         </div>
@@ -163,7 +208,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-
+                                    {setFilterData('feature', this.state.features)}
                                 </div>
                             </div>
                         </div>
