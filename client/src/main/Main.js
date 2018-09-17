@@ -4,6 +4,7 @@ import {getApiUrl} from '../boot/constants'
 import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import axios from 'axios';
+import qs from 'qs';
 import './Main.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
 
@@ -35,19 +36,22 @@ class Main extends Component {
     query() {
         const self = this;
         const url = getApiUrl('/leaseapi/playground/list');
-        axios.get(url, {params: this.state.filter})
-            .then(function (response) {
-                console.log('Response:', response);
-                const data = response.data;
-                self.setState({
-                    content: data.content,
-                    pageNumber: data.pageNumber,
-                    totalPages: data.totalPages
-                });
-            })
-            .catch(function (error) {
-                console.log('Error:', error);
-            })
+        axios.get(url, {
+            params: this.state.filter,
+            paramsSerializer: params => {
+                return qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        }).then(function (response) {
+            console.log('Response:', response);
+            const data = response.data;
+            self.setState({
+                content: data.content,
+                pageNumber: data.pageNumber,
+                totalPages: data.totalPages
+            });
+        }).catch(function (error) {
+            console.log('Error:', error);
+        })
     }
 
     render() {
@@ -119,6 +123,13 @@ class PlaygroundFilter extends Component {
         });
     }
 
+    static updateAbstractCodes(codes, code, checked) {
+        const idx = codes.indexOf(code);
+        if ((checked) && (idx < 0)) codes.push(code);
+        else codes.splice(idx, 1);
+        return codes;
+    }
+
     /**
      * Load dictionary and store it in state.
      * @param uri {string}
@@ -145,6 +156,8 @@ class PlaygroundFilter extends Component {
         event.preventDefault();
         this.props.callback({
             searchString: this.state.searchString,
+            featureCodes: this.state.featureCodes,
+            sportCodes: this.state.sportCodes,
             startCost: this.state.startCost,
             endCost: this.state.endCost,
             opening: this.state.opening,
@@ -153,19 +166,32 @@ class PlaygroundFilter extends Component {
         })
     }
 
+    updateSportCodes(code, checked) {
+        this.setState(prevState => {
+            return {sportCodes: PlaygroundFilter.updateAbstractCodes(prevState.sportCodes, code, checked)}
+        });
+    }
+
+    updateFeatureCodes(code, checked) {
+        this.setState(prevState => {
+            return {featureCodes: PlaygroundFilter.updateAbstractCodes(prevState.featureCodes, code, checked)}
+        });
+    }
+
     render() {
-        const setFilterData = (prefix, content) => {
+        const setFilterData = (prefix, content, updater) => {
             const result = [];
-            const handler = event => {
-                console.log(event.target);
-            };
             if ((content != null) && (content.length > 0)) {
                 content.forEach(function (item, i, arr) {
-                    const id = prefix + '_' + item.code;
+                    const code = item.code;
+                    const id = prefix + '_' + code;
                     const name = item.name.charAt(0).toUpperCase() + item.name.slice(1);
                     result.push(
                         <div key={i} className="custom-control custom-checkbox">
-                            <input type="checkbox" className="custom-control-input" onChange={handler} id={id}/>
+                            <input type="checkbox" className="custom-control-input"
+                                   value={code} id={id} onChange={event => {
+                                updater(event.target.value, event.target.checked);
+                            }}/>
                             <label className="custom-control-label" htmlFor={id}>{name}</label>
                         </div>
                     );
@@ -194,7 +220,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('sport', this.state.sports)}
+                                    {setFilterData('sport', this.state.sports, this.updateSportCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
@@ -208,7 +234,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('feature', this.state.features)}
+                                    {setFilterData('feature', this.state.features, this.updateFeatureCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
