@@ -333,10 +333,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 predicates.add(rootPredicate);
             }
             if (featureCodes != null) {
-                predicates.add(searchByFeaturesPredicate(root));
+                predicates.add(searchByFeaturesPredicate(root, query, cb));
             }
             if (sportCodes != null) {
-                predicates.add(searchBySportsPredicate(root));
+                predicates.add(searchBySportsPredicate(root, query, cb));
             }
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
@@ -354,12 +354,35 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                     .distinct(true).getRestriction();
         }
 
-        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root) {
-            return root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> mainRoot, CriteriaQuery<?> mainQuery, CriteriaBuilder cb) {
+//            version 1
+//            ------------------------
+            return mainRoot.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
         }
 
-        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root) {
-            return root.join(PlaygroundEntity_.specializations).get(FeatureEntity_.code).in(sportCodes);
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> mainRoot, CriteriaQuery<?> mainQuery, CriteriaBuilder cb) {
+//            version 1
+//            ------------------------
+//            return root.join(PlaygroundEntity_.specializations).get(SportEntity_.code).in(sportCodes);
+
+//            version 2 (not working)
+//            ------------------------
+//            Subquery<SportEntity> subQuery = query.subquery(SportEntity.class);
+//            Root<SportEntity> subRoot = subQuery.from(SportEntity.class);
+//            subQuery.select(subRoot);
+//            return subQuery
+//                    .where(subRoot.get(SportEntity_.code).in(sportCodes))
+//                    .in(root.join(PlaygroundEntity_.specializations));
+
+//            version 3 (same result as in version 1)
+//            ------------------------
+            Subquery<SportEntity> subQuery = mainQuery.subquery(SportEntity.class);
+            Root<SportEntity> subRoot = subQuery.from(SportEntity.class);
+            subQuery.select(subRoot);
+            return cb.exists(subQuery.where(cb.and(
+                    subRoot.get(SportEntity_.code).in(sportCodes),
+                    subRoot.in(mainRoot.join(PlaygroundEntity_.specializations))
+            )));
         }
 
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
