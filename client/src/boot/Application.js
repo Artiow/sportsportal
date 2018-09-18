@@ -28,7 +28,7 @@ class MainFrame extends Component {
     render() {
         return (
             <div>
-                <Header/>
+                <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
                 <Main/>
             </div>
         );

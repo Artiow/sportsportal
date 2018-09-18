@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import './Header.css';
+import {getApiUrl} from '../boot/constants'
 import axios from "axios/index";
+import './Header.css';
 
 function Header(props) {
     return (
         <header className="Header">
             <div className="container">
                 <div className="row">
-                    <MainBlock titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
+                    <MainBlock titleHref={props.titleHref} titleLabel={props.titleLabel}
+                               subtitleHref={props.subtitleHref} subtitleLabel={props.subtitleLabel}/>
                     <AuthBlock/>
                 </div>
             </div>
@@ -19,15 +21,15 @@ function Header(props) {
 function MainBlock(props) {
     return (
         <div className="MainBlock col-md-6">
-            <h3>
-                <Link to={props.titleHref}>{props.titleLabel}</Link>
-            </h3>
-            <h6>
-                <Link to="/">
+            {((props.titleHref != null) && (props.titleLabel != null)) ? (
+                <h3><Link to={props.titleHref}>{props.titleLabel}</Link></h3>
+            ) : (null)}
+            {((props.subtitleHref != null) && (props.subtitleLabel != null)) ? (
+                <h6><Link to={props.subtitleHref}>
                     <i className="fa fa-angle-double-left"/>
-                    <small>НА ГЛАВНУЮ</small>
-                </Link>
-            </h6>
+                    <small>{props.subtitleLabel}</small>
+                </Link></h6>
+            ) : (null)}
         </div>
     );
 }
@@ -61,7 +63,7 @@ class AuthBlock extends Component {
         const accessToken = localStorage.getItem('token');
         if (accessToken !== null) {
             axios
-                .get('http://localhost:8080/auth/verify', {params: {accessToken: accessToken}})
+                .get(getApiUrl('/auth/verify'), {params: {accessToken: accessToken}})
                 .then(function (response) {
                     console.log('Response:', response);
                     const data = response.data;
@@ -78,32 +80,24 @@ class AuthBlock extends Component {
         }
     }
 
-    authContent() {
-        if (this.state.isAuthorized) {
-            return (
-                <div className="auth">
-                    <Link to="/home"><i className="fa fa-user"/>
-                        <span>{this.state.nickname}</span>
-                    </Link>
-                    <Link to="/logout" onClick={this.handleLogout.bind(this)}>
-                        <i className="fa fa-sign-out"/>
-                        <span>ВЫЙТИ</span>
-                    </Link>
-                </div>
-            );
-        } else {
-            return (
-                <div className="auth">
-                    <Link to="/login"><i className="fa fa-sign-in"/>ВОЙТИ</Link>
-                </div>
-            );
-        }
-    }
-
     render() {
         return (
             <div className="AuthBlock col-md-6">
-                {this.authContent()}
+                {this.state.isAuthorized ? (
+                    <div className="auth">
+                        <Link to="/home"><i className="fa fa-user"/>
+                            <span>{this.state.nickname}</span>
+                        </Link>
+                        <Link to="/logout" onClick={this.handleLogout.bind(this)}>
+                            <i className="fa fa-sign-out"/>
+                            <span>ВЫЙТИ</span>
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="auth">
+                        <Link to="/login"><i className="fa fa-sign-in"/>ВОЙТИ</Link>
+                    </div>
+                )}
             </div>
         );
     }
