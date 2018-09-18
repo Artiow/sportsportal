@@ -333,10 +333,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 predicates.add(rootPredicate);
             }
             if (featureCodes != null) {
-                predicates.add(searchByFeaturesPredicate(root, query, cb));
+                predicates.add(searchByFeaturesPredicate(root));
             }
             if (sportCodes != null) {
-                predicates.add(searchBySportsPredicate(root, query, cb));
+                predicates.add(searchBySportsPredicate(root));
             }
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
@@ -354,16 +354,16 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                     .distinct(true).getRestriction();
         }
 
-        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> mainRoot, CriteriaQuery<?> mainQuery, CriteriaBuilder cb) {
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root) {
 //            version 1
 //            ----------------------------------------------------------------------------------------------------------
-            return mainRoot.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
+            return root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
         }
 
-        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> mainRoot, CriteriaQuery<?> mainQuery, CriteriaBuilder cb) {
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root) {
 //            version 1
 //            ----------------------------------------------------------------------------------------------------------
-            return mainRoot.join(PlaygroundEntity_.specializations).get(SportEntity_.code).in(sportCodes);
+            return root.join(PlaygroundEntity_.specializations).get(SportEntity_.code).in(sportCodes);
 
 //            version 2 (same result as in version 1)
 //            ----------------------------------------------------------------------------------------------------------

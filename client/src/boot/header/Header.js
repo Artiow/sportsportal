@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {getApiUrl} from '../boot/constants'
+import {getApiUrl} from '../constants'
 import axios from "axios/index";
 import './Header.css';
 
@@ -41,7 +41,6 @@ class AuthBlock extends Component {
             isAuthorized: false,
             nickname: null
         };
-
         this.queryVerify();
     }
 

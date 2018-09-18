@@ -5,12 +5,12 @@ import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import axios from 'axios';
 import qs from 'qs';
-import './Main.css';
+import './Index.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
 
-class Main extends Component {
+class Index extends Component {
 
-    static PAGE_SIZE = 10;
+    static DEFAULT_PAGE_SIZE = 10;
 
     updateFilterCallback = newFilter => {
         this.setState(prevState => {
@@ -26,8 +26,8 @@ class Main extends Component {
             pageNumber: 0,
             totalPages: 0,
             filter: {
-                pageNum: 0,
-                pageSize: Main.PAGE_SIZE
+                pageSize: Index.DEFAULT_PAGE_SIZE,
+                pageNum: 0
             }
         };
         this.query();
@@ -42,7 +42,7 @@ class Main extends Component {
                 return qs.stringify(params, {arrayFormat: 'repeat'})
             }
         }).then(function (response) {
-            console.log('Response:', response);
+            console.log('API Request Response:', response);
             const data = response.data;
             self.setState({
                 content: data.content,
@@ -50,7 +50,7 @@ class Main extends Component {
                 totalPages: data.totalPages
             });
         }).catch(function (error) {
-            console.log('Error:', error);
+            console.log('API Request Error:', error);
         })
     }
 
@@ -123,7 +123,7 @@ class PlaygroundFilter extends Component {
         });
     }
 
-    static updateAbstractCodes(codes, code, checked) {
+    static updateCodeArray(codes, code, checked) {
         const idx = codes.indexOf(code);
         if ((checked) && (idx < 0)) codes.push(code);
         else codes.splice(idx, 1);
@@ -138,11 +138,11 @@ class PlaygroundFilter extends Component {
     uploadFilerData(uri, setting) {
         axios.get(getApiUrl(uri))
             .then(function (response) {
-                console.log('API Response:', response);
+                console.log('API Dictionary Response:', response);
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('API Error:', error);
+                console.log('API Dictionary Error:', error);
             })
     }
 
@@ -168,13 +168,13 @@ class PlaygroundFilter extends Component {
 
     updateSportCodes(code, checked) {
         this.setState(prevState => {
-            return {sportCodes: PlaygroundFilter.updateAbstractCodes(prevState.sportCodes, code, checked)}
+            return {sportCodes: PlaygroundFilter.updateCodeArray(prevState.sportCodes, code, checked)}
         });
     }
 
     updateFeatureCodes(code, checked) {
         this.setState(prevState => {
-            return {featureCodes: PlaygroundFilter.updateAbstractCodes(prevState.featureCodes, code, checked)}
+            return {featureCodes: PlaygroundFilter.updateCodeArray(prevState.featureCodes, code, checked)}
         });
     }
 
@@ -189,9 +189,10 @@ class PlaygroundFilter extends Component {
                     result.push(
                         <div key={i} className="custom-control custom-checkbox">
                             <input type="checkbox" className="custom-control-input"
-                                   value={code} id={id} onChange={event => {
-                                updater(event.target.value, event.target.checked);
-                            }}/>
+                                   value={code} id={id}
+                                   onChange={event => {
+                                       updater(event.target.value, event.target.checked);
+                                   }}/>
                             <label className="custom-control-label" htmlFor={id}>{name}</label>
                         </div>
                     );
@@ -329,26 +330,22 @@ class PlaygroundFilter extends Component {
 function PageablePlaygroundContainer(props) {
     const content = props.content;
     const pageable = props.pageable;
-    if ((content !== null) && (content.length > 0)) {
-        return (
-            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-                <PlaygroundContainer content={content}/>
-                {(pageable) ? (<PlaygroundPagination/>) : (null)}
-            </div>
-        );
-    } else {
-        return (
-            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-                <div className="col-xs-12 col-sm-12 mb-12">
-                    <div className="alert alert-light">
-                        <h4 className="alert-heading">Ничего не найдено!</h4>
-                        <hr/>
-                        <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
-                    </div>
+    return ((content !== null) && (content.length > 0)) ? (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
+            <PlaygroundContainer content={content}/>
+            {(pageable) ? (<PlaygroundPagination/>) : (null)}
+        </div>
+    ) : (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
+            <div className="col-xs-12 col-sm-12 mb-12">
+                <div className="alert alert-light">
+                    <h4 className="alert-heading">Ничего не найдено!</h4>
+                    <hr/>
+                    <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 function PlaygroundPagination(props) {
@@ -404,7 +401,6 @@ function PlaygroundCard(props) {
 function Rate(props) {
     const rate = props.rate;
     let stars = [];
-
     let i = 0;
     while (i <= (rate - 2)) {
         stars.push(<i key={i} className="fa fa-star"/>);
@@ -418,10 +414,9 @@ function Rate(props) {
         stars.push(<i key={i} className="fa fa-star-o"/>);
         i += 2;
     }
-
     return (
         <span className="Rate card-title">{stars}</span>
     );
 }
 
-export default Main;
+export default Index;

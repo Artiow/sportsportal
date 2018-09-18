@@ -1,38 +1,55 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 import '../../node_modules/jquery/dist/jquery.min';
 import '../../node_modules/popper.js/dist/umd/popper';
 import '../../node_modules/bootstrap/dist/js/bootstrap.min';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
-import Home from './home/Home';
 import Login from './auth/Login';
 import Registration from './auth/Registration';
-import Header from '../header/Header';
-import Main from '../main/Main';
+import NoMatch from './mismatch/NoMatch';
+import Header from './header/Header';
+import Index from '../main/Index';
 
-class Application extends Component {
-    render() {
-        return (
-            <Switch>
-                <Route exact path='/registration' component={Registration}/>
-                <Route exact path='/login' component={Login}/>
-                <Route exact path='/home' component={Home}/>
-                <Route path='/' component={MainFrame}/>
-            </Switch>
-        );
-    }
+function Application(props) {
+    return (
+        <Switch>
+            <Route exact path='/registration' component={Registration}/>
+            <Route exact path='/login' component={Login}/>
+            <Route exact path='/home' component={HomeFrame}/>
+            <Route exact path='/' component={IndexFrame}/>
+            <Route component={NoMatch}/>
+        </Switch>
+    );
 }
 
-class MainFrame extends Component {
-    render() {
-        return (
-            <div>
-                <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
-                <Main/>
-            </div>
-        );
-    }
+function HomeFrame(props) {
+    return (
+        <div>
+            <Header titleHref={'/home'} titleLabel={'ДОМАШНЯЯ СТРАНИЦА'}
+                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
+            <div className="container"/>
+        </div>
+    );
+}
+
+function IndexFrame(props) {
+    return (
+        <div>
+            <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
+            <Index/>
+        </div>
+    );
+}
+
+function PgFrame(props) {
+    return (
+        <div>
+            <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}
+                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
+            <div className="container"/>
+        </div>
+    );
 }
 
 export default Application;

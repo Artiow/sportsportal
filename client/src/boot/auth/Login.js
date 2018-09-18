@@ -12,7 +12,6 @@ class Login extends Component {
             password: '',
             errorMessage: ''
         };
-
         this.queryVerify();
     }
 
