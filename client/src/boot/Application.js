@@ -10,14 +10,16 @@ import Registration from './auth/Registration';
 import NoMatch from './mismatch/NoMatch';
 import Header from './header/Header';
 import Index from '../main/Index';
+import Playground from '../main/Playground';
 
 function Application(props) {
     return (
         <Switch>
+            <Route exact path='/' component={IndexFrame}/>
+            <Route exact path='/playground/id:identifier' component={PgFrame}/>
             <Route exact path='/registration' component={Registration}/>
             <Route exact path='/login' component={Login}/>
             <Route exact path='/home' component={HomeFrame}/>
-            <Route exact path='/' component={IndexFrame}/>
             <Route component={NoMatch}/>
         </Switch>
     );
@@ -47,7 +49,7 @@ function PgFrame(props) {
         <div>
             <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}
                     subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
-            <div className="container"/>
+            <Playground identifier={props.match.params.identifier}/>
         </div>
     );
 }
