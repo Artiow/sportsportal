@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.controller.advice;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,10 +20,7 @@ import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.generic.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestControllerAdvice
 public class AdviseController {
@@ -66,18 +63,22 @@ public class AdviseController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        BindingResult bindingResult = ex.getBindingResult();
-        List<ObjectError> allErrors = bindingResult.getAllErrors();
-
-        String message = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
-        Map<String, String> errors = new HashMap<>(allErrors.size());
+        List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
+        Map<String, String> errorMap = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            String code = ((DefaultMessageSourceResolvable) error.getArguments()[0]).getCode();
+            String code = Optional.ofNullable(error.getArguments())
+                    .map(args -> ((DefaultMessageSourceResolvable) args[0]))
+                    .map(DefaultMessageSourceResolvable::getCode)
+                    .orElse("null");
             if (code.equals("")) code = "class";
-            errors.put(code, error.getDefaultMessage());
+            errorMap.put(code, error.getDefaultMessage());
         }
-
-        return new ErrorMapDTO(warnUUID("Sent Argument Not Valid."), ex.getClass().getName(), message, errors);
+        return new ErrorMapDTO(
+                warnUUID("Sent Argument Not Valid."),
+                ex.getClass().getName(),
+                messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
+                errorMap
+        );
     }
 
 
@@ -89,8 +90,14 @@ public class AdviseController {
 
     @ExceptionHandler(AuthorizationRequiredException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorDTO handleHttpMessageNotReadableException(AuthorizationRequiredException ex) {
+    public ErrorDTO handleAuthorizationRequiredException(AuthorizationRequiredException ex) {
         return warnDTO(ex, "Unexpected Unauthorized Access Attempt.");
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorDTO handleSignatureException(SignatureException ex) {
+        return warnDTO(ex, "Unauthorized Access Attempt.");
     }
 
     @ExceptionHandler({NoHandlerFoundException.class, HandlerNotFoundException.class})

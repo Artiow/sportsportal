@@ -29,8 +29,8 @@ class Login extends Component {
                     window.location.replace('/');
                 })
                 .catch(function (error) {
-                    const response = error.response;
-                    console.log('Verify Error Response:', response);
+                    console.log('Verify Error:', error.response);
+                    localStorage.clear();
                 })
         }
     }
@@ -49,7 +49,7 @@ class Login extends Component {
             })
             .catch(function (error) {
                 const response = error.response;
-                console.log('Login Error Response:', response);
+                console.log('Login Error:', response);
                 self.setState({
                     errorMessages: response.data.message
                 });

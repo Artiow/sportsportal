@@ -64,7 +64,7 @@ class AuthBlock extends Component {
             axios
                 .get(getApiUrl('/auth/verify'), {params: {accessToken: accessToken}})
                 .then(function (response) {
-                    console.log('Response:', response);
+                    console.log('Verify Response:', response);
                     const data = response.data;
                     const userInfo = data.userInfo;
                     const login = userInfo.login;
@@ -75,6 +75,10 @@ class AuthBlock extends Component {
                         isAuthorized: true,
                         nickname: nickname
                     })
+                })
+                .catch(function (error) {
+                    console.log('Verify Error:', error.response);
+                    localStorage.clear();
                 })
         }
     }

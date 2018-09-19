@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.service;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -131,10 +132,10 @@ public class UserService extends AbstractMessageService {
      * @param accessToken {@link String} access token
      * @return {@link TokenDTO} token info
      * @throws UsernameNotFoundException if user not found
-     * @throws JwtException              if could not parse jwt
+     * @throws SignatureException        if could not parse jwt
      */
     @Transactional(readOnly = true)
-    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, JwtException {
+    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, SignatureException {
         final String tokenType = securityService.getTokenType();
         if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
             throw new BadCredentialsException(mGet("sportsportal.auth.filter.credentialsNotValid.message"));
