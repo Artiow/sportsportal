@@ -77,7 +77,7 @@ class AuthBlock extends Component {
                     })
                 })
                 .catch(function (error) {
-                    console.log('Verify Error:', error.response);
+                    console.log('Verify Error:', error);
                     localStorage.clear();
                 })
         }

@@ -42,7 +42,7 @@ class Index extends Component {
                 return qs.stringify(params, {arrayFormat: 'repeat'})
             }
         }).then(function (response) {
-            console.log('API Request Response:', response);
+            console.log('Query Response:', response);
             const data = response.data;
             self.setState({
                 content: data.content,
@@ -50,7 +50,7 @@ class Index extends Component {
                 totalPages: data.totalPages
             });
         }).catch(function (error) {
-            console.log('API Request Error:', error);
+            console.log('Query Error:', error);
         })
     }
 
@@ -138,11 +138,11 @@ class PlaygroundFilter extends Component {
     uploadFilerData(uri, setting) {
         axios.get(getApiUrl(uri))
             .then(function (response) {
-                console.log('API Dictionary Response:', response);
+                console.log('Dictionary Response:', response);
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('API Dictionary Error:', error);
+                console.log('Dictionary Error:', error);
             })
     }
 
