@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import Slider, {Range} from 'rc-slider';
+import 'rc-slider/assets/index.css';
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
 import StarRate from '../util/components/StarRate';
