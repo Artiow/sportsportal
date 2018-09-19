@@ -34,6 +34,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
@@ -333,10 +334,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 predicates.add(rootPredicate);
             }
             if (featureCodes != null) {
-                predicates.add(searchByFeaturesPredicate(root));
+                predicates.add(searchByFeaturesPredicate(root, cb));
             }
             if (sportCodes != null) {
-                predicates.add(searchBySportsPredicate(root));
+                predicates.add(searchBySportsPredicate(root, cb));
             }
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
@@ -354,12 +355,24 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                     .distinct(true).getRestriction();
         }
 
-        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root) {
-            return root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code).in(featureCodes);
+        private Predicate searchByFeaturesPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            List<Predicate> predicates = new ArrayList<>(featureCodes.size());
+            for (String featureCode : featureCodes) {
+                predicates.add(
+                        cb.equal(root.join(PlaygroundEntity_.capabilities).get(FeatureEntity_.code), featureCode)
+                );
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
         }
 
-        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root) {
-            return root.join(PlaygroundEntity_.specializations).get(FeatureEntity_.code).in(sportCodes);
+        private Predicate searchBySportsPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            List<Predicate> predicates = new ArrayList<>(sportCodes.size());
+            for (String sportCode : sportCodes) {
+                predicates.add(
+                        cb.equal(root.join(PlaygroundEntity_.specializations).get(SportEntity_.code), sportCode)
+                );
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
         }
 
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {

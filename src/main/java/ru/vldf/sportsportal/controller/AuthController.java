@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.controller;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,12 @@ public class AuthController {
      * @param accessToken {@link String} users access token
      * @return {@link TokenDTO} token data
      * @throws UsernameNotFoundException if user not found
-     * @throws JwtException              if could not parse jwt
+     * @throws SignatureException        if could not parse jwt
      */
     @GetMapping("/verify")
     @ApiOperation("верификация")
     public TokenDTO verify(@RequestParam String accessToken)
-            throws UsernameNotFoundException, JwtException {
+            throws UsernameNotFoundException, SignatureException {
         return userService.verify(accessToken);
     }
 

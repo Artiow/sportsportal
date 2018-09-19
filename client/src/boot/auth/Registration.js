@@ -151,7 +151,6 @@ function InputField(props) {
             </div>
         </div>
     );
-
 }
 
 function PasswordInputField(props) {
@@ -184,7 +183,6 @@ function PasswordInputField(props) {
             </div>
         </div>
     );
-
 }
 
 export default Registration;

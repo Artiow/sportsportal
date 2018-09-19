@@ -1,15 +1,16 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
-import {Range} from 'rc-slider';
+import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import axios from 'axios';
-import './Main.css';
+import qs from 'qs';
+import './Index.css';
 import noImageSm from '../util/img/no-image-sm.jpg';
 
-class Main extends Component {
+class Index extends Component {
 
-    static PAGE_SIZE = 10;
+    static DEFAULT_PAGE_SIZE = 10;
 
     updateFilterCallback = newFilter => {
         this.setState(prevState => {
@@ -25,8 +26,8 @@ class Main extends Component {
             pageNumber: 0,
             totalPages: 0,
             filter: {
-                pageNum: 0,
-                pageSize: Main.PAGE_SIZE
+                pageSize: Index.DEFAULT_PAGE_SIZE,
+                pageNum: 0
             }
         };
         this.query();
@@ -35,19 +36,22 @@ class Main extends Component {
     query() {
         const self = this;
         const url = getApiUrl('/leaseapi/playground/list');
-        axios.get(url, {params: this.state.filter})
-            .then(function (response) {
-                console.log('Response:', response);
-                const data = response.data;
-                self.setState({
-                    content: data.content,
-                    pageNumber: data.pageNumber,
-                    totalPages: data.totalPages
-                });
-            })
-            .catch(function (error) {
-                console.log('Error:', error);
-            })
+        axios.get(url, {
+            params: this.state.filter,
+            paramsSerializer: params => {
+                return qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        }).then(function (response) {
+            console.log('API Request Response:', response);
+            const data = response.data;
+            self.setState({
+                content: data.content,
+                pageNumber: data.pageNumber,
+                totalPages: data.totalPages
+            });
+        }).catch(function (error) {
+            console.log('API Request Error:', error);
+        })
     }
 
     render() {
@@ -68,6 +72,12 @@ class PlaygroundFilter extends Component {
     static MIN_COST = 0;
     static MAX_COST = 1000000;
 
+    updateRateCallback = slider => {
+        this.setState({
+            minRate: slider
+        });
+    };
+
     updateCostCallback = range => {
         const MAX = PlaygroundFilter.MAX_COST;
         this.setState({
@@ -77,29 +87,63 @@ class PlaygroundFilter extends Component {
     };
 
     updateTimeCallback = range => {
-        let opening = range[0];
-        opening = (opening !== 48) ? opening : 0;
-        const openingHour = Math.floor(opening / 2);
-        const openingMinute = (30 * (opening % 2));
-        let closing = range[1];
-        closing = (closing !== 48) ? closing : 0;
-        const closingHour = Math.floor(closing / 2);
-        const closingMinute = (30 * (closing % 2));
+        const normalize = time => {
+            const normalTime = (time !== 48) ? time : 0;
+            const timeHour = Math.floor(normalTime / 2);
+            const timeMinute = (30 * (normalTime % 2));
+            return ((timeHour < 10) ? ('0' + timeHour) : timeHour) + ':' + ((timeMinute !== 30) ? (timeMinute + '0') : timeMinute)
+        };
         this.setState({
-            opening: ((openingHour < 10) ? '0' : '') + openingHour + ':' + openingMinute + ((openingMinute !== 30) ? '0' : ''),
-            closing: ((closingHour < 10) ? '0' : '') + closingHour + ':' + closingMinute + ((closingMinute !== 30) ? '0' : '')
+            opening: normalize(range[0]),
+            closing: normalize(range[1])
         });
     };
 
     constructor(props) {
         super(props);
         this.state = {
+            sports: null,
+            sportCodes: [],
+            features: null,
+            featureCodes: [],
             searchString: '',
             startCost: PlaygroundFilter.MIN_COST,
             endCost: PlaygroundFilter.MAX_COST,
             opening: '00:00',
-            closing: '00:00'
-        }
+            closing: '00:00',
+            minRate: 0
+        };
+
+        const self = this;
+        this.uploadFilerData("/leaseapi/dict/feature/list", function (list) {
+            self.setState({features: list});
+        });
+        this.uploadFilerData("/leaseapi/dict/sport/list", function (list) {
+            self.setState({sports: list});
+        });
+    }
+
+    static updateCodeArray(codes, code, checked) {
+        const idx = codes.indexOf(code);
+        if ((checked) && (idx < 0)) codes.push(code);
+        else codes.splice(idx, 1);
+        return codes;
+    }
+
+    /**
+     * Load dictionary and store it in state.
+     * @param uri {string}
+     * @param setting {function(object)}
+     */
+    uploadFilerData(uri, setting) {
+        axios.get(getApiUrl(uri))
+            .then(function (response) {
+                console.log('API Dictionary Response:', response);
+                setting(response.data.content);
+            })
+            .catch(function (error) {
+                console.log('API Dictionary Error:', error);
+            })
     }
 
     handleInputChange(event) {
@@ -112,14 +156,50 @@ class PlaygroundFilter extends Component {
         event.preventDefault();
         this.props.callback({
             searchString: this.state.searchString,
+            featureCodes: this.state.featureCodes,
+            sportCodes: this.state.sportCodes,
             startCost: this.state.startCost,
             endCost: this.state.endCost,
             opening: this.state.opening,
-            closing: this.state.closing
+            closing: this.state.closing,
+            minRate: this.state.minRate
         })
     }
 
+    updateSportCodes(code, checked) {
+        this.setState(prevState => {
+            return {sportCodes: PlaygroundFilter.updateCodeArray(prevState.sportCodes, code, checked)}
+        });
+    }
+
+    updateFeatureCodes(code, checked) {
+        this.setState(prevState => {
+            return {featureCodes: PlaygroundFilter.updateCodeArray(prevState.featureCodes, code, checked)}
+        });
+    }
+
     render() {
+        const setFilterData = (prefix, content, updater) => {
+            const result = [];
+            if ((content != null) && (content.length > 0)) {
+                content.forEach(function (item, i, arr) {
+                    const code = item.code;
+                    const id = prefix + '_' + code;
+                    const name = item.name.charAt(0).toUpperCase() + item.name.slice(1);
+                    result.push(
+                        <div key={i} className="custom-control custom-checkbox">
+                            <input type="checkbox" className="custom-control-input"
+                                   value={code} id={id}
+                                   onChange={event => {
+                                       updater(event.target.value, event.target.checked);
+                                   }}/>
+                            <label className="custom-control-label" htmlFor={id}>{name}</label>
+                        </div>
+                    );
+                });
+            }
+            return result;
+        };
         return (
             <div className="PlaygroundFilter col-xs-12 col-sm-4 mb-4">
                 <form onSubmit={this.handleSubmit.bind(this)} className="card">
@@ -135,11 +215,39 @@ class PlaygroundFilter extends Component {
                             <div className="card-header">
                                 <h5 className="mb-0">
                                     <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
-                                        Стоимость часа
+                                        Виды спорта
                                     </a>
                                 </h5>
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    {setFilterData('sport', this.state.sports, this.updateSportCodes.bind(this))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                        Инфраструктура
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_2" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    {setFilterData('feature', this.state.features, this.updateFeatureCodes.bind(this))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_3">
+                                        Стоимость часа
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_3" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -167,12 +275,12 @@ class PlaygroundFilter extends Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_4">
                                         Время работы
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_2" className="collapse" data-parent="#accordion">
+                            <div id="collapse_4" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -192,6 +300,26 @@ class PlaygroundFilter extends Component {
                                 </div>
                             </div>
                         </div>
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className="mb-0">
+                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_5">
+                                        Рейтинг
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapse_5" className="collapse" data-parent="#accordion">
+                                <div className="card-body">
+                                    <h6 className="badge badge-dark">
+                                            <span className="badge-param">
+                                                <Rate rate={this.state.minRate}/>
+                                            </span>
+                                    </h6>
+                                    <Slider min={0} max={10} defaultValue={0}
+                                            onChange={this.updateRateCallback}/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -202,22 +330,22 @@ class PlaygroundFilter extends Component {
 function PageablePlaygroundContainer(props) {
     const content = props.content;
     const pageable = props.pageable;
-    if ((content !== null) && (content.length > 0)) {
-        return (
-            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-                <PlaygroundContainer content={content}/>
-                {(pageable) ? (<PlaygroundPagination/>) : (null)}
-            </div>
-        );
-    } else {
-        return (
-            <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-                <div className="col-xs-12 col-sm-12 mb-12">
-                    <div className="alert alert-primary">Ничего не найдено!</div>
+    return ((content !== null) && (content.length > 0)) ? (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
+            <PlaygroundContainer content={content}/>
+            {(pageable) ? (<PlaygroundPagination/>) : (null)}
+        </div>
+    ) : (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
+            <div className="col-xs-12 col-sm-12 mb-12">
+                <div className="alert alert-light">
+                    <h4 className="alert-heading">Ничего не найдено!</h4>
+                    <hr/>
+                    <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 function PlaygroundPagination(props) {
@@ -231,18 +359,12 @@ function PlaygroundPagination(props) {
 }
 
 function PlaygroundContainer(props) {
-    const content = props.content;
     let container = [];
-    if (content.length > 0) {
+    const content = props.content;
+    if ((content !== null) && (content.length > 0)) {
         content.forEach(function (item, i, arr) {
             container.push(<PlaygroundCard key={i} playground={item}/>);
         });
-    } else {
-        container.push(
-            <div className="col-xs-12 col-sm-12 mb-12">
-                <div className="alert alert-primary">Ничего не найдено!</div>
-            </div>
-        );
     }
     return (<div className="PlaygroundContainer row">{container}</div>);
 }
@@ -259,7 +381,9 @@ function PlaygroundCard(props) {
                     <h4 className="card-title">
                         <small>{playground.name}</small>
                     </h4>
-                    <Rate className="card-title" rate={playground.rate}/>
+                    <h6 className="card-title">
+                        <Rate rate={playground.rate}/>
+                    </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
                             от<span>{((playground.cost / 100).toFixed())}</span><i className="fa fa-rub"/>/час
@@ -277,7 +401,6 @@ function PlaygroundCard(props) {
 function Rate(props) {
     const rate = props.rate;
     let stars = [];
-
     let i = 0;
     while (i <= (rate - 2)) {
         stars.push(<i key={i} className="fa fa-star"/>);
@@ -291,10 +414,9 @@ function Rate(props) {
         stars.push(<i key={i} className="fa fa-star-o"/>);
         i += 2;
     }
-
     return (
-        <h6 className="Rate card-title">{stars}</h6>
+        <span className="Rate card-title">{stars}</span>
     );
 }
 
-export default Main;
+export default Index;

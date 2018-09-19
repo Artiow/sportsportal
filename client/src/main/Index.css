@@ -30,7 +30,7 @@
     width: 100%;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-header button:hover {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-header a:hover {
     color: black;
 }
 
@@ -39,13 +39,33 @@
     padding-top: 15px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body h6 span.badge-sub {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge-sub {
     display: inline-block;
     min-width: 21px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body h6 span.badge span.badge-param {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge span.badge-param {
     margin: 0 3px 0 0;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox {
+    margin-bottom: 2px;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox:last-child {
+    margin-bottom: 0;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox input,
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox label {
+    font-weight: 500;
+    color: #343a40;
+}
+
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox input:hover,
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox label:hover {
+    cursor: pointer;
+    color: black;
 }
 
 /* PlaygroundCard */
