@@ -1,12 +1,12 @@
 import React, {Component} from "react";
+import Slider, {Range} from 'rc-slider';
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
-import Slider, {Range} from 'rc-slider';
-import 'rc-slider/assets/index.css';
+import StarRate from '../util/components/StarRate';
 import axios from 'axios';
 import qs from 'qs';
 import './Index.css';
-import noImageSm from '../util/img/no-image-sm.jpg';
+import noImage from '../util/img/no-image-white-sm.jpg';
 
 class Index extends Component {
 
@@ -312,7 +312,7 @@ class PlaygroundFilter extends Component {
                                 <div className="card-body">
                                     <h6 className="badge badge-dark">
                                             <span className="badge-param">
-                                                <Rate rate={this.state.minRate}/>
+                                                <StarRate value={this.state.minRate}/>
                                             </span>
                                     </h6>
                                     <Slider min={0} max={10} defaultValue={0}
@@ -335,7 +335,7 @@ function PageablePlaygroundContainer(props) {
             <PlaygroundContainer content={content}/>
             {(pageable) ? (<PlaygroundPagination/>) : (null)}
         </div>
-    ) : (
+    ) : (((content !== null) && (content.length === 0)) ? (
         <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
             <div className="col-xs-12 col-sm-12 mb-12">
                 <div className="alert alert-light">
@@ -345,7 +345,9 @@ function PageablePlaygroundContainer(props) {
                 </div>
             </div>
         </div>
-    );
+    ) : (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8"/>
+    ));
 }
 
 function PlaygroundPagination(props) {
@@ -372,7 +374,7 @@ function PlaygroundContainer(props) {
 function PlaygroundCard(props) {
     const playground = props.playground;
     const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImageSm);
+    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImage);
     return (
         <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
@@ -382,7 +384,7 @@ function PlaygroundCard(props) {
                         <small>{playground.name}</small>
                     </h4>
                     <h6 className="card-title">
-                        <Rate rate={playground.rate}/>
+                        <StarRate value={playground.rate}/>
                     </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
@@ -395,27 +397,6 @@ function PlaygroundCard(props) {
                 </div>
             </div>
         </div>
-    );
-}
-
-function Rate(props) {
-    const rate = props.rate;
-    let stars = [];
-    let i = 0;
-    while (i <= (rate - 2)) {
-        stars.push(<i key={i} className="fa fa-star"/>);
-        i += 2;
-    }
-    if (i < rate) {
-        stars.push(<i key={i} className="fa fa-star-half-o"/>);
-        i += 2;
-    }
-    while (i < 10) {
-        stars.push(<i key={i} className="fa fa-star-o"/>);
-        i += 2;
-    }
-    return (
-        <span className="Rate card-title">{stars}</span>
     );
 }
 
