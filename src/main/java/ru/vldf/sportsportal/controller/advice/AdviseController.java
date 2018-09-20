@@ -73,10 +73,17 @@ public class AdviseController {
             if (code.equals("")) code = "class";
             errorMap.put(code, error.getDefaultMessage());
         }
+
+        Throwable cause = ex.getCause();
+        String exceptionMessage = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
+        String causeClassName = (cause != null) ? cause.getClass().getName() : null;
+        String causeMessage = (cause != null) ? cause.getMessage() : null;
         return new ErrorMapDTO(
                 warnUUID("Sent Argument Not Valid."),
                 ex.getClass().getName(),
-                messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
+                exceptionMessage,
+                causeClassName,
+                causeMessage,
                 errorMap
         );
     }
@@ -138,7 +145,7 @@ public class AdviseController {
 
 
     public ErrorDTO errorDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(errorUUID(ex, logMessage), ex.getClass().getName(), ex.getMessage());
+        return new ErrorDTO(errorUUID(ex, logMessage), ex);
     }
 
     public UUID errorUUID(Throwable ex, String logMessage) {
@@ -148,7 +155,7 @@ public class AdviseController {
     }
 
     public ErrorDTO warnDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(warnUUID(logMessage), ex.getClass().getName(), ex.getMessage());
+        return new ErrorDTO(warnUUID(logMessage), ex);
     }
 
     public UUID warnUUID(String logMessage) {

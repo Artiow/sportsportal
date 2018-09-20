@@ -1,8 +1,10 @@
 package ru.vldf.sportsportal.config.security;
 
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -56,6 +58,8 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
 
         try {
             return security.authentication(auth.getCredentials().toString());
+        } catch (SignatureException e) {
+            throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.provider.insufficientToken.message"), e);
         } catch (JwtException e) {
             throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
         }

@@ -1,5 +1,11 @@
 import React from "react";
 
+/**
+ * StarRate by font awesome carousel.
+ * @author Artem Namednev <namednev.artem@gmail.com>
+ * @param props {object} component props
+ * @return rate component
+ */
 function StarRate(props) {
     const value = props.value;
     let stars = [];

@@ -165,12 +165,13 @@ public class PlaygroundController {
      * @param playgroundDTO playground data
      * @return no content
      * @throws ResourceNotFoundException       if playground not found
+     * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
     public ResponseEntity<Void> update(@PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO)
-            throws ResourceNotFoundException, ResourceOptimisticLockException {
+            throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }

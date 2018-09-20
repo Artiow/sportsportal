@@ -34,9 +34,9 @@ class Playground extends Component {
         let photos = [];
         let features = null;
         if (isLoad) {
-            const photoURLs = playground.photos;
-            if (photoURLs != null) photoURLs.forEach(function (item, i, arr) {
-                photos.push(item + '?size=mdh');
+            const photoItems = playground.photos;
+            if (photoItems != null) photoItems.forEach(function (item, i, arr) {
+                photos.push(item.url + '?size=mdh');
             });
 
             const featureLines = [];

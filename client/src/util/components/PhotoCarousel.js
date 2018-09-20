@@ -1,7 +1,10 @@
 import React from "react";
 
 /**
- * @return {null}
+ * PhotoCarousel by bootstrap carousel.
+ * @author Artem Namednev <namednev.artem@gmail.com>
+ * @param props {object} component props
+ * @return carousel component
  */
 function PhotoCarousel(props) {
     let photos = props.photos;
@@ -20,24 +23,28 @@ function PhotoCarousel(props) {
             )];
             for (let i = 1; i < photosCount; i++) {
                 carouselIndicatorItems.push(
-                    <li data-target="#carousel" data-slide-to={i} key={1}/>
+                    <li data-target="#carousel" data-slide-to={i} key={i}/>
                 )
             }
-            carouselIndicator = (<ol className="carousel-indicators">{carouselIndicatorItems}</ol>)
+            carouselIndicator = (<ol className="carousel-indicators">{carouselIndicatorItems}</ol>);
         }
 
-        const carouselInnerItems = [];
-        photos.forEach(function (item, i, arr) {
+        const carouselInnerItems = [(
+            <div className="carousel-item active" key={0}>
+                <img className="d-block w-100" src={photos[0]} alt=""/>
+            </div>
+        )];
+        for (let i = 1; i < photosCount; i++) {
             carouselInnerItems.push(
-                <div className="carousel-item active" key={i}>
-                    <img className="d-block w-100" src={item} alt=""/>
+                <div className="carousel-item" key={i}>
+                    <img className="d-block w-100" src={photos[i]} alt=""/>
                 </div>
             );
-        });
+        }
         const carouselInner = (<div className="carousel-inner">{carouselInnerItems}</div>);
 
         return (
-            <div id="carousel" className="carousel slide" data-ride="carousel">
+            <div id="carousel" className="PhotoCarousel carousel slide" data-ride="carousel">
                 {carouselIndicator}
                 {carouselInner}
                 {(photosCount > 1) ? (
@@ -54,7 +61,9 @@ function PhotoCarousel(props) {
                 ) : (null)}
             </div>
         )
-    } else return null;
+    } else return (
+        <div id="carousel" className="PhotoCarousel carousel slide" data-ride="carousel"/>
+    );
 }
 
 export default PhotoCarousel;

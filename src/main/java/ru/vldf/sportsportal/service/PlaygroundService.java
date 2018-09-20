@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
@@ -226,15 +227,21 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id            {@link Integer} playground identifier
      * @param playgroundDTO {@link PlaygroundDTO} with new playground data
      * @throws ResourceNotFoundException       if playground not found
+     * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
      */
     @Override
-    @Transactional
-    public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceOptimisticLockException {
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class, ResourceOptimisticLockException.class},
+            noRollbackFor = {EntityNotFoundException.class, JpaObjectRetrievalFailureException.class, OptimisticLockException.class, OptimisticLockingFailureException.class}
+    )
+    public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         try {
             playgroundRepository.saveAndFlush(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        } catch (JpaObjectRetrievalFailureException e) {
+            throw new ResourceCannotUpdateException(mGet("sportsportal.lease.Playground.cannotUpdate.message"), e);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             throw new ResourceOptimisticLockException(mGet("sportsportal.lease.Playground.optimisticLock.message"), e);
         }

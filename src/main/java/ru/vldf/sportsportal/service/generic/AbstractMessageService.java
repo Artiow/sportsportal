@@ -6,11 +6,9 @@ public abstract class AbstractMessageService {
 
     private MessageContainer messages;
 
-
     protected void setMessages(MessageContainer messages) {
         this.messages = messages;
     }
-
 
     protected String mGet(String msg) {
         return messages.get(msg);
