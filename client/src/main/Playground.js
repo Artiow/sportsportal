@@ -44,8 +44,11 @@ class Playground extends Component {
             if ((capabilities != null) && (capabilities.length > 0)) {
                 capabilities.forEach(function (item, i, arr) {
                     const name = item.name;
-                    featureLines.push(<li className="list-group-item" key={i}>{(name.charAt(0).toUpperCase() +
-                        name.slice(1))}</li>);
+                    featureLines.push(
+                        <li className="list-group-item" key={i}>
+                            {(name.charAt(0).toUpperCase() + name.slice(1))}
+                        </li>
+                    );
                 });
                 features = (<ul className="list-group list-group-flush">{featureLines}</ul>)
             }
@@ -58,21 +61,29 @@ class Playground extends Component {
                             <div className="container content-container">
                                 <div className="row header-row">
                                     <div className="col-12">
-                                        <h1>{playground.name}</h1>
-                                        <h4>{playground.address}</h4>
-                                        <h6><StarRate value={playground.rate}/></h6>
+                                        <h1 className="header-h header-name">
+                                            {playground.name}
+                                        </h1>
+                                        <h4 className="header-h header-address">
+                                            {playground.address}
+                                        </h4>
+                                        <h6 className="header-h header-rate">
+                                            <StarRate value={playground.rate}/>
+                                        </h6>
                                     </div>
                                 </div>
                                 <div className="row info-row">
                                     <div className="col-4">
-                                        <h4>
+                                        <h4 className="info-h info-cost">
                                             <span className="mr-md-2">Стоимость:</span>
                                             <span className="badge badge-secondary">
                                                 <span>{((playground.cost / 100).toFixed())}</span>
-                                                <i className="fa fa-rub"/>/час
+                                                <i className="fa fa-rub ml-1"/>/час
                                             </span>
                                         </h4>
-                                        {(features != null) ? (<h5>Инфраструктура:</h5>) : (null)}
+                                        {(features != null) ? (
+                                            <h5 className="info-h info-infra">Инфраструктура:</h5>
+                                        ) : (null)}
                                         {features}
                                     </div>
                                     <div className="col-8">
