@@ -9,6 +9,7 @@ public class PhoneValidator implements ConstraintValidator<Phone, String> {
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return ((s != null) && s.matches("^(\\+7\\()?[0-9]{3}\\)?[0-9]{3}-?[0-9]{2}-?[0-9]{2}$"));
+        if (s == null) return true;
+        return s.matches("^(\\+7\\()?[0-9]{3}\\)?[0-9]{3}-?[0-9]{2}-?[0-9]{2}$");
     }
 }

@@ -70,8 +70,9 @@ class Index extends Component {
 
 class PlaygroundFilter extends Component {
 
-    static MIN_COST = 0;
-    static MAX_COST = 1000000;
+    static MIN_PRICE = 0;
+    static MAX_PRICE = 10000;
+    static PRICE_STEP = 100;
 
     updateRateCallback = slider => {
         this.setState({
@@ -79,11 +80,10 @@ class PlaygroundFilter extends Component {
         });
     };
 
-    updateCostCallback = range => {
-        const MAX = PlaygroundFilter.MAX_COST;
+    updatePriceCallback = range => {
         this.setState({
-            startCost: (MAX * (range[0] / 100)),
-            endCost: (MAX * (range[1] / 100))
+            startPrice: range[0],
+            endPrice: range[1]
         });
     };
 
@@ -108,8 +108,8 @@ class PlaygroundFilter extends Component {
             features: null,
             featureCodes: [],
             searchString: '',
-            startCost: PlaygroundFilter.MIN_COST,
-            endCost: PlaygroundFilter.MAX_COST,
+            startPrice: PlaygroundFilter.MIN_PRICE,
+            endPrice: PlaygroundFilter.MAX_PRICE,
             opening: '00:00',
             closing: '00:00',
             minRate: 0
@@ -159,8 +159,8 @@ class PlaygroundFilter extends Component {
             searchString: this.state.searchString,
             featureCodes: this.state.featureCodes,
             sportCodes: this.state.sportCodes,
-            startCost: this.state.startCost,
-            endCost: this.state.endCost,
+            startPrice: this.state.startPrice,
+            endPrice: this.state.endPrice,
             opening: this.state.opening,
             closing: this.state.closing,
             minRate: this.state.minRate
@@ -254,7 +254,7 @@ class PlaygroundFilter extends Component {
                                         <span className="badge-sub">от</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {(this.state.startCost / 100).toFixed()}
+                                                {Math.floor(this.state.startPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
@@ -263,13 +263,16 @@ class PlaygroundFilter extends Component {
                                         <span className="badge-sub">до</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {(this.state.endCost / 100).toFixed()}
+                                                {Math.floor(this.state.endPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
                                     </h6>
-                                    <Range allowCross={false} defaultValue={[0, 100]}
-                                           onChange={this.updateCostCallback}/>
+                                    <Range allowCross={false}
+                                           min={PlaygroundFilter.MIN_PRICE} max={PlaygroundFilter.MAX_PRICE}
+                                           defaultValue={[PlaygroundFilter.MIN_PRICE, PlaygroundFilter.MAX_PRICE]}
+                                           step={[PlaygroundFilter.PRICE_STEP]}
+                                           onChange={this.updatePriceCallback}/>
                                 </div>
                             </div>
                         </div>
@@ -389,7 +392,7 @@ function PlaygroundCard(props) {
                     </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
-                            от<span>{((playground.cost / 100).toFixed())}</span><i className="fa fa-rub"/>/час
+                            от<span>{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
                         </span>
                     </p>
                     <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">

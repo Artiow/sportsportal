@@ -74,10 +74,10 @@ class Playground extends Component {
                                 </div>
                                 <div className="row info-row">
                                     <div className="col-4">
-                                        <h4 className="info-h info-cost">
+                                        <h4 className="info-h info-price">
                                             <span className="mr-md-2">Стоимость:</span>
                                             <span className="badge badge-secondary">
-                                                <span>{((playground.cost / 100).toFixed())}</span>
+                                                <span>{Math.floor(playground.price)}</span>
                                                 <i className="fa fa-rub ml-1"/>/час
                                             </span>
                                         </h4>

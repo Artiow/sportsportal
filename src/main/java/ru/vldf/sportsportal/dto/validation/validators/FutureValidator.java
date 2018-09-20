@@ -10,6 +10,7 @@ public class FutureValidator implements ConstraintValidator<Future, LocalDateTim
 
     @Override
     public boolean isValid(LocalDateTime ldt, ConstraintValidatorContext constraintValidatorContext) {
-        return ((ldt != null) && ldt.isAfter(LocalDateTime.now()));
+        if (ldt == null) return true;
+        return ldt.isAfter(LocalDateTime.now());
     }
 }

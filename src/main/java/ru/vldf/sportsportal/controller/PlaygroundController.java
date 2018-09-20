@@ -20,6 +20,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,8 +52,8 @@ public class PlaygroundController {
      * @param closing      {@link PlaygroundFilterDTO} closing field
      * @param featureCodes {@link PlaygroundFilterDTO} featureCodes field
      * @param sportCodes   {@link PlaygroundFilterDTO} sportCodes field
-     * @param startCost    {@link PlaygroundFilterDTO} startCost field
-     * @param endCost      {@link PlaygroundFilterDTO} endCost field
+     * @param startPrice   {@link PlaygroundFilterDTO} startPrice field
+     * @param endPrice     {@link PlaygroundFilterDTO} endPrice field
      * @param minRate      {@link PlaygroundFilterDTO} minRate field
      * @param searchString {@link StringSearcherDTO} searchString field
      * @param pageSize     {@link PageDividerDTO} pageSize field
@@ -66,8 +67,8 @@ public class PlaygroundController {
             @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
             @RequestParam(required = false) Collection<String> featureCodes,
             @RequestParam(required = false) Collection<String> sportCodes,
-            @RequestParam(required = false) Integer startCost,
-            @RequestParam(required = false) Integer endCost,
+            @RequestParam(required = false) BigDecimal startPrice,
+            @RequestParam(required = false) BigDecimal endPrice,
             @RequestParam(required = false) Integer minRate,
             @RequestParam(required = false) String searchString,
             @RequestParam(required = false) Integer pageSize,
@@ -76,8 +77,8 @@ public class PlaygroundController {
         return playgroundService.getList((PlaygroundFilterDTO) new PlaygroundFilterDTO()
                 .setFeatureCodes(featureCodes)
                 .setSportCodes(sportCodes)
-                .setStartCost(startCost)
-                .setEndCost(endCost)
+                .setStartPrice(startPrice)
+                .setEndPrice(endPrice)
                 .setMinRate(minRate)
                 .setOpening(opening)
                 .setClosing(closing)

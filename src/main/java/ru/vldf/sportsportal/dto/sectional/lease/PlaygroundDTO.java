@@ -9,6 +9,7 @@ import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -54,7 +55,8 @@ public class PlaygroundDTO extends AbstractVersionedDTO implements WorkTimeDTO {
 
     @NotNull(groups = FieldCheck.class)
     @Min(value = 0, groups = FieldCheck.class)
-    private Integer cost;
+    @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
+    private BigDecimal price;
 
     @Valid
     @NotNull(groups = FieldCheck.class)
@@ -175,12 +177,12 @@ public class PlaygroundDTO extends AbstractVersionedDTO implements WorkTimeDTO {
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public PlaygroundDTO setCost(Integer cost) {
-        this.cost = cost;
+    public PlaygroundDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 
@@ -219,6 +221,7 @@ public class PlaygroundDTO extends AbstractVersionedDTO implements WorkTimeDTO {
         this.owners = owners;
         return this;
     }
+
 
     public interface IdCheck extends VersionCheck {
 

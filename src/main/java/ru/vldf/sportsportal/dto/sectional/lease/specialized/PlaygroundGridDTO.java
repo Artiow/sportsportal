@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +11,7 @@ import java.util.Map;
 public class PlaygroundGridDTO implements DataTransferObject {
 
     private URI playgroundURL;
-    private Integer cost;
+    private BigDecimal price;
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
     private ReservationGridDTO grid;
@@ -25,12 +26,12 @@ public class PlaygroundGridDTO implements DataTransferObject {
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public PlaygroundGridDTO setCost(Integer cost) {
-        this.cost = cost;
+    public PlaygroundGridDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 

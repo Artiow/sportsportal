@@ -5,7 +5,11 @@ import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 
 @Entity
@@ -30,11 +34,11 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "opening", nullable = false)
-    private Timestamp opening;
+    private Timestamp opening = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), LocalTime.MIN));
 
     @Basic
     @Column(name = "closing", nullable = false)
-    private Timestamp closing;
+    private Timestamp closing = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), LocalTime.MIN));
 
     @Basic
     @Column(name = "half_hour_available", nullable = false)
@@ -45,8 +49,8 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     private Boolean fullHourRequired = false;
 
     @Basic
-    @Column(name = "cost", nullable = false)
-    private Integer cost;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.valueOf(0, 2);
 
     @OrderBy("pk.datetime")
     @OneToMany(mappedBy = "pk.playground")
@@ -153,12 +157,12 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
         this.fullHourRequired = fullHourRequired;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setCost(Integer cost) {
-        this.cost = cost;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Collection<ReservationEntity> getReservations() {
