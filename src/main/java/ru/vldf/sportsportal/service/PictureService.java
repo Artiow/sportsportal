@@ -96,7 +96,11 @@ public class PictureService extends AbstractMessageService {
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class, ResourceFileNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
@@ -128,7 +132,10 @@ public class PictureService extends AbstractMessageService {
      * @return {@link Integer} resource identifier
      * @throws ResourceCannotCreateException if resource cannot create
      */
-    @Transactional
+    @Transactional(
+            rollbackFor = {ResourceCannotCreateException.class},
+            noRollbackFor = {MaxUploadSizeExceededException.class}
+    )
     public Integer create(MultipartFile picture) throws ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"));
@@ -163,7 +170,7 @@ public class PictureService extends AbstractMessageService {
      * @param id {@link Integer} picture identifier
      * @throws ResourceNotFoundException if record not found in database
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void delete(@NotNull Integer id) throws ResourceNotFoundException {
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));

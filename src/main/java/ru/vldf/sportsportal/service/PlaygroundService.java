@@ -103,7 +103,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException  if playground not found
      * @throws ResourceCorruptedException if playground data corrupted
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
+            noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
+    )
     public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
             return playgroundMapper.makeSchedule(
@@ -124,7 +128,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @return {@link PlaygroundShortDTO}
      * @throws ResourceNotFoundException if playground not found
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public PlaygroundShortDTO getShort(Integer id) throws ResourceNotFoundException {
         try {
             return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
@@ -141,7 +149,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
         try {
             return playgroundMapper.toDTO(playgroundRepository.getOne(id));
@@ -160,7 +172,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException      if playground not found
      * @throws ResourceCannotCreateException  if playground cannot create
      */
-    @Transactional
+    @Transactional(
+            rollbackFor = {AuthorizationRequiredException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
@@ -214,11 +229,19 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param playgroundDTO {@link PlaygroundDTO} with playground data
      * @return new playground {@link Integer} identifier
+     * @throws ResourceCannotCreateException if playground cannot create
      */
     @Override
-    @Transactional
-    public Integer create(PlaygroundDTO playgroundDTO) {
-        return playgroundRepository.save(playgroundMapper.toEntity(playgroundDTO)).getId();
+    @Transactional(
+            rollbackFor = {ResourceCannotCreateException.class},
+            noRollbackFor = {JpaObjectRetrievalFailureException.class}
+    )
+    public Integer create(PlaygroundDTO playgroundDTO) throws ResourceCannotCreateException {
+        try {
+            return playgroundRepository.save(playgroundMapper.toEntity(playgroundDTO)).getId();
+        } catch (JpaObjectRetrievalFailureException e) {
+            throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.cannotCreate.message"), e);
+        }
     }
 
     /**
@@ -237,7 +260,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     )
     public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         try {
-            playgroundRepository.saveAndFlush(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
+            playgroundRepository.save(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         } catch (JpaObjectRetrievalFailureException e) {
@@ -254,12 +277,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void delete(Integer id) throws ResourceNotFoundException {
         if (!playgroundRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
         }
-
         playgroundRepository.deleteById(id);
     }
 

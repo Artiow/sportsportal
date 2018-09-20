@@ -1,9 +1,9 @@
 package ru.vldf.sportsportal.service;
 
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +21,7 @@ import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.AbstractMessageService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 import ru.vldf.sportsportal.service.security.SecurityService;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
@@ -86,7 +87,11 @@ public class UserService extends AbstractMessageService {
      * @return {@link UserShortDTO} users data
      * @throws ResourceNotFoundException if user with sent id not found
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public UserShortDTO get(@NotNull Integer id) throws ResourceNotFoundException {
         try {
             return userMapper.toShortDTO(userRepository.getOne(id));
@@ -104,10 +109,13 @@ public class UserService extends AbstractMessageService {
      * @throws UsernameNotFoundException if user not found
      * @throws JwtException              if could not parse jwt
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {UsernameNotFoundException.class, JwtException.class},
+            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
+    )
     public TokenDTO login(@NotNull String login, @NotNull String password) throws UsernameNotFoundException, JwtException {
         UserEntity user;
-
         try {
             user = userRepository.findByLogin(login);
             if (user == null) {
@@ -115,11 +123,9 @@ public class UserService extends AbstractMessageService {
             } else if (!passwordEncoder.matches(password, user.getPassword())) {
                 throw new BadCredentialsException(mGet("sportsportal.auth.service.passwordEncoder.message"));
             }
-
         } catch (EntityNotFoundException | BadCredentialsException e) {
             throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"), e);
         }
-
         return new TokenDTO()
                 .setUserInfo(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
@@ -131,30 +137,35 @@ public class UserService extends AbstractMessageService {
      *
      * @param accessToken {@link String} access token
      * @return {@link TokenDTO} token info
-     * @throws UsernameNotFoundException if user not found
-     * @throws SignatureException        if could not parse jwt
+     * @throws UsernameNotFoundException  if user not found
+     * @throws ResourceNotFoundException  if user not found
+     * @throws SentDataCorruptedException if token not valid
+     * @throws JwtException               if could not parse jwt
      */
-    @Transactional(readOnly = true)
-    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, SignatureException {
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {UsernameNotFoundException.class, ResourceNotFoundException.class, SentDataCorruptedException.class, JwtException.class},
+            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
+    )
+    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
         final String tokenType = securityService.getTokenType();
-        if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
-            throw new BadCredentialsException(mGet("sportsportal.auth.filter.credentialsNotValid.message"));
-        } else {
-            IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
-            UserEntity user = userRepository.findById(userDetails.getId()).orElseThrow(
-                    () -> new EntityNotFoundException(mGet("sportsportal.auth.service.userRepository.message"))
-            );
-
-            String login = userDetails.getUsername();
-            String password = userDetails.getPassword();
-            if ((!user.getLogin().equals(login)) || (!user.getPassword().equals(password))) {
-                throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
-            } else {
-                return new TokenDTO()
-                        .setUserInfo(loginMapper.toLoginDTO(user))
-                        .setTokenType(securityService.getTokenType())
-                        .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
+        try {
+            if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
+                throw new BadCredentialsException(String.format("Sent token null or not starts with \'%s\'", tokenType));
             }
+            IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
+            UserEntity user = userRepository.getOne(userDetails.getId());
+            if ((!user.getLogin().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
+                throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
+            }
+            return new TokenDTO()
+                    .setUserInfo(loginMapper.toLoginDTO(user))
+                    .setTokenType(securityService.getTokenType())
+                    .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
+        } catch (BadCredentialsException e) {
+            throw new SentDataCorruptedException(mGet("sportsportal.auth.filter.credentialsNotValid.message"), e);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGet("sportsportal.auth.service.userRepository.message"), e);
         }
     }
 
@@ -165,16 +176,21 @@ public class UserService extends AbstractMessageService {
      * @return {@link Integer} user identifier
      * @throws ResourceCannotCreateException if user could not create
      */
-    @Transactional
+    @Transactional(
+            rollbackFor = {ResourceCannotCreateException.class},
+            noRollbackFor = {JpaObjectRetrievalFailureException.class}
+    )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String login = userDTO.getLogin();
         if (userRepository.existsByLogin(login)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByLogin.message", login));
         }
-
-        UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
-        user.setRoles(roleRepository.findAllByCode(userRoleCode));
-
-        return userRepository.save(user).getId();
+        try {
+            UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
+            user.setRoles(roleRepository.findAllByCode(userRoleCode));
+            return userRepository.save(user).getId();
+        } catch (JpaObjectRetrievalFailureException e) {
+            throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+        }
     }
 }

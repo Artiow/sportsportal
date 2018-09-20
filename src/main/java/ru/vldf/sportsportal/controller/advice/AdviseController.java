@@ -95,6 +95,12 @@ public class AdviseController {
         return warnDTO(ex, "Sent HTTP Message Not Readable.");
     }
 
+    @ExceptionHandler(SentDataCorruptedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleSentDataCorruptedException(SentDataCorruptedException ex) {
+        return warnDTO(ex, "Sent Access Token Not Readable.");
+    }
+
     @ExceptionHandler(AuthorizationRequiredException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleAuthorizationRequiredException(AuthorizationRequiredException ex) {

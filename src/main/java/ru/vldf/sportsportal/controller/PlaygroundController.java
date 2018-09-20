@@ -142,7 +142,8 @@ public class PlaygroundController {
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
-    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
+    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO)
+            throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
@@ -151,10 +152,12 @@ public class PlaygroundController {
      *
      * @param playgroundDTO sent {@link PlaygroundDTO}
      * @return new playgrounds {@link URI}
+     * @throws ResourceCannotCreateException if playground create update
      */
     @PostMapping
     @ApiOperation("создать площадку")
-    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO) {
+    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO)
+            throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
