@@ -271,7 +271,8 @@ class PlaygroundFilter extends Component {
                                     <Range allowCross={false}
                                            min={PlaygroundFilter.MIN_PRICE} max={PlaygroundFilter.MAX_PRICE}
                                            defaultValue={[PlaygroundFilter.MIN_PRICE, PlaygroundFilter.MAX_PRICE]}
-                                           step={[PlaygroundFilter.PRICE_STEP]}
+                                        // todo: fix!
+                                        // step={[PlaygroundFilter.PRICE_STEP]}
                                            onChange={this.updatePriceCallback}/>
                                 </div>
                             </div>

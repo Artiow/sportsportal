@@ -109,7 +109,36 @@ class PlaygroundLeaseCalendar extends Component {
 
     static START_DATE_OFFSET = 0;
     static END_DATE_OFFSET = 6;
-    static DAYS_OF_WEEK_NAMES = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+    static DAYS_OF_WEEK_NAMES = [
+        {
+            full: 'воскресенье',
+            short: 'вс'
+        },
+        {
+            full: 'понедельник',
+            short: 'пн'
+        },
+        {
+            full: 'вторник',
+            short: 'вт'
+        },
+        {
+            full: 'среда',
+            short: 'ср'
+        },
+        {
+            full: 'четверг',
+            short: 'чт'
+        },
+        {
+            full: 'пятница',
+            short: 'пт'
+        },
+        {
+            full: 'суббота',
+            short: 'сб'
+        }
+    ];
 
     constructor(props) {
         super(props);
@@ -153,30 +182,66 @@ class PlaygroundLeaseCalendar extends Component {
             : today;
     }
 
-    updateGridInfo(newStartDateOffset, newEndDateOffset) {
-        this.setState({
-            startDateOffset: newStartDateOffset,
-            endDateOffset: newEndDateOffset,
-            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset),
-            startDate: PlaygroundLeaseCalendar.normalNow(newStartDateOffset),
-            endDate: PlaygroundLeaseCalendar.normalNow(newEndDateOffset),
-        })
+    handleOffset(event) {
+        let btn = event.target.id;
+        if ((btn == null) || (btn === '')) {
+            btn = event.target.parentNode.id;
+        }
+        if (btn === 'btn-next') {
+            this.updateGrid(1);
+        }
+        else if ((btn === 'btn-prev') && (this.state.startDateOffset > 0)) {
+            this.updateGrid(-1);
+        }
+    }
+
+    updateGrid(offset) {
+        if (offset !== 0) {
+            this.setState(prevState => {
+                const newStartDateOffset = prevState.startDateOffset + offset;
+                const newEndDateOffset = prevState.endDateOffset + offset;
+                return {
+                    startDateOffset: newStartDateOffset,
+                    endDateOffset: newEndDateOffset,
+                    daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset),
+                    startDate: PlaygroundLeaseCalendar.normalNow(newStartDateOffset),
+                    endDate: PlaygroundLeaseCalendar.normalNow(newEndDateOffset)
+                }
+            })
+        }
     }
 
     render() {
-        const tmp = [];
+        const line = [];
         this.state.daysOfWeek.forEach(function (item, i, arr) {
-            tmp.push(<span key={i}>{item.date + ' (' + item.dayOfWeek + ')'}</span>);
-            tmp.push(<br/>);
+            line.push(
+                <th key={i} className="th-calendar"
+                    style={{textAlign: 'center', verticalAlign: 'middle'}}>
+                    <span className="mr-1">{item.date.split('-')[2]}</span>
+                    <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
+                </th>
+            );
         });
         return (
             <div className="PlaygroundLeaseCalendar">
-                <span>{this.state.startDate}</span>
-                <br/>
-                <span>{this.state.endDate}</span>
-                <br/>
-                <br/>
-                <span>{tmp}</span>
+                <table className="table table-hover mt-3">
+                    <thead className="thead-dark">
+                    <tr>
+                        <th className="th-control">
+                            <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
+                                    title="Назад" onClick={this.handleOffset.bind(this)}>
+                                <i className="fa fa-angle-left"/>
+                            </button>
+                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
+                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                <i className="fa fa-angle-right"/>
+                            </button>
+                        </th>
+                        {line}
+                    </tr>
+                    </thead>
+                    <tbody/>
+                </table>
             </div>
         )
     }

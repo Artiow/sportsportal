@@ -33,3 +33,36 @@
     background: inherit;
     font-weight: 300;
 }
+
+/* PlaygroundLeaseCalendar */
+
+.Playground.container .PlaygroundLeaseCalendar table.table {
+    border-collapse: separate;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th {
+    background-color: #24292e;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-calendar {
+    width: 13%;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-control {
+    /*max-width: 3rem;*/
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button {
+    padding: 0 .5rem;
+    font-size: 1.125rem;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button:first-child {
+    float: left;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button:last-child {
+    float: right;
+}
