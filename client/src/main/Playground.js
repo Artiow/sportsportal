@@ -170,7 +170,7 @@ class PlaygroundLeaseCalendar extends Component {
             tmp.push(<br/>);
         });
         return (
-            <div style={{minHeight: "500px"}}>
+            <div className="PlaygroundLeaseCalendar">
                 <span>{this.state.startDate}</span>
                 <br/>
                 <span>{this.state.endDate}</span>

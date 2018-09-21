@@ -1,10 +1,11 @@
 import React from 'react';
-import {Route, Switch} from 'react-router-dom';
+import {Switch} from 'react-router-dom';
 import '../../node_modules/jquery/dist/jquery.min';
 import '../../node_modules/popper.js/dist/umd/popper';
 import '../../node_modules/bootstrap/dist/js/bootstrap.min';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
+import ScrollRoute from '../util/components/ScrollRoute';
 import Login from './auth/Login';
 import Registration from './auth/Registration';
 import NoMatch from './mismatch/NoMatch';
@@ -16,12 +17,12 @@ import Playground from '../main/Playground';
 function Application(props) {
     return (
         <Switch>
-            <Route exact path='/' component={IndexFrame}/>
-            <Route exact path='/playground/id:identifier' component={PgFrame}/>
-            <Route exact path='/registration' component={Registration}/>
-            <Route exact path='/login' component={Login}/>
-            <Route exact path='/home' component={HomeFrame}/>
-            <Route component={NoMatch}/>
+            <ScrollRoute exact path='/' component={IndexFrame}/>
+            <ScrollRoute exact path='/playground/id:identifier' component={PgFrame}/>
+            <ScrollRoute exact path='/registration' component={Registration}/>
+            <ScrollRoute exact path='/login' component={Login}/>
+            <ScrollRoute exact path='/home' component={HomeFrame}/>
+            <ScrollRoute component={NoMatch}/>
         </Switch>
     );
 }
