@@ -91,8 +91,9 @@ class Playground extends Component {
                                     </div>
                                 </div>
                                 <div className="row info-row lease-info-row">
-                                    <div className="col-12" style={{minHeight: "500px"}}>
+                                    <div className="col-12">
                                         <h4 className="row-h info-h info-price">Аренда:</h4>
+                                        <PlaygroundLeaseCalendar/>
                                     </div>
                                 </div>
                             </div>
@@ -101,6 +102,83 @@ class Playground extends Component {
                 ) : (null)}
             </main>
         );
+    }
+}
+
+class PlaygroundLeaseCalendar extends Component {
+
+    static START_DATE_OFFSET = 0;
+    static END_DATE_OFFSET = 6;
+    static DAYS_OF_WEEK_NAMES = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+
+    constructor(props) {
+        super(props);
+        const sOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
+        const eOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        this.state = {
+            startDateOffset: sOffset,
+            endDateOffset: eOffset,
+            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(sOffset, eOffset),
+            startDate: PlaygroundLeaseCalendar.normalNow(sOffset),
+            endDate: PlaygroundLeaseCalendar.normalNow(eOffset),
+        };
+    }
+
+    static daysOfWeek(from, to) {
+        const daysOfWeek = [];
+        for (let i = from; i <= to; i++) {
+            let now = this.now(i);
+            daysOfWeek.push({
+                date: this.normalize(now),
+                dayOfWeek: this.DAYS_OF_WEEK_NAMES[now.getDay()]
+            })
+        }
+        return daysOfWeek;
+    }
+
+    static normalNow(days) {
+        return this.normalize(this.now(days));
+    }
+
+    static normalize(date) {
+        let day = date.getDate();
+        let month = date.getMonth();
+        return date.getFullYear() + '-' + ((++month < 10) ? ('0' + month) : (month)) + '-' + ((day < 10) ? ('0' + day) : (day));
+    }
+
+    static now(days) {
+        const today = new Date();
+        return ((days != null) && (days > 0))
+            ? new Date(today.getFullYear(), today.getMonth(), (today.getDate() + days))
+            : today;
+    }
+
+    updateGridInfo(newStartDateOffset, newEndDateOffset) {
+        this.setState({
+            startDateOffset: newStartDateOffset,
+            endDateOffset: newEndDateOffset,
+            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset),
+            startDate: PlaygroundLeaseCalendar.normalNow(newStartDateOffset),
+            endDate: PlaygroundLeaseCalendar.normalNow(newEndDateOffset),
+        })
+    }
+
+    render() {
+        const tmp = [];
+        this.state.daysOfWeek.forEach(function (item, i, arr) {
+            tmp.push(<span key={i}>{item.date + ' (' + item.dayOfWeek + ')'}</span>);
+            tmp.push(<br/>);
+        });
+        return (
+            <div style={{minHeight: "500px"}}>
+                <span>{this.state.startDate}</span>
+                <br/>
+                <span>{this.state.endDate}</span>
+                <br/>
+                <br/>
+                <span>{tmp}</span>
+            </div>
+        )
     }
 }
 
