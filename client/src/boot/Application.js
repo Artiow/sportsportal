@@ -8,7 +8,8 @@ import '../../node_modules/font-awesome/css/font-awesome.min.css';
 import Login from './auth/Login';
 import Registration from './auth/Registration';
 import NoMatch from './mismatch/NoMatch';
-import Header from './header/Header';
+import Header from './enviroment/Header';
+import Footer from './enviroment/Footer';
 import Index from '../main/Index';
 import Playground from '../main/Playground';
 
@@ -30,7 +31,8 @@ function HomeFrame(props) {
         <div>
             <Header titleHref={'/home'} titleLabel={'ДОМАШНЯЯ СТРАНИЦА'}
                     subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
-            <div className="container"/>
+            <div className="container" style={{minHeight: "95vh"}}/>
+            <Footer/>
         </div>
     );
 }
@@ -40,6 +42,7 @@ function IndexFrame(props) {
         <div>
             <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
             <Index/>
+            <Footer/>
         </div>
     );
 }
@@ -50,6 +53,7 @@ function PgFrame(props) {
             <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}
                     subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
             <Playground identifier={props.match.params.identifier}/>
+            <Footer/>
         </div>
     );
 }

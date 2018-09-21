@@ -59,22 +59,22 @@ class Playground extends Component {
                     <div className="row">
                         <div className="col-10 offset-1">
                             <div className="container content-container">
-                                <div className="row header-row">
+                                <div className="row info-row header-info-row">
                                     <div className="col-12">
-                                        <h1 className="header-h header-name">
+                                        <h1 className="row-h header-h header-name">
                                             {playground.name}
                                         </h1>
-                                        <h4 className="header-h header-address">
+                                        <h4 className="row-h header-h header-address">
                                             {playground.address}
                                         </h4>
-                                        <h6 className="header-h header-rate">
+                                        <h6 className="row-h header-h header-rate">
                                             <StarRate value={playground.rate}/>
                                         </h6>
                                     </div>
                                 </div>
-                                <div className="row info-row">
+                                <div className="row info-row feature-info-row">
                                     <div className="col-4">
-                                        <h4 className="info-h info-price">
+                                        <h4 className="row-h info-h info-price">
                                             <span className="mr-md-2">Стоимость:</span>
                                             <span className="badge badge-secondary">
                                                 <span>{Math.floor(playground.price)}</span>
@@ -82,12 +82,17 @@ class Playground extends Component {
                                             </span>
                                         </h4>
                                         {(features != null) ? (
-                                            <h5 className="info-h info-infra">Инфраструктура:</h5>
+                                            <h5 className="row-h info-h info-infra">Инфраструктура:</h5>
                                         ) : (null)}
                                         {features}
                                     </div>
                                     <div className="col-8">
                                         <PhotoCarousel photos={photos} placeimg={noImage}/>
+                                    </div>
+                                </div>
+                                <div className="row info-row lease-info-row">
+                                    <div className="col-12" style={{minHeight: "500px"}}>
+                                        <h4 className="row-h info-h info-price">Аренда:</h4>
                                     </div>
                                 </div>
                             </div>
