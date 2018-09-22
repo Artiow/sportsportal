@@ -42,8 +42,9 @@ class Registration extends Component {
                 window.location.replace('/login');
             })
             .catch(function (error) {
-                console.log('Registration Error Response:', error);
-                const data = error.response.data;
+                const errorResponse = error.response;
+                console.log('Registration Error Response:', errorResponse);
+                const data = errorResponse.data;
                 const message = data.message;
                 const errors = data.errors;
                 if (errors != null) {

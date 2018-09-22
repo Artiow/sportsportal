@@ -51,7 +51,7 @@ class Index extends Component {
                 totalPages: data.totalPages
             });
         }).catch(function (error) {
-            console.log('Query Error:', error);
+            console.log('Query Error:', error.response);
         })
     }
 
@@ -143,7 +143,7 @@ class PlaygroundFilter extends Component {
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('Dictionary Error:', error);
+                console.log('Dictionary Error:', error.response);
             })
     }
 
@@ -271,8 +271,7 @@ class PlaygroundFilter extends Component {
                                     <Range allowCross={false}
                                            min={PlaygroundFilter.MIN_PRICE} max={PlaygroundFilter.MAX_PRICE}
                                            defaultValue={[PlaygroundFilter.MIN_PRICE, PlaygroundFilter.MAX_PRICE]}
-                                        // todo: fix!
-                                        // step={[PlaygroundFilter.PRICE_STEP]}
+                                           step={PlaygroundFilter.PRICE_STEP}
                                            onChange={this.updatePriceCallback}/>
                                 </div>
                             </div>

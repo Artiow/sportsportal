@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
@@ -59,14 +60,13 @@ public class AdviseController {
         return errorDTO(ex, "Requested Resource Corrupted.");
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String, String> errorMap = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            String code = Optional.ofNullable(error.getArguments())
+            String code = Optional.of(error.getArguments())
                     .map(args -> ((DefaultMessageSourceResolvable) args[0]))
                     .map(DefaultMessageSourceResolvable::getCode)
                     .orElse("null");
@@ -93,6 +93,12 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return warnDTO(ex, "Sent HTTP Message Not Readable.");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        return warnDTO(ex, "Sent Request Argument Mismatch.");
     }
 
     @ExceptionHandler(SentDataCorruptedException.class)

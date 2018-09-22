@@ -24,7 +24,7 @@ class Playground extends Component {
             console.log('Query Response:', response);
             self.setState({content: response.data});
         }).catch(function (error) {
-            console.log('Query Error:', error);
+            console.log('Query Error:', error.response);
         })
     }
 
@@ -87,13 +87,14 @@ class Playground extends Component {
                                         {features}
                                     </div>
                                     <div className="col-8">
-                                        <PhotoCarousel photos={photos} placeimg={noImage}/>
+                                        <PhotoCarousel photos={photos} placeimg={noImage}
+                                                       identifier={this.state.id}/>
                                     </div>
                                 </div>
                                 <div className="row info-row lease-info-row">
                                     <div className="col-12">
                                         <h4 className="row-h info-h info-price">Аренда:</h4>
-                                        <PlaygroundLeaseCalendar/>
+                                        <PlaygroundLeaseCalendar identifier={this.state.id}/>
                                     </div>
                                 </div>
                             </div>
@@ -142,14 +143,21 @@ class PlaygroundLeaseCalendar extends Component {
 
     constructor(props) {
         super(props);
-        const sOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
-        const eOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        const id = props.identifier;
+        const startDateOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
+        const endDateOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        const daysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(startDateOffset, endDateOffset);
+        const startDate = PlaygroundLeaseCalendar.normalNow(startDateOffset);
+        const endDate = PlaygroundLeaseCalendar.normalNow(endDateOffset);
+        const gridInfo = this.query(id, startDate, endDate);
         this.state = {
-            startDateOffset: sOffset,
-            endDateOffset: eOffset,
-            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(sOffset, eOffset),
-            startDate: PlaygroundLeaseCalendar.normalNow(sOffset),
-            endDate: PlaygroundLeaseCalendar.normalNow(eOffset),
+            id: id,
+            startDateOffset: startDateOffset,
+            endDateOffset: endDateOffset,
+            daysOfWeek: daysOfWeek,
+            startDate: startDate,
+            endDate: endDate,
+            gridInfo: gridInfo
         };
     }
 
@@ -182,6 +190,19 @@ class PlaygroundLeaseCalendar extends Component {
             : today;
     }
 
+    query(id, from, to) {
+        let queryResponse = null;
+        const url = getApiUrl('/leaseapi/playground/' + id + '/grid');
+        axios.get(url, {params: {from: from, to: to}}
+        ).then(function (response) {
+            console.log('Query Response:', response);
+            queryResponse = response.data;
+        }).catch(function (error) {
+            console.log('Query Error:', error.response);
+        });
+        return queryResponse;
+    }
+
     handleOffset(event) {
         let btn = event.target.id;
         if ((btn == null) || (btn === '')) {
@@ -200,14 +221,19 @@ class PlaygroundLeaseCalendar extends Component {
             this.setState(prevState => {
                 const newStartDateOffset = prevState.startDateOffset + offset;
                 const newEndDateOffset = prevState.endDateOffset + offset;
+                const newDaysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset);
+                const newStartDate = PlaygroundLeaseCalendar.normalNow(newStartDateOffset);
+                const newEndDate = PlaygroundLeaseCalendar.normalNow(newEndDateOffset);
+                const gridInfo = this.query(prevState.id, newStartDate, newEndDate);
                 return {
                     startDateOffset: newStartDateOffset,
                     endDateOffset: newEndDateOffset,
-                    daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset),
-                    startDate: PlaygroundLeaseCalendar.normalNow(newStartDateOffset),
-                    endDate: PlaygroundLeaseCalendar.normalNow(newEndDateOffset)
+                    daysOfWeek: newDaysOfWeek,
+                    startDate: newStartDate,
+                    endDate: newEndDate,
+                    gridInfo: gridInfo
                 }
-            })
+            });
         }
     }
 
