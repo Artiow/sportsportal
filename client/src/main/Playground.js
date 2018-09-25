@@ -149,7 +149,6 @@ class PlaygroundLeaseCalendar extends Component {
         const daysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(startDateOffset, endDateOffset);
         const startDate = PlaygroundLeaseCalendar.normalNow(startDateOffset);
         const endDate = PlaygroundLeaseCalendar.normalNow(endDateOffset);
-        const gridInfo = this.query(id, startDate, endDate);
         this.state = {
             id: id,
             startDateOffset: startDateOffset,
@@ -157,7 +156,6 @@ class PlaygroundLeaseCalendar extends Component {
             daysOfWeek: daysOfWeek,
             startDate: startDate,
             endDate: endDate,
-            gridInfo: gridInfo
         };
     }
 
@@ -190,28 +188,12 @@ class PlaygroundLeaseCalendar extends Component {
             : today;
     }
 
-    query(id, from, to) {
-        let queryResponse = null;
-        const url = getApiUrl('/leaseapi/playground/' + id + '/grid');
-        axios.get(url, {params: {from: from, to: to}}
-        ).then(function (response) {
-            console.log('Query Response:', response);
-            queryResponse = response.data;
-        }).catch(function (error) {
-            console.log('Query Error:', error.response);
-        });
-        return queryResponse;
-    }
-
     handleOffset(event) {
         let btn = event.target.id;
-        if ((btn == null) || (btn === '')) {
-            btn = event.target.parentNode.id;
-        }
+        if ((btn == null) || (btn === '')) btn = event.target.parentNode.id;
         if (btn === 'btn-next') {
             this.updateGrid(1);
-        }
-        else if ((btn === 'btn-prev') && (this.state.startDateOffset > 0)) {
+        } else if ((btn === 'btn-prev') && (this.state.startDateOffset > 0)) {
             this.updateGrid(-1);
         }
     }
@@ -224,17 +206,25 @@ class PlaygroundLeaseCalendar extends Component {
                 const newDaysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset);
                 const newStartDate = PlaygroundLeaseCalendar.normalNow(newStartDateOffset);
                 const newEndDate = PlaygroundLeaseCalendar.normalNow(newEndDateOffset);
-                const gridInfo = this.query(prevState.id, newStartDate, newEndDate);
                 return {
                     startDateOffset: newStartDateOffset,
                     endDateOffset: newEndDateOffset,
                     daysOfWeek: newDaysOfWeek,
                     startDate: newStartDate,
                     endDate: newEndDate,
-                    gridInfo: gridInfo
                 }
             });
         }
+    }
+
+    updateGridQuery(id, from, to) {
+        const url = getApiUrl('/leaseapi/playground/' + id + '/grid');
+        axios.get(url, {params: {from: from, to: to}}
+        ).then(function (response) {
+            console.log('Query Response:', response);
+        }).catch(function (error) {
+            console.log('Query Error:', error.response);
+        });
     }
 
     render() {
