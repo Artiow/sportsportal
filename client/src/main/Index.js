@@ -13,43 +13,34 @@ class Index extends Component {
 
     static DEFAULT_PAGE_SIZE = 10;
 
-    updateFilterCallback = newFilter => {
-        this.setState(prevState => {
-            return {filter: Object.assign(prevState.filter, newFilter)}
-        });
-        this.query();
+    updateFilter = newFilter => {
+        this.filter = Object.assign(this.filter, newFilter);
+        this.query(this.filter);
     };
 
     constructor(props) {
         super(props);
-        this.state = {
-            content: null,
-            pageNumber: 0,
-            totalPages: 0,
-            filter: {
-                pageSize: Index.DEFAULT_PAGE_SIZE,
-                pageNum: 0
-            }
-        };
-        this.query();
+        this.state = {page: null};
+        this.filter = {pageNum: 0, pageSize: Index.DEFAULT_PAGE_SIZE};
+        this.query(this.filter);
     }
 
-    query() {
+    /**
+     * Downloading playground page.
+     * @param filter {object} playground filter
+     */
+    query(filter) {
         const self = this;
         const url = getApiUrl('/leaseapi/playground/list');
+        const serializer = params => {
+            return qs.stringify(params, {arrayFormat: 'repeat'})
+        };
         axios.get(url, {
-            params: this.state.filter,
-            paramsSerializer: params => {
-                return qs.stringify(params, {arrayFormat: 'repeat'})
-            }
+            params: filter,
+            paramsSerializer: serializer
         }).then(function (response) {
             console.log('Query Response:', response);
-            const data = response.data;
-            self.setState({
-                content: data.content,
-                pageNumber: data.pageNumber,
-                totalPages: data.totalPages
-            });
+            self.setState({page: response.data});
         }).catch(function (error) {
             console.log('Query Error:', error.response);
         })
@@ -59,9 +50,8 @@ class Index extends Component {
         return (
             <main className="Main container">
                 <div className="row">
-                    <PlaygroundFilter callback={this.updateFilterCallback}/>
-                    <PageablePlaygroundContainer pageable={(this.state.totalPages > 1)}
-                                                 content={this.state.content}/>
+                    <PlaygroundFilter callback={this.updateFilter}/>
+                    <PageablePlaygroundContainer page={this.state.page}/>
                 </div>
             </main>
         );
@@ -102,10 +92,12 @@ class PlaygroundFilter extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.dictionary = {
             sports: null,
-            sportCodes: [],
             features: null,
+        };
+        this.state = {
+            sportCodes: [],
             featureCodes: [],
             searchString: '',
             startPrice: PlaygroundFilter.MIN_PRICE,
@@ -116,15 +108,15 @@ class PlaygroundFilter extends Component {
         };
 
         const self = this;
-        this.uploadFilerData("/leaseapi/dict/feature/list", function (list) {
-            self.setState({features: list});
+        this.uploadFilerData("/leaseapi/dict/feature/list", function (response) {
+            self.dictionary.features = response;
         });
-        this.uploadFilerData("/leaseapi/dict/sport/list", function (list) {
-            self.setState({sports: list});
+        this.uploadFilerData("/leaseapi/dict/sport/list", function (response) {
+            self.dictionary.sports = response;
         });
     }
 
-    static updateCodeArray(codes, code, checked) {
+    static updateCheckboxArray(codes, code, checked) {
         const idx = codes.indexOf(code);
         if ((checked) && (idx < 0)) codes.push(code);
         else codes.splice(idx, 1);
@@ -169,18 +161,18 @@ class PlaygroundFilter extends Component {
 
     updateSportCodes(code, checked) {
         this.setState(prevState => {
-            return {sportCodes: PlaygroundFilter.updateCodeArray(prevState.sportCodes, code, checked)}
+            return {sportCodes: PlaygroundFilter.updateCheckboxArray(prevState.sportCodes, code, checked)}
         });
     }
 
     updateFeatureCodes(code, checked) {
         this.setState(prevState => {
-            return {featureCodes: PlaygroundFilter.updateCodeArray(prevState.featureCodes, code, checked)}
+            return {featureCodes: PlaygroundFilter.updateCheckboxArray(prevState.featureCodes, code, checked)}
         });
     }
 
     render() {
-        const setFilterData = (prefix, content, updater) => {
+        const setCheckboxData = (prefix, content, updater) => {
             const result = [];
             if ((content != null) && (content.length > 0)) {
                 content.forEach(function (item, i, arr) {
@@ -222,7 +214,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('sport', this.state.sports, this.updateSportCodes.bind(this))}
+                                    {setCheckboxData('sport', this.dictionary.sports, this.updateSportCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
@@ -236,7 +228,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('feature', this.state.features, this.updateFeatureCodes.bind(this))}
+                                    {setCheckboxData('feature', this.dictionary.features, this.updateFeatureCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
@@ -332,12 +324,13 @@ class PlaygroundFilter extends Component {
 }
 
 function PageablePlaygroundContainer(props) {
-    const content = props.content;
-    const pageable = props.pageable;
+    const page = props.page;
+    const totalPages = (page != null) ? page.totalPages : 0;
+    const content = (page != null) ? page.content : null;
     return ((content !== null) && (content.length > 0)) ? (
         <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
             <PlaygroundContainer content={content}/>
-            {(pageable) ? (<PlaygroundPagination/>) : (null)}
+            {(totalPages > 1) ? (<PlaygroundPagination/>) : (null)}
         </div>
     ) : (((content !== null) && (content.length === 0)) ? (
         <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
