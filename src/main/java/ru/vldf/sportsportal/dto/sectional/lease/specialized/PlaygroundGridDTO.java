@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
 import java.math.BigDecimal;
@@ -63,6 +64,7 @@ public class PlaygroundGridDTO implements DataTransferObject {
     }
 
 
+    @JsonPropertyOrder({"startDate", "endDate", "totalDays", "startTime", "endTime", "totalTimes", "schedule"})
     public static class ReservationGridDTO implements DataTransferObject {
 
         private LocalDate startDate;
@@ -71,6 +73,8 @@ public class PlaygroundGridDTO implements DataTransferObject {
         private LocalTime startTime;
         private LocalTime endTime;
         private Integer totalTimes;
+
+        @JsonPropertyOrder(alphabetic = true)
         private Map<LocalDate, Map<LocalTime, Boolean>> schedule;
 
 

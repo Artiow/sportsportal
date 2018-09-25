@@ -23,7 +23,7 @@ values (1, 'xs', 'очень маленькая', 320, 200, '320х200 8:5 оче
        (5, 'lg', 'большая', 1152, 864, '1152х864 4:3 большая'),
        (6, 'lgh', 'большая широкая', 1280, 720, '1280х720 16:9 широкая большая');
 
-alter sequence common.role_id_seq
+alter sequence common.picture_size_id_seq
   restart with 7;
 
 -- lease.sport
@@ -33,7 +33,7 @@ values (1, 'football', 'футбол', 'футбол'),
        (2, 'basketball', 'баскетбол', 'баскетбол'),
        (3, 'volleyball', 'волейбол', 'волейбол');
 
-alter sequence common.role_id_seq
+alter sequence lease.sport_id_seq
   restart with 4;
 
 -- lease.feature
@@ -43,5 +43,5 @@ values (1, 'locker', 'раздевалки', 'раздевалки'),
        (2, 'shower', 'душевая', 'душевая'),
        (3, 'parking', 'парковка', 'парковка');
 
-alter sequence common.role_id_seq
+alter sequence lease.feature_id_seq
   restart with 4;

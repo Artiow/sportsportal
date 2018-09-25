@@ -39,8 +39,9 @@ class Playground extends Component {
             if ((capabilityItems != null) && (capabilityItems.length > 0)) {
                 capabilityItems.forEach(function (item, i, arr) {
                     const name = item.name;
-                    featureLines.push(<li className="list-group-item"
-                                          key={i}>{(name.charAt(0).toUpperCase() + name.slice(1))}</li>);
+                    featureLines.push(
+                        <li className="list-group-item" key={i}>{(name.charAt(0).toUpperCase() + name.slice(1))}</li>
+                    );
                 });
                 return (<ul className="list-group list-group-flush">{featureLines}</ul>);
             } else {
@@ -140,20 +141,27 @@ class PlaygroundLeaseCalendar extends Component {
 
     constructor(props) {
         super(props);
-        const id = props.identifier;
-        const startDateOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
-        const endDateOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
-        const daysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(startDateOffset, endDateOffset);
-        const startDate = PlaygroundLeaseCalendar.normalNow(startDateOffset);
-        const endDate = PlaygroundLeaseCalendar.normalNow(endDateOffset);
-        this.state = {
-            id: id,
-            startDateOffset: startDateOffset,
-            endDateOffset: endDateOffset,
-            daysOfWeek: daysOfWeek,
-            startDate: startDate,
-            endDate: endDate,
+        this.playgroundId = props.identifier;
+        const sOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
+        const eOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        this.offset = {
+            startDateOffset: sOffset,
+            endDateOffset: eOffset,
+            startDate: PlaygroundLeaseCalendar.normalNow(sOffset),
+            endDate: PlaygroundLeaseCalendar.normalNow(eOffset)
         };
+        this.state = {
+            schedule: null,
+            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(
+                this.offset.startDateOffset,
+                this.offset.endDateOffset
+            )
+        };
+        this.query(
+            this.playgroundId,
+            this.offset.startDate,
+            this.offset.endDate
+        );
     }
 
     static daysOfWeek(from, to) {
@@ -190,36 +198,59 @@ class PlaygroundLeaseCalendar extends Component {
         if ((btn == null) || (btn === '')) btn = event.target.parentNode.id;
         if (btn === 'btn-next') {
             this.updateGrid(1);
-        } else if ((btn === 'btn-prev') && (this.state.startDateOffset > 0)) {
+        } else if ((btn === 'btn-prev') && (this.offset.startDateOffset > 0)) {
             this.updateGrid(-1);
         }
     }
 
     updateGrid(offset) {
         if (offset !== 0) {
-            this.setState(prevState => {
-                const newStartDateOffset = prevState.startDateOffset + offset;
-                const newEndDateOffset = prevState.endDateOffset + offset;
-                const newDaysOfWeek = PlaygroundLeaseCalendar.daysOfWeek(newStartDateOffset, newEndDateOffset);
-                const newStartDate = PlaygroundLeaseCalendar.normalNow(newStartDateOffset);
-                const newEndDate = PlaygroundLeaseCalendar.normalNow(newEndDateOffset);
-                return {
-                    startDateOffset: newStartDateOffset,
-                    endDateOffset: newEndDateOffset,
-                    daysOfWeek: newDaysOfWeek,
-                    startDate: newStartDate,
-                    endDate: newEndDate,
-                }
+            const sOffset = this.offset.startDateOffset + offset;
+            const eOffset = this.offset.endDateOffset + offset;
+            this.offset.startDateOffset = sOffset;
+            this.offset.endDateOffset = eOffset;
+            this.offset.startDate = PlaygroundLeaseCalendar.normalNow(sOffset);
+            this.offset.endDate = PlaygroundLeaseCalendar.normalNow(eOffset);
+            this.setState({
+                daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(
+                    this.offset.startDateOffset,
+                    this.offset.endDateOffset
+                )
             });
+            this.query(
+                this.playgroundId,
+                this.offset.startDate,
+                this.offset.endDate
+            );
         }
     }
 
-    updateGridQuery(id, from, to) {
+    query(id, from, to) {
+        const self = this;
         const url = getApiUrl('/leaseapi/playground/' + id + '/grid');
         axios.get(url, {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
+            const rawSchedule = [];
+            const schedule = response.data.grid.schedule;
+            for (const date in schedule) {
+                if (schedule.hasOwnProperty(date)) {
+                    const rawDay = [];
+                    const day = schedule[date];
+                    for (const time in day) {
+                        if (day.hasOwnProperty(time)) {
+                            rawDay.push(day[time]);
+                        }
+                    }
+                    rawSchedule.push(rawDay);
+                }
+            }
+            // todo: remove checking!
+            // todo: build schedule!
+            console.log('Schedule:', rawSchedule);
+            self.setState({schedule: rawSchedule});
         }).catch(function (error) {
+            console.log('Query Error:', error);
             console.log('Query Error:', error.response);
         });
     }

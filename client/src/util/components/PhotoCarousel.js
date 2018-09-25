@@ -10,7 +10,7 @@ function PhotoCarousel(props) {
     let photos = props.photos;
     if ((photos == null) || (photos.length === 0)) {
         const placeimg = props.placeimg;
-        photos = ((placeimg != null) ? ([(placeimg)]) : (null));
+        photos = ((placeimg != null) ? [placeimg] : null);
     }
 
     if (photos != null) {
