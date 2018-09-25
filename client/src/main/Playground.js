@@ -9,17 +9,15 @@ import noImage from '../util/img/no-image-grey-mdh.jpg';
 class Playground extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            id: props.identifier,
-            content: null
-        };
+        this.id = props.identifier;
+        this.state = {content: null};
         this.queryOnLoad();
     }
 
     queryOnLoad() {
         const self = this;
         axios.get(
-            getApiUrl('/leaseapi/playground/' + this.state.id)
+            getApiUrl('/leaseapi/playground/' + this.id)
         ).then(function (response) {
             console.log('Query Response:', response);
             self.setState({content: response.data});
@@ -29,30 +27,30 @@ class Playground extends Component {
     }
 
     render() {
-        const playground = this.state.content;
-        const isLoad = (playground != null);
-        let photos = [];
-        let features = null;
-        if (isLoad) {
-            const photoItems = playground.photos;
+        const photoExtractor = photoItems => {
+            const photos = [];
             if (photoItems != null) photoItems.forEach(function (item, i, arr) {
                 photos.push(item.url + '?size=mdh');
             });
-
+            return photos;
+        };
+        const featureBuilder = capabilityItems => {
             const featureLines = [];
-            const capabilities = playground.capabilities;
-            if ((capabilities != null) && (capabilities.length > 0)) {
-                capabilities.forEach(function (item, i, arr) {
+            if ((capabilityItems != null) && (capabilityItems.length > 0)) {
+                capabilityItems.forEach(function (item, i, arr) {
                     const name = item.name;
-                    featureLines.push(
-                        <li className="list-group-item" key={i}>
-                            {(name.charAt(0).toUpperCase() + name.slice(1))}
-                        </li>
-                    );
+                    featureLines.push(<li className="list-group-item"
+                                          key={i}>{(name.charAt(0).toUpperCase() + name.slice(1))}</li>);
                 });
-                features = (<ul className="list-group list-group-flush">{featureLines}</ul>)
+                return (<ul className="list-group list-group-flush">{featureLines}</ul>);
+            } else {
+                return null;
             }
-        }
+        };
+        const playground = this.state.content;
+        const isLoad = (playground != null);
+        const photos = (isLoad) ? photoExtractor(playground.photos) : null;
+        const features = (isLoad) ? featureBuilder(playground.capabilities) : null;
         return (
             <main className="Playground container">
                 {isLoad ? (
@@ -87,14 +85,13 @@ class Playground extends Component {
                                         {features}
                                     </div>
                                     <div className="col-8">
-                                        <PhotoCarousel photos={photos} placeimg={noImage}
-                                                       identifier={this.state.id}/>
+                                        <PhotoCarousel photos={photos} placeimg={noImage}/>
                                     </div>
                                 </div>
                                 <div className="row info-row lease-info-row">
                                     <div className="col-12">
                                         <h4 className="row-h info-h info-price">Аренда:</h4>
-                                        <PlaygroundLeaseCalendar identifier={this.state.id}/>
+                                        <PlaygroundLeaseCalendar identifier={this.id}/>
                                     </div>
                                 </div>
                             </div>
