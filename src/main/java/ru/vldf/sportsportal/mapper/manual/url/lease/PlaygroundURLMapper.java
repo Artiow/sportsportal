@@ -13,7 +13,7 @@ import java.util.Collection;
 @Named("toPlaygroundURL")
 public class PlaygroundURLMapper extends AbstractURLMapper<PlaygroundEntity> {
 
-    @Value("${api-path.lease.playground}")
+    @Value("${api.path.lease.playground}")
     private String apiPath;
 
     @Override

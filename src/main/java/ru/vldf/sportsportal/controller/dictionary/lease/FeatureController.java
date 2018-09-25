@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
 @Api(tags = {"Dictionary Feature"})
-@RequestMapping("${api-path.lease.dict.feature}")
+@RequestMapping("${api.path.lease.dict.feature}")
 public class FeatureController {
 
     private FeatureService featureService;

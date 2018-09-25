@@ -25,6 +25,27 @@ public class SwaggerConfig {
     @Value("${api.version}")
     private String apiVersion;
 
+    @Value("${api.title}")
+    private String apiTitle;
+
+    @Value("${api.description}")
+    private String apiDescription;
+
+    @Value("${api.licence.name}")
+    private String apiLicenceName;
+
+    @Value("${api.licence.url}")
+    private String apiLicenceUrl;
+
+    @Value("${api.contact.name}")
+    private String apiContactName;
+
+    @Value("${api.contact.url}")
+    private String apiContactUrl;
+
+    @Value("${api.contact.email}")
+    private String apiContactEmail;
+
     /**
      * Swagger configuration.
      *
@@ -45,24 +66,17 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        String TITLE = "SportsPortal Api";
-        String DESCRIPTION = "SportsPortal by VLDF Api Documentation";
-        String LICENCE = "Apache 2.0";
-        String LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.html";
-        Contact CONTACT = new Contact(
-                "Artiow",
-                "https://github.com/Artiow",
-                "namednev.artem@gmail.com"
-        );
-
         return new ApiInfoBuilder()
-                .title(TITLE)
-                .description(DESCRIPTION)
-                .contact(CONTACT)
-                .license(LICENCE)
-                .licenseUrl(LICENCE_URL)
+                .title(apiTitle)
                 .version(apiVersion)
-                .build();
+                .description(apiDescription)
+                .license(apiLicenceName)
+                .licenseUrl(apiLicenceUrl)
+                .contact(new Contact(
+                        apiContactName,
+                        apiContactUrl,
+                        apiContactEmail
+                )).build();
     }
 
     private List<ApiKey> securitySchemes() {

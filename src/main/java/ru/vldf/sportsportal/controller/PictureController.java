@@ -23,7 +23,7 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Picture"})
-@RequestMapping("${api-path.common.picture}")
+@RequestMapping("${api.path.common.picture}")
 public class PictureController {
 
     private static final Logger logger = LoggerFactory.getLogger(PictureController.class);

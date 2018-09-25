@@ -231,24 +231,7 @@ class PlaygroundLeaseCalendar extends Component {
         axios.get(url, {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
-            const rawSchedule = [];
-            const schedule = response.data.grid.schedule;
-            for (const date in schedule) {
-                if (schedule.hasOwnProperty(date)) {
-                    const rawDay = [];
-                    const day = schedule[date];
-                    for (const time in day) {
-                        if (day.hasOwnProperty(time)) {
-                            rawDay.push(day[time]);
-                        }
-                    }
-                    rawSchedule.push(rawDay);
-                }
-            }
-            // todo: remove checking!
-            // todo: build schedule!
-            console.log('Schedule:', rawSchedule);
-            self.setState({schedule: rawSchedule});
+            self.setState({schedule: response.data.grid.schedule});
         }).catch(function (error) {
             console.log('Query Error:', error);
             console.log('Query Error:', error.response);
@@ -256,16 +239,17 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     render() {
-        const line = [];
-        this.state.daysOfWeek.forEach(function (item, i, arr) {
-            line.push(
-                <th key={i} className="th-calendar"
-                    style={{textAlign: 'center', verticalAlign: 'middle'}}>
+        const headerLine = [];
+        const daysOfWeek = this.state.daysOfWeek;
+        daysOfWeek.forEach(function (item, i, arr) {
+            headerLine.push(
+                <th key={i} className="th-calendar">
                     <span className="mr-1">{item.date.split('-')[2]}</span>
                     <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
                 </th>
             );
         });
+
         return (
             <div className="PlaygroundLeaseCalendar">
                 <table className="table table-hover mt-3">
@@ -281,7 +265,7 @@ class PlaygroundLeaseCalendar extends Component {
                                 <i className="fa fa-angle-right"/>
                             </button>
                         </th>
-                        {line}
+                        {headerLine}
                     </tr>
                     </thead>
                     <tbody/>

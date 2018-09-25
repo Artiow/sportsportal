@@ -31,10 +31,10 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Playground"})
-@RequestMapping("${api-path.lease.playground}")
+@RequestMapping("${api.path.lease.playground}")
 public class PlaygroundController {
 
-    @Value("${api-path.lease.order}")
+    @Value("${api.path.lease.order}")
     private String orderPath;
 
     private PlaygroundService playgroundService;

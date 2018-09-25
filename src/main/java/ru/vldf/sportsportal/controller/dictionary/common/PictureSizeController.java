@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
 @Api(tags = {"Dictionary Picture Size"})
-@RequestMapping("${api-path.common.dict.picturesize}")
+@RequestMapping("${api.path.common.dict.picturesize}")
 public class PictureSizeController {
 
     private PictureSizeService pictureSizeService;

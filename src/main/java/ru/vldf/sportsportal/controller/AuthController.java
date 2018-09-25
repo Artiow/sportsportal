@@ -20,10 +20,10 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Authentication"})
-@RequestMapping("${api-path.common.auth}")
+@RequestMapping("${api.path.common.auth}")
 public class AuthController {
 
-    @Value("${api-path.common.user}")
+    @Value("${api.path.common.user}")
     private String userPath;
 
     private UserService userService;

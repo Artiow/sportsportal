@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
 @Api(tags = {"Dictionary Role"})
-@RequestMapping("${api-path.common.dict.role}")
+@RequestMapping("${api.path.common.dict.role}")
 public class RoleController {
 
     private RoleService roleService;

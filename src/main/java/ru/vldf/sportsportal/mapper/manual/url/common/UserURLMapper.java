@@ -13,7 +13,7 @@ import java.util.Collection;
 @Named("toUserURL")
 public class UserURLMapper extends AbstractURLMapper<UserEntity> {
 
-    @Value("${api-path.common.user}")
+    @Value("${api.path.common.user}")
     private String apiPath;
 
     @Override

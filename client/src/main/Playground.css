@@ -41,17 +41,15 @@
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th {
-    background-color: #24292e;
+    background-color: #2d3237;
     border-top-left-radius: .25rem;
     border-top-right-radius: .25rem;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-calendar {
     width: 13%;
-}
-
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-control {
-    /*max-width: 3rem;*/
+    text-align: center;
+    vertical-align: middle;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th button {
