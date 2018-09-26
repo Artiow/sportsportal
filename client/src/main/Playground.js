@@ -147,8 +147,8 @@ class PlaygroundLeaseCalendar extends Component {
         };
         this.state = {
             schedule: null,
-            daysOfWeek: null,
-            timesOfDay: null
+            dateList: null,
+            timeList: null
         };
         this.query(
             this.playgroundId,
@@ -206,28 +206,24 @@ class PlaygroundLeaseCalendar extends Component {
         axios.get(url, {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
-            const daysOfWeek = [];
-            const timesOfDay = [];
+            const dateList = [];
+            const timeList = [];
             const array = Object.entries(response.data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
-                timesOfDay.push(item[0])
+                timeList.push(item[0])
             });
             array.forEach(function (item, i, arr) {
                 arr[i][1] = new Map(Object.entries(item[1]));
                 const date = item[0];
-                daysOfWeek.push({
+                dateList.push({
                     dayOfWeek: PlaygroundLeaseCalendar.DAYS_OF_WEEK_NAMES[(new Date(date)).getDay()],
                     date: date
                 });
             });
-            const schedule = new Map(array);
-            console.log('daysOfWeek:', daysOfWeek);
-            console.log('timesOfDay:', timesOfDay);
-            console.log('schedule:', schedule);
             self.setState({
-                daysOfWeek: daysOfWeek,
-                timesOfDay: timesOfDay,
-                schedule: schedule
+                schedule: new Map(array),
+                dateList: dateList,
+                timeList: timeList
             });
         }).catch(function (error) {
             console.log('Query Error:', error);
@@ -236,10 +232,10 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     render() {
-        const headerLineBuilder = daysOfWeek => {
+        const headerLineBuilder = dateList => {
             const headerLine = [];
-            if ((daysOfWeek != null) && (daysOfWeek.length > 0)) {
-                daysOfWeek.forEach(function (item, i, arr) {
+            if ((dateList != null) && (dateList.length > 0)) {
+                dateList.forEach(function (item, i, arr) {
                     headerLine.push(
                         <th key={i} className="th-calendar">
                             <span className="mr-1">{item.date.split('-')[2]}</span>
@@ -250,9 +246,26 @@ class PlaygroundLeaseCalendar extends Component {
             }
             return headerLine;
         };
+        const tableBuilder = (timeList, schedule) => {
+            const table = [];
+            timeList.forEach(function (item, i, arr) {
+                const timeLines = [];
+                schedule.forEach(function (value, key, map) {
+                    timeLines.push(<td key={timeLines.length}>{value.get(item) ? 'true' : 'false'}</td>)
+                });
+                table.push(
+                    <tr key={i}>
+                        <td>{item}</td>
+                        {timeLines}
+                    </tr>
+                )
+            });
+            return (table);
+        };
         const schedule = this.state.schedule;
         const didLoad = (schedule != null);
-        const headerLine = didLoad ? headerLineBuilder(this.state.daysOfWeek) : null;
+        const table = didLoad ? tableBuilder(this.state.timeList, schedule) : null;
+        const headerLine = didLoad ? headerLineBuilder(this.state.dateList) : null;
         return (
             <div className="PlaygroundLeaseCalendar">
                 {(didLoad) ? (
@@ -272,7 +285,9 @@ class PlaygroundLeaseCalendar extends Component {
                             {headerLine}
                         </tr>
                         </thead>
-                        <tbody/>
+                        <tbody>
+                        {table}
+                        </tbody>
                     </table>
                 ) : (null)}
             </div>

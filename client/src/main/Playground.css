@@ -38,6 +38,7 @@
 
 .Playground.container .PlaygroundLeaseCalendar table.table {
     border-collapse: separate;
+    margin-bottom: 5px;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th {
