@@ -49,12 +49,12 @@ class Playground extends Component {
             }
         };
         const playground = this.state.content;
-        const isLoad = (playground != null);
-        const photos = (isLoad) ? photoExtractor(playground.photos) : null;
-        const features = (isLoad) ? featureBuilder(playground.capabilities) : null;
+        const didLoad = (playground != null);
+        const photos = didLoad ? photoExtractor(playground.photos) : null;
+        const features = didLoad ? featureBuilder(playground.capabilities) : null;
         return (
             <main className="Playground container">
-                {isLoad ? (
+                {didLoad ? (
                     <div className="row">
                         <div className="col-10 offset-1">
                             <div className="container content-container">
@@ -108,72 +108,53 @@ class PlaygroundLeaseCalendar extends Component {
 
     static START_DATE_OFFSET = 0;
     static END_DATE_OFFSET = 6;
-    static DAYS_OF_WEEK_NAMES = [
-        {
-            full: 'воскресенье',
-            short: 'вс'
-        },
-        {
-            full: 'понедельник',
-            short: 'пн'
-        },
-        {
-            full: 'вторник',
-            short: 'вт'
-        },
-        {
-            full: 'среда',
-            short: 'ср'
-        },
-        {
-            full: 'четверг',
-            short: 'чт'
-        },
-        {
-            full: 'пятница',
-            short: 'пт'
-        },
-        {
-            full: 'суббота',
-            short: 'сб'
-        }
-    ];
+    static DAYS_OF_WEEK_NAMES = [{
+        full: 'воскресенье',
+        short: 'вс'
+    }, {
+        full: 'понедельник',
+        short: 'пн'
+    }, {
+        full: 'вторник',
+        short: 'вт'
+    }, {
+        full: 'среда',
+        short: 'ср'
+    }, {
+        full: 'четверг',
+        short: 'чт'
+    }, {
+        full: 'пятница',
+        short: 'пт'
+    }, {
+        full: 'суббота',
+        short: 'сб'
+    }];
 
     constructor(props) {
         super(props);
         this.playgroundId = props.identifier;
-        const sOffset = PlaygroundLeaseCalendar.START_DATE_OFFSET;
-        const eOffset = PlaygroundLeaseCalendar.END_DATE_OFFSET;
-        this.offset = {
-            startDateOffset: sOffset,
-            endDateOffset: eOffset,
-            startDate: PlaygroundLeaseCalendar.normalNow(sOffset),
-            endDate: PlaygroundLeaseCalendar.normalNow(eOffset)
+        const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
+        const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        this.frame = {
+            offset: {
+                start: start,
+                end: end
+            }, date: {
+                start: PlaygroundLeaseCalendar.normalNow(start),
+                end: PlaygroundLeaseCalendar.normalNow(end)
+            }
         };
         this.state = {
             schedule: null,
-            daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(
-                this.offset.startDateOffset,
-                this.offset.endDateOffset
-            )
+            daysOfWeek: null,
+            timesOfDay: null
         };
         this.query(
             this.playgroundId,
-            this.offset.startDate,
-            this.offset.endDate
+            this.frame.date.start,
+            this.frame.date.end
         );
-    }
-
-    static daysOfWeek(from, to) {
-        const daysOfWeek = [];
-        for (let i = from; i <= to; i++) {
-            let now = this.now(i);
-            daysOfWeek.push({
-                date: this.normalize(now),
-                dayOfWeek: this.DAYS_OF_WEEK_NAMES[now.getDay()]
-            })
-        }
-        return daysOfWeek;
     }
 
     static normalNow(days) {
@@ -198,29 +179,23 @@ class PlaygroundLeaseCalendar extends Component {
         if ((btn == null) || (btn === '')) btn = event.target.parentNode.id;
         if (btn === 'btn-next') {
             this.updateGrid(1);
-        } else if ((btn === 'btn-prev') && (this.offset.startDateOffset > 0)) {
+        } else if ((btn === 'btn-prev') && (this.frame.offset.start > 0)) {
             this.updateGrid(-1);
         }
     }
 
     updateGrid(offset) {
         if (offset !== 0) {
-            const sOffset = this.offset.startDateOffset + offset;
-            const eOffset = this.offset.endDateOffset + offset;
-            this.offset.startDateOffset = sOffset;
-            this.offset.endDateOffset = eOffset;
-            this.offset.startDate = PlaygroundLeaseCalendar.normalNow(sOffset);
-            this.offset.endDate = PlaygroundLeaseCalendar.normalNow(eOffset);
-            this.setState({
-                daysOfWeek: PlaygroundLeaseCalendar.daysOfWeek(
-                    this.offset.startDateOffset,
-                    this.offset.endDateOffset
-                )
-            });
+            const start = this.frame.offset.start + offset;
+            const end = this.frame.offset.end + offset;
+            this.frame.offset.start = start;
+            this.frame.offset.end = end;
+            this.frame.date.start = PlaygroundLeaseCalendar.normalNow(start);
+            this.frame.date.end = PlaygroundLeaseCalendar.normalNow(end);
             this.query(
                 this.playgroundId,
-                this.offset.startDate,
-                this.offset.endDate
+                this.frame.date.start,
+                this.frame.date.end
             );
         }
     }
@@ -231,7 +206,29 @@ class PlaygroundLeaseCalendar extends Component {
         axios.get(url, {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
-            self.setState({schedule: response.data.grid.schedule});
+            const daysOfWeek = [];
+            const timesOfDay = [];
+            const array = Object.entries(response.data.grid.schedule);
+            Object.entries(array[0][1]).forEach(item => {
+                timesOfDay.push(item[0])
+            });
+            array.forEach(function (item, i, arr) {
+                arr[i][1] = new Map(Object.entries(item[1]));
+                const date = item[0];
+                daysOfWeek.push({
+                    dayOfWeek: PlaygroundLeaseCalendar.DAYS_OF_WEEK_NAMES[(new Date(date)).getDay()],
+                    date: date
+                });
+            });
+            const schedule = new Map(array);
+            console.log('daysOfWeek:', daysOfWeek);
+            console.log('timesOfDay:', timesOfDay);
+            console.log('schedule:', schedule);
+            self.setState({
+                daysOfWeek: daysOfWeek,
+                timesOfDay: timesOfDay,
+                schedule: schedule
+            });
         }).catch(function (error) {
             console.log('Query Error:', error);
             console.log('Query Error:', error.response);
@@ -239,37 +236,45 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     render() {
-        const headerLine = [];
-        const daysOfWeek = this.state.daysOfWeek;
-        daysOfWeek.forEach(function (item, i, arr) {
-            headerLine.push(
-                <th key={i} className="th-calendar">
-                    <span className="mr-1">{item.date.split('-')[2]}</span>
-                    <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
-                </th>
-            );
-        });
-
+        const headerLineBuilder = daysOfWeek => {
+            const headerLine = [];
+            if ((daysOfWeek != null) && (daysOfWeek.length > 0)) {
+                daysOfWeek.forEach(function (item, i, arr) {
+                    headerLine.push(
+                        <th key={i} className="th-calendar">
+                            <span className="mr-1">{item.date.split('-')[2]}</span>
+                            <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
+                        </th>
+                    );
+                });
+            }
+            return headerLine;
+        };
+        const schedule = this.state.schedule;
+        const didLoad = (schedule != null);
+        const headerLine = didLoad ? headerLineBuilder(this.state.daysOfWeek) : null;
         return (
             <div className="PlaygroundLeaseCalendar">
-                <table className="table table-hover mt-3">
-                    <thead className="thead-dark">
-                    <tr>
-                        <th className="th-control">
-                            <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
-                                    title="Назад" onClick={this.handleOffset.bind(this)}>
-                                <i className="fa fa-angle-left"/>
-                            </button>
-                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
-                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
-                                <i className="fa fa-angle-right"/>
-                            </button>
-                        </th>
-                        {headerLine}
-                    </tr>
-                    </thead>
-                    <tbody/>
-                </table>
+                {(didLoad) ? (
+                    <table className="table table-hover mt-3">
+                        <thead className="thead-dark">
+                        <tr>
+                            <th className="th-control">
+                                <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
+                                        title="Назад" onClick={this.handleOffset.bind(this)}>
+                                    <i className="fa fa-angle-left"/>
+                                </button>
+                                <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
+                                        title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                    <i className="fa fa-angle-right"/>
+                                </button>
+                            </th>
+                            {headerLine}
+                        </tr>
+                        </thead>
+                        <tbody/>
+                    </table>
+                ) : (null)}
             </div>
         )
     }
