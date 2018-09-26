@@ -89,9 +89,9 @@ class Playground extends Component {
                                         <PhotoCarousel photos={photos} placeimg={noImage}/>
                                     </div>
                                 </div>
-                                <div className="row info-row lease-info-row">
+                                <div className="row info-row calendar-info-row">
                                     <div className="col-12">
-                                        <h4 className="row-h info-h info-price">Аренда:</h4>
+                                        <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
                                         <PlaygroundLeaseCalendar identifier={this.id}/>
                                     </div>
                                 </div>
@@ -146,6 +146,7 @@ class PlaygroundLeaseCalendar extends Component {
             }
         };
         this.state = {
+            price: null,
             schedule: null,
             dateList: null,
             timeList: null
@@ -208,7 +209,9 @@ class PlaygroundLeaseCalendar extends Component {
             console.log('Query Response:', response);
             const dateList = [];
             const timeList = [];
-            const array = Object.entries(response.data.grid.schedule);
+            const data = response.data;
+            const price = data.price;
+            const array = Object.entries(data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
                 timeList.push(item[0])
             });
@@ -221,6 +224,7 @@ class PlaygroundLeaseCalendar extends Component {
                 });
             });
             self.setState({
+                price: price,
                 schedule: new Map(array),
                 dateList: dateList,
                 timeList: timeList
@@ -246,26 +250,28 @@ class PlaygroundLeaseCalendar extends Component {
             }
             return headerLine;
         };
-        const tableBuilder = (timeList, schedule) => {
+        const tableBuilder = (timeList, price, schedule) => {
             const table = [];
             timeList.forEach(function (item, i, arr) {
-                const timeLines = [];
+                const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
                 schedule.forEach(function (value, key, map) {
-                    timeLines.push(<td key={timeLines.length}>{value.get(item) ? 'true' : 'false'}</td>)
+                    rows.push(
+                        <td key={rows.length}>
+                            <button
+                                className={value.get(item) ? 'btn btn-sm btn-outline-dark' : 'btn btn-sm btn-light disabled'}>
+                                {price}<i className="fa fa-rub ml-1"/>/час
+                            </button>
+                        </td>
+                    )
                 });
-                table.push(
-                    <tr key={i}>
-                        <td>{item}</td>
-                        {timeLines}
-                    </tr>
-                )
+                table.push(<tr key={i}>{rows}</tr>)
             });
             return (table);
         };
         const schedule = this.state.schedule;
         const didLoad = (schedule != null);
-        const table = didLoad ? tableBuilder(this.state.timeList, schedule) : null;
         const headerLine = didLoad ? headerLineBuilder(this.state.dateList) : null;
+        const table = didLoad ? tableBuilder(this.state.timeList, this.state.price, schedule) : null;
         return (
             <div className="PlaygroundLeaseCalendar">
                 {(didLoad) ? (

@@ -37,20 +37,17 @@
 /* PlaygroundLeaseCalendar */
 
 .Playground.container .PlaygroundLeaseCalendar table.table {
-    border-collapse: separate;
     margin-bottom: 5px;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th {
     background-color: #2d3237;
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-calendar {
-    width: 13%;
-    text-align: center;
     vertical-align: middle;
+    text-align: center;
+    width: 13%;
 }
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th button {
@@ -64,4 +61,20 @@
 
 .Playground.container .PlaygroundLeaseCalendar table.table thead tr th button:last-child {
     float: right;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td {
+    vertical-align: middle;
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .badge {
+    font-size: 90%;
+}
+
+.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .btn {
+    padding-bottom: 0;
+    padding-top: 0;
 }
