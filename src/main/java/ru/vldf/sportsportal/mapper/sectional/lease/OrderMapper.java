@@ -22,7 +22,7 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
     default OrderEntity merge(OrderEntity acceptor, OrderEntity donor) throws OptimisticLockException {
         AbstractVersionedMapper.super.merge(acceptor, donor);
 
-        acceptor.setCost(donor.getCost());
+        acceptor.setPrice(donor.getPrice());
         acceptor.setPaid(donor.getPaid());
         acceptor.setDatetime(donor.getDatetime());
         acceptor.setExpiration(donor.getExpiration());

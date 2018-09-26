@@ -20,6 +20,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,10 +31,10 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Playground"})
-@RequestMapping("${api-path.lease.playground}")
+@RequestMapping("${api.path.lease.playground}")
 public class PlaygroundController {
 
-    @Value("${api-path.lease.order}")
+    @Value("${api.path.lease.order}")
     private String orderPath;
 
     private PlaygroundService playgroundService;
@@ -51,8 +52,8 @@ public class PlaygroundController {
      * @param closing      {@link PlaygroundFilterDTO} closing field
      * @param featureCodes {@link PlaygroundFilterDTO} featureCodes field
      * @param sportCodes   {@link PlaygroundFilterDTO} sportCodes field
-     * @param startCost    {@link PlaygroundFilterDTO} startCost field
-     * @param endCost      {@link PlaygroundFilterDTO} endCost field
+     * @param startPrice   {@link PlaygroundFilterDTO} startPrice field
+     * @param endPrice     {@link PlaygroundFilterDTO} endPrice field
      * @param minRate      {@link PlaygroundFilterDTO} minRate field
      * @param searchString {@link StringSearcherDTO} searchString field
      * @param pageSize     {@link PageDividerDTO} pageSize field
@@ -66,8 +67,8 @@ public class PlaygroundController {
             @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
             @RequestParam(required = false) Collection<String> featureCodes,
             @RequestParam(required = false) Collection<String> sportCodes,
-            @RequestParam(required = false) Integer startCost,
-            @RequestParam(required = false) Integer endCost,
+            @RequestParam(required = false) BigDecimal startPrice,
+            @RequestParam(required = false) BigDecimal endPrice,
             @RequestParam(required = false) Integer minRate,
             @RequestParam(required = false) String searchString,
             @RequestParam(required = false) Integer pageSize,
@@ -76,8 +77,8 @@ public class PlaygroundController {
         return playgroundService.getList((PlaygroundFilterDTO) new PlaygroundFilterDTO()
                 .setFeatureCodes(featureCodes)
                 .setSportCodes(sportCodes)
-                .setStartCost(startCost)
-                .setEndCost(endCost)
+                .setStartPrice(startPrice)
+                .setEndPrice(endPrice)
                 .setMinRate(minRate)
                 .setOpening(opening)
                 .setClosing(closing)
@@ -142,7 +143,8 @@ public class PlaygroundController {
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
-    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
+    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO)
+            throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
@@ -151,10 +153,12 @@ public class PlaygroundController {
      *
      * @param playgroundDTO sent {@link PlaygroundDTO}
      * @return new playgrounds {@link URI}
+     * @throws ResourceCannotCreateException if playground create update
      */
     @PostMapping
     @ApiOperation("создать площадку")
-    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO) {
+    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO)
+            throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
@@ -165,12 +169,13 @@ public class PlaygroundController {
      * @param playgroundDTO playground data
      * @return no content
      * @throws ResourceNotFoundException       if playground not found
+     * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
     public ResponseEntity<Void> update(@PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO)
-            throws ResourceNotFoundException, ResourceOptimisticLockException {
+            throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }

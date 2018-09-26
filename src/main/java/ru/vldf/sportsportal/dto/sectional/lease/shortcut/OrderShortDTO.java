@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,8 +13,8 @@ import java.util.List;
 public class OrderShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
-    private Integer cost;
     private Boolean paid;
+    private BigDecimal price;
     private LocalDateTime datetime;
     private LocalDateTime expiration;
     private URI playgroundURL;
@@ -32,21 +33,21 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
-    }
-
-    public OrderShortDTO setCost(Integer cost) {
-        this.cost = cost;
-        return this;
-    }
-
     public Boolean getPaid() {
         return paid;
     }
 
     public OrderShortDTO setPaid(Boolean paid) {
         this.paid = paid;
+        return this;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public OrderShortDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 
@@ -101,7 +102,7 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
         private LocalDate date;
         private LocalTime startTime;
         private LocalTime endTime;
-        private Integer cost;
+        private BigDecimal price;
 
         public LocalDate getDate() {
             return date;
@@ -130,12 +131,12 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
             return this;
         }
 
-        public Integer getCost() {
-            return cost;
+        public BigDecimal getPrice() {
+            return price;
         }
 
-        public OrderPositionDTO setCost(Integer cost) {
-            this.cost = cost;
+        public OrderPositionDTO setPrice(BigDecimal price) {
+            this.price = price;
             return this;
         }
     }

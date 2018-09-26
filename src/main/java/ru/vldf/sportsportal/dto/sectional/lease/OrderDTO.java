@@ -5,10 +5,11 @@ import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundLinkDTO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,9 +24,9 @@ public class OrderDTO extends AbstractVersionedDTO {
     private Long version;
 
     @NotNull(groups = FieldCheck.class)
-    @Min(value = 1, groups = FieldCheck.class)
-    @Max(value = 10, groups = FieldCheck.class)
-    private Integer cost;
+    @Min(value = 0, groups = FieldCheck.class)
+    @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
+    private BigDecimal price;
 
     @NotNull(groups = FieldCheck.class)
     private Boolean paid;
@@ -71,12 +72,12 @@ public class OrderDTO extends AbstractVersionedDTO {
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public OrderDTO setCost(Integer cost) {
-        this.cost = cost;
+    public OrderDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 

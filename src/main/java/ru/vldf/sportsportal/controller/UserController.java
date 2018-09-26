@@ -13,7 +13,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
 @Api(tags = {"User"})
-@RequestMapping("${api-path.common.user}")
+@RequestMapping("${api.path.common.user}")
 public class UserController {
 
     private UserService userService;

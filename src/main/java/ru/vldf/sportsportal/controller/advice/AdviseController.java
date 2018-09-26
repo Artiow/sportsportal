@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
@@ -59,24 +60,30 @@ public class AdviseController {
         return errorDTO(ex, "Requested Resource Corrupted.");
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String, String> errorMap = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            String code = Optional.ofNullable(error.getArguments())
+            String code = Optional.of(error.getArguments())
                     .map(args -> ((DefaultMessageSourceResolvable) args[0]))
                     .map(DefaultMessageSourceResolvable::getCode)
                     .orElse("null");
             if (code.equals("")) code = "class";
             errorMap.put(code, error.getDefaultMessage());
         }
+
+        Throwable cause = ex.getCause();
+        String exceptionMessage = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
+        String causeClassName = (cause != null) ? cause.getClass().getName() : null;
+        String causeMessage = (cause != null) ? cause.getMessage() : null;
         return new ErrorMapDTO(
                 warnUUID("Sent Argument Not Valid."),
                 ex.getClass().getName(),
-                messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
+                exceptionMessage,
+                causeClassName,
+                causeMessage,
                 errorMap
         );
     }
@@ -86,6 +93,18 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return warnDTO(ex, "Sent HTTP Message Not Readable.");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        return warnDTO(ex, "Sent Request Argument Mismatch.");
+    }
+
+    @ExceptionHandler(SentDataCorruptedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleSentDataCorruptedException(SentDataCorruptedException ex) {
+        return warnDTO(ex, "Sent Access Token Not Readable.");
     }
 
     @ExceptionHandler(AuthorizationRequiredException.class)
@@ -138,7 +157,7 @@ public class AdviseController {
 
 
     public ErrorDTO errorDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(errorUUID(ex, logMessage), ex.getClass().getName(), ex.getMessage());
+        return new ErrorDTO(errorUUID(ex, logMessage), ex);
     }
 
     public UUID errorUUID(Throwable ex, String logMessage) {
@@ -148,7 +167,7 @@ public class AdviseController {
     }
 
     public ErrorDTO warnDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(warnUUID(logMessage), ex.getClass().getName(), ex.getMessage());
+        return new ErrorDTO(warnUUID(logMessage), ex);
     }
 
     public UUID warnUUID(String logMessage) {

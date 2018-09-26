@@ -48,10 +48,10 @@ class Login extends Component {
                 window.location.replace('/');
             })
             .catch(function (error) {
-                const response = error.response;
-                console.log('Login Error:', response);
+                const errorResponse = error.response;
+                console.log('Login Error:', errorResponse);
                 self.setState({
-                    errorMessages: response.data.message
+                    errorMessages: errorResponse.data.message
                 });
             })
     }

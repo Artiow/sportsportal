@@ -1,56 +1,48 @@
 import React, {Component} from "react";
-import {Link} from 'react-router-dom';
-import {getApiUrl} from '../boot/constants'
 import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import {Link} from 'react-router-dom';
+import {getApiUrl} from '../boot/constants'
+import StarRate from '../util/components/StarRate';
 import axios from 'axios';
 import qs from 'qs';
 import './Index.css';
-import noImageSm from '../util/img/no-image-sm.jpg';
+import noImage from '../util/img/no-image-white-sm.jpg';
 
 class Index extends Component {
 
     static DEFAULT_PAGE_SIZE = 10;
 
-    updateFilterCallback = newFilter => {
-        this.setState(prevState => {
-            return {filter: Object.assign(prevState.filter, newFilter)}
-        });
-        this.query();
+    updateFilter = newFilter => {
+        this.filter = Object.assign(this.filter, newFilter);
+        this.query(this.filter);
     };
 
     constructor(props) {
         super(props);
-        this.state = {
-            content: null,
-            pageNumber: 0,
-            totalPages: 0,
-            filter: {
-                pageSize: Index.DEFAULT_PAGE_SIZE,
-                pageNum: 0
-            }
-        };
-        this.query();
+        this.state = {page: null};
+        this.filter = {pageNum: 0, pageSize: Index.DEFAULT_PAGE_SIZE};
+        this.query(this.filter);
     }
 
-    query() {
+    /**
+     * Downloading playground page.
+     * @param filter {object} playground filter
+     */
+    query(filter) {
         const self = this;
         const url = getApiUrl('/leaseapi/playground/list');
+        const serializer = params => {
+            return qs.stringify(params, {arrayFormat: 'repeat'})
+        };
         axios.get(url, {
-            params: this.state.filter,
-            paramsSerializer: params => {
-                return qs.stringify(params, {arrayFormat: 'repeat'})
-            }
+            params: filter,
+            paramsSerializer: serializer
         }).then(function (response) {
-            console.log('API Request Response:', response);
-            const data = response.data;
-            self.setState({
-                content: data.content,
-                pageNumber: data.pageNumber,
-                totalPages: data.totalPages
-            });
+            console.log('Query Response:', response);
+            self.setState({page: response.data});
         }).catch(function (error) {
-            console.log('API Request Error:', error);
+            console.log('Query Error:', error.response);
         })
     }
 
@@ -58,9 +50,8 @@ class Index extends Component {
         return (
             <main className="Main container">
                 <div className="row">
-                    <PlaygroundFilter callback={this.updateFilterCallback}/>
-                    <PageablePlaygroundContainer pageable={(this.state.totalPages > 1)}
-                                                 content={this.state.content}/>
+                    <PlaygroundFilter callback={this.updateFilter}/>
+                    <PageablePlaygroundContainer page={this.state.page}/>
                 </div>
             </main>
         );
@@ -69,8 +60,9 @@ class Index extends Component {
 
 class PlaygroundFilter extends Component {
 
-    static MIN_COST = 0;
-    static MAX_COST = 1000000;
+    static MIN_PRICE = 0;
+    static MAX_PRICE = 10000;
+    static PRICE_STEP = 100;
 
     updateRateCallback = slider => {
         this.setState({
@@ -78,11 +70,10 @@ class PlaygroundFilter extends Component {
         });
     };
 
-    updateCostCallback = range => {
-        const MAX = PlaygroundFilter.MAX_COST;
+    updatePriceCallback = range => {
         this.setState({
-            startCost: (MAX * (range[0] / 100)),
-            endCost: (MAX * (range[1] / 100))
+            startPrice: range[0],
+            endPrice: range[1]
         });
     };
 
@@ -101,29 +92,31 @@ class PlaygroundFilter extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.dictionary = {
             sports: null,
-            sportCodes: [],
             features: null,
+        };
+        this.state = {
+            sportCodes: [],
             featureCodes: [],
             searchString: '',
-            startCost: PlaygroundFilter.MIN_COST,
-            endCost: PlaygroundFilter.MAX_COST,
+            startPrice: PlaygroundFilter.MIN_PRICE,
+            endPrice: PlaygroundFilter.MAX_PRICE,
             opening: '00:00',
             closing: '00:00',
             minRate: 0
         };
 
         const self = this;
-        this.uploadFilerData("/leaseapi/dict/feature/list", function (list) {
-            self.setState({features: list});
+        this.uploadFilerData("/leaseapi/dict/feature/list", function (response) {
+            self.dictionary.features = response;
         });
-        this.uploadFilerData("/leaseapi/dict/sport/list", function (list) {
-            self.setState({sports: list});
+        this.uploadFilerData("/leaseapi/dict/sport/list", function (response) {
+            self.dictionary.sports = response;
         });
     }
 
-    static updateCodeArray(codes, code, checked) {
+    static updateCheckboxArray(codes, code, checked) {
         const idx = codes.indexOf(code);
         if ((checked) && (idx < 0)) codes.push(code);
         else codes.splice(idx, 1);
@@ -138,11 +131,11 @@ class PlaygroundFilter extends Component {
     uploadFilerData(uri, setting) {
         axios.get(getApiUrl(uri))
             .then(function (response) {
-                console.log('API Dictionary Response:', response);
+                console.log('Dictionary Response:', response);
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('API Dictionary Error:', error);
+                console.log('Dictionary Error:', error.response);
             })
     }
 
@@ -158,8 +151,8 @@ class PlaygroundFilter extends Component {
             searchString: this.state.searchString,
             featureCodes: this.state.featureCodes,
             sportCodes: this.state.sportCodes,
-            startCost: this.state.startCost,
-            endCost: this.state.endCost,
+            startPrice: this.state.startPrice,
+            endPrice: this.state.endPrice,
             opening: this.state.opening,
             closing: this.state.closing,
             minRate: this.state.minRate
@@ -168,18 +161,18 @@ class PlaygroundFilter extends Component {
 
     updateSportCodes(code, checked) {
         this.setState(prevState => {
-            return {sportCodes: PlaygroundFilter.updateCodeArray(prevState.sportCodes, code, checked)}
+            return {sportCodes: PlaygroundFilter.updateCheckboxArray(prevState.sportCodes, code, checked)}
         });
     }
 
     updateFeatureCodes(code, checked) {
         this.setState(prevState => {
-            return {featureCodes: PlaygroundFilter.updateCodeArray(prevState.featureCodes, code, checked)}
+            return {featureCodes: PlaygroundFilter.updateCheckboxArray(prevState.featureCodes, code, checked)}
         });
     }
 
     render() {
-        const setFilterData = (prefix, content, updater) => {
+        const setCheckboxData = (prefix, content, updater) => {
             const result = [];
             if ((content != null) && (content.length > 0)) {
                 content.forEach(function (item, i, arr) {
@@ -221,7 +214,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_1" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('sport', this.state.sports, this.updateSportCodes.bind(this))}
+                                    {setCheckboxData('sport', this.dictionary.sports, this.updateSportCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
@@ -235,7 +228,7 @@ class PlaygroundFilter extends Component {
                             </div>
                             <div id="collapse_2" className="collapse" data-parent="#accordion">
                                 <div className="card-body">
-                                    {setFilterData('feature', this.state.features, this.updateFeatureCodes.bind(this))}
+                                    {setCheckboxData('feature', this.dictionary.features, this.updateFeatureCodes.bind(this))}
                                 </div>
                             </div>
                         </div>
@@ -253,7 +246,7 @@ class PlaygroundFilter extends Component {
                                         <span className="badge-sub">от</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {(this.state.startCost / 100).toFixed()}
+                                                {Math.floor(this.state.startPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
@@ -262,13 +255,16 @@ class PlaygroundFilter extends Component {
                                         <span className="badge-sub">до</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {(this.state.endCost / 100).toFixed()}
+                                                {Math.floor(this.state.endPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
                                     </h6>
-                                    <Range allowCross={false} defaultValue={[0, 100]}
-                                           onChange={this.updateCostCallback}/>
+                                    <Range allowCross={false}
+                                           min={PlaygroundFilter.MIN_PRICE} max={PlaygroundFilter.MAX_PRICE}
+                                           defaultValue={[PlaygroundFilter.MIN_PRICE, PlaygroundFilter.MAX_PRICE]}
+                                           step={PlaygroundFilter.PRICE_STEP}
+                                           onChange={this.updatePriceCallback}/>
                                 </div>
                             </div>
                         </div>
@@ -312,7 +308,7 @@ class PlaygroundFilter extends Component {
                                 <div className="card-body">
                                     <h6 className="badge badge-dark">
                                             <span className="badge-param">
-                                                <Rate rate={this.state.minRate}/>
+                                                <StarRate value={this.state.minRate}/>
                                             </span>
                                     </h6>
                                     <Slider min={0} max={10} defaultValue={0}
@@ -328,14 +324,15 @@ class PlaygroundFilter extends Component {
 }
 
 function PageablePlaygroundContainer(props) {
-    const content = props.content;
-    const pageable = props.pageable;
+    const page = props.page;
+    const totalPages = (page != null) ? page.totalPages : 0;
+    const content = (page != null) ? page.content : null;
     return ((content !== null) && (content.length > 0)) ? (
         <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
             <PlaygroundContainer content={content}/>
-            {(pageable) ? (<PlaygroundPagination/>) : (null)}
+            {(totalPages > 1) ? (<PlaygroundPagination/>) : (null)}
         </div>
-    ) : (
+    ) : (((content !== null) && (content.length === 0)) ? (
         <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
             <div className="col-xs-12 col-sm-12 mb-12">
                 <div className="alert alert-light">
@@ -345,7 +342,9 @@ function PageablePlaygroundContainer(props) {
                 </div>
             </div>
         </div>
-    );
+    ) : (
+        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8"/>
+    ));
 }
 
 function PlaygroundPagination(props) {
@@ -372,7 +371,7 @@ function PlaygroundContainer(props) {
 function PlaygroundCard(props) {
     const playground = props.playground;
     const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImageSm);
+    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImage);
     return (
         <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
@@ -382,11 +381,11 @@ function PlaygroundCard(props) {
                         <small>{playground.name}</small>
                     </h4>
                     <h6 className="card-title">
-                        <Rate rate={playground.rate}/>
+                        <StarRate value={playground.rate}/>
                     </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
-                            от<span>{((playground.cost / 100).toFixed())}</span><i className="fa fa-rub"/>/час
+                            от<span>{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
                         </span>
                     </p>
                     <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
@@ -395,27 +394,6 @@ function PlaygroundCard(props) {
                 </div>
             </div>
         </div>
-    );
-}
-
-function Rate(props) {
-    const rate = props.rate;
-    let stars = [];
-    let i = 0;
-    while (i <= (rate - 2)) {
-        stars.push(<i key={i} className="fa fa-star"/>);
-        i += 2;
-    }
-    if (i < rate) {
-        stars.push(<i key={i} className="fa fa-star-half-o"/>);
-        i += 2;
-    }
-    while (i < 10) {
-        stars.push(<i key={i} className="fa fa-star-o"/>);
-        i += 2;
-    }
-    return (
-        <span className="Rate card-title">{stars}</span>
     );
 }
 

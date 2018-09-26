@@ -3,8 +3,10 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 import ru.vldf.sportsportal.dto.validation.annotations.Future;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ReservationDTO implements DataTransferObject {
@@ -15,7 +17,8 @@ public class ReservationDTO implements DataTransferObject {
 
     @NotNull
     @Min(value = 0)
-    private Integer cost;
+    @Digits(integer = 6, fraction = 2)
+    private BigDecimal price;
 
 
     public LocalDateTime getDatetime() {
@@ -27,12 +30,12 @@ public class ReservationDTO implements DataTransferObject {
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public ReservationDTO setCost(Integer cost) {
-        this.cost = cost;
+    public ReservationDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 }

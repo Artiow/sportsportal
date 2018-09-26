@@ -4,6 +4,7 @@ import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -12,8 +13,8 @@ import java.util.Collection;
 public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
-    @Column(name = "cost", nullable = false)
-    private Integer cost = 0;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price = BigDecimal.valueOf(0, 2);
 
     @Basic
     @Column(name = "paid", nullable = false)
@@ -36,12 +37,12 @@ public class OrderEntity extends AbstractVersionedEntity {
     private Collection<ReservationEntity> reservations;
 
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setCost(Integer cost) {
-        this.cost = cost;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Boolean getPaid() {

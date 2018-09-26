@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
 @Api(tags = {"Dictionary Sport"})
-@RequestMapping("${api-path.lease.dict.sport}")
+@RequestMapping("${api.path.lease.dict.sport}")
 public class SportController {
 
     private SportService sportService;

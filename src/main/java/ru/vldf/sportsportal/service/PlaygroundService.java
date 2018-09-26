@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
@@ -27,6 +28,7 @@ import ru.vldf.sportsportal.util.LocalDateTimeNormalizer;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.criteria.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -102,7 +104,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException  if playground not found
      * @throws ResourceCorruptedException if playground data corrupted
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
+            noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
+    )
     public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
             return playgroundMapper.makeSchedule(
@@ -123,7 +129,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @return {@link PlaygroundShortDTO}
      * @throws ResourceNotFoundException if playground not found
      */
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public PlaygroundShortDTO getShort(Integer id) throws ResourceNotFoundException {
         try {
             return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
@@ -140,7 +150,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
         try {
             return playgroundMapper.toDTO(playgroundRepository.getOne(id));
@@ -159,7 +173,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException      if playground not found
      * @throws ResourceCannotCreateException  if playground cannot create
      */
-    @Transactional
+    @Transactional(
+            rollbackFor = {AuthorizationRequiredException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
@@ -171,8 +188,8 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
 
-            int sumCost = 0;
-            int cost = playground.getCost();
+            BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
+            BigDecimal price = playground.getPrice();
             Collection<LocalDateTime> datetimes = reservationListDTO.getReservations();
             if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable())) {
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
@@ -193,14 +210,14 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 reservation.setDatetime(reservedDatetime);
                 reservation.setPlayground(playground);
                 reservation.setOrder(order);
-                reservation.setCost(cost);
+                reservation.setPrice(price);
 
-                sumCost += cost;
+                sumPrice = sumPrice.add(price);
                 reservations.add(reservation);
             }
 
             order.setPaid(false);
-            order.setCost(sumCost);
+            order.setPrice(sumPrice);
             order.setReservations(reservations);
             return orderRepository.save(order).getId();
         } catch (EntityNotFoundException e) {
@@ -213,11 +230,19 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param playgroundDTO {@link PlaygroundDTO} with playground data
      * @return new playground {@link Integer} identifier
+     * @throws ResourceCannotCreateException if playground cannot create
      */
     @Override
-    @Transactional
-    public Integer create(PlaygroundDTO playgroundDTO) {
-        return playgroundRepository.save(playgroundMapper.toEntity(playgroundDTO)).getId();
+    @Transactional(
+            rollbackFor = {ResourceCannotCreateException.class},
+            noRollbackFor = {JpaObjectRetrievalFailureException.class}
+    )
+    public Integer create(PlaygroundDTO playgroundDTO) throws ResourceCannotCreateException {
+        try {
+            return playgroundRepository.save(playgroundMapper.toEntity(playgroundDTO)).getId();
+        } catch (JpaObjectRetrievalFailureException e) {
+            throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.cannotCreate.message"), e);
+        }
     }
 
     /**
@@ -226,15 +251,21 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id            {@link Integer} playground identifier
      * @param playgroundDTO {@link PlaygroundDTO} with new playground data
      * @throws ResourceNotFoundException       if playground not found
+     * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
      */
     @Override
-    @Transactional
-    public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceOptimisticLockException {
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class, ResourceOptimisticLockException.class},
+            noRollbackFor = {EntityNotFoundException.class, JpaObjectRetrievalFailureException.class, OptimisticLockException.class, OptimisticLockingFailureException.class}
+    )
+    public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         try {
-            playgroundRepository.saveAndFlush(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
+            playgroundRepository.save(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        } catch (JpaObjectRetrievalFailureException e) {
+            throw new ResourceCannotUpdateException(mGet("sportsportal.lease.Playground.cannotUpdate.message"), e);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             throw new ResourceOptimisticLockException(mGet("sportsportal.lease.Playground.optimisticLock.message"), e);
         }
@@ -247,12 +278,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void delete(Integer id) throws ResourceNotFoundException {
         if (!playgroundRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
         }
-
         playgroundRepository.deleteById(id);
     }
 
@@ -261,10 +291,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
         private Collection<String> featureCodes;
         private Collection<String> sportCodes;
+        private BigDecimal startPrice;
+        private BigDecimal endPrice;
         private Timestamp opening;
         private Timestamp closing;
-        private Integer startCost;
-        private Integer endCost;
         private Integer minRate;
 
 
@@ -273,7 +303,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             configureSearchByFeatures(dto);
             configureSearchBySports(dto);
             configureSearchByWorkTime(dto);
-            configureSearchByCost(dto);
+            configureSearchByPrice(dto);
             configureSearchByRate(dto);
         }
 
@@ -308,16 +338,16 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             }
         }
 
-        private void configureSearchByCost(PlaygroundFilterDTO dto) {
-            Integer startCost = dto.getStartCost();
-            Integer endCost = dto.getEndCost();
-            if ((startCost != null) && (endCost != null)) {
-                if (startCost <= endCost) {
-                    this.startCost = startCost;
-                    this.endCost = endCost;
+        private void configureSearchByPrice(PlaygroundFilterDTO dto) {
+            BigDecimal startPrice = dto.getStartPrice();
+            BigDecimal endPrice = dto.getEndPrice();
+            if ((startPrice != null) && (endPrice != null)) {
+                if (startPrice.compareTo(endPrice) <= 0) {
+                    this.startPrice = startPrice;
+                    this.endPrice = endPrice;
                 } else {
-                    this.startCost = endCost;
-                    this.endCost = startCost;
+                    this.startPrice = endPrice;
+                    this.endPrice = startPrice;
                 }
             }
         }
@@ -342,7 +372,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
             }
-            if (startCost != null) {
+            if (startPrice != null) {
                 predicates.add(searchByCostPredicate(root, cb));
             }
             if (minRate != null) {
@@ -387,10 +417,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         }
 
         private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            Path<Integer> sought = root.get(PlaygroundEntity_.cost);
+            Path<BigDecimal> sought = root.get(PlaygroundEntity_.price);
             return cb.and(
-                    cb.greaterThanOrEqualTo(sought, startCost),
-                    cb.lessThanOrEqualTo(sought, endCost)
+                    cb.greaterThanOrEqualTo(sought, startPrice),
+                    cb.lessThanOrEqualTo(sought, endPrice)
             );
         }
 

@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.controller;
 
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +13,17 @@ import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
 import ru.vldf.sportsportal.service.UserService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
 @Api(tags = {"Authentication"})
-@RequestMapping("${api-path.common.auth}")
+@RequestMapping("${api.path.common.auth}")
 public class AuthController {
 
-    @Value("${api-path.common.user}")
+    @Value("${api.path.common.user}")
     private String userPath;
 
     private UserService userService;
@@ -54,13 +55,15 @@ public class AuthController {
      *
      * @param accessToken {@link String} users access token
      * @return {@link TokenDTO} token data
-     * @throws UsernameNotFoundException if user not found
-     * @throws SignatureException        if could not parse jwt
+     * @throws UsernameNotFoundException  if user not found
+     * @throws ResourceNotFoundException  if user not found
+     * @throws SentDataCorruptedException if token not valid
+     * @throws JwtException               if could not parse jwt
      */
     @GetMapping("/verify")
     @ApiOperation("верификация")
     public TokenDTO verify(@RequestParam String accessToken)
-            throws UsernameNotFoundException, SignatureException {
+            throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
         return userService.verify(accessToken);
     }
 

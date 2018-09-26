@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.lease;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -19,8 +20,8 @@ public class ReservationEntity implements DomainObject {
     private ReservationEntityPK pk;
 
     @Basic
-    @Column(name = "cost")
-    private Integer cost;
+    @Column(name = "price")
+    private BigDecimal price = BigDecimal.valueOf(0, 2);
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
@@ -40,12 +41,12 @@ public class ReservationEntity implements DomainObject {
         this.pk = pk;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setCost(Integer cost) {
-        this.cost = cost;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public OrderEntity getOrder() {

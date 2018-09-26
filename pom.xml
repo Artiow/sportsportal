@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.4.63</version>
+    <version>0.4.82</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -306,10 +306,11 @@
 
                 <executions>
                     <execution>
-                        <id>default</id>
+                        <id>boot</id>
                         <configuration>
                             <url>${datasource.url.default}</url>
                             <srcFiles>
+                                <srcFile>database/testing/cleaning.sql</srcFile>
                                 <srcFile>database/boot/boot.sql</srcFile>
                             </srcFiles>
                         </configuration>
@@ -319,6 +320,7 @@
                         <configuration>
                             <url>${datasource.url.default}</url>
                             <srcFiles>
+                                <srcFile>database/testing/cleaning.sql</srcFile>
                                 <srcFile>database/boot/boot.sql</srcFile>
                                 <srcFile>database/boot/demo.sql</srcFile>
                             </srcFiles>
@@ -329,6 +331,7 @@
                         <configuration>
                             <url>${datasource.url.test}</url>
                             <srcFiles>
+                                <srcFile>database/testing/cleaning.sql</srcFile>
                                 <srcFile>database/boot/boot.sql</srcFile>
                             </srcFiles>
                         </configuration>

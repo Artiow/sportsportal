@@ -1,12 +1,14 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.specific.WorkTimeDTO;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.List;
 
-public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
+public class PlaygroundShortDTO extends AbstractIdentifiedDTO implements WorkTimeDTO {
 
     private Integer id;
     private String name;
@@ -17,7 +19,7 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
     private LocalTime closing;
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
-    private Integer cost;
+    private BigDecimal price;
     private List<String> specializations;
     private List<String> capabilities;
     private URI playgroundURL;
@@ -25,10 +27,12 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
     private List<URI> photoURLs;
 
 
+    @Override
     public Integer getId() {
         return id;
     }
 
+    @Override
     public PlaygroundShortDTO setId(Integer id) {
         this.id = id;
         return this;
@@ -70,48 +74,56 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
+    @Override
     public LocalTime getOpening() {
         return opening;
     }
 
+    @Override
     public PlaygroundShortDTO setOpening(LocalTime opening) {
         this.opening = opening;
         return this;
     }
 
+    @Override
     public LocalTime getClosing() {
         return closing;
     }
 
+    @Override
     public PlaygroundShortDTO setClosing(LocalTime closing) {
         this.closing = closing;
         return this;
     }
 
+    @Override
     public Boolean getHalfHourAvailable() {
         return halfHourAvailable;
     }
 
+    @Override
     public PlaygroundShortDTO setHalfHourAvailable(Boolean halfHourAvailable) {
         this.halfHourAvailable = halfHourAvailable;
         return this;
     }
 
+    @Override
     public Boolean getFullHourRequired() {
         return fullHourRequired;
     }
 
+    @Override
     public PlaygroundShortDTO setFullHourRequired(Boolean fullHourRequired) {
         this.fullHourRequired = fullHourRequired;
         return this;
     }
 
-    public Integer getCost() {
-        return cost;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public PlaygroundShortDTO setCost(Integer cost) {
-        this.cost = cost;
+    public PlaygroundShortDTO setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 

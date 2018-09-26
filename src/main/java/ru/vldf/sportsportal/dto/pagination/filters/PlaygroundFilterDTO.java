@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.pagination.filters;
 
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Collection;
 
@@ -9,10 +10,10 @@ public class PlaygroundFilterDTO extends StringSearcherDTO {
 
     private Collection<String> featureCodes;
     private Collection<String> sportCodes;
+    private BigDecimal startPrice;
+    private BigDecimal endPrice;
     private LocalTime opening;
     private LocalTime closing;
-    private Integer startCost;
-    private Integer endCost;
     private Integer minRate;
 
 
@@ -34,6 +35,24 @@ public class PlaygroundFilterDTO extends StringSearcherDTO {
         return this;
     }
 
+    public BigDecimal getStartPrice() {
+        return startPrice;
+    }
+
+    public PlaygroundFilterDTO setStartPrice(BigDecimal startPrice) {
+        this.startPrice = startPrice;
+        return this;
+    }
+
+    public BigDecimal getEndPrice() {
+        return endPrice;
+    }
+
+    public PlaygroundFilterDTO setEndPrice(BigDecimal endPrice) {
+        this.endPrice = endPrice;
+        return this;
+    }
+
     public LocalTime getOpening() {
         return opening;
     }
@@ -49,24 +68,6 @@ public class PlaygroundFilterDTO extends StringSearcherDTO {
 
     public PlaygroundFilterDTO setClosing(LocalTime closing) {
         this.closing = closing;
-        return this;
-    }
-
-    public Integer getStartCost() {
-        return startCost;
-    }
-
-    public PlaygroundFilterDTO setStartCost(Integer startCost) {
-        this.startCost = startCost;
-        return this;
-    }
-
-    public Integer getEndCost() {
-        return endCost;
-    }
-
-    public PlaygroundFilterDTO setEndCost(Integer endCost) {
-        this.endCost = endCost;
         return this;
     }
 

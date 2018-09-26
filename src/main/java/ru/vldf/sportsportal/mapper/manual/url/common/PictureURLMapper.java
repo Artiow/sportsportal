@@ -13,7 +13,7 @@ import java.util.Collection;
 @Named("toPictureURL")
 public class PictureURLMapper extends AbstractURLMapper<PictureEntity> {
 
-    @Value("${api-path.common.picture}")
+    @Value("${api.path.common.picture}")
     private String apiPath;
 
     @Override

@@ -78,7 +78,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         acceptor.setClosing(donor.getClosing());
         acceptor.setHalfHourAvailable(donor.getHalfHourAvailable());
         acceptor.setFullHourRequired(donor.getFullHourRequired());
-        acceptor.setCost(donor.getCost());
+        acceptor.setPrice(donor.getPrice());
         acceptor.setSpecializations(donor.getSpecializations());
         acceptor.setCapabilities(donor.getCapabilities());
         acceptor.setOwners(donor.getOwners());
