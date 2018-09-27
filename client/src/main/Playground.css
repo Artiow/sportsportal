@@ -36,45 +36,46 @@
 
 /* PlaygroundLeaseCalendar */
 
-.Playground.container .PlaygroundLeaseCalendar table.table {
+.Playground.container .PlaygroundLeaseCalendar {
     margin-bottom: 5px;
+    margin-top: 12px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th {
+.Playground.container .PlaygroundLeaseCalendar thead tr th. {
     background-color: #2d3237;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th.th-calendar {
+.Playground.container .PlaygroundLeaseCalendar thead tr th.th-calendar {
     vertical-align: middle;
     text-align: center;
     width: 13%;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button {
+.Playground.container .PlaygroundLeaseCalendar thead tr th button {
     padding: 0 .5rem;
     font-size: 1.125rem;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button:first-child {
+.Playground.container .PlaygroundLeaseCalendar thead tr th button:first-child {
     float: left;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table thead tr th button:last-child {
+.Playground.container .PlaygroundLeaseCalendar thead tr th button:last-child {
     float: right;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td {
+.Playground.container .PlaygroundLeaseCalendar tbody tr td {
     text-align: center;
     padding-top: 6px;
     padding-bottom: 6px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .badge {
+.Playground.container .PlaygroundLeaseCalendar tbody tr td .badge {
     font-size: 90%;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td button.btn,
-.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .CheckButton {
+.Playground.container .PlaygroundLeaseCalendar tbody tr td button.btn,
+.Playground.container .PlaygroundLeaseCalendar tbody tr td .CheckButton {
     padding-bottom: 0;
     padding-top: 0;
     margin: 0;

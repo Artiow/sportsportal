@@ -271,35 +271,32 @@ class PlaygroundLeaseCalendar extends Component {
             return (table);
         };
         const schedule = this.state.schedule;
-        const didLoad = (schedule != null);
-        const headerLine = didLoad ? headerLineBuilder(this.state.dateList) : null;
-        const table = didLoad ? tableBuilder(this.state.timeList, this.state.price, schedule) : null;
-        return (
-            <div className="PlaygroundLeaseCalendar">
-                {(didLoad) ? (
-                    <table className="table table-hover mt-3">
-                        <thead className="thead-dark">
-                        <tr>
-                            <th className="th-control">
-                                <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
-                                        title="Назад" onClick={this.handleOffset.bind(this)}>
-                                    <i className="fa fa-angle-left"/>
-                                </button>
-                                <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
-                                        title="Вперед" onClick={this.handleOffset.bind(this)}>
-                                    <i className="fa fa-angle-right"/>
-                                </button>
-                            </th>
-                            {headerLine}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {table}
-                        </tbody>
-                    </table>
-                ) : (null)}
-            </div>
-        )
+        if (schedule != null) {
+            return (
+                <table className="PlaygroundLeaseCalendar table table-hover">
+                    <thead className="thead-dark">
+                    <tr>
+                        <th>
+                            <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
+                                    title="Назад" onClick={this.handleOffset.bind(this)}>
+                                <i className="fa fa-angle-left"/>
+                            </button>
+                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
+                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                <i className="fa fa-angle-right"/>
+                            </button>
+                        </th>
+                        {headerLineBuilder(this.state.dateList)}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {tableBuilder(this.state.timeList, this.state.price, schedule)}
+                    </tbody>
+                </table>
+            )
+        } else {
+            return null;
+        }
     }
 }
 
