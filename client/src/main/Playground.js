@@ -150,7 +150,8 @@ class PlaygroundLeaseCalendar extends Component {
             price: null,
             schedule: null,
             dateList: null,
-            timeList: null
+            timeList: null,
+            reservation: []
         };
         this.query(
             this.playgroundId,
@@ -236,6 +237,21 @@ class PlaygroundLeaseCalendar extends Component {
         });
     }
 
+    updateReservation(event) {
+        const value = event.target.value;
+        console.log('value:', value);
+        const checked = event.target.checked;
+        console.log('checked:', checked);
+        this.setState(prevState => {
+            const arr = prevState.reservation;
+            const idx = arr.indexOf(value);
+            if ((checked) && (idx < 0)) arr.push(value);
+            else arr.splice(idx, 1);
+            console.log('reservation:', arr);
+            return {reservation: arr};
+        });
+    }
+
     render() {
         const headerLineBuilder = dateList => {
             const headerLine = [];
@@ -252,15 +268,19 @@ class PlaygroundLeaseCalendar extends Component {
             return headerLine;
         };
         const tableBuilder = (timeList, price, schedule) => {
+            const self = this;
             const table = [];
             timeList.forEach(function (item, i, arr) {
                 const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
                 schedule.forEach(function (value, key, map) {
                     const content = (<span>{price}<i className="fa fa-rub ml-1"/></span>);
+                    const datetime = key + 'T' + item;
                     rows.push(
                         <td key={rows.length}>
                             {(value.get(item)
-                                    ? (<CheckButton content={content} checked={false}/>)
+                                    ? (<CheckButton id={datetime} value={datetime} content={content}
+                                                    checked={!(self.state.reservation.indexOf(value) < 0)}
+                                                    onChange={self.updateReservation.bind(self)}/>)
                                     : (<button className="btn btn-sm btn-light disabled">{content}</button>)
                             )}
                         </td>

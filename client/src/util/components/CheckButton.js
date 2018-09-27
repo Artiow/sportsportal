@@ -21,11 +21,11 @@ class CheckButton extends Component {
     }
 
     render() {
-        // hidden="hidden"
         return (
-            <label className={this.state.active ? this.activeClassName : this.inactiveClassName}>
-                {this.props.content}<input type="checkbox" checked={this.state.active} hidden={true}
-                                           onChange={this.switch.bind(this)}/>
+            <label id={this.props.id} className={this.state.active ? this.activeClassName : this.inactiveClassName}>
+                {this.props.content}
+                <input type="checkbox" value={this.props.value} hidden={true}
+                       checked={this.state.active} onChange={this.switch.bind(this)}/>
             </label>
         )
     }

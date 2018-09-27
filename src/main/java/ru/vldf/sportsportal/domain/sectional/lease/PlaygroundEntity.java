@@ -42,7 +42,7 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "half_hour_available", nullable = false)
-    private Boolean halfHourAvailable = true;
+    private Boolean halfHourAvailable = false;
 
     @Basic
     @Column(name = "full_hour_required", nullable = false)
