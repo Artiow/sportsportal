@@ -4,6 +4,7 @@ import 'rc-slider/assets/index.css';
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../boot/constants'
 import StarRate from '../util/components/StarRate';
+import CustomCheckbox from '../util/components/CustomCheckbox';
 import axios from 'axios';
 import qs from 'qs';
 import './Index.css';
@@ -176,18 +177,12 @@ class PlaygroundFilter extends Component {
             const result = [];
             if ((content != null) && (content.length > 0)) {
                 content.forEach(function (item, i, arr) {
-                    const code = item.code;
-                    const id = prefix + '_' + code;
-                    const name = item.name.charAt(0).toUpperCase() + item.name.slice(1);
                     result.push(
-                        <div key={i} className="custom-control custom-checkbox">
-                            <input type="checkbox" className="custom-control-input"
-                                   value={code} id={id}
-                                   onChange={event => {
-                                       updater(event.target.value, event.target.checked);
-                                   }}/>
-                            <label className="custom-control-label" htmlFor={id}>{name}</label>
-                        </div>
+                        <CustomCheckbox key={i} id={prefix + '_' + item.code} value={item.code}
+                                        label={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                                        onChange={event => {
+                                            updater(event.target.value, event.target.checked);
+                                        }}/>
                     );
                 });
             }

@@ -66,7 +66,7 @@ public class AdviseController {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String, String> errorMap = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            String code = Optional.of(error.getArguments())
+            String code = Optional.ofNullable(error.getArguments())
                     .map(args -> ((DefaultMessageSourceResolvable) args[0]))
                     .map(DefaultMessageSourceResolvable::getCode)
                     .orElse("null");

@@ -49,22 +49,22 @@
     margin: 0 3px 0 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox {
     margin-bottom: 2px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox:last-child {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox:last-child {
     margin-bottom: 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox input,
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox label {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input,
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label {
     font-weight: 500;
     color: #343a40;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox input:hover,
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body div.custom-checkbox label:hover {
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input:hover,
+.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label:hover {
     cursor: pointer;
     color: black;
 }

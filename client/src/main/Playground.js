@@ -210,7 +210,7 @@ class PlaygroundLeaseCalendar extends Component {
             const dateList = [];
             const timeList = [];
             const data = response.data;
-            const price = data.price;
+            const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price ;
             const array = Object.entries(data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
                 timeList.push(item[0])
@@ -257,10 +257,10 @@ class PlaygroundLeaseCalendar extends Component {
                 schedule.forEach(function (value, key, map) {
                     rows.push(
                         <td key={rows.length}>
-                            <button
-                                className={value.get(item) ? 'btn btn-sm btn-outline-dark' : 'btn btn-sm btn-light disabled'}>
-                                {price}<i className="fa fa-rub ml-1"/>/час
-                            </button>
+                            <label style={{margin: '0'}} className={value.get(item) ? 'btn btn-sm btn-outline-dark' : 'btn btn-sm btn-light disabled'}>
+                                {price}<i className="fa fa-rub ml-1"/>
+                                <input type="checkbox" hidden="hidden"/>
+                            </label>
                         </td>
                     )
                 });
