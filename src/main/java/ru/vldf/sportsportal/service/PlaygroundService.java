@@ -33,10 +33,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
@@ -188,10 +185,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
 
-            BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
             BigDecimal price = playground.getPrice();
-            Collection<LocalDateTime> datetimes = reservationListDTO.getReservations();
-            if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable())) {
+            BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
+            List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
+            Collections.sort(datetimes);
+            if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 
@@ -199,7 +197,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             for (LocalDateTime datetime : datetimes) {
                 Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
-                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
+                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notWorkingTime.message"));
                 }
                 Timestamp reservedDatetime = Timestamp.valueOf(datetime);
                 if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playground, reservedDatetime)) {

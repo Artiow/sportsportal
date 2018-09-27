@@ -63,7 +63,10 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
     })
     PlaygroundEntity toEntity(PlaygroundLinkDTO dto);
 
-    @Mapping(target = "id", ignore = true)
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "reservations", ignore = true),
+    })
     PlaygroundEntity toEntity(PlaygroundDTO dto);
 
     @Override
