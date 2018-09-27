@@ -1,7 +1,7 @@
 import React from "react";
 
 /**
- * CustomCheckbox by bootstrap carousel.
+ * CustomCheckbox by bootstrap custom-control.
  * @author Artem Namednev <namednev.artem@gmail.com>
  * @param props {object} component props
  * @return carousel component

@@ -73,7 +73,9 @@
     font-size: 90%;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .btn {
+.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td button.btn,
+.Playground.container .PlaygroundLeaseCalendar table.table tbody tr td .CheckButton {
     padding-bottom: 0;
     padding-top: 0;
+    margin: 0;
 }

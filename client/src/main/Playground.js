@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PhotoCarousel from '../util/components/PhotoCarousel';
+import CheckButton from '../util/components/CheckButton';
 import StarRate from '../util/components/StarRate';
 import {getApiUrl} from '../boot/constants';
 import axios from 'axios';
@@ -210,7 +211,7 @@ class PlaygroundLeaseCalendar extends Component {
             const dateList = [];
             const timeList = [];
             const data = response.data;
-            const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price ;
+            const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price;
             const array = Object.entries(data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
                 timeList.push(item[0])
@@ -255,12 +256,13 @@ class PlaygroundLeaseCalendar extends Component {
             timeList.forEach(function (item, i, arr) {
                 const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
                 schedule.forEach(function (value, key, map) {
+                    const content = (<span>{price}<i className="fa fa-rub ml-1"/></span>);
                     rows.push(
                         <td key={rows.length}>
-                            <label style={{margin: '0'}} className={value.get(item) ? 'btn btn-sm btn-outline-dark' : 'btn btn-sm btn-light disabled'}>
-                                {price}<i className="fa fa-rub ml-1"/>
-                                <input type="checkbox" hidden="hidden"/>
-                            </label>
+                            {(value.get(item)
+                                    ? (<CheckButton content={content} checked={false}/>)
+                                    : (<button className="btn btn-sm btn-light disabled">{content}</button>)
+                            )}
                         </td>
                     )
                 });
