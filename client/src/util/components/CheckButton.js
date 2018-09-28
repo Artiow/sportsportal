@@ -17,7 +17,7 @@ class CheckButton extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if ((this.props.value !== nextProps.value) && (this.props.checked !== nextProps.checked)) {
+        if (this.props.checked !== nextProps.checked) {
             this.setState({active: ((nextProps.checked === 'checked') || (nextProps.checked === true))});
         }
     }

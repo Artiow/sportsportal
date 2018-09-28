@@ -142,8 +142,8 @@ class PlaygroundLeaseCalendar extends Component {
                 start: start,
                 end: end
             }, date: {
-                start: PlaygroundLeaseCalendar.normalNow(start),
-                end: PlaygroundLeaseCalendar.normalNow(end)
+                start: PlaygroundLeaseCalendar.normalNowDate(start),
+                end: PlaygroundLeaseCalendar.normalNowDate(end)
             }
         };
         this.state = {
@@ -151,7 +151,9 @@ class PlaygroundLeaseCalendar extends Component {
             schedule: null,
             dateList: null,
             timeList: null,
-            reservation: []
+            reservation: [],
+            halfHourAvailable: false,
+            fullHourRequired: false
         };
         this.query(
             this.playgroundId,
@@ -160,14 +162,24 @@ class PlaygroundLeaseCalendar extends Component {
         );
     }
 
-    static normalNow(days) {
-        return this.normalize(this.now(days));
+    static normalNowDate(days) {
+        return this.normalizeDate(this.now(days));
     }
 
     static normalize(date) {
+        return this.normalizeDate(date) + 'T' + this.normalizeTime(date);
+    }
+
+    static normalizeDate(date) {
         let day = date.getDate();
         let month = date.getMonth();
         return date.getFullYear() + '-' + ((++month < 10) ? ('0' + month) : (month)) + '-' + ((day < 10) ? ('0' + day) : (day));
+    }
+
+    static normalizeTime(date) {
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        return ((hours < 10) ? ('0' + hours) : (hours)) + ':' + ((minutes < 10) ? ('0' + minutes) : (minutes));
     }
 
     static now(days) {
@@ -193,8 +205,8 @@ class PlaygroundLeaseCalendar extends Component {
             const end = this.frame.offset.end + offset;
             this.frame.offset.start = start;
             this.frame.offset.end = end;
-            this.frame.date.start = PlaygroundLeaseCalendar.normalNow(start);
-            this.frame.date.end = PlaygroundLeaseCalendar.normalNow(end);
+            this.frame.date.start = PlaygroundLeaseCalendar.normalNowDate(start);
+            this.frame.date.end = PlaygroundLeaseCalendar.normalNowDate(end);
             this.query(
                 this.playgroundId,
                 this.frame.date.start,
@@ -227,9 +239,11 @@ class PlaygroundLeaseCalendar extends Component {
             });
             self.setState({
                 price: price,
-                schedule: new Map(array),
                 dateList: dateList,
-                timeList: timeList
+                timeList: timeList,
+                schedule: new Map(array),
+                halfHourAvailable: data.halfHourAvailable,
+                fullHourRequired: data.fullHourRequired
             });
         }).catch(function (error) {
             console.log('Query Error:', error);
@@ -240,12 +254,49 @@ class PlaygroundLeaseCalendar extends Component {
     updateReservation(event) {
         const value = event.target.value;
         const checked = event.target.checked;
+        const valueDatetime = new Date(value);
+
+        // todo: remove test mock!
+        // const prevDatetime = new Date(new Date(value).setMinutes(valueDatetime.getMinutes() - 30));
+        // const nextDatetime = new Date(new Date(value).setMinutes(valueDatetime.getMinutes() + 30));
+
+        const prevDatetime = new Date((new Date(value)).setHours(valueDatetime.getHours() - 1));
+        const prevDate = PlaygroundLeaseCalendar.normalizeDate(prevDatetime);
+        const prevTime = PlaygroundLeaseCalendar.normalizeTime(prevDatetime);
+        const prevValue = prevDate + 'T' + prevTime;
+        const nextDatetime = new Date((new Date(value)).setHours(valueDatetime.getHours() + 1));
+        const nextDate = PlaygroundLeaseCalendar.normalizeDate(nextDatetime);
+        const nextTime = PlaygroundLeaseCalendar.normalizeTime(nextDatetime);
+        const nextValue = nextDate + 'T' + nextTime;
+
         this.setState(prevState => {
             const arr = prevState.reservation;
+            const schedule = prevState.schedule;
+            const timeList = prevState.timeList;
+            const prevNotSelected = (arr.indexOf(prevValue) < 0);
+            const prevAvailable = ((timeList.indexOf(prevTime) >= 0) && (schedule.get(prevDate)).get(prevTime));
+            const nextNotSelected = (arr.indexOf(nextValue) < 0);
+            const nextAvailable = ((timeList.indexOf(nextTime) >= 0) && (schedule.get(nextDate)).get(nextTime));
             const idx = arr.indexOf(value);
-            if ((checked) && (idx < 0)) arr.push(value);
-            else arr.splice(idx, 1);
-            console.log('reservation:', arr);
+            if ((checked) && (idx < 0)) {
+                // todo: remove test 'true' mock!
+                if (true || ((prevState.halfHourAvailable && prevState.fullHourRequired) && (nextNotSelected && prevNotSelected))) {
+                    if (nextAvailable && nextNotSelected) {
+                        arr.push(value);
+                        arr.push(nextValue);
+                    } else if (prevAvailable && prevNotSelected) {
+                        arr.push(value);
+                        arr.push(prevValue);
+                    } else {
+                        console.log('WARNING: The selected time cell is incorrect!');
+                    }
+                } else arr.push(value);
+            } else {
+                // todo: handle uncheck!
+                arr.splice(idx, 1);
+            }
+            // todo: remove logging!
+            console.log('arr:', arr);
             return {reservation: arr};
         });
     }
@@ -302,7 +353,7 @@ class PlaygroundLeaseCalendar extends Component {
                                     <i className="fa fa-angle-left"/>
                                 </button>
                             ) : (
-                                <button disabled="disabled" className="btn btn-sm btn-outline-light disabled"
+                                <button disabled="disabled" className="btn btn-sm btn-outline-secondary disabled"
                                         title="Назад">
                                     <i className="fa fa-angle-left"/>
                                 </button>

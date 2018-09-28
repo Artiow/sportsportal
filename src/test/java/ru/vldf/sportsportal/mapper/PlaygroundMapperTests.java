@@ -191,7 +191,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+        playgroundMapper.getRawReservationGridDTO(playgroundEntity);
 
         // no assert
     }
@@ -206,7 +206,7 @@ public class PlaygroundMapperTests {
         playgroundEntity.setHalfHourAvailable(true);
 
         // act
-        PlaygroundGridDTO.ReservationGridDTO gridDTO = playgroundMapper.getRawReservationGridDTO(playgroundEntity);
+        playgroundMapper.getRawReservationGridDTO(playgroundEntity);
 
         // no assert
     }
