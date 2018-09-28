@@ -7,11 +7,19 @@ import React, {Component} from "react";
  * @return carousel component
  */
 class CheckButton extends Component {
+
+    static ACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-dark';
+    static INACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-outline-dark';
+
     constructor(props) {
         super(props);
-        this.activeClassName = 'CheckButton btn btn-sm btn-dark';
-        this.inactiveClassName = 'CheckButton btn btn-sm btn-outline-dark';
-        this.state = {active: (((props.checked === 'checked') || (props.checked === true)))};
+        this.state = {active: ((props.checked === 'checked') || (props.checked === true))};
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if ((this.props.value !== nextProps.value) && (this.props.checked !== nextProps.checked)) {
+            this.setState({active: ((nextProps.checked === 'checked') || (nextProps.checked === true))});
+        }
     }
 
     switch(event) {
@@ -22,7 +30,11 @@ class CheckButton extends Component {
 
     render() {
         return (
-            <label id={this.props.id} className={this.state.active ? this.activeClassName : this.inactiveClassName}>
+            <label id={this.props.id} className={
+                this.state.active
+                    ? CheckButton.ACTIVE_CLASS_NAME
+                    : CheckButton.INACTIVE_CLASS_NAME
+            }>
                 {this.props.content}
                 <input type="checkbox" value={this.props.value} hidden={true}
                        checked={this.state.active} onChange={this.switch.bind(this)}/>

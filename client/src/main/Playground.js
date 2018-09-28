@@ -239,9 +239,7 @@ class PlaygroundLeaseCalendar extends Component {
 
     updateReservation(event) {
         const value = event.target.value;
-        console.log('value:', value);
         const checked = event.target.checked;
-        console.log('checked:', checked);
         this.setState(prevState => {
             const arr = prevState.reservation;
             const idx = arr.indexOf(value);
@@ -268,8 +266,9 @@ class PlaygroundLeaseCalendar extends Component {
             return headerLine;
         };
         const tableBuilder = (timeList, price, schedule) => {
-            const self = this;
             const table = [];
+            const reservation = this.state.reservation;
+            const updateReservation = this.updateReservation.bind(this);
             timeList.forEach(function (item, i, arr) {
                 const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
                 schedule.forEach(function (value, key, map) {
@@ -279,8 +278,8 @@ class PlaygroundLeaseCalendar extends Component {
                         <td key={rows.length}>
                             {(value.get(item)
                                     ? (<CheckButton id={datetime} value={datetime} content={content}
-                                                    checked={!(self.state.reservation.indexOf(value) < 0)}
-                                                    onChange={self.updateReservation.bind(self)}/>)
+                                                    checked={!(reservation.indexOf(datetime) < 0)}
+                                                    onChange={updateReservation}/>)
                                     : (<button className="btn btn-sm btn-light disabled">{content}</button>)
                             )}
                         </td>
