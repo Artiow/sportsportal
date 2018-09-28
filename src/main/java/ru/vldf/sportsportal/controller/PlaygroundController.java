@@ -144,7 +144,7 @@ public class PlaygroundController {
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
     public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO)
-            throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
+            throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 

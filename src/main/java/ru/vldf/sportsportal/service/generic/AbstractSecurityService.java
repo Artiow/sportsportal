@@ -33,13 +33,13 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * Returns authenticated user id.
      *
      * @return user id
-     * @throws AuthorizationRequiredException - if user is anonymous
+     * @throws UnauthorizedAccessException - if user is anonymous
      */
-    protected Integer getCurrentUserId() throws AuthorizationRequiredException {
+    protected Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         } catch (ClassCastException | NullPointerException e) {
-            throw new AuthorizationRequiredException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
+            throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
 
@@ -47,9 +47,9 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * Returns authenticated user.
      *
      * @return user entity
-     * @throws AuthorizationRequiredException - if user is anonymous
+     * @throws UnauthorizedAccessException - if user is anonymous
      */
-    protected UserEntity getCurrentUserEntity() throws AuthorizationRequiredException {
+    protected UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
         return userRepository.getOne(getCurrentUserId());
     }
 }

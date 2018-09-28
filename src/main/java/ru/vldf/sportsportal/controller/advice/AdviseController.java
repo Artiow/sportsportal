@@ -107,9 +107,9 @@ public class AdviseController {
         return warnDTO(ex, "Sent Access Token Not Readable.");
     }
 
-    @ExceptionHandler(AuthorizationRequiredException.class)
+    @ExceptionHandler(UnauthorizedAccessException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorDTO handleAuthorizationRequiredException(AuthorizationRequiredException ex) {
+    public ErrorDTO handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         return warnDTO(ex, "Unexpected Unauthorized Access Attempt.");
     }
 

@@ -166,15 +166,15 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id                 {@link Integer} playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation info
      * @return new order {@link Integer} identifier
-     * @throws AuthorizationRequiredException if authorization is missing
+     * @throws UnauthorizedAccessException if authorization is missing
      * @throws ResourceNotFoundException      if playground not found
      * @throws ResourceCannotCreateException  if playground cannot create
      */
     @Transactional(
-            rollbackFor = {AuthorizationRequiredException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
+            rollbackFor = {UnauthorizedAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws AuthorizationRequiredException, ResourceNotFoundException, ResourceCannotCreateException {
+    public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
 
