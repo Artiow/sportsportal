@@ -296,11 +296,18 @@ class PlaygroundLeaseCalendar extends Component {
                     <thead className="thead-dark">
                     <tr>
                         <th>
-                            <button type="button" id="btn-prev" className="btn btn-sm btn-outline-info"
-                                    title="Назад" onClick={this.handleOffset.bind(this)}>
-                                <i className="fa fa-angle-left"/>
-                            </button>
-                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-info"
+                            {this.frame.offset.start > 0 ? (
+                                <button type="button" id="btn-prev" className="btn btn-sm btn-outline-light"
+                                        title="Назад" onClick={this.handleOffset.bind(this)}>
+                                    <i className="fa fa-angle-left"/>
+                                </button>
+                            ) : (
+                                <button disabled="disabled" className="btn btn-sm btn-outline-light disabled"
+                                        title="Назад">
+                                    <i className="fa fa-angle-left"/>
+                                </button>
+                            )}
+                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-light"
                                     title="Вперед" onClick={this.handleOffset.bind(this)}>
                                 <i className="fa fa-angle-right"/>
                             </button>
