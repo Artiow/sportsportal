@@ -86,6 +86,10 @@
 }
 
 .Playground.container .PlaygroundLeaseCalendar .btn-group {
-    margin-top: 10px;
+    margin-top: 15px;
     margin-left: 15px;
+}
+
+.Playground.container .PlaygroundLeaseCalendar .btn-group .btn {
+    font-weight: 600;
 }

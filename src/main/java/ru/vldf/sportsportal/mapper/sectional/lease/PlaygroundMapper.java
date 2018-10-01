@@ -98,7 +98,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         // data integrity check
         LocalTime openTime = entity.getOpening().toLocalDateTime().toLocalTime();
         LocalTime closeTime = entity.getClosing().toLocalDateTime().toLocalTime();
-        boolean toMidnight = closeTime.equals(LocalTime.MIN);
+        boolean toMidnight = closeTime.equals(LocalTime.MIDNIGHT);
         if ((!toMidnight) && (!closeTime.isAfter(openTime))) {
             throw new DataCorruptedException("PlaygroundEntity data corrupted: open time must be less than close time!");
         }
@@ -171,13 +171,27 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             amountToAdd = 1;
         }
 
+        // time iterator by increment definition
+        Function<LocalTime, LocalTime> timeInc = i -> i.plus(amountToAdd, unitToAdd);
+
+        // midnight detection
+        boolean toMidnight = endTime.plus(amountToAdd, unitToAdd).equals(LocalTime.MIDNIGHT);
+
         // bool-solid time line
         Function<Boolean, Map<LocalTime, Boolean>> solidMap = param -> {
             Map<LocalTime, Boolean> result = new HashMap<>();
             LocalTime timeIter = startTime;
-            while (!timeIter.isAfter(endTime)) {
+            if (!toMidnight) {
+                while (!timeIter.isAfter(endTime)) {
+                    result.put(timeIter, param);
+                    timeIter = timeInc.apply(timeIter);
+                }
+            } else {
                 result.put(timeIter, param);
-                timeIter = timeIter.plus(amountToAdd, unitToAdd);
+                while (!timeIter.equals(endTime)) {
+                    timeIter = timeInc.apply(timeIter);
+                    result.put(timeIter, param);
+                }
             }
             return result;
         };
@@ -186,13 +200,25 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         Function<LocalTime, Map<LocalTime, Boolean>> modularMap = param -> {
             Map<LocalTime, Boolean> result = new HashMap<>();
             LocalTime timeIter = startTime;
-            while ((!timeIter.isAfter(param)) && (!timeIter.isAfter(endTime))) {
-                result.put(timeIter, false);
-                timeIter = timeIter.plus(amountToAdd, unitToAdd);
-            }
-            while (!timeIter.isAfter(endTime)) {
-                result.put(timeIter, true);
-                timeIter = timeIter.plus(amountToAdd, unitToAdd);
+            if (!toMidnight) {
+                while ((!timeIter.isAfter(param)) && (!timeIter.isAfter(endTime))) {
+                    result.put(timeIter, false);
+                    timeIter = timeInc.apply(timeIter);
+                }
+                while (!timeIter.isAfter(endTime)) {
+                    result.put(timeIter, true);
+                    timeIter = timeInc.apply(timeIter);
+                }
+            } else {
+                while ((!timeIter.isAfter(param)) && (!timeIter.equals(endTime))) {
+                    result.put(timeIter, false);
+                    timeIter = timeInc.apply(timeIter);
+                }
+                result.put(timeIter, timeIter.isAfter(param));
+                while (!timeIter.equals(endTime)) {
+                    timeIter = timeInc.apply(timeIter);
+                    result.put(timeIter, true);
+                }
             }
             return result;
         };

@@ -378,22 +378,24 @@ class PlaygroundLeaseCalendar extends Component {
                     </table>
                     {(this.state.reservation.length > 0) ? (
                         <div className="btn-group">
-                            <button type="button" className="btn btn-sm btn-danger" onClick={cancel}>
+                            <button type="button" className="btn btn-danger" onClick={cancel}>
                                 Сбросить выбор
                             </button>
-                            <button type="submit" className="btn btn-sm btn-success">
-                                Забронировать!
+                            <button type="submit" className="btn btn-success">
+                                К оплате
+                                <span className="badge badge-dark ml-1">
+                                    {this.state.reservation.length * this.state.price}
+                                    <i className="fa fa-rub ml-1"/>
+                                </span>
                             </button>
                         </div>
                     ) : (
                         <div className="btn-group">
-                            <button className="btn btn-sm btn-danger disabled"
-                                    disabled="disabled">
+                            <button className="btn btn-danger disabled" disabled="disabled">
                                 Сбросить выбор
                             </button>
-                            <button className="btn btn-sm btn-success disabled"
-                                    disabled="disabled">
-                                Забронировать!
+                            <button className="btn btn-success disabled" disabled="disabled">
+                                К оплате
                             </button>
                         </div>
                     )}
