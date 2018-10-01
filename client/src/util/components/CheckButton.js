@@ -8,7 +8,7 @@ import React, {Component} from "react";
  */
 class CheckButton extends Component {
 
-    static ACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-dark';
+    static ACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-success';
     static INACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-outline-dark';
 
     constructor(props) {

@@ -38,17 +38,21 @@
 
 .Playground.container .PlaygroundLeaseCalendar {
     margin-bottom: 5px;
-    margin-top: 12px;
+    margin-top: 15px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th. {
-    background-color: #2d3237;
+.Playground.container .PlaygroundLeaseCalendar table {
+    table-layout: fixed;
+    margin: 0;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th.th-calendar {
+.Playground.container .PlaygroundLeaseCalendar thead tr th {
     vertical-align: middle;
     text-align: center;
-    width: 13%;
+}
+
+.Playground.container .PlaygroundLeaseCalendar thead tr th.th-control {
+    width: 80px;
 }
 
 .Playground.container .PlaygroundLeaseCalendar thead tr th button {
@@ -79,4 +83,9 @@
     padding-bottom: 0;
     padding-top: 0;
     margin: 0;
+}
+
+.Playground.container .PlaygroundLeaseCalendar .btn-group {
+    margin-top: 10px;
+    margin-left: 15px;
 }

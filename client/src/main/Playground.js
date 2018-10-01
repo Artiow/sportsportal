@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PhotoCarousel from '../util/components/PhotoCarousel';
 import CheckButton from '../util/components/CheckButton';
 import StarRate from '../util/components/StarRate';
-import {getApiUrl} from '../boot/constants';
+import {env, getApiUrl} from '../boot/constants';
 import axios from 'axios';
 import './Playground.css';
 import noImage from '../util/img/no-image-grey-mdh.jpg';
@@ -109,39 +109,18 @@ class PlaygroundLeaseCalendar extends Component {
 
     static START_DATE_OFFSET = 0;
     static END_DATE_OFFSET = 6;
-    static DAYS_OF_WEEK_NAMES = [{
-        full: 'воскресенье',
-        short: 'вс'
-    }, {
-        full: 'понедельник',
-        short: 'пн'
-    }, {
-        full: 'вторник',
-        short: 'вт'
-    }, {
-        full: 'среда',
-        short: 'ср'
-    }, {
-        full: 'четверг',
-        short: 'чт'
-    }, {
-        full: 'пятница',
-        short: 'пт'
-    }, {
-        full: 'суббота',
-        short: 'сб'
-    }];
 
     constructor(props) {
         super(props);
         this.playgroundId = props.identifier;
         const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
         const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
-        this.frame = {
+        this.timeFrame = {
             offset: {
                 start: start,
                 end: end
-            }, date: {
+            },
+            date: {
                 start: PlaygroundLeaseCalendar.normalNowDate(start),
                 end: PlaygroundLeaseCalendar.normalNowDate(end)
             }
@@ -157,8 +136,8 @@ class PlaygroundLeaseCalendar extends Component {
         };
         this.query(
             this.playgroundId,
-            this.frame.date.start,
-            this.frame.date.end
+            this.timeFrame.date.start,
+            this.timeFrame.date.end
         );
     }
 
@@ -194,23 +173,23 @@ class PlaygroundLeaseCalendar extends Component {
         if ((btn == null) || (btn === '')) btn = event.target.parentNode.id;
         if (btn === 'btn-next') {
             this.updateGrid(1);
-        } else if ((btn === 'btn-prev') && (this.frame.offset.start > 0)) {
+        } else if ((btn === 'btn-prev') && (this.timeFrame.offset.start > 0)) {
             this.updateGrid(-1);
         }
     }
 
     updateGrid(offset) {
         if (offset !== 0) {
-            const start = this.frame.offset.start + offset;
-            const end = this.frame.offset.end + offset;
-            this.frame.offset.start = start;
-            this.frame.offset.end = end;
-            this.frame.date.start = PlaygroundLeaseCalendar.normalNowDate(start);
-            this.frame.date.end = PlaygroundLeaseCalendar.normalNowDate(end);
+            const start = this.timeFrame.offset.start + offset;
+            const end = this.timeFrame.offset.end + offset;
+            this.timeFrame.offset.start = start;
+            this.timeFrame.offset.end = end;
+            this.timeFrame.date.start = PlaygroundLeaseCalendar.normalNowDate(start);
+            this.timeFrame.date.end = PlaygroundLeaseCalendar.normalNowDate(end);
             this.query(
                 this.playgroundId,
-                this.frame.date.start,
-                this.frame.date.end
+                this.timeFrame.date.start,
+                this.timeFrame.date.end
             );
         }
     }
@@ -232,8 +211,10 @@ class PlaygroundLeaseCalendar extends Component {
             array.forEach(function (item, i, arr) {
                 arr[i][1] = new Map(Object.entries(item[1]));
                 const date = item[0];
+                const dateClass = new Date(date);
                 dateList.push({
-                    dayOfWeek: PlaygroundLeaseCalendar.DAYS_OF_WEEK_NAMES[(new Date(date)).getDay()],
+                    month: env.MONTH_NAMES[dateClass.getMonth()],
+                    dayOfWeek: env.DAYS_OF_WEEK_NAMES[dateClass.getDay()],
                     date: date
                 });
             });
@@ -313,14 +294,20 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     render() {
+        const cancel = event => {
+            this.setState({reservation: []});
+        };
         const headerLineBuilder = dateList => {
             const headerLine = [];
             if ((dateList != null) && (dateList.length > 0)) {
                 dateList.forEach(function (item, i, arr) {
                     headerLine.push(
                         <th key={i} className="th-calendar">
-                            <span className="mr-1">{item.date.split('-')[2]}</span>
-                            <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
+                            <div className="small">{item.month}</div>
+                            <div>
+                                <span className="mr-1">{item.date.split('-')[2]}</span>
+                                <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
+                            </div>
                         </th>
                     );
                 });
@@ -338,11 +325,15 @@ class PlaygroundLeaseCalendar extends Component {
                     const datetime = key + 'T' + item;
                     rows.push(
                         <td key={rows.length}>
-                            {(value.get(item)
-                                    ? (<CheckButton id={datetime} value={datetime} content={content}
-                                                    checked={!(reservation.indexOf(datetime) < 0)}
-                                                    onChange={updateReservation}/>)
-                                    : (<button className="btn btn-sm btn-light disabled">{content}</button>)
+                            {value.get(item) ? (
+                                <CheckButton id={datetime} value={datetime} content={content}
+                                             checked={!(reservation.indexOf(datetime) < 0)}
+                                             onChange={updateReservation}/>
+                            ) : (
+                                <button className="btn btn-sm btn-light disabled"
+                                        disabled="disabled">
+                                    {content}
+                                </button>
                             )}
                         </td>
                     )
@@ -354,33 +345,59 @@ class PlaygroundLeaseCalendar extends Component {
         const schedule = this.state.schedule;
         if (schedule != null) {
             return (
-                <table className="PlaygroundLeaseCalendar table table-hover">
-                    <thead className="thead-dark">
-                    <tr>
-                        <th>
-                            {this.frame.offset.start > 0 ? (
-                                <button type="button" id="btn-prev" className="btn btn-sm btn-outline-light"
-                                        title="Назад" onClick={this.handleOffset.bind(this)}>
-                                    <i className="fa fa-angle-left"/>
+                <form className="PlaygroundLeaseCalendar" onSubmit={event => {
+                    event.preventDefault();
+                    console.log('submit!');
+                }}>
+                    <table className="table table-hover">
+                        <thead className="thead-dark">
+                        <tr>
+                            <th className="th-control">
+                                {(this.timeFrame.offset.start > 0) ? (
+                                    <button type="button" id="btn-prev" className="btn btn-sm btn-outline-light"
+                                            title="Назад" onClick={this.handleOffset.bind(this)}>
+                                        <i className="fa fa-angle-left"/>
+                                    </button>
+                                ) : (
+                                    <button disabled="disabled" className="btn btn-sm btn-outline-secondary disabled"
+                                            title="Назад">
+                                        <i className="fa fa-angle-left"/>
+                                    </button>
+                                )}
+                                <button type="button" id="btn-next" className="btn btn-sm btn-outline-light"
+                                        title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                    <i className="fa fa-angle-right"/>
                                 </button>
-                            ) : (
-                                <button disabled="disabled" className="btn btn-sm btn-outline-secondary disabled"
-                                        title="Назад">
-                                    <i className="fa fa-angle-left"/>
-                                </button>
-                            )}
-                            <button type="button" id="btn-next" className="btn btn-sm btn-outline-light"
-                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
-                                <i className="fa fa-angle-right"/>
+                            </th>
+                            {headerLineBuilder(this.state.dateList)}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {tableBuilder(this.state.timeList, this.state.price, schedule)}
+                        </tbody>
+                    </table>
+                    {(this.state.reservation.length > 0) ? (
+                        <div className="btn-group">
+                            <button type="button" className="btn btn-sm btn-danger" onClick={cancel}>
+                                Сбросить выбор
                             </button>
-                        </th>
-                        {headerLineBuilder(this.state.dateList)}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {tableBuilder(this.state.timeList, this.state.price, schedule)}
-                    </tbody>
-                </table>
+                            <button type="submit" className="btn btn-sm btn-success">
+                                Забронировать!
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="btn-group">
+                            <button className="btn btn-sm btn-danger disabled"
+                                    disabled="disabled">
+                                Сбросить выбор
+                            </button>
+                            <button className="btn btn-sm btn-success disabled"
+                                    disabled="disabled">
+                                Забронировать!
+                            </button>
+                        </div>
+                    )}
+                </form>
             )
         } else {
             return null;
