@@ -254,49 +254,60 @@ class PlaygroundLeaseCalendar extends Component {
     updateReservation(event) {
         const value = event.target.value;
         const checked = event.target.checked;
-        const valueDatetime = new Date(value);
-
-        // todo: remove test mock!
-        // const prevDatetime = new Date(new Date(value).setMinutes(valueDatetime.getMinutes() - 30));
-        // const nextDatetime = new Date(new Date(value).setMinutes(valueDatetime.getMinutes() + 30));
-
-        const prevDatetime = new Date((new Date(value)).setHours(valueDatetime.getHours() - 1));
-        const prevDate = PlaygroundLeaseCalendar.normalizeDate(prevDatetime);
-        const prevTime = PlaygroundLeaseCalendar.normalizeTime(prevDatetime);
-        const prevValue = prevDate + 'T' + prevTime;
-        const nextDatetime = new Date((new Date(value)).setHours(valueDatetime.getHours() + 1));
-        const nextDate = PlaygroundLeaseCalendar.normalizeDate(nextDatetime);
-        const nextTime = PlaygroundLeaseCalendar.normalizeTime(nextDatetime);
-        const nextValue = nextDate + 'T' + nextTime;
-
+        const buildByOffset = minuteDiff => {
+            const valueDatetime = new Date(value);
+            const datetime = new Date(new Date(value).setMinutes(valueDatetime.getMinutes() + minuteDiff));
+            const date = PlaygroundLeaseCalendar.normalizeDate(datetime);
+            const time = PlaygroundLeaseCalendar.normalizeTime(datetime);
+            return {
+                date: date,
+                time: time,
+                value: (date + 'T' + time),
+                notSelected: undefined,
+                available: undefined
+            }
+        };
+        const farPrev = buildByOffset(-60);
+        const prev = buildByOffset(-30);
+        const next = buildByOffset(+30);
+        const farNext = buildByOffset(+60);
         this.setState(prevState => {
             const arr = prevState.reservation;
             const schedule = prevState.schedule;
             const timeList = prevState.timeList;
-            const prevNotSelected = (arr.indexOf(prevValue) < 0);
-            const prevAvailable = ((timeList.indexOf(prevTime) >= 0) && (schedule.get(prevDate)).get(prevTime));
-            const nextNotSelected = (arr.indexOf(nextValue) < 0);
-            const nextAvailable = ((timeList.indexOf(nextTime) >= 0) && (schedule.get(nextDate)).get(nextTime));
+            const checkActive = (prevState.halfHourAvailable && prevState.fullHourRequired);
+            if (checkActive) {
+                const updateByData = (element) => {
+                    element.selected = (arr.indexOf(element.value) >= 0);
+                    element.available = ((timeList.indexOf(element.time) >= 0) && (schedule.get(element.date)).get(element.time));
+                };
+                updateByData(farPrev);
+                updateByData(prev);
+                updateByData(next);
+                updateByData(farNext);
+            }
             const idx = arr.indexOf(value);
             if ((checked) && (idx < 0)) {
-                // todo: remove test 'true' mock!
-                if (true || ((prevState.halfHourAvailable && prevState.fullHourRequired) && (nextNotSelected && prevNotSelected))) {
-                    if (nextAvailable && nextNotSelected) {
+                if (checkActive && !next.selected && !prev.selected) {
+                    if (next.available && !next.selected) {
                         arr.push(value);
-                        arr.push(nextValue);
-                    } else if (prevAvailable && prevNotSelected) {
+                        arr.push(next.value);
+                    } else if (prev.available && !prev.selected) {
                         arr.push(value);
-                        arr.push(prevValue);
+                        arr.push(prev.value);
                     } else {
                         console.log('WARNING: The selected time cell is incorrect!');
                     }
                 } else arr.push(value);
             } else {
-                // todo: handle uncheck!
                 arr.splice(idx, 1);
+                const needNextRemoving = (next.selected && !farNext.selected);
+                const needPrevRemoving = (prev.selected && !farPrev.selected);
+                if (checkActive && (needNextRemoving || needPrevRemoving)) {
+                    if (needNextRemoving) arr.splice(arr.indexOf(next.value), 1);
+                    if (needPrevRemoving) arr.splice(arr.indexOf(prev.value), 1);
+                }
             }
-            // todo: remove logging!
-            console.log('arr:', arr);
             return {reservation: arr};
         });
     }

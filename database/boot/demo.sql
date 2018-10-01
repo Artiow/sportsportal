@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- DEMO DATA EXAMPLE 0.2.2 FOR
+-- DEMO DATA EXAMPLE 0.2.3 FOR
 -- SPORTSPORTAL DATABASE 0.2.1
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -32,15 +32,27 @@ values (1, 1),
 
 -- playground
 
-insert into lease.playground (id, name, address, phone, opening, closing, price)
+insert into lease.playground (id,
+                              name,
+                              address,
+                              phone,
+                              opening,
+                              closing,
+                              half_hour_available,
+                              full_hour_required,
+                              price)
 values (1,
         'Площадка один',
         'г. Москва, ул. Ленина 1',
         '+7(999)999-99-99',
         '0001-01-01 09:00:00',
         '0001-01-01 21:00:00',
-        2000.00),
-       (2,
+        true,
+        true,
+        2000.00);
+
+insert into lease.playground (id, name, address, phone, opening, closing, price)
+values (2,
         'Площадка два',
         'г. Москва, ул. Ленина 2',
         '+7(999)999-99-99',
