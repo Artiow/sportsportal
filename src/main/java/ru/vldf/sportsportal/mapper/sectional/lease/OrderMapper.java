@@ -14,7 +14,7 @@ import java.util.Collection;
 
 @Mapper(
         componentModel = "spring",
-        uses = {JavaTimeMapper.class, UserMapper.class, PictureMapper.class, ReservationMapper.class}
+        uses = {JavaTimeMapper.class, PlaygroundMapper.class, UserMapper.class, PictureMapper.class, ReservationMapper.class}
 )
 public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
 
@@ -29,9 +29,7 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
         acceptor.setCustomer(donor.getCustomer());
 
         Collection<ReservationEntity> reservations = acceptor.getReservations();
-        if (!reservations.isEmpty()) {
-            reservations.clear();
-        }
+        if (!reservations.isEmpty()) reservations.clear();
         for (ReservationEntity reservation : donor.getReservations()) {
             reservation.setOrder(acceptor);
             reservations.add(reservation);

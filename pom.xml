@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.4.91</version>
+    <version>0.4.92</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -37,9 +37,10 @@
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
         <org.imgscalr.version>4.2</org.imgscalr.version>
         <org.flywaydb.version>5.1.1</org.flywaydb.version>
-        <org.postgresql.version>42.2.2</org.postgresql.version>
         <org.hibernate.version>5.3.2.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
+        <org.postgresql.version>42.2.2</org.postgresql.version>
+        <org.codehaus.mojo.version>1.5</org.codehaus.mojo.version>
         <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
         <org.apache.maven.plugins.compiler.version>3.5.1</org.apache.maven.plugins.compiler.version>
         <org.apache.maven.plugins.resources.version>3.1.0</org.apache.maven.plugins.resources.version>
@@ -288,7 +289,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
-                <version>1.5</version>
+                <version>${org.codehaus.mojo.version}</version>
 
                 <dependencies>
                     <dependency>

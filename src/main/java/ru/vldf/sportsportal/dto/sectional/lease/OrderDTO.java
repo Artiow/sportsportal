@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -42,12 +42,8 @@ public class OrderDTO extends AbstractVersionedDTO {
     private UserLinkDTO customer;
 
     @Valid
-    @NotNull(groups = FieldCheck.class)
-    private PlaygroundLinkDTO playground;
-
-    @Valid
     @NotEmpty(groups = FieldCheck.class)
-    private List<ReservationDTO> reservations;
+    private List<ReservationResumeDTO> reservations;
 
 
     @Override
@@ -117,20 +113,11 @@ public class OrderDTO extends AbstractVersionedDTO {
         return this;
     }
 
-    public PlaygroundLinkDTO getPlayground() {
-        return playground;
-    }
-
-    public OrderDTO setPlayground(PlaygroundLinkDTO playground) {
-        this.playground = playground;
-        return this;
-    }
-
-    public List<ReservationDTO> getReservations() {
+    public List<ReservationResumeDTO> getReservations() {
         return reservations;
     }
 
-    public OrderDTO setReservations(List<ReservationDTO> reservations) {
+    public OrderDTO setReservations(List<ReservationResumeDTO> reservations) {
         this.reservations = reservations;
         return this;
     }
