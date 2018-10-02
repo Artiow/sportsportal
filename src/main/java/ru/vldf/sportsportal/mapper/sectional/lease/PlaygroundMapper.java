@@ -44,6 +44,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
+            @Mapping(target = "playgroundVersion", source = "version"),
             @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
     })
     PlaygroundGridDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;

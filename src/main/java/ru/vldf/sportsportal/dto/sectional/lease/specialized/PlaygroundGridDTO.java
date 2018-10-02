@@ -12,6 +12,7 @@ import java.util.Map;
 public class PlaygroundGridDTO implements DataTransferObject {
 
     private URI playgroundURL;
+    private Long playgroundVersion;
     private BigDecimal price;
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
@@ -24,6 +25,15 @@ public class PlaygroundGridDTO implements DataTransferObject {
 
     public PlaygroundGridDTO setPlaygroundURL(URI playgroundURL) {
         this.playgroundURL = playgroundURL;
+        return this;
+    }
+
+    public Long getPlaygroundVersion() {
+        return playgroundVersion;
+    }
+
+    public PlaygroundGridDTO setPlaygroundVersion(Long playgroundVersion) {
+        this.playgroundVersion = playgroundVersion;
         return this;
     }
 

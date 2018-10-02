@@ -6,6 +6,9 @@ import axios from "axios/index";
 import './Registration.css';
 
 class Registration extends Component {
+
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+
     constructor(props) {
         super(props);
         this.state = {
@@ -43,43 +46,27 @@ class Registration extends Component {
             })
             .catch(function (error) {
                 const errorResponse = error.response;
-                console.log('Registration Error Response:', errorResponse);
-                const data = errorResponse.data;
-                const message = data.message;
-                const errors = data.errors;
-                if (errors != null) {
-                    self.setState({
-                        errorMessage: message,
-                        errorMessages: errors
-                    });
-                } else {
-                    self.setState({
-                        errorMessage: message
-                    });
-                }
+                console.log('Registration Error:', ((errorResponse != null) ? errorResponse : error));
+                if (errorResponse != null) {
+                    const data = errorResponse.data;
+                    const message = data.message;
+                    const errors = data.errors;
+                    if (errors != null) self.setState({errorMessage: message, errorMessages: errors});
+                    else self.setState({errorMessage: message});
+                } else self.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
             })
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        this.setState({
-            errorMessage: null,
-            errorMessages: {}
-        });
-        if (this.state.password === this.state.confirm) {
-            this.queryRegistration();
-        } else {
-            this.setState({
-                errorMessages: {password: 'Введенные пароли не совпадают!'}
-            });
-        }
+        this.setState({errorMessage: null, errorMessages: {}});
+        if (this.state.password === this.state.confirm) this.queryRegistration();
+        else this.setState({errorMessages: {password: 'Введенные пароли не совпадают!'}});
     }
 
     handleInputChange(event) {
         const target = event.target;
-        this.setState({
-            [target.id]: target.value
-        });
+        this.setState({[target.id]: target.value});
     }
 
     render() {

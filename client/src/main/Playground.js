@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PhotoCarousel from '../util/components/PhotoCarousel';
 import CheckButton from '../util/components/CheckButton';
 import StarRate from '../util/components/StarRate';
+import saveReservation, {restoreReservation} from '../util/reservationSaver';
 import {env, getApiUrl} from '../boot/constants';
 import axios from 'axios';
 import './Playground.css';
@@ -23,7 +24,7 @@ class Playground extends Component {
             console.log('Query Response:', response);
             self.setState({content: response.data});
         }).catch(function (error) {
-            console.log('Query Error:', error.response);
+            console.log('Query Error:', ((error.response != null) ? error.response : error));
         })
     }
 
@@ -93,7 +94,7 @@ class Playground extends Component {
                                 <div className="row info-row calendar-info-row">
                                     <div className="col-12">
                                         <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
-                                        <PlaygroundLeaseCalendar identifier={this.id}/>
+                                        <PlaygroundLeaseCalendar identifier={this.id} version={playground.version}/>
                                     </div>
                                 </div>
                             </div>
@@ -107,12 +108,16 @@ class Playground extends Component {
 
 class PlaygroundLeaseCalendar extends Component {
 
+    static CANCEL_TITLE = 'Сбросить выбор';
+    static SUBMIT_TITLE = 'Забронировать';
+
     static START_DATE_OFFSET = 0;
     static END_DATE_OFFSET = 6;
 
     constructor(props) {
         super(props);
         this.playgroundId = props.identifier;
+        this.playgroundVersion = props.version;
         const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
         const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
         this.timeFrame = {
@@ -130,12 +135,13 @@ class PlaygroundLeaseCalendar extends Component {
             schedule: null,
             dateList: null,
             timeList: null,
-            reservation: [],
-            halfHourAvailable: false,
-            fullHourRequired: false
+            reservation: null,
+            halfHourAvailable: null,
+            fullHourRequired: null
         };
         this.query(
             this.playgroundId,
+            this.playgroundVersion,
             this.timeFrame.date.start,
             this.timeFrame.date.end
         );
@@ -194,10 +200,9 @@ class PlaygroundLeaseCalendar extends Component {
         }
     }
 
-    query(id, from, to) {
+    query(id, version, from, to) {
         const self = this;
-        const url = getApiUrl('/leaseapi/playground/' + id + '/grid');
-        axios.get(url, {params: {from: from, to: to}}
+        axios.get(getApiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
             const dateList = [];
@@ -223,12 +228,12 @@ class PlaygroundLeaseCalendar extends Component {
                 dateList: dateList,
                 timeList: timeList,
                 schedule: new Map(array),
+                reservation: restoreReservation(id, version),
                 halfHourAvailable: data.halfHourAvailable,
                 fullHourRequired: data.fullHourRequired
             });
         }).catch(function (error) {
-            console.log('Query Error:', error);
-            console.log('Query Error:', error.response);
+            console.log('Query Error:', ((error.response != null) ? error.response : error));
         });
     }
 
@@ -253,13 +258,13 @@ class PlaygroundLeaseCalendar extends Component {
         const next = buildByOffset(+30);
         const farNext = buildByOffset(+60);
         this.setState(prevState => {
-            const arr = prevState.reservation;
+            const reservation = prevState.reservation;
             const schedule = prevState.schedule;
             const timeList = prevState.timeList;
             const checkActive = (prevState.halfHourAvailable && prevState.fullHourRequired);
             if (checkActive) {
                 const updateByData = (element) => {
-                    element.selected = (arr.indexOf(element.value) >= 0);
+                    element.selected = (reservation.indexOf(element.value) >= 0);
                     element.available = ((timeList.indexOf(element.time) >= 0) && (schedule.get(element.date)).get(element.time));
                 };
                 updateByData(farPrev);
@@ -267,35 +272,42 @@ class PlaygroundLeaseCalendar extends Component {
                 updateByData(next);
                 updateByData(farNext);
             }
-            const idx = arr.indexOf(value);
+            const idx = reservation.indexOf(value);
             if ((checked) && (idx < 0)) {
                 if (checkActive && !next.selected && !prev.selected) {
                     if (next.available && !next.selected) {
-                        arr.push(value);
-                        arr.push(next.value);
+                        reservation.push(value);
+                        reservation.push(next.value);
                     } else if (prev.available && !prev.selected) {
-                        arr.push(value);
-                        arr.push(prev.value);
+                        reservation.push(value);
+                        reservation.push(prev.value);
                     } else {
                         console.log('WARNING: The selected time cell is incorrect!');
                     }
-                } else arr.push(value);
+                } else reservation.push(value);
             } else {
-                arr.splice(idx, 1);
+                reservation.splice(idx, 1);
                 const needNextRemoving = (next.selected && !farNext.selected);
                 const needPrevRemoving = (prev.selected && !farPrev.selected);
                 if (checkActive && (needNextRemoving || needPrevRemoving)) {
-                    if (needNextRemoving) arr.splice(arr.indexOf(next.value), 1);
-                    if (needPrevRemoving) arr.splice(arr.indexOf(prev.value), 1);
+                    if (needNextRemoving) reservation.splice(reservation.indexOf(next.value), 1);
+                    if (needPrevRemoving) reservation.splice(reservation.indexOf(prev.value), 1);
                 }
             }
-            return {reservation: arr};
+            saveReservation(this.playgroundId, this.playgroundVersion, reservation);
+            return {reservation: reservation};
         });
+    }
+
+    submit(event) {
+        event.preventDefault();
+        console.log('submit reservation:', this.state.reservation);
     }
 
     render() {
         const cancel = event => {
             this.setState({reservation: []});
+            saveReservation(this.playgroundId, this.playgroundVersion, []);
         };
         const headerLineBuilder = dateList => {
             const headerLine = [];
@@ -345,10 +357,7 @@ class PlaygroundLeaseCalendar extends Component {
         const schedule = this.state.schedule;
         if (schedule != null) {
             return (
-                <form className="PlaygroundLeaseCalendar" onSubmit={event => {
-                    event.preventDefault();
-                    console.log('submit!');
-                }}>
+                <form className="PlaygroundLeaseCalendar" onSubmit={this.submit.bind(this)}>
                     <table className="table table-hover">
                         <thead className="thead-dark">
                         <tr>
@@ -379,23 +388,25 @@ class PlaygroundLeaseCalendar extends Component {
                     {(this.state.reservation.length > 0) ? (
                         <div className="btn-group">
                             <button type="button" className="btn btn-danger" onClick={cancel}>
-                                Сбросить выбор
+                                {PlaygroundLeaseCalendar.CANCEL_TITLE}
                             </button>
                             <button type="submit" className="btn btn-success">
-                                К оплате
+                                {PlaygroundLeaseCalendar.SUBMIT_TITLE}
                                 <span className="badge badge-dark ml-1">
-                                    {this.state.reservation.length * this.state.price}
-                                    <i className="fa fa-rub ml-1"/>
+                                    {this.state.reservation.length * this.state.price}<i className="fa fa-rub ml-1"/>
                                 </span>
                             </button>
                         </div>
                     ) : (
                         <div className="btn-group">
                             <button className="btn btn-danger disabled" disabled="disabled">
-                                Сбросить выбор
+                                {PlaygroundLeaseCalendar.CANCEL_TITLE}
                             </button>
                             <button className="btn btn-success disabled" disabled="disabled">
-                                К оплате
+                                {PlaygroundLeaseCalendar.SUBMIT_TITLE}
+                                <span className="badge badge-dark ml-1">
+                                    0<i className="fa fa-rub ml-1"/>
+                                </span>
                             </button>
                         </div>
                     )}

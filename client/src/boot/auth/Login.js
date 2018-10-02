@@ -5,6 +5,9 @@ import axios from 'axios';
 import './Login.css';
 
 class Login extends Component {
+
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+
     constructor(props) {
         super(props);
         this.state = {
@@ -29,7 +32,7 @@ class Login extends Component {
                     window.location.replace('/');
                 })
                 .catch(function (error) {
-                    console.log('Verify Error:', error.response);
+                    console.log('Verify Error:', ((error.response != null) ? error.response : error));
                     localStorage.clear();
                 })
         }
@@ -49,10 +52,8 @@ class Login extends Component {
             })
             .catch(function (error) {
                 const errorResponse = error.response;
-                console.log('Login Error:', errorResponse);
-                self.setState({
-                    errorMessages: errorResponse.data.message
-                });
+                console.log('Login Error:', ((errorResponse != null) ? errorResponse : error));
+                self.setState({errorMessage: (errorResponse != null) ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE});
             })
     }
 

@@ -43,7 +43,7 @@ class Index extends Component {
             console.log('Query Response:', response);
             self.setState({page: response.data});
         }).catch(function (error) {
-            console.log('Query Error:', error.response);
+            console.log('Query Error:', ((error.response != null) ? error.response : error));
         })
     }
 
@@ -136,7 +136,7 @@ class PlaygroundFilter extends Component {
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('Dictionary Error:', error.response);
+                console.log('Dictionary Error:', ((error.response != null) ? error.response : error));
             })
     }
 
