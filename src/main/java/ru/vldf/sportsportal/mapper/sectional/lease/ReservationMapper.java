@@ -10,7 +10,7 @@ import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = JavaTimeMapper.class)
+@Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
 public interface ReservationMapper extends ObjectMapper<ReservationEntity, ReservationResumeDTO.ReservationItemDTO> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
