@@ -28,16 +28,15 @@ class Registration extends Component {
 
     queryRegistration() {
         const self = this;
-        const p = self.state.phone.trim().split(' ');
-        const validPhoneNumber = (p.length === 5) ? (p[0] + p[1] + p[2] + '-' + p[3] + '-' + p[4]) : (p.join(' '));
-        const url = getApiUrl('/auth/register');
+        const pDigits = self.state.phone.trim().split(' ');
+        const validPhone = (pDigits.length === 5) ? (pDigits[0] + pDigits[1] + pDigits[2] + '-' + pDigits[3] + '-' + pDigits[4]) : (pDigits.join(' '));
         axios
-            .post(url, {
+            .post(getApiUrl('/auth/register'), {
                 name: self.state.name,
                 surname: self.state.surname,
                 patronymic: self.state.patronymic,
                 address: self.state.address,
-                phone: validPhoneNumber,
+                phone: validPhone,
                 login: self.state.login,
                 email: self.state.email,
                 password: self.state.password

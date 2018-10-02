@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReservationResumeDTO implements DataTransferObject {
@@ -42,5 +43,26 @@ public class ReservationResumeDTO implements DataTransferObject {
 
     public static class ReservationItemDTO implements DataTransferObject {
 
+        private LocalDateTime datetime;
+        private BigDecimal price;
+
+
+        public LocalDateTime getDatetime() {
+            return datetime;
+        }
+
+        public ReservationItemDTO setDatetime(LocalDateTime datetime) {
+            this.datetime = datetime;
+            return this;
+        }
+
+        public BigDecimal getPrice() {
+            return price;
+        }
+
+        public ReservationItemDTO setPrice(BigDecimal price) {
+            this.price = price;
+            return this;
+        }
     }
 }
