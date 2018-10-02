@@ -11,7 +11,7 @@ public class PageDTO<T> implements DataTransferObject {
     private List<T> content;
     private Integer pageNumber;
     private Integer numberOfElements;
-    private Integer totalElements;
+    private Long totalElements;
     private Integer totalPages;
 
 
@@ -19,7 +19,7 @@ public class PageDTO<T> implements DataTransferObject {
         this.content = new ArrayList<>(page.getContent());
         this.pageNumber = page.getNumber();
         this.numberOfElements = page.getNumberOfElements();
-        this.totalElements = (int) page.getTotalElements();
+        this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
     }
 
@@ -36,7 +36,7 @@ public class PageDTO<T> implements DataTransferObject {
         return numberOfElements;
     }
 
-    public Integer getTotalElements() {
+    public Long getTotalElements() {
         return totalElements;
     }
 

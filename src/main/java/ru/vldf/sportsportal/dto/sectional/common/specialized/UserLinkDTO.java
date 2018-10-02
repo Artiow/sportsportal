@@ -11,6 +11,7 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
     private Integer id;
 
     private String login;
+    private String email;
     private String name;
     private String surname;
     private String patronymic;
@@ -35,6 +36,15 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
 
     public UserLinkDTO setLogin(String login) {
         this.login = login;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public UserLinkDTO setEmail(String email) {
+        this.email = email;
         return this;
     }
 

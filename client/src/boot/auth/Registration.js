@@ -18,6 +18,7 @@ class Registration extends Component {
             address: '',
             phone: '',
             login: '',
+            email: '',
             password: '',
             confirm: '',
             errorMessage: null,
@@ -28,7 +29,7 @@ class Registration extends Component {
     queryRegistration() {
         const self = this;
         const p = self.state.phone.trim().split(' ');
-        const validPhoneNumber = (p.length === 5) ? (p[0] + p[1] + p[2] + '-' + p[3] + '-' + p[4]) : ('');
+        const validPhoneNumber = (p.length === 5) ? (p[0] + p[1] + p[2] + '-' + p[3] + '-' + p[4]) : (p.join(' '));
         const url = getApiUrl('/auth/register');
         axios
             .post(url, {
@@ -38,6 +39,7 @@ class Registration extends Component {
                 address: self.state.address,
                 phone: validPhoneNumber,
                 login: self.state.login,
+                email: self.state.email,
                 password: self.state.password
             })
             .then(function (response) {
@@ -98,6 +100,10 @@ class Registration extends Component {
                         <InputField identifier={'login'} placeholder={'Логин'}
                                     onChange={this.handleInputChange.bind(this)}
                                     errorMessage={this.state.errorMessages.login}/>
+                        <InputField type={'email'}
+                                    identifier={'email'} placeholder={'Эл. Почта'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.email}/>
                         <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                             secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
                                             onChange={this.handleInputChange.bind(this)}
@@ -125,7 +131,8 @@ function InputField(props) {
                 {props.placeholder}
             </label>
             <div className="col-sm-9">
-                <InputMask type="text" id={props.identifier} placeholder={props.placeholder}
+                <InputMask type={(props.type != null) ? props.type : 'text'}
+                           id={props.identifier} placeholder={props.placeholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            maskChar={props.maskChar} mask={props.mask}
                            onChange={props.onChange}

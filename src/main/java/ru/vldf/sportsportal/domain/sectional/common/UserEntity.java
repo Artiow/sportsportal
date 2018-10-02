@@ -20,6 +20,10 @@ public class UserEntity extends AbstractVersionedEntity {
     private String password;
 
     @Basic
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Basic
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -73,6 +77,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
+import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Login;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
@@ -25,8 +26,13 @@ public class UserDTO extends AbstractVersionedDTO {
     private String login;
 
     @NotBlank(groups = FieldCheck.class)
-    @Size(min = 4, max = 90, groups = FieldCheck.class)
+    @Size(min = 4, max = 50, groups = FieldCheck.class)
     private String password;
+
+    @NotBlank(groups = FieldCheck.class)
+    @Size(min = 5, max = 254, groups = FieldCheck.class)
+    @Email(groups = FieldCheck.class)
+    private String email;
 
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 1, max = 45, groups = FieldCheck.class)
@@ -41,7 +47,7 @@ public class UserDTO extends AbstractVersionedDTO {
     private String patronymic;
 
     @NotBlank(groups = FieldCheck.class)
-    @Size(min = 1, max = 90, groups = FieldCheck.class)
+    @Size(min = 5, max = 254, groups = FieldCheck.class)
     private String address;
 
     @NotBlank(groups = FieldCheck.class)
@@ -92,6 +98,15 @@ public class UserDTO extends AbstractVersionedDTO {
 
     public UserDTO setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public UserDTO setEmail(String email) {
+        this.email = email;
         return this;
     }
 

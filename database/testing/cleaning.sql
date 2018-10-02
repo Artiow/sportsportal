@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CLEANING SPORTSPORTAL DATABASE 0.2.1
+-- CLEANING SPORTSPORTAL DATABASE 0.2.3
 
 truncate table
 common.role,

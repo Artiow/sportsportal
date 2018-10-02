@@ -9,6 +9,7 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
     private String login;
+    private String email;
     private String name;
     private String surname;
     private String patronymic;
@@ -36,6 +37,15 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
 
     public UserShortDTO setLogin(String login) {
         this.login = login;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public UserShortDTO setEmail(String email) {
+        this.email = email;
         return this;
     }
 
