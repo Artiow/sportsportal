@@ -3,6 +3,8 @@ package ru.vldf.sportsportal.service;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +26,10 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 import ru.vldf.sportsportal.service.security.SecurityService;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 
@@ -36,6 +41,7 @@ public class AuthService extends AbstractSecurityService {
 
     private BCryptPasswordEncoder passwordEncoder;
     private SecurityService securityService;
+    private JavaMailSender javaMailSender;
     private LoginMapper loginMapper;
     private UserMapper userMapper;
 
@@ -54,6 +60,11 @@ public class AuthService extends AbstractSecurityService {
     @Autowired
     public void setSecurityService(SecurityService securityService) {
         this.securityService = securityService;
+    }
+
+    @Autowired
+    public void setJavaMailSender(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
     }
 
     @Autowired
@@ -176,9 +187,33 @@ public class AuthService extends AbstractSecurityService {
         try {
             UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
             user.setRoles(roleRepository().findAllByCode(userRoleCode));
+            sendEmail(user.getEmail(), "TOKEN_EXAMPLE");
             return userRepository.save(user).getId();
+        } catch (MessagingException e) {
+            throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotSendEmail.message"), e);
         } catch (JpaObjectRetrievalFailureException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
         }
+    }
+
+    public void sendEmail(String address, String confirmCode) throws MessagingException {
+        MimeMessage mailMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage, "UTF-8");
+        messageHelper.setTo(address);
+        messageHelper.setSubject(mGet("sportsportal.email.confirm.subject"));
+        messageHelper.setText(
+                String.format(
+                        "<p>%s</p>",
+                        mGetAndFormat(
+                                "sportsportal.email.confirm.text.env",
+                                String.format(
+                                        "<a href=\"%s\">%s</a>",
+                                        ResourceLocationBuilder.buildURL(String.format("/confirm?token=%s", confirmCode)).toString(),
+                                        mGet("sportsportal.email.confirm.text.link")
+                                )
+                        )
+                ), true
+        );
+        javaMailSender.send(mailMessage);
     }
 }

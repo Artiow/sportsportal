@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.3.RELEASE</version>
+        <version>2.0.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -25,26 +25,30 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <java.version>1.8</java.version>
-        <javax.servlet.version>3.0.1</javax.servlet.version>
+        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 
         <datasource.url.default>jdbc:postgresql://localhost:5432/sportsportal</datasource.url.default>
         <datasource.url.test>jdbc:postgresql://localhost:5432/sportsportal.test</datasource.url.test>
+        <db.username>postgres</db.username>
+        <db.password>postgres</db.password>
 
-        <dbUsername>postgres</dbUsername>
-        <dbPassword>postgres</dbPassword>
+        <jmail.port>587</jmail.port>
+        <jmail.host>smtp.gmail.com</jmail.host>
+        <jmail.username>ru.vldf.sportsportal.example@gmail.com</jmail.username>
+        <jmail.password>ru.vldf.sportsportal.example@password</jmail.password>
 
-        <io.springfox.version>2.9.2</io.springfox.version>
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
+        <io.springfox.version>2.9.2</io.springfox.version>
         <org.imgscalr.version>4.2</org.imgscalr.version>
         <org.flywaydb.version>5.1.1</org.flywaydb.version>
-        <org.hibernate.version>5.3.2.Final</org.hibernate.version>
+        <org.hibernate.version>5.3.6.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
-        <org.postgresql.version>42.2.2</org.postgresql.version>
+        <org.postgresql.version>42.2.5</org.postgresql.version>
         <org.codehaus.mojo.version>1.5</org.codehaus.mojo.version>
-        <org.hibernate.validator.version>6.0.10.Final</org.hibernate.validator.version>
-        <org.apache.maven.plugins.compiler.version>3.5.1</org.apache.maven.plugins.compiler.version>
-        <org.apache.maven.plugins.resources.version>3.1.0</org.apache.maven.plugins.resources.version>
-        <com.fasterxml.jackson.dataformat.yaml>2.9.6</com.fasterxml.jackson.dataformat.yaml>
+        <org.hibernate.validator.version>6.0.13.Final</org.hibernate.validator.version>
+        <org.apache.maven.plugins.m-c-p.version>3.5.1</org.apache.maven.plugins.m-c-p.version>
+        <org.apache.maven.plugins.m-r-p.version>3.1.0</org.apache.maven.plugins.m-r-p.version>
+        <com.fasterxml.jackson.dataformat.version>2.9.6</com.fasterxml.jackson.dataformat.version>
     </properties>
 
     <dependencies>
@@ -64,7 +68,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet.version}</version>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -85,6 +89,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
 
         <!-- POSTGRESQL -->
         <dependency>
@@ -102,11 +110,6 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-java8</artifactId>
-            <version>${org.hibernate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
             <version>${org.hibernate.version}</version>
         </dependency>
         <dependency>
@@ -152,7 +155,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${com.fasterxml.jackson.dataformat.yaml}</version>
+            <version>${com.fasterxml.jackson.dataformat.version}</version>
         </dependency>
 
         <!-- SWAGGER -->
@@ -206,7 +209,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>${org.apache.maven.plugins.resources.version}</version>
+                <version>${org.apache.maven.plugins.m-r-p.version}</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <nonFilteredFileExtensions>
@@ -224,8 +227,8 @@
                 <version>${org.flywaydb.version}</version>
                 <configuration>
                     <url>${datasource.url.default}</url>
-                    <user>${dbUsername}</user>
-                    <password>${dbPassword}</password>
+                    <user>${db.username}</user>
+                    <password>${db.password}</password>
                     <locations>filesystem:database/migration</locations>
                     <schemas>
                         <schema>flyway</schema>
@@ -240,8 +243,8 @@
                         <id>test</id>
                         <configuration>
                             <url>${datasource.url.test}</url>
-                            <user>${dbUsername}</user>
-                            <password>${dbPassword}</password>
+                            <user>${db.username}</user>
+                            <password>${db.password}</password>
                             <locations>filesystem:database/migration</locations>
                             <schemas>
                                 <schema>flyway</schema>
@@ -257,10 +260,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${org.apache.maven.plugins.compiler.version}</version>
+                <version>${org.apache.maven.plugins.m-c-p.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <annotationProcessorPaths>
 
                         <!-- HIBERNATE METAMODEL GENERATION -->
@@ -301,8 +304,8 @@
 
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <username>${dbUsername}</username>
-                    <password>${dbPassword}</password>
+                    <username>${db.username}</username>
+                    <password>${db.password}</password>
                 </configuration>
 
                 <executions>
