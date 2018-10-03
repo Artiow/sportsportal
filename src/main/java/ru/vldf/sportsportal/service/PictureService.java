@@ -92,7 +92,7 @@ public class PictureService extends AbstractMessageService {
      *
      * @param id       {@link Integer} resource identifier
      * @param sizeCode {@link String} resource size code
-     * @return picture {@link Resource}
+     * @return {@link Resource} picture
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk
      */

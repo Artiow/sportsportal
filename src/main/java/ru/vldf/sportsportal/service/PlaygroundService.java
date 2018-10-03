@@ -135,7 +135,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * Returns requested playground.
      *
      * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundDTO}
+     * @return {@link PlaygroundDTO} playground
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
