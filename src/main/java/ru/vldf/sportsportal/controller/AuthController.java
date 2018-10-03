@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.service.UserService;
+import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
@@ -26,11 +26,11 @@ public class AuthController {
     @Value("${api.path.common.user}")
     private String userPath;
 
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
 
@@ -47,7 +47,7 @@ public class AuthController {
     @ApiOperation("получить токен")
     public TokenDTO login(@RequestParam String login, @RequestParam String password)
             throws UsernameNotFoundException, JwtException {
-        return userService.login(login, password);
+        return authService.login(login, password);
     }
 
     /**
@@ -64,7 +64,7 @@ public class AuthController {
     @ApiOperation("верификация")
     public TokenDTO verify(@RequestParam String accessToken)
             throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
-        return userService.verify(accessToken);
+        return authService.verify(accessToken);
     }
 
     /**
@@ -78,6 +78,6 @@ public class AuthController {
     @ApiOperation("регистрация")
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(userPath, userService.register(userDTO))).build();
+        return ResponseEntity.created(buildURL(userPath, authService.register(userDTO))).build();
     }
 }

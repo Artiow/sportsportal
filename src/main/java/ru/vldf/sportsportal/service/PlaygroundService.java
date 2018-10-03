@@ -43,20 +43,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
 
-    @Autowired
-    public void setMessages(MessageContainer messages) {
-        super.setMessages(messages);
-    }
 
     @Autowired
-    protected void setUserRepository(UserRepository userRepository) {
-        super.setUserRepository(userRepository);
+    public PlaygroundService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
+        super(messages, userRepository, roleRepository);
     }
 
-    @Autowired
-    protected void setRoleRepository(RoleRepository roleRepository) {
-        super.setRoleRepository(roleRepository);
-    }
 
     @Autowired
     public void setOrderRepository(OrderRepository orderRepository) {
@@ -166,9 +158,9 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id                 {@link Integer} playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation info
      * @return new order {@link Integer} identifier
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ResourceNotFoundException      if playground not found
-     * @throws ResourceCannotCreateException  if playground cannot create
+     * @throws UnauthorizedAccessException   if authorization is missing
+     * @throws ResourceNotFoundException     if playground not found
+     * @throws ResourceCannotCreateException if playground cannot create
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
@@ -276,7 +268,9 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @throws ResourceNotFoundException if playground not found
      */
     @Override
-    @Transactional(rollbackFor = {ResourceNotFoundException.class})
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class}
+    )
     public void delete(Integer id) throws ResourceNotFoundException {
         if (!playgroundRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));

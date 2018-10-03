@@ -6,15 +6,15 @@ public abstract class AbstractMessageService {
 
     private MessageContainer messages;
 
-    protected void setMessages(MessageContainer messages) {
+    public AbstractMessageService(MessageContainer messages) {
         this.messages = messages;
     }
 
-    protected String mGet(String msg) {
+    public String mGet(String msg) {
         return messages.get(msg);
     }
 
-    protected String mGetAndFormat(String msg, Object... args) {
+    public String mGetAndFormat(String msg, Object... args) {
         return messages.getAndFormat(msg, args);
     }
 }

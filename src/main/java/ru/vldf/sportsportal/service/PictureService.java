@@ -52,13 +52,14 @@ public class PictureService extends AbstractMessageService {
     private Path pictureDirectory;
     private PictureRepository pictureRepository;
     private PictureSizeRepository pictureSizeRepository;
-
     private PictureSizeMapper pictureSizeMapper;
 
+
     @Autowired
-    public void setMessages(MessageContainer messages) {
-        super.setMessages(messages);
+    public PictureService(MessageContainer messages) {
+        super(messages);
     }
+
 
     @Autowired
     public void setPictureRepository(PictureRepository pictureRepository) {
@@ -78,7 +79,6 @@ public class PictureService extends AbstractMessageService {
     @PostConstruct
     public void setFileStorageLocation() {
         this.pictureDirectory = Paths.get(dir).toAbsolutePath().normalize();
-
         try {
             Files.createDirectories(this.pictureDirectory);
         } catch (IOException e) {
@@ -170,7 +170,9 @@ public class PictureService extends AbstractMessageService {
      * @param id {@link Integer} picture identifier
      * @throws ResourceNotFoundException if record not found in database
      */
-    @Transactional(rollbackFor = {ResourceNotFoundException.class})
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class}
+    )
     public void delete(@NotNull Integer id) throws ResourceNotFoundException {
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));

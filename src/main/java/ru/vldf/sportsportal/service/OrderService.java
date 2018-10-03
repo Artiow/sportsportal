@@ -11,17 +11,7 @@ import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 public class OrderService extends AbstractSecurityService {
 
     @Autowired
-    public void setMessages(MessageContainer messages) {
-        super.setMessages(messages);
-    }
-
-    @Autowired
-    protected void setUserRepository(UserRepository userRepository) {
-        super.setUserRepository(userRepository);
-    }
-
-    @Autowired
-    protected void setRoleRepository(RoleRepository roleRepository) {
-        super.setRoleRepository(roleRepository);
+    public OrderService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
+        super(messages, userRepository, roleRepository);
     }
 }

@@ -18,7 +18,7 @@ import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.mapper.security.LoginMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.generic.AbstractMessageService;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
@@ -29,25 +29,22 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 
 @Service
-public class UserService extends AbstractMessageService {
+public class AuthService extends AbstractSecurityService {
 
     @Value("${code.role.user}")
     private String userRoleCode;
 
     private BCryptPasswordEncoder passwordEncoder;
-
     private SecurityService securityService;
-
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-
     private LoginMapper loginMapper;
     private UserMapper userMapper;
 
+
     @Autowired
-    public void setMessages(MessageContainer messages) {
-        super.setMessages(messages);
+    public AuthService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
+        super(messages, userRepository, roleRepository);
     }
+
 
     @Autowired
     public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
@@ -57,16 +54,6 @@ public class UserService extends AbstractMessageService {
     @Autowired
     public void setSecurityService(SecurityService securityService) {
         this.securityService = securityService;
-    }
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Autowired
-    public void setRoleRepository(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
     }
 
     @Autowired
@@ -94,7 +81,7 @@ public class UserService extends AbstractMessageService {
     )
     public UserShortDTO get(@NotNull Integer id) throws ResourceNotFoundException {
         try {
-            return userMapper.toShortDTO(userRepository.getOne(id));
+            return userMapper.toShortDTO(userRepository().getOne(id));
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", id), e);
         }
@@ -117,7 +104,7 @@ public class UserService extends AbstractMessageService {
     public TokenDTO login(@NotNull String login, @NotNull String password) throws UsernameNotFoundException, JwtException {
         UserEntity user;
         try {
-            user = userRepository.findByLogin(login);
+            user = userRepository().findByLogin(login);
             if (user == null) {
                 throw new EntityNotFoundException(mGet("sportsportal.auth.service.userRepository.message"));
             } else if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -154,7 +141,7 @@ public class UserService extends AbstractMessageService {
                 throw new BadCredentialsException(String.format("Sent token null or not starts with \'%s\'", tokenType));
             }
             IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
-            UserEntity user = userRepository.getOne(userDetails.getId());
+            UserEntity user = userRepository().getOne(userDetails.getId());
             if ((!user.getLogin().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
                 throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
             }
@@ -182,12 +169,13 @@ public class UserService extends AbstractMessageService {
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String login = userDTO.getLogin();
+        UserRepository userRepository = userRepository();
         if (userRepository.existsByLogin(login)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByLogin.message", login));
         }
         try {
             UserEntity user = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
-            user.setRoles(roleRepository.findAllByCode(userRoleCode));
+            user.setRoles(roleRepository().findAllByCode(userRoleCode));
             return userRepository.save(user).getId();
         } catch (JpaObjectRetrievalFailureException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);

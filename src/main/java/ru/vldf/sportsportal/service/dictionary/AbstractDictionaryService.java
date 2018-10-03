@@ -18,13 +18,11 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
     private AbstractWordbookRepository<E> repository;
     private AbstractDictionaryMapper<E, D> mapper;
 
-
     public AbstractDictionaryService(MessageContainer messages, AbstractWordbookRepository<E> repository, AbstractDictionaryMapper<E, D> mapper) {
-        this.setMessages(messages);
+        super(messages);
         this.repository = repository;
         this.mapper = mapper;
     }
-
 
     @Transactional(readOnly = true)
     public D get(Integer id) throws ResourceNotFoundException {
