@@ -12,7 +12,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     private RoleRepository roleRepository;
 
 
-    protected UserRepository getUserRepository() {
+    protected UserRepository userRepository() {
         return userRepository;
     }
 
@@ -20,7 +20,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         this.userRepository = userRepository;
     }
 
-    protected RoleRepository getRoleRepository() {
+    protected RoleRepository roleRepository() {
         return roleRepository;
     }
 

@@ -39,7 +39,7 @@ public class RoleController {
 
     @GetMapping("/list")
     @ApiOperation("получить страницу с ролями")
-    public PageDTO<RoleDTO> get(PageDividerDTO pageDividerDTO) {
-        return roleService.get(pageDividerDTO);
+    public PageDTO<RoleDTO> getList(PageDividerDTO pageDividerDTO) {
+        return roleService.getList(pageDividerDTO);
     }
 }

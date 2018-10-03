@@ -39,7 +39,7 @@ public class FeatureController {
 
     @GetMapping("/list")
     @ApiOperation("получить страницу с особенностями")
-    public PageDTO<FeatureDTO> get(PageDividerDTO pageDividerDTO) {
-        return featureService.get(pageDividerDTO);
+    public PageDTO<FeatureDTO> getList(PageDividerDTO pageDividerDTO) {
+        return featureService.getList(pageDividerDTO);
     }
 }

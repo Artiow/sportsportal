@@ -39,7 +39,7 @@ public class PictureSizeController {
 
     @GetMapping("/list")
     @ApiOperation("получить страницу с размерами изображений")
-    public PageDTO<PictureSizeDTO> get(PageDividerDTO pageDividerDTO) {
-        return pictureSizeService.get(pageDividerDTO);
+    public PageDTO<PictureSizeDTO> getList(PageDividerDTO pageDividerDTO) {
+        return pictureSizeService.getList(pageDividerDTO);
     }
 }
