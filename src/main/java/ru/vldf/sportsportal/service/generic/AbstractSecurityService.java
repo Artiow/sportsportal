@@ -62,7 +62,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @throws UnauthorizedAccessException if user is anonymous
      * @throws ResourceNotFoundException   if role code not exist
      */
-    public boolean userHasRole(String roleCode) throws UnauthorizedAccessException, ResourceNotFoundException {
+    public boolean currentUserHasRole(String roleCode) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (!roleRepository.existsByCode(roleCode)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", roleCode));
         }

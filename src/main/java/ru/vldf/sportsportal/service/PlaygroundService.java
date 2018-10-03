@@ -170,12 +170,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         try {
             PlaygroundEntity playground = playgroundRepository.getOne(id);
 
-            int expMinutes = 15;
-            LocalDateTime now = LocalDateTime.now();
             OrderEntity order = new OrderEntity();
             order.setCustomer(getCurrentUserEntity());
-            order.setDatetime(Timestamp.valueOf(now));
-            order.setExpiration(Timestamp.valueOf(now.plusMinutes(expMinutes)));
+            order.setDatetime(Timestamp.valueOf(LocalDateTime.now()));
+            order.setExpiration(null);
 
             BigDecimal price = playground.getPrice();
             BigDecimal sumPrice = BigDecimal.valueOf(0, 2);

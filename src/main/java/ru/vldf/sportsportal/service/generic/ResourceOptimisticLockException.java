@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class ResourceOptimisticLockException extends Exception {
+public class ResourceOptimisticLockException extends AbstractResourceException {
 
     public ResourceOptimisticLockException(String message) {
         super(message);

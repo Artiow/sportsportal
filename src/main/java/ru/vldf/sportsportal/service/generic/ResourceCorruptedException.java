@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class ResourceCorruptedException extends Exception {
+public class ResourceCorruptedException extends AbstractResourceException {
 
     public ResourceCorruptedException(String message) {
         super(message);

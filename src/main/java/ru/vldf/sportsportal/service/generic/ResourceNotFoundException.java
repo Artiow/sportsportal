@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class ResourceNotFoundException extends Exception {
+public class ResourceNotFoundException extends AbstractResourceException {
 
     public ResourceNotFoundException(String message) {
         super(message);

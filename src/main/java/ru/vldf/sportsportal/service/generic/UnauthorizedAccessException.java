@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class UnauthorizedAccessException extends Exception {
+public class UnauthorizedAccessException extends AbstractAuthorizationException {
 
     public UnauthorizedAccessException(String message) {
         super(message);
