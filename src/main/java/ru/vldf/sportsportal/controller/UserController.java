@@ -27,13 +27,13 @@ public class UserController {
     /**
      * Returns short user data by sent his id.
      *
-     * @param id {@link Integer} user id
+     * @param id user identifier
      * @return {@link UserShortDTO} user dto
      * @throws ResourceNotFoundException if user not found
      */
     @GetMapping("/{id}")
     @ApiOperation("получить пользователя")
-    public UserShortDTO get(@PathVariable Integer id) throws ResourceNotFoundException {
+    public UserShortDTO get(@PathVariable int id) throws ResourceNotFoundException {
         return authService.get(id);
     }
 }

@@ -70,7 +70,7 @@ public class AuthController {
     /**
      * Register new user.
      *
-     * @param userDTO new user data
+     * @param userDTO {@link UserDTO} new user data
      * @return new user location
      * @throws ResourceCannotCreateException if user cannot create
      */

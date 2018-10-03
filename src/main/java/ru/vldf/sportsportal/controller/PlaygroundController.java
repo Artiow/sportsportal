@@ -11,8 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
-import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
@@ -46,19 +44,19 @@ public class PlaygroundController {
 
 
     /**
-     * Returns requested page with playgrounds for current page divider.
+     * Returns requested page with playgrounds for current playground filter.
      *
-     * @param opening      {@link PlaygroundFilterDTO} opening field
-     * @param closing      {@link PlaygroundFilterDTO} closing field
-     * @param featureCodes {@link PlaygroundFilterDTO} featureCodes field
-     * @param sportCodes   {@link PlaygroundFilterDTO} sportCodes field
-     * @param startPrice   {@link PlaygroundFilterDTO} startPrice field
-     * @param endPrice     {@link PlaygroundFilterDTO} endPrice field
-     * @param minRate      {@link PlaygroundFilterDTO} minRate field
-     * @param searchString {@link StringSearcherDTO} searchString field
-     * @param pageSize     {@link PageDividerDTO} pageSize field
-     * @param pageNum      {@link PageDividerDTO} pageNum field
-     * @return {@link PageDTO<PlaygroundShortDTO>}
+     * @param opening      {@link LocalTime} opening time
+     * @param closing      {@link LocalTime} closing time
+     * @param featureCodes {@link Collection<String>} feature codes
+     * @param sportCodes   {@link Collection<String>} sport codes
+     * @param startPrice   {@link BigDecimal} minimal playground price
+     * @param endPrice     {@link BigDecimal} maximal playground price
+     * @param searchString {@link String} search string
+     * @param pageSize     {@link Integer} page size
+     * @param pageNum      {@link Integer} page number
+     * @param minRate      {@link Integer} minimal playground rate
+     * @return {@link PageDTO<PlaygroundShortDTO>} page with playgrounds
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
@@ -69,12 +67,12 @@ public class PlaygroundController {
             @RequestParam(required = false) Collection<String> sportCodes,
             @RequestParam(required = false) BigDecimal startPrice,
             @RequestParam(required = false) BigDecimal endPrice,
-            @RequestParam(required = false) Integer minRate,
             @RequestParam(required = false) String searchString,
             @RequestParam(required = false) Integer pageSize,
-            @RequestParam(required = false) Integer pageNum
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer minRate
     ) {
-        return playgroundService.getList((PlaygroundFilterDTO) new PlaygroundFilterDTO()
+        return playgroundService.getList(new PlaygroundFilterDTO()
                 .setFeatureCodes(featureCodes)
                 .setSportCodes(sportCodes)
                 .setStartPrice(startPrice)
@@ -91,7 +89,7 @@ public class PlaygroundController {
     /**
      * Returns requested playground with time grid by start date and end date.
      *
-     * @param id   {@link int} playground identifier
+     * @param id   playground identifier
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
      * @return {@link PlaygroundGridDTO} requested time grid
@@ -110,7 +108,7 @@ public class PlaygroundController {
     /**
      * Returns playground by identifier with short information.
      *
-     * @param id {@link int} playground identifier
+     * @param id playground identifier
      * @return {@link PlaygroundShortDTO} requested playground
      * @throws ResourceNotFoundException if requested playground not found
      */
@@ -123,7 +121,7 @@ public class PlaygroundController {
     /**
      * Returns playground by identifier with full information.
      *
-     * @param id {@link int} playground identifier
+     * @param id playground identifier
      * @return {@link PlaygroundDTO} requested playground
      * @throws ResourceNotFoundException if requested playground not found
      */
@@ -136,8 +134,8 @@ public class PlaygroundController {
     /**
      * Reserve playground for authorize user by sent datetime and returns order location.
      *
-     * @param id                 {@link int} playground identifier
-     * @param reservationListDTO {@link ReservationListDTO} reservation info
+     * @param id                 playground identifier
+     * @param reservationListDTO {@link ReservationListDTO} reservation data
      * @return new order {@link URI}
      * @throws ResourceNotFoundException if requested playground not found
      */
@@ -151,7 +149,7 @@ public class PlaygroundController {
     /**
      * Create playground and returns its location.
      *
-     * @param playgroundDTO sent {@link PlaygroundDTO}
+     * @param playgroundDTO {@link PlaygroundDTO} new playground data
      * @return new playgrounds {@link URI}
      * @throws ResourceCannotCreateException if playground create update
      */
@@ -166,7 +164,7 @@ public class PlaygroundController {
      * Update playground by id.
      *
      * @param id            playground identifier
-     * @param playgroundDTO playground data
+     * @param playgroundDTO {@link PlaygroundDTO} playground data
      * @return no content
      * @throws ResourceNotFoundException       if playground not found
      * @throws ResourceCannotUpdateException   if playground cannot update
