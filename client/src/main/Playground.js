@@ -118,6 +118,10 @@ class PlaygroundLeaseCalendar extends Component {
         super(props);
         this.playgroundId = props.identifier;
         this.playgroundVersion = props.version;
+        this.restoredReservation = restoreReservation(
+            this.playgroundId,
+            this.playgroundVersion
+        );
         const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
         const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
         this.timeFrame = {
@@ -194,6 +198,7 @@ class PlaygroundLeaseCalendar extends Component {
             this.timeFrame.date.end = PlaygroundLeaseCalendar.normalNowDate(end);
             this.query(
                 this.playgroundId,
+                this.playgroundVersion,
                 this.timeFrame.date.start,
                 this.timeFrame.date.end
             );
@@ -201,6 +206,7 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     query(id, version, from, to) {
+        console.log('params:', id, version, from, to);
         const self = this;
         axios.get(getApiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
@@ -223,12 +229,24 @@ class PlaygroundLeaseCalendar extends Component {
                     date: date
                 });
             });
+            const schedule = new Map(array);
+            const restoredReservation = self.restoredReservation;
+            if (restoredReservation != null) {
+                const reservation = [];
+                restoredReservation.forEach(function (i, item, array) {
+                    const datetime = i.split('T');
+                    if ((timeList.indexOf(datetime[1]) >= 0) && schedule.get(datetime[0]) && (schedule.get(datetime[0])).get(datetime[1])) {
+                        reservation.push(i)
+                    }
+                });
+                self.restoredReservation = null;
+                self.setState({reservation: reservation});
+            }
             self.setState({
                 price: price,
                 dateList: dateList,
                 timeList: timeList,
-                schedule: new Map(array),
-                reservation: restoreReservation(id, version),
+                schedule: schedule,
                 halfHourAvailable: data.halfHourAvailable,
                 fullHourRequired: data.fullHourRequired
             });
@@ -265,7 +283,7 @@ class PlaygroundLeaseCalendar extends Component {
             if (checkActive) {
                 const updateByData = (element) => {
                     element.selected = (reservation.indexOf(element.value) >= 0);
-                    element.available = ((timeList.indexOf(element.time) >= 0) && (schedule.get(element.date)).get(element.time));
+                    element.available = ((timeList.indexOf(element.time) >= 0) && schedule.get(element.date) && (schedule.get(element.date)).get(element.time));
                 };
                 updateByData(farPrev);
                 updateByData(prev);
