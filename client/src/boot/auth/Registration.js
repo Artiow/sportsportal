@@ -8,8 +8,8 @@ import './Registration.css';
 
 class Registration extends Component {
 
-    static STAGE = Object.freeze({REGISTRATION: 1, CONFIRMATION: 2});
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+    static STAGE = Object.freeze({REGISTRATION: 1, CONFIRMATION: 2});
 
     constructor(props) {
         super(props);
@@ -22,21 +22,17 @@ class Registration extends Component {
         }
     }
 
-    queryConfirm() {
-        const userId = this.state.confirmId;
-        const userEmail = this.state.confirmEmail;
-        console.log('send:', userId + ' :: ' + userEmail);
-        console.log('origin:', window.location.origin);
+    querySendConfirmMessage() {
         axios
-            .put(getApiUrl('/auth/confirm/' + userId), '', {
+            .put(getApiUrl('/auth/confirm/' + this.state.confirmId), '', {
                 params: {confirmRoot: window.location.origin},
                 paramsSerializer: (params => qs.stringify(params))
             })
             .then(function (response) {
-
+                console.log('Confirm Message Response:', response);
             })
             .catch(function (error) {
-
+                console.log('Confirm Message Error:', ((error.response != null) ? error.response : error));
             })
     }
 
@@ -86,7 +82,7 @@ class Registration extends Component {
                                           onSubmit={this.queryRegistration.bind(this)}/>
                     );
                 case Registration.STAGE.CONFIRMATION:
-                    this.queryConfirm();
+                    this.querySendConfirmMessage();
                     return (
                         <div className="ConfirmationMessage alert">
                             <h4 className="alert-heading">Подтвердите вашу учетную запись!</h4>
@@ -202,6 +198,7 @@ class RegistrationForm extends Component {
                         <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
                         <div className="login-link-box">
                             <Link className="btn btn-link btn-sm" to="/login">Авторизация</Link>
+                            <Link className="btn btn-link btn-sm" to="/">На главную</Link>
                         </div>
                     </div>
                 </div>

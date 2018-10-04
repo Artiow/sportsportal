@@ -46,7 +46,8 @@ class AuthBlock extends Component {
 
     handleLogout(event) {
         event.preventDefault();
-        this.queryLogout()
+        this.queryLogout();
+        window.location.replace('/login');
     }
 
     queryLogout() {

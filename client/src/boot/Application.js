@@ -8,6 +8,7 @@ import '../../node_modules/font-awesome/css/font-awesome.min.css';
 import ScrollRoute from '../util/components/ScrollRoute';
 import Login from './auth/Login';
 import Registration from './auth/Registration';
+import Confirmation from './auth/Confirmation';
 import NoMatch from './mismatch/NoMatch';
 import Header from './enviroment/Header';
 import Footer from './enviroment/Footer';
@@ -20,6 +21,7 @@ function Application(props) {
             <ScrollRoute exact path='/' component={IndexFrame}/>
             <ScrollRoute exact path='/playground/id:identifier' component={PgFrame}/>
             <ScrollRoute exact path='/registration' component={Registration}/>
+            <ScrollRoute exact path='/confirm' component={Confirmation}/>
             <ScrollRoute exact path='/login' component={Login}/>
             <ScrollRoute exact path='/home' component={HomeFrame}/>
             <ScrollRoute component={NoMatch}/>
