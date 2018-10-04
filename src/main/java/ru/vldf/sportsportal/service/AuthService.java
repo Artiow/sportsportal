@@ -214,7 +214,7 @@ public class AuthService extends AbstractSecurityService {
             UserEntity userEntity = userRepository.getOne(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendEmail(userEntity.getAddress(), confirmRoot, confirmCode);
+                sendEmail(userEntity.getEmail(), confirmRoot, confirmCode);
                 userRepository.save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.alreadyConfirmed.message"));
@@ -248,15 +248,15 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * @param address     {@link String} sending address
-     * @param confirmRoot {@link String} confirm root
-     * @param confirmCode {@link String} confirm code
+     * @param emailAddress {@link String} sending address
+     * @param confirmRoot  {@link String} confirm root
+     * @param confirmCode  {@link String} confirm code
      * @throws MessagingException if could not sent email
      */
-    private void sendEmail(String address, String confirmRoot, String confirmCode) throws MessagingException {
+    private void sendEmail(String emailAddress, String confirmRoot, String confirmCode) throws MessagingException {
         MimeMessage mailMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
-        messageHelper.setTo(address);
+        messageHelper.setTo(emailAddress);
         messageHelper.setSubject(mGet("sportsportal.email.confirm.subject"));
         messageHelper.setText(String.format(
                 "<p>%s</p>",

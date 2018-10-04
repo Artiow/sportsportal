@@ -12,34 +12,23 @@ class Registration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            surname: '',
-            patronymic: '',
-            address: '',
-            phone: '',
-            login: '',
-            email: '',
-            password: '',
-            confirm: '',
             errorMessage: null,
             errorMessages: {}
         }
     }
 
-    queryRegistration() {
+    queryRegistration(obj) {
         const self = this;
-        const pDigits = self.state.phone.trim().split(' ');
-        const validPhone = (pDigits.length === 5) ? (pDigits[0] + pDigits[1] + pDigits[2] + '-' + pDigits[3] + '-' + pDigits[4]) : (pDigits.join(' '));
         axios
             .post(getApiUrl('/auth/register'), {
-                name: self.state.name,
-                surname: self.state.surname,
-                patronymic: self.state.patronymic,
-                address: self.state.address,
-                phone: validPhone,
-                login: self.state.login,
-                email: self.state.email,
-                password: self.state.password
+                name: obj.name,
+                surname: obj.surname,
+                patronymic: obj.patronymic,
+                address: obj.address,
+                phone: obj.phone,
+                login: obj.login,
+                email: obj.email,
+                password: obj.password
             })
             .then(function (response) {
                 console.log('Registration Response:', response);
@@ -58,13 +47,6 @@ class Registration extends Component {
             })
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
-        this.setState({errorMessage: null, errorMessages: {}});
-        if (this.state.password === this.state.confirm) this.queryRegistration();
-        else this.setState({errorMessages: {password: 'Введенные пароли не совпадают!'}});
-    }
-
     handleInputChange(event) {
         const target = event.target;
         this.setState({[target.id]: target.value});
@@ -74,51 +56,112 @@ class Registration extends Component {
         return (
             <div className="Registration">
                 <div className="container">
-                    <form onSubmit={this.handleSubmit.bind(this)}>
-                        <h1>Регистрация</h1>
-                        <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
-                             className="alert alert-warning">
-                            {this.state.errorMessage}
-                        </div>
-                        <InputField identifier={'name'} placeholder={'Имя'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.name}/>
-                        <InputField identifier={'surname'} placeholder={'Фамилия'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.surname}/>
-                        <InputField identifier={'patronymic'} placeholder={'Отчество'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.patronymic}/>
-                        <InputField identifier={'address'} placeholder={'Адрес'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.address}/>
-                        <InputField identifier={'phone'} placeholder={'Телефон'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.phone}
-                                    maskChar=" " mask="+7 (999) 999 99 99"/>
-                        <InputField identifier={'login'} placeholder={'Логин'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.login}/>
-                        <InputField type={'email'}
-                                    identifier={'email'} placeholder={'Эл. Почта'}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    errorMessage={this.state.errorMessages.email}/>
-                        <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
-                                            secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
-                                            onChange={this.handleInputChange.bind(this)}
-                                            errorMessage={this.state.errorMessages.password}/>
-                        <div className="row">
-                            <div className="col-sm-6 offset-sm-3">
-                                <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
-                                <div className="login-link-box">
-                                    <Link className="btn btn-link btn-sm" to="/login">Авторизация</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    <RegistrationForm errorMessage={this.state.errorMessage} errorMessages={this.state.errorMessages}
+                                      onSubmit={this.queryRegistration.bind(this)}/>
                 </div>
             </div>
         );
+    }
+}
+
+class RegistrationForm extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            surname: '',
+            patronymic: '',
+            address: '',
+            phone: '',
+            login: '',
+            email: '',
+            password: '',
+            confirm: '',
+            errorMessage: ((props.errorMessage != null) ? props.errorMessage : null),
+            errorMessages: ((props.errorMessages != null) ? props.errorMessages : {})
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            errorMessage: ((nextProps.errorMessage != null) ? nextProps.errorMessage : null),
+            errorMessages: ((nextProps.errorMessages != null) ? nextProps.errorMessages : {})
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        this.setState({errorMessage: null, errorMessages: {}});
+        if (this.state.password === this.state.confirm) {
+            const onSubmit = this.props.onSubmit;
+            const pDigits = this.state.phone.trim().split(' ');
+            if (typeof onSubmit === 'function') onSubmit({
+                name: this.state.name,
+                surname: this.state.surname,
+                patronymic: this.state.patronymic,
+                address: this.state.address,
+                phone: ((pDigits.length === 5) ? (pDigits[0] + pDigits[1] + pDigits[2] + '-' + pDigits[3] + '-' + pDigits[4]) : (pDigits.join(' '))),
+                login: this.state.login,
+                email: this.state.email,
+                password: this.state.password
+            });
+        }
+        else {
+            this.setState({errorMessages: {password: 'Введенные пароли не совпадают!'}});
+        }
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        this.setState({[target.id]: target.value});
+    }
+
+    render() {
+        return (
+            <form className="RegistrationForm" onSubmit={this.handleSubmit.bind(this)}>
+                <h1>Регистрация</h1>
+                <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
+                     className="alert alert-warning">
+                    {this.state.errorMessage}
+                </div>
+                <InputField identifier={'name'} placeholder={'Имя'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.name}/>
+                <InputField identifier={'surname'} placeholder={'Фамилия'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.surname}/>
+                <InputField identifier={'patronymic'} placeholder={'Отчество'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.patronymic}/>
+                <InputField identifier={'address'} placeholder={'Адрес'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.address}/>
+                <InputField identifier={'phone'} placeholder={'Телефон'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.phone}
+                            maskChar=" " mask="+7 (999) 999 99 99"/>
+                <InputField identifier={'login'} placeholder={'Логин'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.login}/>
+                <InputField type={'email'}
+                            identifier={'email'} placeholder={'Эл. Почта'}
+                            onChange={this.handleInputChange.bind(this)}
+                            errorMessage={this.state.errorMessages.email}/>
+                <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
+                                    secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    errorMessage={this.state.errorMessages.password}/>
+                <div className="row">
+                    <div className="col-sm-6 offset-sm-3">
+                        <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
+                        <div className="login-link-box">
+                            <Link className="btn btn-link btn-sm" to="/login">Авторизация</Link>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        )
     }
 }
 
