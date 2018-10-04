@@ -13,6 +13,7 @@ import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
 import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 
@@ -79,5 +80,35 @@ public class AuthController {
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(userPath, authService.register(userDTO))).build();
+    }
+
+    /**
+     * Init confirmation for user and send him confirmation email.
+     *
+     * @param id          user identifier
+     * @param confirmRoot {@link String} confirmation link root
+     * @return no content
+     * @throws ResourceNotFoundException     if user could not found
+     * @throws ResourceCannotUpdateException if could not sent email
+     */
+    @PutMapping("/confirm/{id}")
+    @ApiOperation("отправить письмо для подтверждения электронной почты")
+    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam String confirmRoot) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        authService.initConfirmation(id, confirmRoot);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * User confirmation.
+     *
+     * @param confirmToken @link String} user's confirmation token
+     * @return no content
+     * @throws ResourceNotFoundException if user not found by confirm code
+     */
+    @PutMapping("/confirm")
+    @ApiOperation("подтвердить пользователя")
+    public ResponseEntity<Void> confirm(@RequestParam String confirmToken) throws ResourceNotFoundException {
+        authService.confirm(confirmToken);
+        return ResponseEntity.noContent().build();
     }
 }

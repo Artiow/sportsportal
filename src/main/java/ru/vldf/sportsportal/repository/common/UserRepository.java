@@ -7,6 +7,8 @@ import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
 
 public interface UserRepository extends AbstractIdentifiedRepository<UserEntity> {
 
+    UserEntity findByConfirmCode(String confirmCode);
+
     UserEntity findByLogin(String login);
 
     boolean existsByLogin(String login);

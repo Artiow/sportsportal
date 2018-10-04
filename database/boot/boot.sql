@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------------------------------------------------
--- BOOT DATA EXAMPLE 0.2.2 FOR
--- SPORTSPORTAL DATABASE 0.2.3
+-- BOOT DATA EXAMPLE 0.3.0 FOR
+-- SPORTSPORTAL DATABASE 0.3.0
 
 ------------------------------------------------------------------------------------------------------------------------
 -- DICTIONARY BOOT
@@ -9,11 +9,10 @@
 
 insert into common.role (id, code, name, description)
 values (1, 'admin', 'Администратор', 'администратор сайта'),
-       (2, 'user', 'Пользователь', 'обычный пользователь'),
-       (3, 'unconfirmed', 'Не подтвержден', 'не подтвержденный пользователь');
+       (2, 'user', 'Пользователь', 'обычный пользователь');
 
 alter sequence common.role_id_seq
-  restart with 4;
+  restart with 3;
 
 -- common.picture_size
 

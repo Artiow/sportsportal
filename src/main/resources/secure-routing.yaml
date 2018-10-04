@@ -7,6 +7,10 @@ publicRoutePaths:
   httpMethod: GET
 - pattern: /auth/register
   httpMethod: POST
+- pattern: /auth/confirm
+  httpMethod: PUT
+- pattern: /auth/confirm/*
+  httpMethod: PUT
 
 protectedRoutePaths:
   ADMIN:

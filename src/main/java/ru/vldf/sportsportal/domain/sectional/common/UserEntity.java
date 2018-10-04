@@ -43,6 +43,10 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Basic
+    @Column(name = "confirm_code")
+    private String confirmCode;
+
     @OneToOne
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
@@ -125,6 +129,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getConfirmCode() {
+        return confirmCode;
+    }
+
+    public void setConfirmCode(String confirmCode) {
+        this.confirmCode = confirmCode;
     }
 
     public PictureEntity getAvatar() {
