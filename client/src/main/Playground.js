@@ -130,8 +130,8 @@ class PlaygroundLeaseCalendar extends Component {
                 end: end
             },
             date: {
-                start: PlaygroundLeaseCalendar.normalNowDate(start),
-                end: PlaygroundLeaseCalendar.normalNowDate(end)
+                start: PlaygroundLeaseCalendar.normalNow(start),
+                end: PlaygroundLeaseCalendar.normalNow(end)
             }
         };
         this.state = {
@@ -151,23 +151,19 @@ class PlaygroundLeaseCalendar extends Component {
         );
     }
 
-    static normalNowDate(days) {
+    static normalNow(days) {
         return this.normalizeDate(this.now(days));
     }
 
-    static normalize(date) {
-        return this.normalizeDate(date) + 'T' + this.normalizeTime(date);
+    static normalizeDate(datetime) {
+        let day = datetime.getDate();
+        let month = datetime.getMonth();
+        return datetime.getFullYear() + '-' + ((++month < 10) ? ('0' + month) : (month)) + '-' + ((day < 10) ? ('0' + day) : (day));
     }
 
-    static normalizeDate(date) {
-        let day = date.getDate();
-        let month = date.getMonth();
-        return date.getFullYear() + '-' + ((++month < 10) ? ('0' + month) : (month)) + '-' + ((day < 10) ? ('0' + day) : (day));
-    }
-
-    static normalizeTime(date) {
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
+    static normalizeTime(datetime) {
+        let hours = datetime.getHours();
+        let minutes = datetime.getMinutes();
         return ((hours < 10) ? ('0' + hours) : (hours)) + ':' + ((minutes < 10) ? ('0' + minutes) : (minutes));
     }
 
@@ -194,8 +190,8 @@ class PlaygroundLeaseCalendar extends Component {
             const end = this.timeFrame.offset.end + offset;
             this.timeFrame.offset.start = start;
             this.timeFrame.offset.end = end;
-            this.timeFrame.date.start = PlaygroundLeaseCalendar.normalNowDate(start);
-            this.timeFrame.date.end = PlaygroundLeaseCalendar.normalNowDate(end);
+            this.timeFrame.date.start = PlaygroundLeaseCalendar.normalNow(start);
+            this.timeFrame.date.end = PlaygroundLeaseCalendar.normalNow(end);
             this.query(
                 this.playgroundId,
                 this.playgroundVersion,

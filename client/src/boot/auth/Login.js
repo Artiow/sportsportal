@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../constants'
+import verify from '../../util/verification'
 import axios from 'axios';
 import './Login.css';
 
@@ -15,27 +16,9 @@ class Login extends Component {
             password: '',
             errorMessage: ''
         };
-        this.queryVerify();
-    }
-
-    queryVerify() {
-        const url = getApiUrl('/auth/verify');
-        const accessToken = localStorage.getItem('token');
-        if (accessToken !== null) {
-            axios
-                .get(url, {params: {accessToken: accessToken}})
-                .then(function (response) {
-                    console.log('Verify Response:', response);
-                    const data = response.data;
-                    localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
-                    localStorage.setItem('user', data.userInfo);
-                    window.location.replace('/');
-                })
-                .catch(function (error) {
-                    console.log('Verify Error:', ((error.response != null) ? error.response : error));
-                    localStorage.clear();
-                })
-        }
+        verify(function () {
+            window.location.replace('/');
+        });
     }
 
     queryLogin() {
