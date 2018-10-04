@@ -14,12 +14,14 @@ import Header from './enviroment/Header';
 import Footer from './enviroment/Footer';
 import Index from '../main/Index';
 import Playground from '../main/Playground';
+import Order from '../main/Order';
 
 function Application(props) {
     return (
         <Switch>
             <ScrollRoute exact path='/' component={IndexFrame}/>
-            <ScrollRoute exact path='/playground/id:identifier' component={PgFrame}/>
+            <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
+            <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
             <ScrollRoute exact path='/registration' component={Registration}/>
             <ScrollRoute exact path='/confirm' component={Confirmation}/>
             <ScrollRoute exact path='/login' component={Login}/>
@@ -50,12 +52,23 @@ function IndexFrame(props) {
     );
 }
 
-function PgFrame(props) {
+function PlaygroundFrame(props) {
     return (
         <div>
             <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}
                     subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
             <Playground identifier={props.match.params.identifier}/>
+            <Footer/>
+        </div>
+    );
+}
+
+function OrderFrame(props) {
+    return (
+        <div>
+            <Header titleHref={'/order'} titleLabel={'ОФОРМЛЕНИЕ БРОНИРОВАНИЯ'}
+                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
+            <Order identifier={props.match.params.identifier}/>
             <Footer/>
         </div>
     );

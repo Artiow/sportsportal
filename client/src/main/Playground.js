@@ -3,6 +3,7 @@ import PhotoCarousel from '../util/components/PhotoCarousel';
 import CheckButton from '../util/components/CheckButton';
 import StarRate from '../util/components/StarRate';
 import saveReservation, {restoreReservation} from '../util/reservationSaver';
+import {getToken} from '../util/verification';
 import {env, getApiUrl} from '../boot/constants';
 import axios from 'axios';
 import './Playground.css';
@@ -108,6 +109,7 @@ class Playground extends Component {
 
 class PlaygroundLeaseCalendar extends Component {
 
+    static CLOSE_TITLE = 'Отмена';
     static CANCEL_TITLE = 'Сбросить выбор';
     static SUBMIT_TITLE = 'Забронировать';
 
@@ -315,7 +317,18 @@ class PlaygroundLeaseCalendar extends Component {
 
     submit(event) {
         event.preventDefault();
-        console.log('submit reservation:', this.state.reservation);
+        axios.post(getApiUrl('/leaseapi/playground/' + this.playgroundId + '/reserve'), {
+            reservations: this.state.reservation
+        }, {
+            headers: {Authorization: getToken(),}
+        }).then(function (response) {
+            console.log('Query Response:', response);
+            const locationArray = response.headers.location.split('/');
+            window.location.replace('/order/id' + locationArray[locationArray.length - 1]);
+        }).catch(function (error) {
+            console.log('Query Error:', ((error.response != null) ? error.response : error));
+            // todo: show error!
+        });
     }
 
     render() {
@@ -369,6 +382,9 @@ class PlaygroundLeaseCalendar extends Component {
             return (table);
         };
         const schedule = this.state.schedule;
+        const reservation = this.state.reservation;
+        const price = this.state.price;
+        const totalPrice = ((reservation != null) && (price != null)) ? reservation.length * price : 0;
         if (schedule != null) {
             return (
                 <form className="PlaygroundLeaseCalendar" onSubmit={this.submit.bind(this)}>
@@ -396,18 +412,19 @@ class PlaygroundLeaseCalendar extends Component {
                         </tr>
                         </thead>
                         <tbody>
-                        {tableBuilder(this.state.timeList, this.state.price, schedule)}
+                        {tableBuilder(this.state.timeList, price, schedule)}
                         </tbody>
                     </table>
-                    {(this.state.reservation.length > 0) ? (
+                    {(reservation.length > 0) ? (
                         <div className="btn-group">
                             <button type="button" className="btn btn-danger" onClick={cancel}>
                                 {PlaygroundLeaseCalendar.CANCEL_TITLE}
                             </button>
-                            <button type="submit" className="btn btn-success">
+                            <button type="button" className="btn btn-success" data-toggle="modal"
+                                    data-target="#confirmForm">
                                 {PlaygroundLeaseCalendar.SUBMIT_TITLE}
                                 <span className="badge badge-dark ml-1">
-                                    {this.state.reservation.length * this.state.price}<i className="fa fa-rub ml-1"/>
+                                    {totalPrice}<i className="fa fa-rub ml-1"/>
                                 </span>
                             </button>
                         </div>
@@ -419,11 +436,39 @@ class PlaygroundLeaseCalendar extends Component {
                             <button className="btn btn-success disabled" disabled="disabled">
                                 {PlaygroundLeaseCalendar.SUBMIT_TITLE}
                                 <span className="badge badge-dark ml-1">
-                                    0<i className="fa fa-rub ml-1"/>
+                                    {totalPrice}<i className="fa fa-rub ml-1"/>
                                 </span>
                             </button>
                         </div>
                     )}
+                    <div id="confirmForm" className="modal fade" tabIndex="-1">
+                        <div className="modal-dialog">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">
+                                        Подтвердите правильность выбора
+                                    </h5>
+                                    <button type="button" className="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    ...
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">
+                                        {PlaygroundLeaseCalendar.CLOSE_TITLE}
+                                    </button>
+                                    <button type="submit" className="btn btn-success">
+                                        {PlaygroundLeaseCalendar.SUBMIT_TITLE}
+                                        <span className="badge badge-dark ml-1">
+                                            {totalPrice}<i className="fa fa-rub ml-1"/>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             )
         } else {

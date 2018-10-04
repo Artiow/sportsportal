@@ -24,3 +24,8 @@ export default function verify(thenCallback, catchCallback) {
             })
     }
 }
+
+export function getToken() {
+    const token = localStorage.getItem('token');
+    return (token != null) ? token : null;
+}
