@@ -2,23 +2,47 @@ import React, {Component} from 'react';
 import InputMask from 'react-input-mask';
 import {Link} from 'react-router-dom';
 import {getApiUrl} from '../constants'
-import axios from "axios/index";
+import axios from 'axios';
+import qs from 'qs';
 import './Registration.css';
 
 class Registration extends Component {
 
+    static STAGE = Object.freeze({REGISTRATION: 1, CONFIRMATION: 2});
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
 
     constructor(props) {
         super(props);
         this.state = {
+            stage: Registration.STAGE.REGISTRATION,
+            confirmId: null,
+            confirmEmail: null,
             errorMessage: null,
             errorMessages: {}
         }
     }
 
+    queryConfirm() {
+        const userId = this.state.confirmId;
+        const userEmail = this.state.confirmEmail;
+        console.log('send:', userId + ' :: ' + userEmail);
+        console.log('origin:', window.location.origin);
+        axios
+            .put(getApiUrl('/auth/confirm/' + userId), '', {
+                params: {confirmRoot: window.location.origin},
+                paramsSerializer: (params => qs.stringify(params))
+            })
+            .then(function (response) {
+
+            })
+            .catch(function (error) {
+
+            })
+    }
+
     queryRegistration(obj) {
         const self = this;
+        this.setState({errorMessage: null, errorMessages: {}});
         axios
             .post(getApiUrl('/auth/register'), {
                 name: obj.name,
@@ -32,7 +56,12 @@ class Registration extends Component {
             })
             .then(function (response) {
                 console.log('Registration Response:', response);
-                window.location.replace('/login');
+                const locationArray = response.headers.location.split('/');
+                self.setState({
+                    stage: Registration.STAGE.CONFIRMATION,
+                    confirmId: locationArray[locationArray.length - 1],
+                    confirmEmail: obj.email,
+                })
             })
             .catch(function (error) {
                 const errorResponse = error.response;
@@ -47,18 +76,34 @@ class Registration extends Component {
             })
     }
 
-    handleInputChange(event) {
-        const target = event.target;
-        this.setState({[target.id]: target.value});
-    }
-
     render() {
+        const contentByStage = (stage) => {
+            switch (stage) {
+                case Registration.STAGE.REGISTRATION:
+                    return (
+                        <RegistrationForm errorMessage={this.state.errorMessage}
+                                          errorMessages={this.state.errorMessages}
+                                          onSubmit={this.queryRegistration.bind(this)}/>
+                    );
+                case Registration.STAGE.CONFIRMATION:
+                    this.queryConfirm();
+                    return (
+                        <div className="ConfirmationMessage alert">
+                            <h4 className="alert-heading">Подтвердите вашу учетную запись!</h4>
+                            <p>Мы отправили на указанный вами почтовый
+                                ящик <code>{this.state.confirmEmail}</code> письмо с ссылкой для подтверждения вашей
+                                учетной записи.</p>
+                            <hr/>
+                            <p>Пожалуйста, перейдите по ссылке, указанной в нем.</p>
+                        </div>
+                    );
+                default:
+                    return (null);
+            }
+        };
         return (
             <div className="Registration">
-                <div className="container">
-                    <RegistrationForm errorMessage={this.state.errorMessage} errorMessages={this.state.errorMessages}
-                                      onSubmit={this.queryRegistration.bind(this)}/>
-                </div>
+                <div className="container">{contentByStage(this.state.stage)}</div>
             </div>
         );
     }
