@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {getApiUrl} from '../constants'
+import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Confirmation.css';
@@ -23,7 +23,7 @@ class Confirmation extends Component {
         const confirmToken = qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token;
         console.log('Accepted Token:', confirmToken);
         axios
-            .put(getApiUrl('/auth/confirm'), '', {
+            .put(apiUrl('/auth/confirm'), '', {
                 params: {confirmToken: confirmToken},
                 paramsSerializer: (params => qs.stringify(params))
             })

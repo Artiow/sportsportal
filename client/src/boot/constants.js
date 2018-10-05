@@ -43,6 +43,6 @@ export const env = Object.freeze({
  * @param path {string}
  * @return {string}
  */
-export function getApiUrl(path) {
+export default function apiUrl(path) {
     return env.API_URL + path;
 }

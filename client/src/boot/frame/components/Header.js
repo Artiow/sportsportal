@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {getApiUrl} from '../../constants'
-import axios from "axios/index";
+import verify, {getLogin, logout} from '../../../util/verification'
 import './Header.css';
 
 function Header(props) {
@@ -9,8 +8,7 @@ function Header(props) {
         <header className="Header">
             <div className="container">
                 <div className="row">
-                    <MainBlock titleHref={props.titleHref} titleLabel={props.titleLabel}
-                               subtitleHref={props.subtitleHref} subtitleLabel={props.subtitleLabel}/>
+                    <MainBlock {...props}/>
                     <AuthBlock/>
                 </div>
             </div>
@@ -37,9 +35,11 @@ function MainBlock(props) {
 class AuthBlock extends Component {
     constructor(props) {
         super(props);
+        const login = getLogin();
+        const logged = (login != null);
         this.state = {
-            isAuthorized: false,
-            nickname: null
+            isAuthorized: logged,
+            nickname: logged ? login.username : null
         };
         this.queryVerify();
     }
@@ -51,8 +51,7 @@ class AuthBlock extends Component {
     }
 
     queryLogout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('login');
+        logout();
         this.setState({
             isAuthorized: false,
             nickname: null
@@ -61,26 +60,17 @@ class AuthBlock extends Component {
 
     queryVerify() {
         const self = this;
-        const accessToken = localStorage.getItem('token');
-        if (accessToken !== null) {
-            axios
-                .get(getApiUrl('/auth/verify'), {params: {accessToken: accessToken}})
-                .then(function (response) {
-                    console.log('Verify Response:', response);
-                    const data = response.data;
-                    const login = data.login;
-                    localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
-                    localStorage.setItem('login', login);
-                    self.setState({
-                        isAuthorized: true,
-                        nickname: login.username
-                    })
-                })
-                .catch(function (error) {
-                    console.log('Verify Error:', ((error.response != null) ? error.response : error));
-                    localStorage.clear();
-                })
-        }
+        verify(function (response) {
+            self.setState({
+                isAuthorized: true,
+                nickname: response.data.login.username
+            })
+        }, function (error) {
+            self.setState({
+                isAuthorized: false,
+                nickname: null
+            });
+        });
     }
 
     render() {

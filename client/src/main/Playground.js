@@ -4,7 +4,7 @@ import CheckButton from '../util/components/CheckButton';
 import StarRate from '../util/components/StarRate';
 import saveReservation, {restoreReservation} from '../util/reservationSaver';
 import {getToken} from '../util/verification';
-import {env, getApiUrl} from '../boot/constants';
+import apiUrl, {env} from '../boot/constants';
 import axios from 'axios';
 import './Playground.css';
 import noImage from '../util/img/no-image-grey-mdh.jpg';
@@ -20,7 +20,7 @@ class Playground extends Component {
     queryOnLoad() {
         const self = this;
         axios.get(
-            getApiUrl('/leaseapi/playground/' + this.id)
+            apiUrl('/leaseapi/playground/' + this.id)
         ).then(function (response) {
             console.log('Query Response:', response);
             self.setState({content: response.data});
@@ -202,7 +202,7 @@ class PlaygroundLeaseCalendar extends Component {
     query(id, version, from, to) {
         console.log('params:', id, version, from, to);
         const self = this;
-        axios.get(getApiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
+        axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
             console.log('Query Response:', response);
             const dateList = [];
@@ -313,7 +313,7 @@ class PlaygroundLeaseCalendar extends Component {
 
     submit(event) {
         event.preventDefault();
-        axios.post(getApiUrl('/leaseapi/playground/' + this.playgroundId + '/reserve'), {
+        axios.post(apiUrl('/leaseapi/playground/' + this.playgroundId + '/reserve'), {
             reservations: this.state.reservation
         }, {
             headers: {Authorization: getToken(),}

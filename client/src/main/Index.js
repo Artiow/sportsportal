@@ -2,13 +2,13 @@ import React, {Component} from "react";
 import Slider, {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import {Link} from 'react-router-dom';
-import {getApiUrl} from '../boot/constants'
 import StarRate from '../util/components/StarRate';
 import CustomCheckbox from '../util/components/CustomCheckbox';
+import noImage from '../util/img/no-image-white-sm.jpg';
+import apiUrl from '../boot/constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Index.css';
-import noImage from '../util/img/no-image-white-sm.jpg';
 
 class Index extends Component {
 
@@ -32,7 +32,7 @@ class Index extends Component {
      */
     query(filter) {
         const self = this;
-        const url = getApiUrl('/leaseapi/playground/list');
+        const url = apiUrl('/leaseapi/playground/list');
         const serializer = params => {
             return qs.stringify(params, {arrayFormat: 'repeat'})
         };
@@ -128,7 +128,7 @@ class PlaygroundFilter extends Component {
      * @param setting {function(object)}
      */
     uploadFilerData(uri, setting) {
-        axios.get(getApiUrl(uri))
+        axios.get(apiUrl(uri))
             .then(function (response) {
                 console.log('Dictionary Response:', response);
                 setting(response.data.content);

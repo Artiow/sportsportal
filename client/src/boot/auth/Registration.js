@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import InputMask from 'react-input-mask';
 import {Link} from 'react-router-dom';
-import {getApiUrl} from '../constants'
+import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Registration.css';
@@ -24,7 +24,7 @@ class Registration extends Component {
 
     querySendConfirmMessage() {
         axios
-            .put(getApiUrl('/auth/confirm/' + this.state.confirmId), '', {
+            .put(apiUrl('/auth/confirm/' + this.state.confirmId), '', {
                 params: {confirmRoot: window.location.origin},
                 paramsSerializer: (params => qs.stringify(params))
             })
@@ -40,7 +40,7 @@ class Registration extends Component {
         const self = this;
         this.setState({errorMessage: null, errorMessages: {}});
         axios
-            .post(getApiUrl('/auth/register'), {
+            .post(apiUrl('/auth/register'), {
                 name: obj.name,
                 surname: obj.surname,
                 patronymic: obj.patronymic,

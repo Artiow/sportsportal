@@ -1,31 +1,34 @@
-import {getApiUrl} from '../boot/constants'
+import apiUrl from '../boot/constants';
 import axios from 'axios';
 
 /**
- * @param thenCallback {function(Object)}
- * @param catchCallback {function(Object)}
+ * @param successCallback {function(Object)}
+ * @param failureCallback {function(Object)}
  */
-export default function verify(thenCallback, catchCallback) {
+export default function verify(successCallback, failureCallback) {
     const accessToken = localStorage.getItem('token');
+    const call = (callback, object) => {
+        if (typeof callback === 'function') callback(object);
+    };
     if (accessToken !== null) {
         axios
-            .get(getApiUrl('/auth/verify'), {params: {accessToken: accessToken}})
+            .get(apiUrl('/auth/verify'), {params: {accessToken: accessToken}})
             .then(function (response) {
                 login(response.data);
                 console.log('Verify Response:', response);
-                if (typeof thenCallback === 'function') thenCallback(response);
+                call(successCallback, response);
             })
             .catch(function (error) {
                 logout();
                 console.log('Verify Error:', ((error.response != null) ? error.response : error));
-                if (typeof catchCallback === 'function') catchCallback(error);
+                call(failureCallback, error);
             })
     }
 }
 
 export function login(token) {
     localStorage.setItem('token', (token.tokenType + ' ' + token.tokenHash));
-    localStorage.setItem('login', token.login);
+    localStorage.setItem('login', JSON.stringify(token.login));
 }
 
 export function logout() {
@@ -36,4 +39,13 @@ export function logout() {
 export function getToken() {
     const token = localStorage.getItem('token');
     return (token != null) ? token : null;
+}
+
+export function getLogin() {
+    const login = localStorage.getItem('login');
+    try {
+        return JSON.parse(login);
+    } catch (e) {
+        return null;
+    }
 }
