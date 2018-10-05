@@ -3,8 +3,8 @@ import './Order.css';
 
 export default function Order(props) {
     return (
-        <main className="Order container">
+        <div className="row">
             {'order id: ' + props.identifier}
-        </main>
+        </div>
     );
 }

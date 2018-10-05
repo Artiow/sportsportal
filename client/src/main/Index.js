@@ -49,12 +49,10 @@ class Index extends Component {
 
     render() {
         return (
-            <main className="Main container">
-                <div className="row">
-                    <PlaygroundFilter callback={this.updateFilter}/>
-                    <PageablePlaygroundContainer page={this.state.page}/>
-                </div>
-            </main>
+            <div className="row">
+                <PlaygroundFilter callback={this.updateFilter}/>
+                <PageablePlaygroundContainer page={this.state.page}/>
+            </div>
         );
     }
 }

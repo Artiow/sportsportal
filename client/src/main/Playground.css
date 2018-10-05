@@ -1,14 +1,8 @@
-.Playground.container {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    min-height: 95vh;
-}
-
-.Playground.container .container.content-container {
+.container.content-container {
     padding: 0;
 }
 
-.Playground.container .container.content-container .row.info-row {
+.container.content-container .row.info-row {
     padding: 10px 0;
     margin-top: 15px;
     margin-bottom: 15px;
@@ -16,19 +10,19 @@
     background-color: #f8f9fa;
 }
 
-.Playground.container .container.content-container .row.info-row .row-h {
+.container.content-container .row.info-row .row-h {
     font-weight: 300;
 }
 
-.Playground.container .container.content-container .row.header-info-row h1.header-h {
+.container.content-container .row.header-info-row h1.header-h {
     margin-bottom: 0;
 }
 
-.Playground.container .container.content-container .row.feature-info-row .info-h.info-infra {
+.container.content-container .row.feature-info-row .info-h.info-infra {
     padding: .25rem .75rem;
 }
 
-.Playground.container .container.content-container .row.feature-info-row ul li {
+.container.content-container .row.feature-info-row ul li {
     padding: .5rem .75rem;
     background: inherit;
     font-weight: 300;
@@ -36,60 +30,60 @@
 
 /* PlaygroundLeaseCalendar */
 
-.Playground.container .PlaygroundLeaseCalendar {
+.PlaygroundLeaseCalendar {
     margin-bottom: 5px;
     margin-top: 15px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar table {
+.PlaygroundLeaseCalendar table {
     table-layout: fixed;
     margin: 0;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th {
+.PlaygroundLeaseCalendar thead tr th {
     vertical-align: middle;
     text-align: center;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th.th-control {
+.PlaygroundLeaseCalendar thead tr th.th-control {
     width: 80px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th button {
+.PlaygroundLeaseCalendar thead tr th button {
     padding: 0 .5rem;
     font-size: 1.125rem;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th button:first-child {
+.PlaygroundLeaseCalendar thead tr th button:first-child {
     float: left;
 }
 
-.Playground.container .PlaygroundLeaseCalendar thead tr th button:last-child {
+.PlaygroundLeaseCalendar thead tr th button:last-child {
     float: right;
 }
 
-.Playground.container .PlaygroundLeaseCalendar tbody tr td {
+.PlaygroundLeaseCalendar tbody tr td {
     text-align: center;
     padding-top: 6px;
     padding-bottom: 6px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar tbody tr td .badge {
+.PlaygroundLeaseCalendar tbody tr td .badge {
     font-size: 90%;
 }
 
-.Playground.container .PlaygroundLeaseCalendar tbody tr td button.btn,
-.Playground.container .PlaygroundLeaseCalendar tbody tr td .CheckButton {
+.PlaygroundLeaseCalendar tbody tr td button.btn,
+.PlaygroundLeaseCalendar tbody tr td .CheckButton {
     padding-bottom: 0;
     padding-top: 0;
     margin: 0;
 }
 
-.Playground.container .PlaygroundLeaseCalendar .btn-group {
+.PlaygroundLeaseCalendar .btn-group {
     margin-top: 15px;
     margin-left: 15px;
 }
 
-.Playground.container .PlaygroundLeaseCalendar .btn-group .btn {
+.PlaygroundLeaseCalendar .btn-group .btn {
     font-weight: 600;
 }

@@ -23,7 +23,7 @@ public interface LoginMapper {
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"}),
-            @Mapping(target = "roles", source = "roles")
+            @Mapping(target = "username", source = "name")
     })
     LoginDTO toLoginDTO(UserEntity entity);
 

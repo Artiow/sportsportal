@@ -8,6 +8,8 @@ import java.util.List;
 public class LoginDTO implements DataTransferObject {
 
     private String login;
+    private String email;
+    private String username;
     private URI userURL;
     private URI avatarURL;
     private List<String> roles;
@@ -20,6 +22,22 @@ public class LoginDTO implements DataTransferObject {
     public LoginDTO setLogin(String login) {
         this.login = login;
         return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public URI getUserURL() {

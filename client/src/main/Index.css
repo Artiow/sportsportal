@@ -1,29 +1,24 @@
-.Main.container {
-    min-height: 95vh;
-    margin-top: 25px;
-}
-
 /* PlaygroundFilter */
 
-.Main.container .PlaygroundFilter form.card {
+.PlaygroundFilter form.card {
     padding: 15px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card {
+.PlaygroundFilter form.card #accordion .card {
     margin-bottom: 5px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card:last-child {
+.PlaygroundFilter form.card #accordion .card:last-child {
     margin-bottom: 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-header {
+.PlaygroundFilter form.card #accordion .card .card-header {
     padding: 0;
     background: 0;
     border: 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-header a {
+.PlaygroundFilter form.card #accordion .card .card-header a {
     text-decoration: none;
     text-align: left;
     font-weight: 500;
@@ -31,50 +26,50 @@
     width: 100%;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-header a:hover {
+.PlaygroundFilter form.card #accordion .card .card-header a:hover {
     color: black;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body {
+.PlaygroundFilter form.card #accordion .card .card-body {
     border-top: 1px solid rgba(0, 0, 0, .125);
     padding-top: 15px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge-sub {
+.PlaygroundFilter form.card #accordion .card .card-body span.badge-sub {
     display: inline-block;
     min-width: 21px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body span.badge span.badge-param {
+.PlaygroundFilter form.card #accordion .card .card-body span.badge span.badge-param {
     margin: 0 3px 0 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox {
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox {
     margin-bottom: 2px;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox:last-child {
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox:last-child {
     margin-bottom: 0;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input,
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label {
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input,
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label {
     font-weight: 500;
     color: #343a40;
 }
 
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input:hover,
-.Main.container .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label:hover {
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox input:hover,
+.PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label:hover {
     cursor: pointer;
     color: black;
 }
 
 /* PlaygroundCard */
 
-.Main.container .PlaygroundCard .card .card-body h4.card-title {
+.PlaygroundCard .card .card-body h4.card-title {
     margin-bottom: 3px;
 }
 
-.Main.container .PlaygroundCard .card .card-body p.card-text .badge span {
+.PlaygroundCard .card .card-body p.card-text .badge span {
     margin: 0 3px;
 }

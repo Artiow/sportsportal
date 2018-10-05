@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {getApiUrl} from '../constants'
+import {getApiUrl} from '../../constants'
 import axios from "axios/index";
 import './Header.css';
 
@@ -51,7 +51,8 @@ class AuthBlock extends Component {
     }
 
     queryLogout() {
-        localStorage.clear();
+        localStorage.removeItem('token');
+        localStorage.removeItem('login');
         this.setState({
             isAuthorized: false,
             nickname: null
@@ -67,14 +68,12 @@ class AuthBlock extends Component {
                 .then(function (response) {
                     console.log('Verify Response:', response);
                     const data = response.data;
-                    const userInfo = data.userInfo;
-                    const login = userInfo.login;
+                    const login = data.login;
                     localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
-                    localStorage.setItem('user', userInfo);
-                    const nickname = login.charAt(0).toUpperCase() + login.slice(1);
+                    localStorage.setItem('login', login);
                     self.setState({
                         isAuthorized: true,
-                        nickname: nickname
+                        nickname: login.username
                     })
                 })
                 .catch(function (error) {
@@ -89,17 +88,25 @@ class AuthBlock extends Component {
             <div className="AuthBlock col-md-6">
                 {this.state.isAuthorized ? (
                     <div className="auth">
-                        <Link to="/home"><i className="fa fa-user"/>
-                            <span>{this.state.nickname}</span>
+                        <Link to="/home"
+                              className="row">
+                            <i className="fa fa-user col-1"/>
+                            <span className="col-11 col-label">{this.state.nickname}</span>
                         </Link>
-                        <Link to="/logout" onClick={this.handleLogout.bind(this)}>
-                            <i className="fa fa-sign-out"/>
-                            <span>ВЫЙТИ</span>
+                        <Link to="/logout"
+                              className="row"
+                              onClick={this.handleLogout.bind(this)}>
+                            <i className="fa fa-sign-out col-1"/>
+                            <span className="col-11 col-label">Выйти</span>
                         </Link>
                     </div>
                 ) : (
                     <div className="auth">
-                        <Link to="/login"><i className="fa fa-sign-in"/>ВОЙТИ</Link>
+                        <Link to="/login"
+                              className="row">
+                            <i className="fa fa-sign-in col-1"/>
+                            <span className="col-11 col-label">Войти</span>
+                        </Link>
                     </div>
                 )}
             </div>

@@ -10,8 +10,7 @@ import Login from './auth/Login';
 import Registration from './auth/Registration';
 import Confirmation from './auth/Confirmation';
 import NoMatch from './mismatch/NoMatch';
-import Header from './enviroment/Header';
-import Footer from './enviroment/Footer';
+import MainFrame from './frame/MainFrame';
 import Index from '../main/Index';
 import Playground from '../main/Playground';
 import Order from '../main/Order';
@@ -31,46 +30,66 @@ function Application(props) {
     );
 }
 
-function HomeFrame(props) {
-    return (
-        <div>
-            <Header titleHref={'/home'} titleLabel={'ДОМАШНЯЯ СТРАНИЦА'}
-                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
-            <div className="container" style={{minHeight: "95vh"}}/>
-            <Footer/>
-        </div>
-    );
-}
-
 function IndexFrame(props) {
+    const frameProps = {
+        header: {
+            titleHref: '/',
+            titleLabel: 'АРЕНДА ПЛОЩАДОК'
+        }
+    };
     return (
-        <div>
-            <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}/>
+        <MainFrame {...frameProps}>
             <Index/>
-            <Footer/>
-        </div>
+        </MainFrame>
     );
 }
 
 function PlaygroundFrame(props) {
+    const frameProps = {
+        header: {
+            titleHref: '/',
+            titleLabel: 'АРЕНДА ПЛОЩАДОК',
+            subtitleHref: '/',
+            subtitleLabel: 'НА ГЛАВНУЮ'
+        }
+    };
     return (
-        <div>
-            <Header titleHref={'/'} titleLabel={'АРЕНДА ПЛОЩАДОК'}
-                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
+        <MainFrame {...frameProps}>
             <Playground identifier={props.match.params.identifier}/>
-            <Footer/>
-        </div>
+        </MainFrame>
     );
 }
 
 function OrderFrame(props) {
+    const orderId = props.match.params.identifier;
+    const frameProps = {
+        header: {
+            titleHref: '/order/id' + orderId,
+            titleLabel: 'ОФОРМЛЕНИЕ БРОНИРОВАНИЯ',
+            subtitleHref: '/',
+            subtitleLabel: 'НА ГЛАВНУЮ'
+        }
+    };
     return (
-        <div>
-            <Header titleHref={'/order'} titleLabel={'ОФОРМЛЕНИЕ БРОНИРОВАНИЯ'}
-                    subtitleHref={'/'} subtitleLabel={'НА ГЛАВНУЮ'}/>
-            <Order identifier={props.match.params.identifier}/>
-            <Footer/>
-        </div>
+        <MainFrame {...frameProps}>
+            <Order identifier={orderId}/>
+        </MainFrame>
+    );
+}
+
+function HomeFrame(props) {
+    const frameProps = {
+        header: {
+            titleHref: '/home',
+            titleLabel: 'ДОМАШНЯЯ СТРАНИЦА',
+            subtitleHref: '/',
+            subtitleLabel: 'НА ГЛАВНУЮ'
+        }
+    };
+    return (
+        <MainFrame {...frameProps}>
+            <main className="Home container"/>
+        </MainFrame>
     );
 }
 

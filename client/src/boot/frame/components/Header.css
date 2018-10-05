@@ -7,10 +7,6 @@ header.Header a {
     color: #dddddd;
 }
 
-header.Header .fa {
-    margin-right: 5px;
-}
-
 header.Header a:hover {
     text-decoration: none;
     color: #ffffff;
@@ -42,4 +38,8 @@ header.Header .AuthBlock .auth {
 header.Header .AuthBlock .auth a {
     display: block;
     text-align: left;
+}
+
+header.Header .AuthBlock .auth a.row .col-11.col-label {
+    padding: 0 0 0 5px;
 }

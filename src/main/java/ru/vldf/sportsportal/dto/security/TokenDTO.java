@@ -6,7 +6,7 @@ public class TokenDTO implements DataTransferObject {
 
     private String tokenHash;
     private String tokenType;
-    private LoginDTO userInfo;
+    private LoginDTO login;
 
 
     public String getTokenHash() {
@@ -27,12 +27,12 @@ public class TokenDTO implements DataTransferObject {
         return this;
     }
 
-    public LoginDTO getUserInfo() {
-        return userInfo;
+    public LoginDTO getLogin() {
+        return login;
     }
 
-    public TokenDTO setUserInfo(LoginDTO userInfo) {
-        this.userInfo = userInfo;
+    public TokenDTO setLogin(LoginDTO login) {
+        this.login = login;
         return this;
     }
 }

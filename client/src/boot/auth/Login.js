@@ -30,7 +30,7 @@ class Login extends Component {
                 console.log('Login Response:', response);
                 const data = response.data;
                 localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
-                localStorage.setItem('user', data.userInfo);
+                localStorage.setItem('login', data.login);
                 window.location.replace('/');
             })
             .catch(function (error) {

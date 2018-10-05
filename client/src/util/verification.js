@@ -11,18 +11,26 @@ export default function verify(thenCallback, catchCallback) {
         axios
             .get(getApiUrl('/auth/verify'), {params: {accessToken: accessToken}})
             .then(function (response) {
+                login(response.data);
                 console.log('Verify Response:', response);
-                const data = response.data;
-                localStorage.setItem('token', (data.tokenType + ' ' + data.tokenHash));
-                localStorage.setItem('user', data.userInfo);
                 if (typeof thenCallback === 'function') thenCallback(response);
             })
             .catch(function (error) {
+                logout();
                 console.log('Verify Error:', ((error.response != null) ? error.response : error));
-                localStorage.clear();
                 if (typeof catchCallback === 'function') catchCallback(error);
             })
     }
+}
+
+export function login(token) {
+    localStorage.setItem('token', (token.tokenType + ' ' + token.tokenHash));
+    localStorage.setItem('login', token.login);
+}
+
+export function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('login');
 }
 
 export function getToken() {

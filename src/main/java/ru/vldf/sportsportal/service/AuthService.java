@@ -127,7 +127,7 @@ public class AuthService extends AbstractSecurityService {
             throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"), e);
         }
         return new TokenDTO()
-                .setUserInfo(loginMapper.toLoginDTO(user))
+                .setLogin(loginMapper.toLoginDTO(user))
                 .setTokenType(securityService.getTokenType())
                 .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
     }
@@ -159,7 +159,7 @@ public class AuthService extends AbstractSecurityService {
                 throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
             }
             return new TokenDTO()
-                    .setUserInfo(loginMapper.toLoginDTO(user))
+                    .setLogin(loginMapper.toLoginDTO(user))
                     .setTokenType(securityService.getTokenType())
                     .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
         } catch (BadCredentialsException e) {
