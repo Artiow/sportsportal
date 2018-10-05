@@ -4,8 +4,6 @@ import io.jsonwebtoken.JwtException;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,9 +22,9 @@ import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.service.security.SecurityService;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.subsidiary.MailService;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class AuthService extends AbstractSecurityService {
 
     private BCryptPasswordEncoder passwordEncoder;
     private SecurityService securityService;
-    private JavaMailSender javaMailSender;
+    private MailService mailService;
     private LoginMapper loginMapper;
     private UserMapper userMapper;
 
@@ -65,8 +63,8 @@ public class AuthService extends AbstractSecurityService {
     }
 
     @Autowired
-    public void setJavaMailSender(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
     }
 
     @Autowired
@@ -103,7 +101,7 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Logging user and returns his token.
      *
-     * @param login    {@link String} users login
+     * @param email    {@link String} users email
      * @param password {@link String} users password
      * @return {@link TokenDTO} token info
      * @throws UsernameNotFoundException if user not found
@@ -114,10 +112,10 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {UsernameNotFoundException.class, JwtException.class},
             noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
     )
-    public TokenDTO login(@NotNull String login, @NotNull String password) throws UsernameNotFoundException, JwtException {
+    public TokenDTO login(@NotNull String email, @NotNull String password) throws UsernameNotFoundException, JwtException {
         UserEntity user;
         try {
-            user = userRepository().findByLogin(login);
+            user = userRepository().findByEmail(email);
             if (user == null) {
                 throw new EntityNotFoundException(mGet("sportsportal.auth.service.userRepository.message"));
             } else if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -155,7 +153,7 @@ public class AuthService extends AbstractSecurityService {
             }
             IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
             UserEntity user = userRepository().getOne(userDetails.getId());
-            if ((!user.getLogin().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
+            if ((!user.getEmail().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
                 throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
             }
             return new TokenDTO()
@@ -181,10 +179,10 @@ public class AuthService extends AbstractSecurityService {
             noRollbackFor = {JpaObjectRetrievalFailureException.class}
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
-        String login = userDTO.getLogin();
+        String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.existsByLogin(login)) {
-            throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByLogin.message", login));
+        if (userRepository.existsByEmail(email)) {
+            throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
         }
         try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
@@ -214,7 +212,7 @@ public class AuthService extends AbstractSecurityService {
             UserEntity userEntity = userRepository.getOne(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendEmail(userEntity.getEmail(), confirmRoot, confirmCode);
+                sendConfirmationEmail(userEntity.getEmail(), confirmRoot, confirmCode);
                 userRepository.save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.alreadyConfirmed.message"));
@@ -253,22 +251,20 @@ public class AuthService extends AbstractSecurityService {
      * @param confirmCode  {@link String} confirm code
      * @throws MessagingException if could not sent email
      */
-    private void sendEmail(String emailAddress, String confirmRoot, String confirmCode) throws MessagingException {
-        MimeMessage mailMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
-        messageHelper.setTo(emailAddress);
-        messageHelper.setSubject(mGet("sportsportal.email.confirm.subject"));
-        messageHelper.setText(String.format(
-                "<p>%s</p>",
-                mGetAndFormat(
-                        "sportsportal.email.confirm.text.env",
-                        String.format(
-                                "<a href=\"%s\">%s</a>",
-                                String.format(confirmPath, confirmRoot, confirmCode),
-                                mGet("sportsportal.email.confirm.text.link")
+    private void sendConfirmationEmail(String emailAddress, String confirmRoot, String confirmCode) throws MessagingException {
+        mailService.sender()
+                .setDestination(emailAddress)
+                .setSubject(mGet("sportsportal.email.confirm.subject"))
+                .setHtml(String.format(
+                        "<p>%s</p>",
+                        mGetAndFormat(
+                                "sportsportal.email.confirm.text.env",
+                                String.format(
+                                        "<a href=\"%s\">%s</a>",
+                                        String.format(confirmPath, confirmRoot, confirmCode),
+                                        mGet("sportsportal.email.confirm.text.link")
+                                )
                         )
-                )
-        ), true);
-        javaMailSender.send(mailMessage);
+                )).send();
     }
 }

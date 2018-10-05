@@ -8,7 +8,6 @@ import java.util.List;
 public class UserShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
-    private String login;
     private String email;
     private String name;
     private String surname;
@@ -28,15 +27,6 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
     @Override
     public UserShortDTO setId(Integer id) {
         this.id = id;
-        return this;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public UserShortDTO setLogin(String login) {
-        this.login = login;
         return this;
     }
 

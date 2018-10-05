@@ -12,16 +12,12 @@ import java.util.Collection;
 public class UserEntity extends AbstractVersionedEntity {
 
     @Basic
-    @Column(name = "login", nullable = false)
-    private String login;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Basic
     @Column(name = "password", nullable = false)
     private String password;
-
-    @Basic
-    @Column(name = "email", nullable = false)
-    private String email;
 
     @Basic
     @Column(name = "name", nullable = false)
@@ -67,12 +63,12 @@ public class UserEntity extends AbstractVersionedEntity {
     private Collection<PlaygroundEntity> playgrounds;
 
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -81,14 +77,6 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getName() {

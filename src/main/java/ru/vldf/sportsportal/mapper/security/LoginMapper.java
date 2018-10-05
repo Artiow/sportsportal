@@ -36,7 +36,7 @@ public interface LoginMapper {
         return new IdentifiedUser(
                 entity.getId(),
                 User.builder()
-                        .username(entity.getLogin())
+                        .username(entity.getEmail())
                         .password(entity.getPassword())
                         .roles(roles.toArray(new String[0]))
                         .build()

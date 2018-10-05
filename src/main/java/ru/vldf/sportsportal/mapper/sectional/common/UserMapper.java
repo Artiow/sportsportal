@@ -26,13 +26,13 @@ public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO>
     UserShortDTO toShortDTO(UserEntity entity);
 
     @Mappings({
+            @Mapping(target = "username", source = "name"),
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
     UserLinkDTO toLinkDTO(UserEntity entity);
 
     @Mappings({
-            @Mapping(target = "login", ignore = true),
             @Mapping(target = "name", ignore = true),
             @Mapping(target = "surname", ignore = true),
             @Mapping(target = "patronymic", ignore = true)
@@ -46,7 +46,7 @@ public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO>
     default UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {
         AbstractVersionedMapper.super.merge(acceptor, donor);
 
-        acceptor.setLogin(donor.getLogin());
+        acceptor.setEmail(donor.getEmail());
         acceptor.setPassword(donor.getPassword());
         acceptor.setName(donor.getName());
         acceptor.setSurname(donor.getSurname());

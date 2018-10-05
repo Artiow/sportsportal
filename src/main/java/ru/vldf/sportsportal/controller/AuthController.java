@@ -38,7 +38,7 @@ public class AuthController {
     /**
      * Returns token by logged user.
      *
-     * @param login    {@link String} users login
+     * @param email    {@link String} users email
      * @param password {@link String} users password
      * @return {@link TokenDTO} token data
      * @throws UsernameNotFoundException if user not found
@@ -46,9 +46,9 @@ public class AuthController {
      */
     @GetMapping("/login")
     @ApiOperation("получить токен")
-    public TokenDTO login(@RequestParam String login, @RequestParam String password)
+    public TokenDTO login(@RequestParam String email, @RequestParam String password)
             throws UsernameNotFoundException, JwtException {
-        return authService.login(login, password);
+        return authService.login(email, password);
     }
 
     /**

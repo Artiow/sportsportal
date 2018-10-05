@@ -9,9 +9,9 @@ public interface UserRepository extends AbstractIdentifiedRepository<UserEntity>
 
     UserEntity findByConfirmCode(String confirmCode);
 
-    UserEntity findByLogin(String login);
+    UserEntity findByEmail(String email);
 
-    boolean existsByLogin(String login);
+    boolean existsByEmail(String email);
 
     @Query("select case when (count(u) > 0) then true else false end from UserEntity u join u.roles r where (u.id = :id) and (r.code = :code)")
     boolean existsByIdAndRoleCode(@Param("id") Integer id, @Param("code") String code);

@@ -1,13 +1,13 @@
 package ru.vldf.sportsportal.dto.security;
 
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
 import java.net.URI;
 import java.util.List;
 
-public class LoginDTO implements DataTransferObject {
+public class LoginDTO extends AbstractIdentifiedDTO {
 
-    private String login;
+    private Integer id;
     private String email;
     private String username;
     private URI userURL;
@@ -15,12 +15,14 @@ public class LoginDTO implements DataTransferObject {
     private List<String> roles;
 
 
-    public String getLogin() {
-        return login;
+    @Override
+    public Integer getId() {
+        return id;
     }
 
-    public LoginDTO setLogin(String login) {
-        this.login = login;
+    @Override
+    public LoginDTO setId(Integer id) {
+        this.id = id;
         return this;
     }
 

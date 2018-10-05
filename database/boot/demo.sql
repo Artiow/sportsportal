@@ -1,21 +1,19 @@
 ------------------------------------------------------------------------------------------------------------------------
--- DEMO DATA EXAMPLE 0.3.0 FOR
--- SPORTSPORTAL DATABASE 0.3.0
+-- DEMO DATA EXAMPLE 0.3.1 FOR
+-- SPORTSPORTAL DATABASE 0.3.1
 
 ------------------------------------------------------------------------------------------------------------------------
 -- COMMON
 
 -- user
 
-insert into common."user" (id, avatar_id, login, password, name, surname, patronymic, email, address, phone)
+insert into common."user" (id, name, surname, patronymic, email, password, address, phone)
 values (1,
-        null,
-        'root',
-        '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2',
-        'Иванов',
         'Иван',
+        'Иванов',
         'Иванович',
-        'example@mail.com',
+        'root@mail.com',
+        '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2',
         'г. Москва, ул. Ленина 0',
         '+7(999)999-99-99');
 
