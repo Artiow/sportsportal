@@ -29,22 +29,19 @@ public class UserDTO extends AbstractVersionedDTO {
     private String password;
 
     @NotBlank(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String name;
 
     @NotBlank(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String surname;
 
-    @NotBlank(groups = FieldCheck.class)
-    @Size(min = 1, max = 45, groups = FieldCheck.class)
+    @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String patronymic;
 
-    @NotBlank(groups = FieldCheck.class)
     @Size(min = 5, max = 254, groups = FieldCheck.class)
     private String address;
 
-    @NotBlank(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;
 

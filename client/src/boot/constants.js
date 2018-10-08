@@ -1,4 +1,5 @@
 export const env = Object.freeze({
+    MAIN_HOST_URL: 'http://localhost:3000',
     API_URL: 'http://localhost:8080',
     MONTH_NAMES: [
         'январь',

@@ -28,15 +28,15 @@ public class UserEntity extends AbstractVersionedEntity {
     private String surname;
 
     @Basic
-    @Column(name = "patronymic", nullable = false)
+    @Column(name = "patronymic")
     private String patronymic;
 
     @Basic
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Basic
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
     @Basic

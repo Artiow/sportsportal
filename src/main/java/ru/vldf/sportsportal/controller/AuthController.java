@@ -85,16 +85,16 @@ public class AuthController {
     /**
      * Init confirmation for user and send him confirmation email.
      *
-     * @param id          user identifier
-     * @param confirmRoot {@link String} confirmation link root
+     * @param id   user identifier
+     * @param host {@link String} confirmation link host
      * @return no content
      * @throws ResourceNotFoundException     if user could not found
      * @throws ResourceCannotUpdateException if could not sent email
      */
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
-    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam String confirmRoot) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.initConfirmation(id, confirmRoot);
+    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam String host) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        authService.initConfirmation(id, host);
         return ResponseEntity.noContent().build();
     }
 
