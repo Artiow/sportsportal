@@ -6,11 +6,10 @@ import '../../node_modules/bootstrap/dist/js/bootstrap.min';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
 import ScrollRoute from '../util/components/ScrollRoute';
-import MainFrame from './frame/MainFrame';
-import NoMatch from './mismatch/NoMatch';
-import Login from './auth/Login';
 import Registration from './auth/Registration';
 import Confirmation from './auth/Confirmation';
+import MainFrame from './frame/MainFrame';
+import NoMatch from './mismatch/NoMatch';
 import Index from '../main/Index';
 import Playground from '../main/Playground';
 import Order from '../main/Order';
@@ -23,7 +22,6 @@ function Application(props) {
             <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
             <ScrollRoute exact path='/registration' component={Registration}/>
             <ScrollRoute exact path='/confirm' component={Confirmation}/>
-            <ScrollRoute exact path='/login' component={Login}/>
             <ScrollRoute exact path='/home' component={HomeFrame}/>
             <ScrollRoute component={NoMatch}/>
         </Switch>

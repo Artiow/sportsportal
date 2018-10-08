@@ -9,7 +9,8 @@ function Header(props) {
             <div className="container">
                 <div className="row">
                     <MainBlock {...props}/>
-                    <AuthBlock/>
+                    <AuthBlock onLogin={props.onLogin}
+                               onLogout={props.onLogout}/>
                 </div>
             </div>
         </header>
@@ -44,10 +45,17 @@ class AuthBlock extends Component {
         this.queryVerify();
     }
 
+    handleLogin(event) {
+        event.preventDefault();
+        const onLogin = this.props.onLogin;
+        if (typeof onLogin === 'function') onLogin(event);
+    }
+
     handleLogout(event) {
         event.preventDefault();
         this.queryLogout();
-        window.location.replace('/login');
+        const onLogout = this.props.onLogout;
+        if (typeof onLogout === 'function') onLogout(event);
     }
 
     queryLogout() {
@@ -83,8 +91,7 @@ class AuthBlock extends Component {
                             <i className="fa fa-user col-1"/>
                             <span className="col-11 col-label">{this.state.nickname}</span>
                         </Link>
-                        <Link to="/logout"
-                              className="row"
+                        <Link to="/login" className="row"
                               onClick={this.handleLogout.bind(this)}>
                             <i className="fa fa-sign-out col-1"/>
                             <span className="col-11 col-label">Выйти</span>
@@ -92,8 +99,8 @@ class AuthBlock extends Component {
                     </div>
                 ) : (
                     <div className="auth">
-                        <Link to="/login"
-                              className="row">
+                        <Link to="/logout" className="row"
+                              onClick={this.handleLogin.bind(this)}>
                             <i className="fa fa-sign-in col-1"/>
                             <span className="col-11 col-label">Войти</span>
                         </Link>

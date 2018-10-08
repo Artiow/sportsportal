@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import MainFrame from "../frame/MainFrame";
 import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
@@ -15,10 +16,10 @@ class Confirmation extends Component {
             stage: Confirmation.STAGE.PROCESSED,
             errorMessage: null
         };
-        this.confirm();
+        this.confirmQuery();
     }
 
-    confirm() {
+    confirmQuery() {
         const self = this;
         const confirmToken = qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token;
         console.log('Accepted Token:', confirmToken);
@@ -49,7 +50,7 @@ class Confirmation extends Component {
                         <div className="stage stage-processed">Загрузка...</div>
                     );
                 case Confirmation.STAGE.SUCCESS:
-                    window.location.replace('/login');
+                    MainFrame.reLogin();
                     return (null);
                 case Confirmation.STAGE.FAILED:
                     return (

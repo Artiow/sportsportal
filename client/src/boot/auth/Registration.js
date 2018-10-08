@@ -167,7 +167,6 @@ class RegistrationForm extends Component {
                     <div className="col-sm-6 offset-sm-3">
                         <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
                         <div className="login-link-box">
-                            <Link className="btn btn-link btn-sm" to="/login">Авторизация</Link>
                             <Link className="btn btn-link btn-sm" to="/">На главную</Link>
                         </div>
                     </div>

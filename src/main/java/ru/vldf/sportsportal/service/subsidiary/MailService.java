@@ -26,41 +26,34 @@ public class MailService {
 
     public class MailSender {
 
-        private String destination;
-        private String subject;
-        private String html;
+        private MimeMessage message;
+        private MimeMessageHelper helper;
 
 
         private MailSender() {
-            destination = null;
-            subject = null;
-            html = null;
+            message = javaMailSender.createMimeMessage();
+            helper = new MimeMessageHelper(message);
         }
 
 
-        public MailSender setDestination(String destination) {
-            this.destination = destination;
+        public MailSender setDestination(String destination) throws MessagingException {
+            helper.setTo(destination);
             return this;
         }
 
-        public MailSender setSubject(String subject) {
-            this.subject = subject;
+        public MailSender setSubject(String subject) throws MessagingException {
+            helper.setSubject(subject);
             return this;
         }
 
-        public MailSender setHtml(String html) {
-            this.html = html;
+        public MailSender setHtml(String html) throws MessagingException {
+            helper.setText(html, true);
             return this;
         }
 
 
-        public void send() throws MessagingException {
-            MimeMessage mailMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
-            messageHelper.setTo(destination);
-            messageHelper.setSubject(subject);
-            messageHelper.setText(html, true);
-            javaMailSender.send(mailMessage);
+        public void send() {
+            javaMailSender.send(message);
         }
     }
 }

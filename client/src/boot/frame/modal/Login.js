@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import apiUrl from '../constants'
-import verify, {login} from '../../util/verification'
+import apiUrl from '../../constants'
+import {login} from '../../../util/verification'
 import axios from 'axios';
 import './Login.css';
 
@@ -12,13 +12,10 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            password: '',
-            errorMessage: ''
+            email: null,
+            password: null,
+            errorMessage: null
         };
-        verify(function () {
-            window.location.replace('/');
-        });
     }
 
     queryLogin() {
@@ -54,12 +51,18 @@ class Login extends Component {
         });
     }
 
+    handleRegClick(event) {
+        const onRegClick = this.props.onRegClick;
+        if (typeof onRegClick === 'function') onRegClick(event);
+    }
+
     render() {
         return (
             <div className="Login">
                 <div className="panel panel-top">
-                    <h2>Авторизация</h2>
-                    <p>Введите свой адрес почты и пароль</p>
+                    <p className={this.state.errorMessage ? 'error-message' : null}>
+                        {this.state.errorMessage ? this.state.errorMessage : 'Введите свой адрес почты и пароль'}
+                    </p>
                 </div>
                 <form onSubmit={this.handleSubmit.bind(this)}>
                     <div>
@@ -71,15 +74,17 @@ class Login extends Component {
                                required="required"/>
                     </div>
                     <div>
-                        <div className="forgot"><Link to="/registration">Нет аккаунта?</Link></div>
+                        <div className="forgot">
+                            <Link to="/registration"
+                                  onClick={this.handleRegClick.bind(this)}>
+                                Нет аккаунта?
+                            </Link>
+                        </div>
                         <button type="submit" className="btn btn-primary btn-lg btn-block">
                             Авторизация
                         </button>
                     </div>
                 </form>
-                <div className="panel panel-bottom">
-                    <p>{this.state.errorMessage}</p>
-                </div>
             </div>
         );
     }
