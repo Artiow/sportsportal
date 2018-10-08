@@ -52,6 +52,7 @@ class Login extends Component {
     }
 
     handleRegClick(event) {
+        event.preventDefault();
         const onRegClick = this.props.onRegClick;
         if (typeof onRegClick === 'function') onRegClick(event);
     }

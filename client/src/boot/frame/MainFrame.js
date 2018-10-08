@@ -22,8 +22,10 @@ class MainFrame extends React.Component {
         this.loginForm.show();
     }
 
-    hideLoginModal() {
+    reShowRegistrationModal() {
         this.loginForm.show('hide');
+        const self = this;
+        setTimeout(() => this.registrationForm.show(), 300);
     }
 
     render() {
@@ -37,7 +39,8 @@ class MainFrame extends React.Component {
                 </MainContainer>
                 <Footer {...this.props.footer}/>
                 <LoginModal ref={modal => this.loginForm = modal}
-                            onRegClick={this.hideLoginModal.bind(this)}/>
+                            onRegClick={this.reShowRegistrationModal.bind(this)}/>
+                <RegistrationModal ref={modal => this.registrationForm = modal}/>
             </div>
         )
     }
@@ -63,6 +66,34 @@ class LoginModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <Login onRegClick={this.props.onRegClick}/>
+                        </div>
+                    </div>
+                </div>
+            </ModalFade>
+        );
+    }
+}
+
+class RegistrationModal extends React.Component {
+    show(options) {
+        this.modal.show(options);
+    }
+
+    render() {
+        return (
+            <ModalFade ref={modal => this.modal = modal}>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">
+                                Регистрация
+                            </h5>
+                            <button type="button" className="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+
                         </div>
                     </div>
                 </div>
