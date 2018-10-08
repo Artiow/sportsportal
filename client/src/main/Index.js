@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import Slider, {Range} from 'rc-slider';
+import {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import {Link} from 'react-router-dom';
 import StarRate from '../util/components/StarRate';
@@ -63,12 +63,6 @@ class PlaygroundFilter extends Component {
     static MAX_PRICE = 10000;
     static PRICE_STEP = 100;
 
-    updateRateCallback = slider => {
-        this.setState({
-            minRate: slider
-        });
-    };
-
     updatePriceCallback = range => {
         this.setState({
             startPrice: range[0],
@@ -102,8 +96,7 @@ class PlaygroundFilter extends Component {
             startPrice: PlaygroundFilter.MIN_PRICE,
             endPrice: PlaygroundFilter.MAX_PRICE,
             opening: '00:00',
-            closing: '00:00',
-            minRate: 0
+            closing: '00:00'
         };
 
         const self = this;
@@ -153,8 +146,7 @@ class PlaygroundFilter extends Component {
             startPrice: this.state.startPrice,
             endPrice: this.state.endPrice,
             opening: this.state.opening,
-            closing: this.state.closing,
-            minRate: this.state.minRate
+            closing: this.state.closing
         })
     }
 
@@ -286,26 +278,6 @@ class PlaygroundFilter extends Component {
                                     <Range min={0} max={48}
                                            allowCross={false} defaultValue={[0, 48]}
                                            onChange={this.updateTimeCallback}/>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card">
-                            <div className="card-header">
-                                <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_5">
-                                        Рейтинг
-                                    </a>
-                                </h5>
-                            </div>
-                            <div id="collapse_5" className="collapse" data-parent="#accordion">
-                                <div className="card-body">
-                                    <h6 className="badge badge-dark">
-                                            <span className="badge-param">
-                                                <StarRate value={this.state.minRate}/>
-                                            </span>
-                                    </h6>
-                                    <Slider min={0} max={10} defaultValue={0}
-                                            onChange={this.updateRateCallback}/>
                                 </div>
                             </div>
                         </div>

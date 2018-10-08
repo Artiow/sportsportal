@@ -200,7 +200,6 @@ class PlaygroundLeaseCalendar extends Component {
     }
 
     query(id, version, from, to) {
-        console.log('params:', id, version, from, to);
         const self = this;
         axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
