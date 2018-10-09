@@ -6,7 +6,6 @@ import '../../node_modules/bootstrap/dist/js/bootstrap.min';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../../node_modules/font-awesome/css/font-awesome.min.css';
 import ScrollRoute from '../util/components/ScrollRoute';
-import Registration from './auth/Registration';
 import Confirmation from './auth/Confirmation';
 import MainFrame from './frame/MainFrame';
 import NoMatch from './mismatch/NoMatch';
@@ -18,11 +17,10 @@ export default function Application(props) {
     return (
         <Switch>
             <ScrollRoute exact path='/' component={IndexFrame}/>
-            <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
-            <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
-            <ScrollRoute exact path='/registration' component={Registration}/>
-            <ScrollRoute exact path='/confirm' component={Confirmation}/>
             <ScrollRoute exact path='/home' component={HomeFrame}/>
+            <ScrollRoute exact path='/confirm' component={Confirmation}/>
+            <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
+            <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
             <ScrollRoute component={NoMatch}/>
         </Switch>
     );

@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import MainFrame from "../frame/MainFrame";
 import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Confirmation.css';
 
-class Confirmation extends Component {
+export default class Confirmation extends React.Component {
 
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
     static STAGE = Object.freeze({PROCESSED: 1, SUCCESS: 2, FAILED: 3});
@@ -47,7 +47,12 @@ class Confirmation extends Component {
             switch (stage) {
                 case Confirmation.STAGE.PROCESSED:
                     return (
-                        <div className="stage stage-processed">Загрузка...</div>
+                        <div className="stage stage-processed">
+                            <div className="progress">
+                                <div className="progress-bar progress-bar-striped progress-bar-animated"
+                                     aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style={{width: '100%'}}/>
+                            </div>
+                        </div>
                     );
                 case Confirmation.STAGE.SUCCESS:
                     MainFrame.reLogin();
@@ -71,5 +76,3 @@ class Confirmation extends Component {
             </div>);
     }
 }
-
-export default Confirmation;

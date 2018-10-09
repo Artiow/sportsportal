@@ -81,9 +81,7 @@ export default class Login extends React.Component {
                                 Нет аккаунта?
                             </Link>
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg btn-block">
-                            Авторизация
-                        </button>
+                        <button type="submit" className="btn btn-primary btn-lg btn-block">Авторизация</button>
                     </div>
                 </form>
             </div>

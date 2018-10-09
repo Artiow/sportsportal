@@ -91,7 +91,7 @@ class AuthBlock extends React.Component {
                             <i className="fa fa-user col-1"/>
                             <span className="col-11 col-label">{this.state.nickname}</span>
                         </Link>
-                        <Link to="/login" className="row"
+                        <Link to="/logout" className="row"
                               onClick={this.handleLogout.bind(this)}>
                             <i className="fa fa-sign-out col-1"/>
                             <span className="col-11 col-label">Выйти</span>
@@ -99,7 +99,7 @@ class AuthBlock extends React.Component {
                     </div>
                 ) : (
                     <div className="auth">
-                        <Link to="/logout" className="row"
+                        <Link to="/login" className="row"
                               onClick={this.handleLogin.bind(this)}>
                             <i className="fa fa-sign-in col-1"/>
                             <span className="col-11 col-label">Войти</span>

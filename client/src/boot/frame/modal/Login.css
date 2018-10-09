@@ -31,14 +31,6 @@
     margin-top: 10px;
 }
 
-.Login .btn.btn-primary {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 500;
-    background: #f0ad4e;
-    border-color: #d99a4a;
-}
-
 .Login .forgot {
     text-align: left;
     margin-top: 10px;
@@ -51,4 +43,12 @@
     color: #777777;
     font-size: 14px;
     text-decoration: underline;
+}
+
+.Login .btn.btn-primary {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f0ad4e;
+    border-color: #d99a4a;
 }
