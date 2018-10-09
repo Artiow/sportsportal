@@ -57,15 +57,15 @@ function PlaygroundCard(props) {
             <div className="card">
                 <img className="card-img" src={photoURL} alt={playground.name}/>
                 <div className="card-body">
-                    <h4 className="card-title">
+                    <h4 className="card-title mb-1">
                         <small>{playground.name}</small>
                     </h4>
-                    <h6 className="card-title">
+                    <h6 className="card-title mb-1">
                         <StarRate value={playground.rate}/>
                     </h6>
                     <p className="card-text">
                         <span className="badge badge-dark">
-                            от<span>{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
+                            от<span className="mx-1">{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
                         </span>
                     </p>
                     <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
