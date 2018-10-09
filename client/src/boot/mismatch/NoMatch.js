@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import './NoMatch.css';
 
-function NoMatch() {
+export default function NoMatch() {
     return (
         <div className="NoMatch page-wrap d-flex flex-row align-items-center">
             <div className="container">
@@ -17,5 +17,3 @@ function NoMatch() {
         </div>
     );
 }
-
-export default NoMatch;

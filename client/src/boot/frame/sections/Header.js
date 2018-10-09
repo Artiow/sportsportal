@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import verify, {getLogin, logout} from '../../../util/verification'
 import './Header.css';
 
-function Header(props) {
+export default function Header(props) {
     return (
         <header className="Header">
             <div className="container">
@@ -33,7 +33,7 @@ function MainBlock(props) {
     );
 }
 
-class AuthBlock extends Component {
+class AuthBlock extends React.Component {
     constructor(props) {
         super(props);
         const login = getLogin();
@@ -110,5 +110,3 @@ class AuthBlock extends Component {
         );
     }
 }
-
-export default Header;

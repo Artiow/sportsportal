@@ -6,7 +6,7 @@ import React from "react";
  * @param props {object} component props
  * @return carousel component
  */
-function PhotoCarousel(props) {
+export default function PhotoCarousel(props) {
     let photos = props.photos;
     if ((photos == null) || (photos.length === 0)) {
         const placeimg = props.placeimg;
@@ -65,5 +65,3 @@ function PhotoCarousel(props) {
         <div id="carousel" className="PhotoCarousel carousel slide" data-ride="carousel"/>
     );
 }
-
-export default PhotoCarousel;

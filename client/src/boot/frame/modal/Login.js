@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Link} from 'react-router-dom';
 import apiUrl from '../../constants'
 import {login} from '../../../util/verification'
 import axios from 'axios';
 import './Login.css';
 
-class Login extends Component {
+export default class Login extends React.Component {
 
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
 
@@ -90,5 +90,3 @@ class Login extends Component {
         );
     }
 }
-
-export default Login;

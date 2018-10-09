@@ -6,7 +6,7 @@ import React from "react";
  * @param props {object} component props
  * @return rate component
  */
-function StarRate(props) {
+export default function StarRate(props) {
     const value = props.value;
     let stars = [];
     let i = 0;
@@ -26,5 +26,3 @@ function StarRate(props) {
         <span className="StarRate span-sr">{stars}</span>
     );
 }
-
-export default StarRate;

@@ -14,7 +14,7 @@ import Index from '../main/Index';
 import Playground from '../main/Playground';
 import Order from '../main/Order';
 
-function Application(props) {
+export default function Application(props) {
     return (
         <Switch>
             <ScrollRoute exact path='/' component={IndexFrame}/>
@@ -90,5 +90,3 @@ function HomeFrame(props) {
         </MainFrame>
     );
 }
-
-export default Application;

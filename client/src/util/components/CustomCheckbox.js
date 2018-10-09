@@ -6,7 +6,7 @@ import React from "react";
  * @param props {object} component props
  * @return carousel component
  */
-function CustomCheckbox(props) {
+export default function CustomCheckbox(props) {
     return (
         <div className="CustomCheckbox custom-control custom-checkbox">
             <input type="checkbox" className="custom-control-input"
@@ -15,5 +15,3 @@ function CustomCheckbox(props) {
         </div>
     )
 }
-
-export default CustomCheckbox;

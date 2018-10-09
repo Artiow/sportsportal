@@ -5,7 +5,7 @@ import $ from 'jquery';
  * ModalFade by bootstrap modal.
  * @author Artem Namednev <namednev.artem@gmail.com>
  */
-class ModalFade extends React.Component {
+export default class ModalFade extends React.Component {
     show(options) {
         $(this.modal).modal(options);
     }
@@ -19,5 +19,3 @@ class ModalFade extends React.Component {
         );
     }
 }
-
-export default ModalFade;

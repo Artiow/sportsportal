@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import apiUrl from '../../constants'
 import './Footer.css';
 
-function Footer(props) {
+export default function Footer(props) {
     return (
         <footer className="Footer">
             <div className="container">
@@ -19,5 +19,3 @@ function Footer(props) {
         </footer>
     );
 }
-
-export default Footer;

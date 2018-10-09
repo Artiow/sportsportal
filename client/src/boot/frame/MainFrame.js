@@ -5,7 +5,7 @@ import Login from './modal/Login'
 import Header from './sections/Header';
 import Footer from './sections/Footer';
 
-class MainFrame extends React.Component {
+export default class MainFrame extends React.Component {
     static reLogin() {
         localStorage.setItem('re_login', true);
         window.location.replace('/');
@@ -24,7 +24,6 @@ class MainFrame extends React.Component {
 
     reShowRegistrationModal() {
         this.loginForm.show('hide');
-        const self = this;
         setTimeout(() => this.registrationForm.show(), 300);
     }
 
@@ -101,5 +100,3 @@ class RegistrationModal extends React.Component {
         );
     }
 }
-
-export default MainFrame;

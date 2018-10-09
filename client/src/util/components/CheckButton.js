@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React from "react";
 
 /**
  * CheckButton by bootstrap button.
@@ -6,7 +6,7 @@ import React, {Component} from "react";
  * @param props {object} component props
  * @return carousel component
  */
-class CheckButton extends Component {
+export default class CheckButton extends React.Component {
 
     static ACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-success';
     static INACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-outline-dark';
@@ -42,5 +42,3 @@ class CheckButton extends Component {
         )
     }
 }
-
-export default CheckButton;
