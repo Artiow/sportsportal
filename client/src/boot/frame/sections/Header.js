@@ -1,6 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import verify, {getLogin, logout} from '../../../util/verification';
+import {env} from '../../constants'
+import logo from '../logo.png';
 import './Header.css';
 
 export default function Header(props) {
@@ -18,19 +20,46 @@ export default function Header(props) {
 }
 
 function MainBlock(props) {
+
+    const TITLE = 'Бронирование площадок';
+    const LOGO_W = 75;
+    const LOGO_H = 75;
+
+    let breadcrumb = props.breadcrumb;
+    const initBreadcrumb = [{link: '/', title: 'Главная'}];
+    if (breadcrumb != null) breadcrumb = initBreadcrumb.concat(breadcrumb);
     return (
-        <div className="MainBlock col-md-6">
-            {((props.titleHref != null) && (props.titleLabel != null)) ? (
-                <h3><Link to={props.titleHref}>{props.titleLabel}</Link></h3>
-            ) : (null)}
-            {((props.subtitleHref != null) && (props.subtitleLabel != null)) ? (
-                <h6><Link to={props.subtitleHref}>
-                    <i className="fa fa-angle-double-left"/>
-                    <small>{props.subtitleLabel}</small>
-                </Link></h6>
-            ) : (null)}
+        <div className="MainBlock col-8">
+            <div className="sub-block">
+                <a href={env.MAIN_HOST_URL}>
+                    <img src={logo} width={LOGO_W} height={LOGO_H} alt="logo"/>
+                </a>
+            </div>
+            <div className="sub-block">
+                <Link to="/"><h3>{TITLE}</h3></Link>
+                <MainBreadcrumb breadcrumb={breadcrumb}/>
+            </div>
         </div>
     );
+}
+
+function MainBreadcrumb(props) {
+    const element = (link, title, key, active) => {
+        return active ? (
+            <li key={key} className="breadcrumb-item active">{title}</li>
+        ) : (
+            <li key={key} className="breadcrumb-item"><Link to={link}>{title}</Link></li>
+        );
+    };
+    const elements = [];
+    const breadcrumb = props.breadcrumb;
+    if (breadcrumb != null) {
+        const lastIndex = breadcrumb.length - 1;
+        breadcrumb.forEach(function (item, i, arr) {
+            elements.push(element(item.link, item.title, i, (i === lastIndex)))
+        })
+    }
+    return (<ol className="breadcrumb">{elements}</ol>);
 }
 
 class AuthBlock extends React.Component {
@@ -83,7 +112,7 @@ class AuthBlock extends React.Component {
 
     render() {
         return (
-            <div className="AuthBlock col-md-6">
+            <div className="AuthBlock col-4">
                 {this.state.isAuthorized ? (
                     <div className="auth">
                         <Link to="/home"

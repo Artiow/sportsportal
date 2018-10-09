@@ -1,6 +1,6 @@
 header.Header {
     background-color: #24292e;
-    min-height: 80px;
+    min-height: 90px;
 }
 
 header.Header a {
@@ -12,16 +12,25 @@ header.Header a:hover {
     color: #ffffff;
 }
 
-header.Header h3 {
-    font-size: 20px;
-    font-family: 'Open Sans', sans-serif;
-    margin-top: 20px;
-    margin-bottom: 2px;
+header.Header .MainBlock .sub-block {
+    display: inline-block;
+    vertical-align: top;
+    margin: 7px 5px 7px 0;
 }
 
-header.Header h6 {
+header.Header .MainBlock .sub-block h3 {
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: 100;
     font-family: 'Open Sans', sans-serif;
-    margin-bottom: 10px;
+}
+
+header.Header .MainBlock .sub-block .breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
 }
 
 header.Header .AuthBlock {

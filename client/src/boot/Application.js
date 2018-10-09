@@ -27,12 +27,7 @@ export default function Application(props) {
 }
 
 function IndexFrame(props) {
-    const frameProps = {
-        header: {
-            titleHref: '/',
-            titleLabel: 'АРЕНДА ПЛОЩАДОК'
-        }
-    };
+    const frameProps = {header: {breadcrumb: []}};
     return (
         <MainFrame {...frameProps}>
             <PlaygroundSearcher/>
@@ -42,12 +37,7 @@ function IndexFrame(props) {
 
 function PlaygroundFrame(props) {
     const frameProps = {
-        header: {
-            titleHref: '/',
-            titleLabel: 'АРЕНДА ПЛОЩАДОК',
-            subtitleHref: '/',
-            subtitleLabel: 'НА ГЛАВНУЮ'
-        }
+        header: {breadcrumb: buildBreadcrumb(props.location.pathname, 'Просмотр площадки')}
     };
     return (
         <MainFrame {...frameProps}>
@@ -57,34 +47,27 @@ function PlaygroundFrame(props) {
 }
 
 function OrderFrame(props) {
-    const orderId = props.match.params.identifier;
     const frameProps = {
-        header: {
-            titleHref: '/order/id' + orderId,
-            titleLabel: 'ОФОРМЛЕНИЕ БРОНИРОВАНИЯ',
-            subtitleHref: '/',
-            subtitleLabel: 'НА ГЛАВНУЮ'
-        }
+        header: {breadcrumb: buildBreadcrumb(props.location.pathname, 'Бронирование')}
     };
     return (
         <MainFrame {...frameProps}>
-            <OrderInfo identifier={orderId}/>
+            <OrderInfo identifier={props.match.params.identifier}/>
         </MainFrame>
     );
 }
 
 function HomeFrame(props) {
     const frameProps = {
-        header: {
-            titleHref: '/home',
-            titleLabel: 'ДОМАШНЯЯ СТРАНИЦА',
-            subtitleHref: '/',
-            subtitleLabel: 'НА ГЛАВНУЮ'
-        }
+        header: {breadcrumb: buildBreadcrumb(props.location.pathname, 'Домашняя страница')}
     };
     return (
         <MainFrame {...frameProps}>
             <main className="Home container"/>
         </MainFrame>
     );
+}
+
+function buildBreadcrumb(link, title) {
+    return [{link: link, title: title,}];
 }

@@ -13,6 +13,17 @@
     text-align: center;
 }
 
+/*                                                      */
+/* STICKY TABLE HEADER                                  */
+/*                                                      */
+/*.PlaygroundLeaseCalendar thead tr:first-child th {    */
+/*   border: none;                                      */
+/*   position: sticky;                                  */
+/*   z-index: 100;                                      */
+/*   top: -1px;                                         */
+/*}                                                     */
+/*                                                      */
+
 .PlaygroundLeaseCalendar thead tr th.th-control {
     width: 80px;
 }
