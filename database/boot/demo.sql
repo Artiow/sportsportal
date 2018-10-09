@@ -1,21 +1,14 @@
 ------------------------------------------------------------------------------------------------------------------------
--- DEMO DATA EXAMPLE 0.3.1 FOR
--- SPORTSPORTAL DATABASE 0.3.1
+-- DEMO DATA EXAMPLE 0.3.2 FOR
+-- SPORTSPORTAL DATABASE 0.3.2
 
 ------------------------------------------------------------------------------------------------------------------------
 -- COMMON
 
 -- user
 
-insert into common."user" (id, name, surname, patronymic, email, password, address, phone)
-values (1,
-        'Иван',
-        'Иванов',
-        'Иванович',
-        'root@mail.com',
-        '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2',
-        'г. Москва, ул. Ленина 0',
-        '+7(999)999-99-99');
+insert into common."user" (id, name, surname, email, password)
+values (1, 'Иван', 'Иванов', 'root@mail.com', '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2');
 
 alter sequence common.user_id_seq
   restart with 2;
