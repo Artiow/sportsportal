@@ -48,6 +48,8 @@
 }
 
 .PlaygroundLeaseCalendar tbody tr td .badge {
+    margin-top: 3px;
+    vertical-align: top;
     font-size: 90%;
 }
 

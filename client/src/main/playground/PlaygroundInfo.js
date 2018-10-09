@@ -54,10 +54,10 @@ export default class PlaygroundInfo extends React.Component {
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
         return didLoad ? (
-            <div className="row">
+            <div className="PlaygroundInfo row">
                 <div className="col-10 offset-1">
                     <div className="container content-container">
-                        <div className="row info-row header-info-row">
+                        <div className="row header-row">
                             <div className="col-12">
                                 <h1 className="row-h header-h header-name">
                                     {playground.name}
@@ -70,7 +70,7 @@ export default class PlaygroundInfo extends React.Component {
                                 </h6>
                             </div>
                         </div>
-                        <div className="row info-row feature-info-row">
+                        <div className="row feature-row">
                             <div className="col-4">
                                 <h4 className="row-h info-h info-price">
                                     <span className="mr-md-2">Стоимость:</span>
@@ -88,7 +88,7 @@ export default class PlaygroundInfo extends React.Component {
                                 <PhotoCarousel photos={photos} placeimg={noImage}/>
                             </div>
                         </div>
-                        <div className="row info-row calendar-info-row">
+                        <div className="row calendar-row">
                             <div className="col-12">
                                 <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
                                 <PlaygroundLeaseCalendar identifier={this.id} version={playground.version}/>
