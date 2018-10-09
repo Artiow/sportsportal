@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import verify, {getLogin, logout} from '../../../util/verification'
+import verify, {getLogin, logout} from '../../../util/verification';
 import './Header.css';
 
 export default function Header(props) {

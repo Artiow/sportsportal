@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants'
+import apiUrl from '../../constants';
 import './Footer.css';
 
 export default function Footer(props) {

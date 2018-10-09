@@ -1,7 +1,7 @@
 import React from 'react';
 import InputMask from 'react-input-mask';
 import {Link} from 'react-router-dom';
-import apiUrl, {ID} from '../../constants'
+import apiUrl, {ID} from '../../constants';
 import axios from 'axios';
 import './Registration.css';
 

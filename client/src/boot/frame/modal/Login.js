@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants'
-import {login} from '../../../util/verification'
+import apiUrl from '../../constants';
+import {login} from '../../../util/verification';
 import axios from 'axios';
 import './Login.css';
 

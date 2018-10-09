@@ -9,9 +9,9 @@ import ScrollRoute from '../util/components/ScrollRoute';
 import Confirmation from './auth/Confirmation';
 import MainFrame from './frame/MainFrame';
 import NoMatch from './mismatch/NoMatch';
-import Index from '../main/Index';
-import Playground from '../main/Playground';
-import Order from '../main/Order';
+import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
+import PlaygroundInfo from '../main/playground/PlaygroundInfo';
+import OrderInfo from '../main/order/OrderInfo';
 
 export default function Application(props) {
     return (
@@ -35,7 +35,7 @@ function IndexFrame(props) {
     };
     return (
         <MainFrame {...frameProps}>
-            <Index/>
+            <PlaygroundSearcher/>
         </MainFrame>
     );
 }
@@ -51,7 +51,7 @@ function PlaygroundFrame(props) {
     };
     return (
         <MainFrame {...frameProps}>
-            <Playground identifier={props.match.params.identifier}/>
+            <PlaygroundInfo identifier={props.match.params.identifier}/>
         </MainFrame>
     );
 }
@@ -68,7 +68,7 @@ function OrderFrame(props) {
     };
     return (
         <MainFrame {...frameProps}>
-            <Order identifier={orderId}/>
+            <OrderInfo identifier={orderId}/>
         </MainFrame>
     );
 }

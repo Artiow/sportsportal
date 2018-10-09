@@ -1,5 +1,5 @@
 import React from "react";
-import apiUrl from '../../constants'
+import apiUrl from '../../constants';
 import axios from 'axios';
 import qs from 'qs';
 import './Message.css';

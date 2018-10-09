@@ -1,9 +1,9 @@
 import React from 'react';
-import './Order.css';
+import './OrderInfo.css';
 
 export default function Order(props) {
     return (
-        <div className="row">
+        <div className="Order row">
             {'order id: ' + props.identifier}
         </div>
     );

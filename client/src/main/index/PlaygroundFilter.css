@@ -1,5 +1,3 @@
-/* PlaygroundFilter */
-
 .PlaygroundFilter form.card {
     padding: 15px;
 }
@@ -62,14 +60,4 @@
 .PlaygroundFilter form.card #accordion .card .card-body .CustomCheckbox label:hover {
     cursor: pointer;
     color: black;
-}
-
-/* PlaygroundCard */
-
-.PlaygroundCard .card .card-body h4.card-title {
-    margin-bottom: 3px;
-}
-
-.PlaygroundCard .card .card-body p.card-text .badge span {
-    margin: 0 3px;
 }

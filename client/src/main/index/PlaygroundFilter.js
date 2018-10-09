@@ -1,63 +1,12 @@
-import React, {Component} from "react";
+import React from 'react';
 import {Range} from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import {Link} from 'react-router-dom';
-import StarRate from '../util/components/StarRate';
-import CustomCheckbox from '../util/components/CustomCheckbox';
-import noImage from '../util/img/no-image-white-sm.jpg';
-import apiUrl from '../boot/constants'
+import CustomCheckbox from '../../util/components/CustomCheckbox';
+import apiUrl from '../../boot/constants';
 import axios from 'axios';
-import qs from 'qs';
-import './Index.css';
+import './PlaygroundFilter.css';
 
-class Index extends Component {
-
-    static DEFAULT_PAGE_SIZE = 10;
-
-    updateFilter = newFilter => {
-        this.filter = Object.assign(this.filter, newFilter);
-        this.query(this.filter);
-    };
-
-    constructor(props) {
-        super(props);
-        this.state = {page: null};
-        this.filter = {pageNum: 0, pageSize: Index.DEFAULT_PAGE_SIZE};
-        this.query(this.filter);
-    }
-
-    /**
-     * Downloading playground page.
-     * @param filter {object} playground filter
-     */
-    query(filter) {
-        const self = this;
-        const url = apiUrl('/leaseapi/playground/list');
-        const serializer = params => {
-            return qs.stringify(params, {arrayFormat: 'repeat'})
-        };
-        axios.get(url, {
-            params: filter,
-            paramsSerializer: serializer
-        }).then(function (response) {
-            console.log('Query Response:', response);
-            self.setState({page: response.data});
-        }).catch(function (error) {
-            console.log('Query Error:', ((error.response != null) ? error.response : error));
-        })
-    }
-
-    render() {
-        return (
-            <div className="row">
-                <PlaygroundFilter callback={this.updateFilter}/>
-                <PageablePlaygroundContainer page={this.state.page}/>
-            </div>
-        );
-    }
-}
-
-class PlaygroundFilter extends Component {
+export default class PlaygroundFilter extends React.Component {
 
     static MIN_PRICE = 0;
     static MAX_PRICE = 10000;
@@ -85,10 +34,9 @@ class PlaygroundFilter extends Component {
 
     constructor(props) {
         super(props);
-        this.dictionary = {
-            sports: null,
-            features: null,
-        };
+        this.dictionary = {sports: null, features: null};
+        this.uploadFilerData('/leaseapi/dict/feature/list', response => this.dictionary.features = response);
+        this.uploadFilerData('/leaseapi/dict/sport/list', response => this.dictionary.sports = response);
         this.state = {
             sportCodes: [],
             featureCodes: [],
@@ -98,14 +46,6 @@ class PlaygroundFilter extends Component {
             opening: '00:00',
             closing: '00:00'
         };
-
-        const self = this;
-        this.uploadFilerData("/leaseapi/dict/feature/list", function (response) {
-            self.dictionary.features = response;
-        });
-        this.uploadFilerData("/leaseapi/dict/sport/list", function (response) {
-            self.dictionary.sports = response;
-        });
     }
 
     static updateCheckboxArray(codes, code, checked) {
@@ -139,7 +79,8 @@ class PlaygroundFilter extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        this.props.callback({
+        const onChange = this.props.onChange;
+        if (typeof onChange === 'function') onChange({
             searchString: this.state.searchString,
             featureCodes: this.state.featureCodes,
             sportCodes: this.state.sportCodes,
@@ -147,7 +88,7 @@ class PlaygroundFilter extends Component {
             endPrice: this.state.endPrice,
             opening: this.state.opening,
             closing: this.state.closing
-        })
+        });
     }
 
     updateSportCodes(code, checked) {
@@ -170,9 +111,7 @@ class PlaygroundFilter extends Component {
                     result.push(
                         <CustomCheckbox key={i} id={prefix + '_' + item.code} value={item.code}
                                         label={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
-                                        onChange={event => {
-                                            updater(event.target.value, event.target.checked);
-                                        }}/>
+                                        onChange={event => updater(event.target.value, event.target.checked)}/>
                     );
                 });
             }
@@ -287,79 +226,3 @@ class PlaygroundFilter extends Component {
         );
     }
 }
-
-function PageablePlaygroundContainer(props) {
-    const page = props.page;
-    const totalPages = (page != null) ? page.totalPages : 0;
-    const content = (page != null) ? page.content : null;
-    return ((content !== null) && (content.length > 0)) ? (
-        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-            <PlaygroundContainer content={content}/>
-            {(totalPages > 1) ? (<PlaygroundPagination/>) : (null)}
-        </div>
-    ) : (((content !== null) && (content.length === 0)) ? (
-        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8">
-            <div className="col-xs-12 col-sm-12 mb-12">
-                <div className="alert alert-light">
-                    <h4 className="alert-heading">Ничего не найдено!</h4>
-                    <hr/>
-                    <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
-                </div>
-            </div>
-        </div>
-    ) : (
-        <div className="PageablePlaygroundContainer col-xs-12 col-sm-8"/>
-    ));
-}
-
-function PlaygroundPagination(props) {
-    return (
-        <div className="PlaygroundPagination row">
-            <div className="col-xs-12 col-sm-12 mb-4">
-                <div className="card" style={{minHeight: '50px'}}/>
-            </div>
-        </div>
-    );
-}
-
-function PlaygroundContainer(props) {
-    let container = [];
-    const content = props.content;
-    if ((content !== null) && (content.length > 0)) {
-        content.forEach(function (item, i, arr) {
-            container.push(<PlaygroundCard key={i} playground={item}/>);
-        });
-    }
-    return (<div className="PlaygroundContainer row">{container}</div>);
-}
-
-function PlaygroundCard(props) {
-    const playground = props.playground;
-    const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImage);
-    return (
-        <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
-            <div className="card">
-                <img className="card-img" src={photoURL} alt={playground.name}/>
-                <div className="card-body">
-                    <h4 className="card-title">
-                        <small>{playground.name}</small>
-                    </h4>
-                    <h6 className="card-title">
-                        <StarRate value={playground.rate}/>
-                    </h6>
-                    <p className="card-text">
-                        <span className="badge badge-dark">
-                            от<span>{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
-                        </span>
-                    </p>
-                    <Link to={"/playground/id" + playground.id} className="btn btn-outline-info btn-sm">
-                        Подробнее...
-                    </Link>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default Index;

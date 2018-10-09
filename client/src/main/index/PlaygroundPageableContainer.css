@@ -1,0 +1,7 @@
+.PlaygroundPageableContainer .PlaygroundContainer .PlaygroundCard .card .card-body h4.card-title {
+    margin-bottom: 3px;
+}
+
+.PlaygroundPageableContainer .PlaygroundContainer .PlaygroundCard .card .card-body p.card-text .badge span {
+    margin: 0 3px;
+}

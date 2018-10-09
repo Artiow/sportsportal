@@ -4,7 +4,7 @@
  * @param version {number} playground version
  * @param reservation {Array} reservation array
  */
-export default function saveReservation(identifier, version, reservation) {
+export function saveReservation(identifier, version, reservation) {
     const content = {version: version, reservation: reservation};
     let map = getReservationMap();
     if (map == null) map = new Map([[identifier, content]]);
