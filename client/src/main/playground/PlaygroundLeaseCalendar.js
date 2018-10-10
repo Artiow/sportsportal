@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from "react-router-dom";
+import MainFrame from '../../boot/frame/MainFrame'
 import CheckButton from '../../util/components/CheckButton';
 import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
 import {restoreReservation, saveReservation} from '../../util/reservationSaver';
@@ -323,8 +324,9 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                     <div className="order-group">
                         {(!access) ? (
                             <div className="alert alert-danger" role="alert">
-                                Необходимо <Link to="/?login" className="alert-link">авторизироваться</Link> для того,
-                                чтобы сделать заказ!
+                                Необходимо <Link to="/login" className="alert-link"
+                                                 onClick={MainFrame.reLogin}>авторизироваться</Link> для того, чтобы
+                                сделать заказ!
                             </div>
                         ) : (null)}
                         {(reservation.length > 0) ? (

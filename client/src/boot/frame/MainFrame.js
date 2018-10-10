@@ -11,7 +11,8 @@ export default class MainFrame extends React.Component {
 
     static ANIMATION_TIMEOUT = 300;
 
-    static reLogin() {
+    static reLogin(event) {
+        if (event != null) event.preventDefault();
         localStorage.setItem('re_login', true);
         window.location.replace('/');
     }
@@ -23,8 +24,8 @@ export default class MainFrame extends React.Component {
 
     componentDidMount() {
         if (localStorage.getItem('re_login')) {
-            this.showLoginModal();
             localStorage.removeItem('re_login');
+            this.showLoginModal();
         }
     }
 
