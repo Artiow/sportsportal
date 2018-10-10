@@ -19,4 +19,23 @@ public abstract class AbstractVersionedEntity extends AbstractIdentifiedEntity {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractVersionedEntity)) return false;
+        if (!super.equals(o)) return false;
+
+        AbstractVersionedEntity that = (AbstractVersionedEntity) o;
+
+        return getVersion().equals(that.getVersion());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getVersion().hashCode();
+        return result;
+    }
 }

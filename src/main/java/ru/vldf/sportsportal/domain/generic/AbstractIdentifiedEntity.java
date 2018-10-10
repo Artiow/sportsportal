@@ -18,4 +18,20 @@ public abstract class AbstractIdentifiedEntity implements DomainObject {
     public void setId(Integer id) {
         this.id = id;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractIdentifiedEntity)) return false;
+
+        AbstractIdentifiedEntity that = (AbstractIdentifiedEntity) o;
+
+        return getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 }

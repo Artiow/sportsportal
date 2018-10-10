@@ -7,6 +7,7 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
@@ -33,6 +34,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -168,21 +170,25 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
+            UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
+            boolean isOwner = (playground.getOwners().contains(currentUser));
 
+            int EXPIRATION = 15;
+            LocalDateTime now = LocalDateTime.now();
             OrderEntity order = new OrderEntity();
-            order.setCustomer(getCurrentUserEntity());
-            order.setDatetime(Timestamp.valueOf(LocalDateTime.now()));
-            order.setExpiration(null);
+            order.setCustomer(currentUser);
+            order.setDatetime(Timestamp.valueOf(now));
+            order.setExpiration(!isOwner ? Timestamp.valueOf(now.plus(EXPIRATION, ChronoUnit.MINUTES)) : null);
 
-            BigDecimal price = playground.getPrice();
-            BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
             List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
             Collections.sort(datetimes);
             if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 
+            BigDecimal price = playground.getPrice();
+            BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
                 Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
@@ -198,13 +204,15 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 reservation.setDatetime(reservedDatetime);
                 reservation.setPlayground(playground);
                 reservation.setOrder(order);
-                reservation.setPrice(price);
+                if (!isOwner) {
+                    reservation.setPrice(price);
+                    sumPrice = sumPrice.add(price);
+                }
 
-                sumPrice = sumPrice.add(price);
                 reservations.add(reservation);
             }
 
-            order.setPaid(false);
+            order.setPaid(isOwner);
             order.setPrice(sumPrice);
             order.setReservations(reservations);
             return orderRepository.save(order).getId();

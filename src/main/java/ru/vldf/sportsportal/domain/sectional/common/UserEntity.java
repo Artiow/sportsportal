@@ -158,4 +158,17 @@ public class UserEntity extends AbstractVersionedEntity {
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

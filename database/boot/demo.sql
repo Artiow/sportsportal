@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- DEMO DATA EXAMPLE 0.3.2 FOR
+-- DEMO DATA EXAMPLE 0.3.21 FOR
 -- SPORTSPORTAL DATABASE 0.3.2
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -8,16 +8,18 @@
 -- user
 
 insert into common."user" (id, name, surname, email, password)
-values (1, 'Иван', 'Иванов', 'root@mail.com', '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2');
+values (1, 'Иван', 'Иванов', 'root@mail.com', '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2'),
+       (2, 'Максим', 'Максимов', 'user@mail.com', '$2a$10$Tf3DuvW9w.O.j3c5V.kxUeosg.8tFsbINs7rvZhz9U/bRAOSu/cJe');
 
 alter sequence common.user_id_seq
-  restart with 2;
+  restart with 3;
 
 -- authority
 
 insert into common.authority (user_id, role_id)
 values (1, 1),
-       (1, 2);
+       (1, 2),
+       (2, 2);
 
 ------------------------------------------------------------------------------------------------------------------------
 -- LEASE
@@ -75,6 +77,13 @@ values (2,
 
 alter sequence lease.playground_id_seq
   restart with 6;
+
+insert into lease.ownership (user_id, playground_id)
+values (1, 1),
+       (1, 2),
+       (1, 3),
+       (1, 4),
+       (1, 5);
 
 insert into lease.capability (feature_id, playground_id)
 values (1, 1),

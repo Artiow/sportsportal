@@ -38,5 +38,5 @@ create table lease.reservation
   primary key (playground_id, datetime)
 );
 
-create unique index user_login_uindex
-  on lease.reservation (order_id, playground_id, datetime);
+create unique index reservation_params_uindex
+  on lease.reservation (playground_id, datetime);
