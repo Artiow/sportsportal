@@ -97,10 +97,10 @@ class AuthBlock extends React.Component {
 
     queryVerify() {
         const self = this;
-        verify(function (response) {
+        verify(function (data) {
             self.setState({
                 isAuthorized: true,
-                nickname: response.data.login.username
+                nickname: data.login.username
             })
         }, function (error) {
             self.setState({

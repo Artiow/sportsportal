@@ -1,14 +1,15 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 import CheckButton from '../../util/components/CheckButton';
+import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
 import {restoreReservation, saveReservation} from '../../util/reservationSaver';
-import {getToken} from '../../util/verification';
+import verify, {getToken} from '../../util/verification';
 import apiUrl, {env} from '../../boot/constants';
 import axios from 'axios';
 import './PlaygroundLeaseCalendar.css';
 
 export default class PlaygroundLeaseCalendar extends React.Component {
 
-    static CLOSE_TITLE = 'Отмена';
     static CANCEL_TITLE = 'Сбросить выбор';
     static SUBMIT_TITLE = 'Забронировать';
 
@@ -42,8 +43,12 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             timeList: null,
             reservation: null,
             halfHourAvailable: null,
-            fullHourRequired: null
+            fullHourRequired: null,
+            access: false
         };
+        verify((data) => this.setState({
+            access: !(data.login.roles.indexOf(env.ROLE.USER) < 0)
+        }));
         this.query(
             this.playgroundId,
             this.playgroundVersion,
@@ -222,6 +227,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         }).then(function (response) {
             console.log('Query Response:', response);
             const locationArray = response.headers.location.split('/');
+            // todo: soft redirect!
             window.location.replace('/order/id' + locationArray[locationArray.length - 1]);
         }).catch(function (error) {
             console.log('Query Error:', ((error.response != null) ? error.response : error));
@@ -279,6 +285,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             });
             return (table);
         };
+        const access = this.state.access;
         const schedule = this.state.schedule;
         const reservation = this.state.reservation;
         const price = this.state.price;
@@ -313,60 +320,41 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                         {tableBuilder(this.state.timeList, price, schedule)}
                         </tbody>
                     </table>
-                    {(reservation.length > 0) ? (
-                        <div className="btn-group">
-                            <button type="button" className="btn btn-danger" onClick={cancel}>
-                                {PlaygroundLeaseCalendar.CANCEL_TITLE}
-                            </button>
-                            <button type="button" className="btn btn-success" data-toggle="modal"
-                                    data-target="#confirmForm">
-                                {PlaygroundLeaseCalendar.SUBMIT_TITLE}
-                                <span className="badge badge-dark ml-1">
-                                    {totalPrice}<i className="fa fa-rub ml-1"/>
-                                </span>
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="btn-group">
-                            <button className="btn btn-danger disabled" disabled="disabled">
-                                {PlaygroundLeaseCalendar.CANCEL_TITLE}
-                            </button>
-                            <button className="btn btn-success disabled" disabled="disabled">
-                                {PlaygroundLeaseCalendar.SUBMIT_TITLE}
-                                <span className="badge badge-dark ml-1">
-                                    {totalPrice}<i className="fa fa-rub ml-1"/>
-                                </span>
-                            </button>
-                        </div>
-                    )}
-                    <div id="confirmForm" className="modal fade" tabIndex="-1">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">
-                                        Подтвердите правильность выбора
-                                    </h5>
-                                    <button type="button" className="close" data-dismiss="modal">
-                                        <span>&times;</span>
-                                    </button>
-                                </div>
-                                <div className="modal-body">
-                                    ...
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-dismiss="modal">
-                                        {PlaygroundLeaseCalendar.CLOSE_TITLE}
-                                    </button>
-                                    <button type="submit" className="btn btn-success">
-                                        {PlaygroundLeaseCalendar.SUBMIT_TITLE}
-                                        <span className="badge badge-dark ml-1">
-                                            {totalPrice}<i className="fa fa-rub ml-1"/>
-                                        </span>
-                                    </button>
-                                </div>
+                    <div className="order-group">
+                        {(!access) ? (
+                            <div className="alert alert-danger" role="alert">
+                                Необходимо <Link to="/?login" className="alert-link">авторизироваться</Link> для того,
+                                чтобы сделать заказ!
                             </div>
-                        </div>
+                        ) : (null)}
+                        {(reservation.length > 0) ? (
+                            <div className="btn-group">
+                                <button type="button" className="btn btn-danger" onClick={cancel}>
+                                    {PlaygroundLeaseCalendar.CANCEL_TITLE}
+                                </button>
+                                <button type="button" className="btn btn-success" data-toggle="modal"
+                                        data-target="#submitOrder" disabled={!access}>
+                                    {PlaygroundLeaseCalendar.SUBMIT_TITLE}
+                                    <span className="badge badge-dark ml-1">
+                                    {totalPrice}<i className="fa fa-rub ml-1"/>
+                                </span>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="btn-group">
+                                <button className="btn btn-danger disabled" disabled="disabled">
+                                    {PlaygroundLeaseCalendar.CANCEL_TITLE}
+                                </button>
+                                <button className="btn btn-success disabled" disabled="disabled">
+                                    {PlaygroundLeaseCalendar.SUBMIT_TITLE}
+                                    <span className="badge badge-dark ml-1">
+                                    {totalPrice}<i className="fa fa-rub ml-1"/>
+                                </span>
+                                </button>
+                            </div>
+                        )}
                     </div>
+                    <PlaygroundSubmitOrderModal identifier="submitOrder"/>
                 </form>
             )
         } else {

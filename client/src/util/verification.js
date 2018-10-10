@@ -15,8 +15,8 @@ export default function verify(successCallback, failureCallback) {
             .get(apiUrl('/auth/verify'), {params: {accessToken: accessToken}})
             .then(function (response) {
                 login(response.data);
-                console.log('Verify Response:', response);
-                call(successCallback, response);
+                console.log('Verify Response:', response.data);
+                call(successCallback, response.data);
             })
             .catch(function (error) {
                 logout();
