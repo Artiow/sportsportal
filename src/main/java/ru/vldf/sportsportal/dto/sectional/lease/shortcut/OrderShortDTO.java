@@ -15,6 +15,7 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
     private BigDecimal price;
     private LocalDateTime datetime;
     private LocalDateTime expiration;
+    private Boolean byOwner;
     private URI orderURL;
     private URI customerURL;
     private List<ReservationResumeDTO> reservations;
@@ -64,6 +65,15 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
 
     public OrderShortDTO setExpiration(LocalDateTime expiration) {
         this.expiration = expiration;
+        return this;
+    }
+
+    public Boolean getByOwner() {
+        return byOwner;
+    }
+
+    public OrderShortDTO setByOwner(Boolean byOwner) {
+        this.byOwner = byOwner;
         return this;
     }
 

@@ -2,36 +2,30 @@ import React from 'react';
 
 export default function PlaygroundSubmitOrderModal(props) {
 
-    const CLOSE_TITLE = 'Отмена';
-    const SUBMIT_TITLE = 'Забронировать';
-
-    // template
-    const totalPrice = '0000';
+    const HEADER_TITLE = 'Подтвердите правильность выбора';
 
     return (
-        <div id={props.identifier} className="PlaygroundOrderModal modal fade" tabIndex="-1">
+        <div id={props.submitId} className="PlaygroundOrderModal modal fade" tabIndex="-1">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">
-                            Подтвердите правильность выбора
-                        </h5>
-                        <button type="button" className="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                        <h5 className="modal-title">{HEADER_TITLE}</h5>
+                        <button type="button" className="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div className="modal-body">
                         ...
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-dismiss="modal">
-                            {CLOSE_TITLE}
+                            {props.closeTitle}
                         </button>
-                        <button type="submit" className="btn btn-success">
-                            {SUBMIT_TITLE}
-                            <span className="badge badge-dark ml-1">
-                                {totalPrice}<i className="fa fa-rub ml-1"/>
-                            </span>
+                        <button type="submit" className={props.owner ? 'btn btn-primary' : 'btn btn-success'}>
+                            {props.owner ? props.ownerTitle : props.userTitle}
+                            {props.owner ? (null) : (
+                                <span className="badge badge-dark ml-1">
+                                    {props.price}<i className="fa fa-rub ml-1"/>
+                                </span>
+                            )}
                         </button>
                     </div>
                 </div>

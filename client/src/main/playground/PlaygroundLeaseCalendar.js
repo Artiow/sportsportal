@@ -11,8 +11,10 @@ import './PlaygroundLeaseCalendar.css';
 
 export default class PlaygroundLeaseCalendar extends React.Component {
 
+    static CLOSE_TITLE = 'Отмена';
     static CANCEL_TITLE = 'Сбросить выбор';
-    static SUBMIT_TITLE = 'Забронировать';
+    static USER_SUBMIT_TITLE = 'Забронировать';
+    static OWNER_SUBMIT_TITLE = 'Зарезервировать';
 
     static START_DATE_OFFSET = 0;
     static END_DATE_OFFSET = 6;
@@ -27,6 +29,8 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         );
         const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
         const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
+        this.ownersURLs = null;
+        this.userURL = null;
         this.timeFrame = {
             offset: {
                 start: start,
@@ -45,11 +49,15 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             reservation: null,
             halfHourAvailable: null,
             fullHourRequired: null,
-            access: false
+            access: false,
+            owner: false
         };
-        verify((data) => this.setState({
-            access: !(data.login.roles.indexOf(env.ROLE.USER) < 0)
-        }));
+        verify((data) => {
+            const login = data.login;
+            this.setState({access: !(login.roles.indexOf(env.ROLE.USER) < 0)});
+            this.userURL = login.userURL;
+            this.setAuthority();
+        });
         this.query(
             this.playgroundId,
             this.playgroundVersion,
@@ -79,6 +87,12 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         return ((days != null) && (days > 0))
             ? new Date(today.getFullYear(), today.getMonth(), (today.getDate() + days))
             : today;
+    }
+
+    setAuthority() {
+        const user = this.userURL;
+        const owners = this.ownersURLs;
+        this.setState({owner: ((user != null) && (owners != null)) ? !(owners.indexOf(user) < 0) : false})
     }
 
     handleOffset(event) {
@@ -116,6 +130,11 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             const dateList = [];
             const timeList = [];
             const data = response.data;
+            axios.get(data.playgroundURL + '/short')
+                .then(response => {
+                    self.ownersURLs = response.data.ownersURLs;
+                    self.setAuthority();
+                });
             const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price;
             const array = Object.entries(data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
@@ -261,6 +280,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         const tableBuilder = (timeList, price, schedule) => {
             const table = [];
             const reservation = this.state.reservation;
+            const checkedStyle = this.state.owner ? 'btn-primary' : 'btn-success';
             const updateReservation = this.updateReservation.bind(this);
             timeList.forEach(function (item, i, arr) {
                 const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
@@ -270,7 +290,11 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                     rows.push(
                         <td key={rows.length}>
                             {value.get(item) ? (
-                                <CheckButton id={datetime} value={datetime} content={content}
+                                <CheckButton id={datetime}
+                                             sizeStyle="btn-sm"
+                                             checkedStyle={checkedStyle}
+                                             uncheckedStyle={'btn-outline-dark'}
+                                             value={datetime} content={content}
                                              checked={!(reservation.indexOf(datetime) < 0)}
                                              onChange={updateReservation}/>
                             ) : (
@@ -286,6 +310,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             });
             return (table);
         };
+        const owner = this.state.owner;
         const access = this.state.access;
         const schedule = this.state.schedule;
         const reservation = this.state.reservation;
@@ -323,44 +348,66 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                     </table>
                     <div className="order-group">
                         {(!access) ? (
-                            <div className="alert alert-danger" role="alert">
-                                Необходимо <Link to="/login" className="alert-link"
-                                                 onClick={MainFrame.reLogin}>авторизироваться</Link> для того, чтобы
-                                сделать заказ!
-                            </div>
+                            <AuthAlert link="/login" onClick={MainFrame.reLogin}>авторизироваться</AuthAlert>
                         ) : (null)}
-                        {(reservation.length > 0) ? (
-                            <div className="btn-group">
-                                <button type="button" className="btn btn-danger" onClick={cancel}>
-                                    {PlaygroundLeaseCalendar.CANCEL_TITLE}
-                                </button>
-                                <button type="button" className="btn btn-success" data-toggle="modal"
-                                        data-target="#submitOrder" disabled={!access}>
-                                    {PlaygroundLeaseCalendar.SUBMIT_TITLE}
-                                    <span className="badge badge-dark ml-1">
-                                    {totalPrice}<i className="fa fa-rub ml-1"/>
-                                </span>
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="btn-group">
-                                <button className="btn btn-danger disabled" disabled="disabled">
-                                    {PlaygroundLeaseCalendar.CANCEL_TITLE}
-                                </button>
-                                <button className="btn btn-success disabled" disabled="disabled">
-                                    {PlaygroundLeaseCalendar.SUBMIT_TITLE}
-                                    <span className="badge badge-dark ml-1">
-                                    {totalPrice}<i className="fa fa-rub ml-1"/>
-                                </span>
-                                </button>
-                            </div>
-                        )}
+                        <div className="btn-group">
+                            <CancelButton disabled={!(reservation.length > 0)} onClick={cancel}
+                                          title={PlaygroundLeaseCalendar.CANCEL_TITLE}/>
+                            <SubmitButton dataToggle="modal" dataTarget="#submitOrder"
+                                          disabled={(!(reservation.length > 0) || !access)}
+                                          userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
+                                          ownerTitle={PlaygroundLeaseCalendar.OWNER_SUBMIT_TITLE}
+                                          owner={owner} price={totalPrice}/>
+                        </div>
                     </div>
-                    <PlaygroundSubmitOrderModal identifier="submitOrder"/>
+                    <PlaygroundSubmitOrderModal closeTitle={PlaygroundLeaseCalendar.CLOSE_TITLE}
+                                                userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
+                                                ownerTitle={PlaygroundLeaseCalendar.OWNER_SUBMIT_TITLE}
+                                                submitId="submitOrder" reservation={reservation}
+                                                owner={owner} price={totalPrice}/>
                 </form>
             )
         } else {
             return null;
         }
     }
+}
+
+function AuthAlert(props) {
+    return (
+        <div className="alert alert-danger">
+            Необходимо <Link to={props.link} className="alert-link" onClick={props.onClick}>авторизироваться</Link> для
+            того, чтобы сделать заказ!
+        </div>
+    )
+}
+
+function CancelButton(props) {
+    return (
+        <button type="button" disabled={props.disabled}
+                className={props.disabled ? 'btn btn-danger disabled' : 'btn btn-danger'}
+                onClick={props.disabled ? undefined : props.onClick}>
+            {props.title}
+        </button>
+    );
+}
+
+function SubmitButton(props) {
+    return (
+        <button type="button" disabled={props.disabled}
+                data-toggle={props.disabled ? undefined : props.dataToggle}
+                data-target={props.disabled ? undefined : props.dataTarget}
+                className={
+                    props.disabled
+                        ? (props.owner ? 'btn btn-primary disabled' : 'btn btn-success disabled')
+                        : (props.owner ? 'btn btn-primary' : 'btn btn-success')
+                }>
+            {props.owner ? props.ownerTitle : props.userTitle}
+            {props.owner ? (null) : (
+                <span className="badge badge-dark ml-1">
+                    {props.price}<i className="fa fa-rub ml-1"/>
+                </span>
+            )}
+        </button>
+    );
 }

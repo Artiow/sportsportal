@@ -40,6 +40,7 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
+            @Mapping(target = "byOwner", ignore = true),
             @Mapping(target = "customer", ignore = true),
             @Mapping(target = "reservations", ignore = true)
     })

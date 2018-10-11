@@ -8,36 +8,34 @@ import React from 'react';
  */
 export default class CheckButton extends React.Component {
 
-    static ACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-success';
-    static INACTIVE_CLASS_NAME = 'CheckButton btn btn-sm btn-outline-dark';
+    static className = (props, checked) => {
+        return `CheckButton btn ${props.sizeStyle} ${checked ? props.checkedStyle : props.uncheckedStyle}`;
+    };
 
     constructor(props) {
         super(props);
-        this.state = {active: ((props.checked === 'checked') || (props.checked === true))};
+        this.state = {checked: ((props.checked === 'checked') || (props.checked === true))};
     }
 
     componentWillReceiveProps(nextProps) {
         if (this.props.checked !== nextProps.checked) {
-            this.setState({active: ((nextProps.checked === 'checked') || (nextProps.checked === true))});
+            this.setState({checked: ((nextProps.checked === 'checked') || (nextProps.checked === true))});
         }
     }
 
     switch(event) {
-        this.setState({active: event.target.checked});
+        this.setState({checked: event.target.checked});
         const onChange = this.props.onChange;
         if (typeof onChange === 'function') onChange(event);
     }
 
     render() {
+        const checked = this.state.checked;
         return (
-            <label id={this.props.id} className={
-                this.state.active
-                    ? CheckButton.ACTIVE_CLASS_NAME
-                    : CheckButton.INACTIVE_CLASS_NAME
-            }>
+            <label id={this.props.id} className={CheckButton.className(this.props, checked)}>
                 {this.props.content}
                 <input type="checkbox" value={this.props.value} hidden={true}
-                       checked={this.state.active} onChange={this.switch.bind(this)}/>
+                       checked={checked} onChange={this.switch.bind(this)}/>
             </label>
         )
     }

@@ -28,6 +28,10 @@ public class OrderEntity extends AbstractVersionedEntity {
     @Column(name = "expiration")
     private Timestamp expiration;
 
+    @Basic
+    @Column(name = "by_owner")
+    private Boolean byOwner;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private UserEntity customer;
@@ -67,6 +71,14 @@ public class OrderEntity extends AbstractVersionedEntity {
 
     public void setExpiration(Timestamp expiration) {
         this.expiration = expiration;
+    }
+
+    public Boolean getByOwner() {
+        return byOwner;
+    }
+
+    public void setByOwner(Boolean byOwner) {
+        this.byOwner = byOwner;
     }
 
     public UserEntity getCustomer() {

@@ -37,6 +37,9 @@ public class OrderDTO extends AbstractVersionedDTO {
     @NotNull(groups = FieldCheck.class)
     private LocalDateTime expiration;
 
+    @NotNull(groups = FieldCheck.class)
+    private Boolean byOwner;
+
     @Valid
     @NotNull(groups = FieldCheck.class)
     private UserLinkDTO customer;
@@ -101,6 +104,15 @@ public class OrderDTO extends AbstractVersionedDTO {
 
     public OrderDTO setExpiration(LocalDateTime expiration) {
         this.expiration = expiration;
+        return this;
+    }
+
+    public Boolean getByOwner() {
+        return byOwner;
+    }
+
+    public OrderDTO setByOwner(Boolean byOwner) {
+        this.byOwner = byOwner;
         return this;
     }
 

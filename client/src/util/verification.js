@@ -32,6 +32,7 @@ export function login(token) {
 }
 
 export function logout() {
+    // #clear() maybe?
     localStorage.removeItem('token');
     localStorage.removeItem('login');
 }
