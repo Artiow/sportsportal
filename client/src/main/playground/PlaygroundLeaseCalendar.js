@@ -52,18 +52,6 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             access: false,
             owner: false
         };
-        verify((data) => {
-            const login = data.login;
-            this.setState({access: !(login.roles.indexOf(env.ROLE.USER) < 0)});
-            this.userURL = login.userURL;
-            this.setAuthority();
-        });
-        this.query(
-            this.playgroundId,
-            this.playgroundVersion,
-            this.timeFrame.date.start,
-            this.timeFrame.date.end
-        );
     }
 
     static normalNow(days) {
@@ -87,6 +75,21 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         return ((days != null) && (days > 0))
             ? new Date(today.getFullYear(), today.getMonth(), (today.getDate() + days))
             : today;
+    }
+
+    componentDidMount() {
+        verify((data) => {
+            const login = data.login;
+            this.setState({access: !(login.roles.indexOf(env.ROLE.USER) < 0)});
+            this.userURL = login.userURL;
+            this.setAuthority();
+        });
+        this.query(
+            this.playgroundId,
+            this.playgroundVersion,
+            this.timeFrame.date.start,
+            this.timeFrame.date.end
+        );
     }
 
     setAuthority() {
@@ -126,7 +129,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         const self = this;
         axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
-            console.log('Query Response:', response);
+            console.log('Playground Lease Calendar (query):', response);
             const dateList = [];
             const timeList = [];
             const data = response.data;
@@ -172,7 +175,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                 fullHourRequired: data.fullHourRequired
             });
         }).catch(function (error) {
-            console.log('Query Error:', ((error.response != null) ? error.response : error));
+            console.error('Playground Lease Calendar (query):', ((error.response != null) ? error.response : error));
         });
     }
 
@@ -221,7 +224,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                         reservation.push(value);
                         reservation.push(prev.value);
                     } else {
-                        console.log('WARNING: The selected time cell is incorrect!');
+                        console.warn('WARNING: The selected time cell is incorrect!');
                     }
                 } else reservation.push(value);
             } else {
@@ -245,13 +248,11 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         }, {
             headers: {Authorization: getToken(),}
         }).then(function (response) {
-            console.log('Query Response:', response);
+            console.log('Playground Lease Calendar (submit):', response);
             const locationArray = response.headers.location.split('/');
-            // todo: soft redirect!
             window.location.replace('/order/id' + locationArray[locationArray.length - 1]);
         }).catch(function (error) {
-            console.log('Query Error:', ((error.response != null) ? error.response : error));
-            // todo: show error!
+            console.error('Playground Lease Calendar (submit):', ((error.response != null) ? error.response : error));
         });
     }
 

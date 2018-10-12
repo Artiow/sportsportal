@@ -12,18 +12,21 @@ export default class PlaygroundInfo extends React.Component {
         super(props);
         this.id = props.identifier;
         this.state = {content: null};
-        this.queryOnLoad();
     }
 
-    queryOnLoad() {
+    componentDidMount() {
+        this.query();
+    }
+
+    query() {
         const self = this;
         axios.get(
             apiUrl('/leaseapi/playground/' + this.id)
         ).then(function (response) {
-            console.log('Response (playground):', response);
+            console.log('PlaygroundInfo (query):', response);
             self.setState({content: response.data});
         }).catch(function (error) {
-            console.log('Error (playground):', ((error.response != null) ? error.response : error));
+            console.error('PlaygroundInfo (query):', ((error.response != null) ? error.response : error));
         })
     }
 
