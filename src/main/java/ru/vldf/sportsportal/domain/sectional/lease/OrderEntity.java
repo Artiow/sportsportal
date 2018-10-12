@@ -30,7 +30,7 @@ public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "by_owner")
-    private Boolean byOwner;
+    private Boolean byOwner = false;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")

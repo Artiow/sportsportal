@@ -171,11 +171,17 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     public ReservationListDTO check(Integer id, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
+            Iterator<LocalDateTime> iterator = reservations.iterator();
+            while (iterator.hasNext()) {
+                LocalDateTime localDateTime = iterator.next();
+                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localDateTime.toLocalTime()));
+                if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
+                    iterator.remove();
+                } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
+                    iterator.remove();
+                }
+            }
             reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
-
-            // todo: check from database!
-            // reservationRepository
-
             return new ReservationListDTO()
                     .setReservations(
                             (reservations instanceof List)
@@ -247,6 +253,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
             order.setPaid(isOwner);
             order.setPrice(sumPrice);
+            order.setByOwner(isOwner);
             order.setReservations(reservations);
             return orderRepository.save(order).getId();
         } catch (EntityNotFoundException e) {
