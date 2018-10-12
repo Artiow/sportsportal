@@ -29,13 +29,20 @@ export default class Login extends React.Component {
             })
             .then(function (response) {
                 login(response.data);
-                console.log('Login Response:', response);
+                console.log('Login (query):', response);
                 window.location.replace('/');
             })
             .catch(function (error) {
+                let errorMessage;
                 const errorResponse = error.response;
-                console.log('Login Error:', ((errorResponse != null) ? errorResponse : error));
-                self.setState({errorMessage: (errorResponse != null) ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE});
+                if (errorResponse != null) {
+                    console.warn('Login (query):', errorResponse);
+                    errorMessage = errorResponse.data.message;
+                } else {
+                    console.error('Login (query):', error);
+                    errorMessage = Login.UNEXPECTED_ERROR_MESSAGE;
+                }
+                self.setState({errorMessage: errorMessage});
             })
     }
 

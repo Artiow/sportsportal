@@ -15,15 +15,15 @@ export default function verify(successCallback, failureCallback) {
             .get(apiUrl('/auth/verify'), {params: {accessToken: accessToken}})
             .then(function (response) {
                 login(response.data);
-                console.log('Response (verify):', response);
+                console.log('verify:', response);
                 call(successCallback, response.data);
             })
             .catch(function (error) {
                 logout();
-                console.log('Error (verify):', ((error.response != null) ? error.response : error));
+                console.error('verify:', ((error.response != null) ? error.response : error));
                 call(failureCallback, error);
             })
-    }
+    } else call(failureCallback, undefined);
 }
 
 export function login(token) {

@@ -28,11 +28,11 @@ export default class Message extends React.Component {
                 paramsSerializer: (params => qs.stringify(params))
             })
             .then(function (response) {
-                console.log('Confirm Message Response:', response);
+                console.log('Message (send):', response);
                 self.setState({stage: Message.STAGE.SUCCESS})
             })
             .catch(function (error) {
-                console.log('Confirm Message Error:', ((error.response != null) ? error.response : error));
+                console.error('Message (send):', ((error.response != null) ? error.response : error));
                 self.setState({stage: Message.STAGE.FAILED})
             })
     }

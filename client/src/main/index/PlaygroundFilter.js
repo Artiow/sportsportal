@@ -35,8 +35,8 @@ export default class PlaygroundFilter extends React.Component {
     constructor(props) {
         super(props);
         this.dictionary = {sports: null, features: null};
-        this.uploadFilerData('/leaseapi/dict/feature/list', response => this.dictionary.features = response);
-        this.uploadFilerData('/leaseapi/dict/sport/list', response => this.dictionary.sports = response);
+        this.uploadFilterDictionaryData('/leaseapi/dict/feature/list', response => this.dictionary.features = response);
+        this.uploadFilterDictionaryData('/leaseapi/dict/sport/list', response => this.dictionary.sports = response);
         this.state = {
             sportCodes: [],
             featureCodes: [],
@@ -60,14 +60,14 @@ export default class PlaygroundFilter extends React.Component {
      * @param uri {string}
      * @param setting {function(object)}
      */
-    uploadFilerData(uri, setting) {
+    uploadFilterDictionaryData(uri, setting) {
         axios.get(apiUrl(uri))
             .then(function (response) {
-                console.log('Dictionary Response:', response);
+                console.log('PlaygroundFilter (query):', response);
                 setting(response.data.content);
             })
             .catch(function (error) {
-                console.log('Dictionary Error:', ((error.response != null) ? error.response : error));
+                console.error('PlaygroundFilter (query):', ((error.response != null) ? error.response : error));
             })
     }
 

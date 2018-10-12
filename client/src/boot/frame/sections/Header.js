@@ -71,6 +71,9 @@ class AuthBlock extends React.Component {
             isAuthorized: logged,
             nickname: logged ? login.username : null
         };
+    }
+
+    componentDidMount() {
         this.queryVerify();
     }
 

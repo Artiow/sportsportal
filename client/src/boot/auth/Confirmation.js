@@ -29,12 +29,12 @@ export default class Confirmation extends React.Component {
                 paramsSerializer: (params => qs.stringify(params))
             })
             .then(function (response) {
-                console.log('Response (confirmation):', response);
+                console.log('Confirmation (query):', response);
                 self.setState({stage: Confirmation.STAGE.SUCCESS});
             })
             .catch(function (error) {
                 const errorResponse = error.response;
-                console.log('Error (confirmation):', ((errorResponse != null) ? errorResponse : error));
+                console.error('Confirmation (query):', ((errorResponse != null) ? errorResponse : error));
                 self.setState({
                     stage: Confirmation.STAGE.FAILED,
                     errorMessage: (errorResponse != null) ? errorResponse.data.message : Confirmation.UNEXPECTED_ERROR_MESSAGE

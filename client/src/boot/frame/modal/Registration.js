@@ -23,21 +23,24 @@ export default class Registration extends React.Component {
         axios
             .post(apiUrl('/auth/register'), obj)
             .then(function (response) {
-                console.log('Registration Response:', response);
+                console.log('Registration (query):', response);
                 const locationArray = response.headers.location.split('/');
                 const onSuccess = self.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
             })
             .catch(function (error) {
                 const errorResponse = error.response;
-                console.log('Registration Error:', ((errorResponse != null) ? errorResponse : error));
                 if (errorResponse != null) {
                     const data = errorResponse.data;
                     const message = data.message;
                     const errors = data.errors;
+                    console.warn('Registration (query):', errorResponse);
                     if (errors != null) self.setState({errorMessage: message, errorMessages: errors});
                     else self.setState({errorMessage: message});
-                } else self.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
+                } else {
+                    console.error('Registration (query):', error);
+                    self.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
+                }
             })
     }
 
