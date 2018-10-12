@@ -24,11 +24,11 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, false));
+        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, false, false));
 
         // additional assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true));
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false));
+        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true, false));
+        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false, false));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, false));
+        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, false, false));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, false, false));
+        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, false, false, false));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false));
+        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false, false));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, true));
+        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, true, false));
     }
 
     @Test
@@ -103,6 +103,6 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true));
+        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true, false));
     }
 }

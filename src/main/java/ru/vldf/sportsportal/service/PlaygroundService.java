@@ -155,6 +155,39 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     }
 
     /**
+     * Returns available for reservation times for playground by identifier and collections of checked
+     * reservation times.
+     *
+     * @param id           {@link Integer} playground identifier
+     * @param reservations {@link Collection<LocalDateTime>} checked reservation times
+     * @return {@link ReservationListDTO} with available for reservation times
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    public ReservationListDTO check(Integer id, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
+        try {
+            PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
+            reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
+
+            // todo: check from database!
+            // reservationRepository
+
+            return new ReservationListDTO()
+                    .setReservations(
+                            (reservations instanceof List)
+                                    ? (List<LocalDateTime>) reservations
+                                    : new ArrayList<>(reservations)
+                    );
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
+    }
+
+    /**
      * Reserve sent datetimes and returns new order id.
      *
      * @param id                 {@link Integer} playground identifier

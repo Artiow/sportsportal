@@ -21,9 +21,12 @@ import ru.vldf.sportsportal.service.generic.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -129,6 +132,24 @@ public class PlaygroundController {
     @ApiOperation("получить площадку")
     public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
         return playgroundService.get(id);
+    }
+
+    /**
+     * Returns available for reservation times for playground by identifier and collections of checked
+     * reservation times.
+     *
+     * @param id           playground identifier
+     * @param reservations {@link Collection<String>} checked reservation times
+     * @return {@link ReservationListDTO} with available for reservation times
+     * @throws ResourceNotFoundException if requested playground not found
+     */
+    @GetMapping("/{id}/check")
+    @ApiOperation("проверить доступность бронирования")
+    public ReservationListDTO check(@PathVariable int id, @RequestParam Collection<String> reservations)
+            throws ResourceNotFoundException {
+        List<LocalDateTime> validReservations = new ArrayList<>(reservations.size());
+        for (String datetime : reservations) validReservations.add(LocalDateTime.parse(datetime));
+        return playgroundService.check(id, validReservations);
     }
 
     /**

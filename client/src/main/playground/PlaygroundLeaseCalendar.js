@@ -23,10 +23,6 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         super(props);
         this.playgroundId = props.identifier;
         this.playgroundVersion = props.version;
-        this.restoredReservation = restoreReservation(
-            this.playgroundId,
-            this.playgroundVersion
-        );
         const start = PlaygroundLeaseCalendar.START_DATE_OFFSET;
         const end = PlaygroundLeaseCalendar.END_DATE_OFFSET;
         this.ownersURLs = null;
@@ -84,6 +80,10 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             this.userURL = login.userURL;
             this.setAuthority();
         });
+        this.restore(
+            this.playgroundId,
+            this.playgroundVersion
+        );
         this.query(
             this.playgroundId,
             this.playgroundVersion,
@@ -125,6 +125,15 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         }
     }
 
+    restore(id, version) {
+        const restoredReservation = restoreReservation(id, version);
+        if (restoredReservation != null) {
+            const reservation = [];
+            // todo: restore!
+            this.setState({reservation: reservation});
+        }
+    }
+
     query(id, version, from, to) {
         const self = this;
         axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
@@ -135,6 +144,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             const data = response.data;
             axios.get(data.playgroundURL + '/short')
                 .then(response => {
+                    console.log('Playground Lease Calendar (query [short]):', response);
                     self.ownersURLs = response.data.ownersURLs;
                     self.setAuthority();
                 });
@@ -154,18 +164,6 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                 });
             });
             const schedule = new Map(array);
-            const restoredReservation = self.restoredReservation; // todo: bag: restored only firs 7 days!
-            if (restoredReservation != null) {
-                const reservation = [];
-                restoredReservation.forEach(function (i, item, array) {
-                    const datetime = i.split('T');
-                    if ((timeList.indexOf(datetime[1]) >= 0) && schedule.get(datetime[0]) && (schedule.get(datetime[0])).get(datetime[1])) {
-                        reservation.push(i)
-                    }
-                });
-                self.restoredReservation = null;
-                self.setState({reservation: reservation});
-            }
             self.setState({
                 price: price,
                 dateList: dateList,
