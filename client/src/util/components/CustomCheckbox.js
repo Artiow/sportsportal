@@ -10,8 +10,8 @@ export default function CustomCheckbox(props) {
     return (
         <div className="CustomCheckbox custom-control custom-checkbox">
             <input type="checkbox" className="custom-control-input"
-                   value={props.value} id={props.id} onChange={props.onChange}/>
-            <label className="custom-control-label" htmlFor={props.id}>{props.label}</label>
+                   id={props.id} value={props.value} onChange={props.onChange}/>
+            <label className="custom-control-label" htmlFor={props.id}>{props.children}</label>
         </div>
     )
 }

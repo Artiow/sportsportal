@@ -18,8 +18,8 @@ export default class MainFrame extends React.Component {
     }
 
     static switch(currentModal, nextModal) {
-        currentModal.show('hide');
-        setTimeout(() => nextModal.show(), MainFrame.ANIMATION_TIMEOUT);
+        setTimeout(() => nextModal.activate(), MainFrame.ANIMATION_TIMEOUT);
+        currentModal.activate('hide');
     }
 
     componentDidMount() {
@@ -30,7 +30,7 @@ export default class MainFrame extends React.Component {
     }
 
     showLoginModal() {
-        this.loginForm.show();
+        this.loginForm.activate();
     }
 
     reShowLoginModal() {
@@ -61,8 +61,9 @@ export default class MainFrame extends React.Component {
 }
 
 class LoginModal extends React.Component {
-    show(options) {
-        this.modal.show(options);
+
+    activate(options) {
+        this.modal.activate(options);
     }
 
     render() {
@@ -98,9 +99,9 @@ class RegistrationModal extends React.Component {
         this.state = {stage: RegistrationModal.INIT_STAGE}
     }
 
-    show(options) {
+    activate(options) {
         this.setState({stage: RegistrationModal.INIT_STAGE});
-        this.modal.show(options);
+        this.modal.activate(options);
     }
 
     sendMessage(userId, userEmail) {

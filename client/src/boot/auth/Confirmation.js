@@ -22,19 +22,19 @@ export default class Confirmation extends React.Component {
     confirmQuery() {
         const self = this;
         const confirmToken = qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token;
-        console.log('Accepted Token:', confirmToken);
+        console.log('Accepted Token (confirmation):', confirmToken);
         axios
             .put(apiUrl('/auth/confirm'), '', {
                 params: {confirmToken: confirmToken},
                 paramsSerializer: (params => qs.stringify(params))
             })
             .then(function (response) {
-                console.log('Confirmation Response:', response);
+                console.log('Response (confirmation):', response);
                 self.setState({stage: Confirmation.STAGE.SUCCESS});
             })
             .catch(function (error) {
                 const errorResponse = error.response;
-                console.log('Confirmation Error:', ((errorResponse != null) ? errorResponse : error));
+                console.log('Error (confirmation):', ((errorResponse != null) ? errorResponse : error));
                 self.setState({
                     stage: Confirmation.STAGE.FAILED,
                     errorMessage: (errorResponse != null) ? errorResponse.data.message : Confirmation.UNEXPECTED_ERROR_MESSAGE

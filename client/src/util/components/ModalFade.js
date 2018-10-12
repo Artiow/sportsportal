@@ -6,7 +6,8 @@ import $ from 'jquery';
  * @author Artem Namednev <namednev.artem@gmail.com>
  */
 export default class ModalFade extends React.Component {
-    show(options) {
+    // noinspection JSUnusedGlobalSymbols
+    activate(options) {
         $(this.modal).modal(options);
     }
 

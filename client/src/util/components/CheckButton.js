@@ -33,7 +33,7 @@ export default class CheckButton extends React.Component {
         const checked = this.state.checked;
         return (
             <label id={this.props.id} className={CheckButton.className(this.props, checked)}>
-                {this.props.content}
+                {this.props.children}
                 <input type="checkbox" value={this.props.value} hidden={true}
                        checked={checked} onChange={this.switch.bind(this)}/>
             </label>

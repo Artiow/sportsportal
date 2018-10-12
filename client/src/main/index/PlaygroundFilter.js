@@ -110,8 +110,9 @@ export default class PlaygroundFilter extends React.Component {
                 content.forEach(function (item, i, arr) {
                     result.push(
                         <CustomCheckbox key={i} id={prefix + '_' + item.code} value={item.code}
-                                        label={item.name.charAt(0).toUpperCase() + item.name.slice(1)}
-                                        onChange={event => updater(event.target.value, event.target.checked)}/>
+                                        onChange={event => updater(event.target.value, event.target.checked)}>
+                            {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                        </CustomCheckbox>
                     );
                 });
             }
@@ -127,16 +128,17 @@ export default class PlaygroundFilter extends React.Component {
                             <button className="btn btn-outline-secondary" type="submit">Найти</button>
                         </div>
                     </div>
-                    <div id="accordion">
+                    <div id="pg_filter_accordion" className="filter-accordion">
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_1">
+                                    <a className="btn btn-link" data-toggle="collapse"
+                                       data-target="#pg_filter_collapse_1">
                                         Виды спорта
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_1" className="collapse" data-parent="#accordion">
+                            <div id="pg_filter_collapse_1" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     {setCheckboxData('sport', this.dictionary.sports, this.updateSportCodes.bind(this))}
                                 </div>
@@ -145,12 +147,13 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_2">
+                                    <a className="btn btn-link" data-toggle="collapse"
+                                       data-target="#pg_filter_collapse_2">
                                         Инфраструктура
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_2" className="collapse" data-parent="#accordion">
+                            <div id="pg_filter_collapse_2" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     {setCheckboxData('feature', this.dictionary.features, this.updateFeatureCodes.bind(this))}
                                 </div>
@@ -159,12 +162,13 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_3">
+                                    <a className="btn btn-link" data-toggle="collapse"
+                                       data-target="#pg_filter_collapse_3">
                                         Стоимость часа
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_3" className="collapse" data-parent="#accordion">
+                            <div id="pg_filter_collapse_3" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>
@@ -195,12 +199,13 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse" data-target="#collapse_4">
+                                    <a className="btn btn-link" data-toggle="collapse"
+                                       data-target="#pg_filter_collapse_4">
                                         Время работы
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse_4" className="collapse" data-parent="#accordion">
+                            <div id="pg_filter_collapse_4" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     <h6>
                                         <span className="badge-sub">от</span>

@@ -30,6 +30,12 @@ export function restoreReservation(identifier, version) {
     return contentReservation;
 }
 
+/**
+ * Reservation restore cleaning.
+ */
+export function clearReservations() {
+    localStorage.removeItem('reservations');
+}
 
 /**
  * @param map {Map<any, any>}

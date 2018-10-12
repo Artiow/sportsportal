@@ -85,7 +85,8 @@ export default class PlaygroundInfo extends React.Component {
                                 {features}
                             </div>
                             <div className="col-8">
-                                <PhotoCarousel photos={photos} placeimg={noImage}/>
+                                <PhotoCarousel photos={photos} placeimg={noImage}
+                                               identifier="pg_photo_carousel"/>
                             </div>
                         </div>
                         <div className="row calendar-row">

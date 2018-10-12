@@ -290,13 +290,15 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                     rows.push(
                         <td key={rows.length}>
                             {value.get(item) ? (
-                                <CheckButton id={datetime}
+                                <CheckButton value={datetime}
                                              sizeStyle="btn-sm"
                                              checkedStyle={checkedStyle}
                                              uncheckedStyle={'btn-outline-dark'}
-                                             value={datetime} content={content}
+                                             id={`pg_lease_calendar_button_${datetime}`}
                                              checked={!(reservation.indexOf(datetime) < 0)}
-                                             onChange={updateReservation}/>
+                                             onChange={updateReservation}>
+                                    {content}
+                                </CheckButton>
                             ) : (
                                 <button className="btn btn-sm btn-light disabled"
                                         disabled="disabled">

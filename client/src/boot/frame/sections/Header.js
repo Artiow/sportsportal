@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import verify, {getLogin, logout} from '../../../util/verification';
+import verify, {getLogin} from '../../../util/verification';
 import {env} from '../../constants'
 import logo from '../logo.png';
 import './Header.css';
@@ -88,7 +88,7 @@ class AuthBlock extends React.Component {
     }
 
     queryLogout() {
-        logout();
+        localStorage.clear();
         this.setState({
             isAuthorized: false,
             nickname: null

@@ -11,18 +11,18 @@ export default function StarRate(props) {
     let stars = [];
     let i = 0;
     while (i <= (value - 2)) {
-        stars.push(<i key={i} className="fa fa-sr fa-star"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star"/>);
         i += 2;
     }
     if (i < value) {
-        stars.push(<i key={i} className="fa fa-sr fa-star-half-o"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star-half-o"/>);
         i += 2;
     }
     while (i < 10) {
-        stars.push(<i key={i} className="fa fa-sr fa-star-o"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star-o"/>);
         i += 2;
     }
     return (
-        <span className="StarRate span-sr">{stars}</span>
+        <span className="StarRate span-star-rate">{stars}</span>
     );
 }
