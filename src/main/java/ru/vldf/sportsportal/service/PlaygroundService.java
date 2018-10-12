@@ -86,30 +86,23 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     }
 
     /**
-     * Returns requested playground with time grid info.
+     * Returns requested playground.
      *
-     * @param id   {@link Integer} playground identifier
-     * @param from {@link Date} first date of grid
-     * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundGridDTO}
-     * @throws ResourceNotFoundException  if playground not found
-     * @throws ResourceCorruptedException if playground data corrupted
+     * @param id {@link Integer} playground identifier
+     * @return {@link PlaygroundDTO} playground
+     * @throws ResourceNotFoundException if playground not found
      */
+    @Override
     @Transactional(
             readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
-            noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
     )
-    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
+    public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
         try {
-            return playgroundMapper.makeSchedule(
-                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,
-                    reservationRepository.findAll(new ReservationFilter(id, from, to))
-            );
+            return playgroundMapper.toDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
-        } catch (DataCorruptedException e) {
-            throw new ResourceCorruptedException(mGetAndFormat("sportsportal.lease.Playground.dataCorrupted.message", id), e);
         }
     }
 
@@ -134,23 +127,30 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     }
 
     /**
-     * Returns requested playground.
+     * Returns requested playground with time grid info.
      *
-     * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundDTO} playground
-     * @throws ResourceNotFoundException if playground not found
+     * @param id   {@link Integer} playground identifier
+     * @param from {@link Date} first date of grid
+     * @param to   {@link Date} last date of grid
+     * @return {@link PlaygroundGridDTO}
+     * @throws ResourceNotFoundException  if playground not found
+     * @throws ResourceCorruptedException if playground data corrupted
      */
-    @Override
     @Transactional(
             readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
+            rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
+            noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
     )
-    public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
+    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
-            return playgroundMapper.toDTO(playgroundRepository.getOne(id));
+            return playgroundMapper.makeSchedule(
+                    playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,
+                    reservationRepository.findAll(new ReservationFilter(id, from, to))
+            );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        } catch (DataCorruptedException e) {
+            throw new ResourceCorruptedException(mGetAndFormat("sportsportal.lease.Playground.dataCorrupted.message", id), e);
         }
     }
 

@@ -90,22 +90,16 @@ public class PlaygroundController {
     }
 
     /**
-     * Returns requested playground with time grid by start date and end date.
+     * Returns playground by identifier with full information.
      *
-     * @param id   playground identifier
-     * @param from {@link Date} first date of grid
-     * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundGridDTO} requested time grid
+     * @param id playground identifier
+     * @return {@link PlaygroundDTO} requested playground
      * @throws ResourceNotFoundException if requested playground not found
      */
-    @GetMapping("/{id}/grid")
-    @ApiOperation("получить сетку времени для площадки")
-    public PlaygroundGridDTO getGrid(
-            @PathVariable int id,
-            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
-            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
-    ) throws ResourceNotFoundException, ResourceCorruptedException {
-        return playgroundService.getGrid(id, from, to);
+    @GetMapping("/{id}")
+    @ApiOperation("получить площадку")
+    public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
+        return playgroundService.get(id);
     }
 
     /**
@@ -122,16 +116,22 @@ public class PlaygroundController {
     }
 
     /**
-     * Returns playground by identifier with full information.
+     * Returns requested playground with time grid by start date and end date.
      *
-     * @param id playground identifier
-     * @return {@link PlaygroundDTO} requested playground
+     * @param id   playground identifier
+     * @param from {@link Date} first date of grid
+     * @param to   {@link Date} last date of grid
+     * @return {@link PlaygroundGridDTO} requested time grid
      * @throws ResourceNotFoundException if requested playground not found
      */
-    @GetMapping("/{id}")
-    @ApiOperation("получить площадку")
-    public PlaygroundDTO get(@PathVariable int id) throws ResourceNotFoundException {
-        return playgroundService.get(id);
+    @GetMapping("/{id}/grid")
+    @ApiOperation("получить сетку времени для площадки")
+    public PlaygroundGridDTO getGrid(
+            @PathVariable int id,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
+    ) throws ResourceNotFoundException, ResourceCorruptedException {
+        return playgroundService.getGrid(id, from, to);
     }
 
     /**
