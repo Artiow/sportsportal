@@ -151,7 +151,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                 });
             });
             const schedule = new Map(array);
-            const restoredReservation = self.restoredReservation;
+            const restoredReservation = self.restoredReservation; // todo: bag: restored only firs 7 days!
             if (restoredReservation != null) {
                 const reservation = [];
                 restoredReservation.forEach(function (i, item, array) {
