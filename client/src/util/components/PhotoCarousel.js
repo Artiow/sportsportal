@@ -7,9 +7,10 @@ import React from 'react';
  * @return carousel component
  */
 export default function PhotoCarousel(props) {
+    const placeimg = props.placeimg;
     const identifier = props.identifier ? props.identifier : 'carousel';
     const photos = ((props.photos == null) || (props.photos.length === 0))
-        ? (props.placeimg ? [props.placeimg] : null)
+        ? (placeimg ? [props.placeimg] : null)
         : props.photos;
 
     if (photos != null) {
@@ -22,7 +23,11 @@ export default function PhotoCarousel(props) {
         const carouselInnerItem = (key, active) => {
             return (
                 <div className={active ? 'carousel-item active' : 'carousel-item'} key={key}>
-                    <img className="d-block w-100" src={photos[key]} alt={`${key}`}/>
+                    <img className="d-block w-100" src={photos[key]} alt={`${key}`}
+                         onError={(e) => {
+                             e.target.onError = null;
+                             e.target.src = placeimg
+                         }}/>
                 </div>
             );
         };

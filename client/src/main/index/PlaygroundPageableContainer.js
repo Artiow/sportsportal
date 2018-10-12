@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import StarRate from '../../util/components/StarRate';
-import noImage from '../../util/img/no-image-white-sm.jpg';
+import placeimg from '../../util/img/no-image-white-sm.jpg';
 
 export default function PlaygroundPageableContainer(props) {
     const page = props.page;
@@ -51,11 +51,15 @@ function PlaygroundContainer(props) {
 function PlaygroundCard(props) {
     const playground = props.playground;
     const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : noImage);
+    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : placeimg);
     return (
         <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
-                <img className="card-img" src={photoURL} alt={playground.name}/>
+                <img className="card-img" src={photoURL} alt={playground.name}
+                     onError={(e) => {
+                         e.target.onError = null;
+                         e.target.src = placeimg
+                     }}/>
                 <div className="card-body">
                     <h4 className="card-title mb-1">
                         <small>{playground.name}</small>
