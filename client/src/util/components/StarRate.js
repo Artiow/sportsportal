@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * StarRate by font awesome carousel.
@@ -6,25 +6,23 @@ import React from "react";
  * @param props {object} component props
  * @return rate component
  */
-function StarRate(props) {
+export default function StarRate(props) {
     const value = props.value;
     let stars = [];
     let i = 0;
     while (i <= (value - 2)) {
-        stars.push(<i key={i} className="fa fa-sr fa-star"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star"/>);
         i += 2;
     }
     if (i < value) {
-        stars.push(<i key={i} className="fa fa-sr fa-star-half-o"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star-half-o"/>);
         i += 2;
     }
     while (i < 10) {
-        stars.push(<i key={i} className="fa fa-sr fa-star-o"/>);
+        stars.push(<i key={i} className="fa fa-star-rate fa-star-o"/>);
         i += 2;
     }
     return (
-        <span className="StarRate span-sr">{stars}</span>
+        <span className="StarRate span-star-rate">{stars}</span>
     );
 }
-
-export default StarRate;

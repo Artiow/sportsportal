@@ -19,19 +19,13 @@ import java.util.Collection;
 
 public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
 
-    D get(Integer id) throws
-            ResourceNotFoundException;
+    D get(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 
-    Integer create(D t) throws
-            ResourceCannotCreateException;
+    Integer create(D t) throws AbstractAuthorizationException, AbstractResourceException;
 
-    void update(Integer id, D t) throws
-            ResourceNotFoundException,
-            ResourceCannotUpdateException,
-            ResourceOptimisticLockException;
+    void update(Integer id, D t) throws AbstractAuthorizationException, AbstractResourceException;
 
-    void delete(Integer id) throws
-            ResourceNotFoundException;
+    void delete(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 
 
     class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {

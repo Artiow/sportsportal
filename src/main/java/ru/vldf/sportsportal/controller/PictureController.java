@@ -46,7 +46,7 @@ public class PictureController {
     /**
      * Download picture by id.
      *
-     * @param id {@link Integer} picture identifier
+     * @param id picture identifier
      * @return picture {@link Resource}
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk
@@ -87,7 +87,7 @@ public class PictureController {
     /**
      * Delete picture by id.
      *
-     * @param id {@link Integer} picture identifier
+     * @param id picture identifier
      * @return no content
      * @throws ResourceNotFoundException if record not found in database
      */

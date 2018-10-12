@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class ResourceCannotCreateException extends Exception {
+public class ResourceCannotCreateException extends AbstractResourceException {
 
     public ResourceCannotCreateException(String message) {
         super(message);

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.service.UserService;
+import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 @RestController
@@ -16,24 +16,24 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 @RequestMapping("${api.path.common.user}")
 public class UserController {
 
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
 
     /**
      * Returns short user data by sent his id.
      *
-     * @param id {@link Integer} user id
+     * @param id user identifier
      * @return {@link UserShortDTO} user dto
      * @throws ResourceNotFoundException if user not found
      */
     @GetMapping("/{id}")
     @ApiOperation("получить пользователя")
-    public UserShortDTO get(@PathVariable Integer id) throws ResourceNotFoundException {
-        return userService.get(id);
+    public UserShortDTO get(@PathVariable int id) throws ResourceNotFoundException {
+        return authService.get(id);
     }
 }

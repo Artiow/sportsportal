@@ -1,5 +1,43 @@
-export const connection = Object.freeze({
-    API_URL: 'http://localhost:8080'
+export const env = Object.freeze({
+    ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
+    MAIN_HOST_URL: 'http://localhost:3000',
+    API_URL: 'http://localhost:8080',
+    MONTH_NAMES: [
+        'январь',
+        'февраль',
+        'март',
+        'апрель',
+        'май',
+        'июнь',
+        'июль',
+        'август',
+        'сентябрь',
+        'октябрь',
+        'ноябрь',
+        'декабрь'
+    ],
+    DAYS_OF_WEEK_NAMES: [{
+        full: 'воскресенье',
+        short: 'вс'
+    }, {
+        full: 'понедельник',
+        short: 'пн'
+    }, {
+        full: 'вторник',
+        short: 'вт'
+    }, {
+        full: 'среда',
+        short: 'ср'
+    }, {
+        full: 'четверг',
+        short: 'чт'
+    }, {
+        full: 'пятница',
+        short: 'пт'
+    }, {
+        full: 'суббота',
+        short: 'сб'
+    }]
 });
 
 /**
@@ -7,6 +45,13 @@ export const connection = Object.freeze({
  * @param path {string}
  * @return {string}
  */
-export function getApiUrl(path) {
-    return connection.API_URL + path;
+export default function apiUrl(path) {
+    return env.API_URL + path;
+}
+
+/**
+ * @return {string}
+ */
+export function ID() {
+    return '_' + Math.random().toString(36).substr(2, 9);
 }

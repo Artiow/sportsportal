@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -66,7 +68,7 @@ public class AdviseController {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String, String> errorMap = new HashMap<>(allErrors.size());
         for (ObjectError error : allErrors) {
-            String code = Optional.of(error.getArguments())
+            String code = Optional.ofNullable(error.getArguments())
                     .map(args -> ((DefaultMessageSourceResolvable) args[0]))
                     .map(DefaultMessageSourceResolvable::getCode)
                     .orElse("null");
@@ -88,11 +90,22 @@ public class AdviseController {
         );
     }
 
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return warnDTO(ex, "Sent HTTP Message Not Readable.");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        return warnDTO(ex, "Requested HTTP Method Not Supported");
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return warnDTO(ex, "Sent Request Not Contain Required Parameter");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -107,9 +120,9 @@ public class AdviseController {
         return warnDTO(ex, "Sent Access Token Not Readable.");
     }
 
-    @ExceptionHandler(AuthorizationRequiredException.class)
+    @ExceptionHandler(UnauthorizedAccessException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorDTO handleAuthorizationRequiredException(AuthorizationRequiredException ex) {
+    public ErrorDTO handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         return warnDTO(ex, "Unexpected Unauthorized Access Attempt.");
     }
 

@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
@@ -37,17 +37,16 @@ public class OrderDTO extends AbstractVersionedDTO {
     @NotNull(groups = FieldCheck.class)
     private LocalDateTime expiration;
 
+    @NotNull(groups = FieldCheck.class)
+    private Boolean byOwner;
+
     @Valid
     @NotNull(groups = FieldCheck.class)
     private UserLinkDTO customer;
 
     @Valid
-    @NotNull(groups = FieldCheck.class)
-    private PlaygroundLinkDTO playground;
-
-    @Valid
     @NotEmpty(groups = FieldCheck.class)
-    private List<ReservationDTO> reservations;
+    private List<ReservationResumeDTO> reservations;
 
 
     @Override
@@ -108,6 +107,15 @@ public class OrderDTO extends AbstractVersionedDTO {
         return this;
     }
 
+    public Boolean getByOwner() {
+        return byOwner;
+    }
+
+    public OrderDTO setByOwner(Boolean byOwner) {
+        this.byOwner = byOwner;
+        return this;
+    }
+
     public UserLinkDTO getCustomer() {
         return customer;
     }
@@ -117,20 +125,11 @@ public class OrderDTO extends AbstractVersionedDTO {
         return this;
     }
 
-    public PlaygroundLinkDTO getPlayground() {
-        return playground;
-    }
-
-    public OrderDTO setPlayground(PlaygroundLinkDTO playground) {
-        this.playground = playground;
-        return this;
-    }
-
-    public List<ReservationDTO> getReservations() {
+    public List<ReservationResumeDTO> getReservations() {
         return reservations;
     }
 
-    public OrderDTO setReservations(List<ReservationDTO> reservations) {
+    public OrderDTO setReservations(List<ReservationResumeDTO> reservations) {
         this.reservations = reservations;
         return this;
     }

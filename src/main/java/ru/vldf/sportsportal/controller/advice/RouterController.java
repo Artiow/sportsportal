@@ -5,10 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import ru.vldf.sportsportal.dto.handling.ErrorDTO;
-import ru.vldf.sportsportal.service.generic.AuthorizationRequiredException;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.HandlerNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.RequestDispatcher;
@@ -43,20 +42,21 @@ public class RouterController implements ErrorController {
                 .map(Integer::valueOf)
                 .map(HttpStatus::resolve)
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        String reasonPhrase = status.getReasonPhrase();
+        String message = String.format("%s. Error request: %s", status.getReasonPhrase(),
+                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).map(Object::toString).orElse("undefined uri")
+        );
         switch (status) {
             case NOT_FOUND: {
-                throw new HandlerNotFoundException(reasonPhrase);
+                throw new HandlerNotFoundException(message);
             }
             case UNAUTHORIZED: {
-                throw new AuthorizationRequiredException(reasonPhrase);
+                throw new UnauthorizedAccessException(message);
             }
             case FORBIDDEN: {
-                throw new ForbiddenAccessException(reasonPhrase);
+                throw new ForbiddenAccessException(message);
             }
             default: {
-                throw new Exception(reasonPhrase);
+                throw new Exception(message);
             }
         }
     }

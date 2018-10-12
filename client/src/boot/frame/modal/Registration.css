@@ -1,0 +1,51 @@
+.Registration .RegistrationForm .alert {
+    display: none;
+    padding: 5px;
+    text-align: center;
+}
+
+.Registration .RegistrationForm .form-row,
+.Registration .RegistrationForm .form-row-container {
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.Registration .RegistrationForm .form-row:first-child,
+.Registration .RegistrationForm .form-row-container:first-child {
+    margin-top: 0;
+}
+
+.Registration .RegistrationForm .form-row:last-child,
+.Registration .RegistrationForm .form-row-container:last-child {
+    margin-bottom: 0;
+}
+
+.Registration .RegistrationForm .form-row .col-sm-3 {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.Registration .RegistrationForm .row {
+    margin-top: 3.5%;
+}
+
+.Registration .RegistrationForm .login {
+    margin-top: 10px;
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.Registration .RegistrationForm .login a {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.Registration .RegistrationForm .btn.btn-primary {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f0ad4e;
+    border-color: #d99a4a;
+}

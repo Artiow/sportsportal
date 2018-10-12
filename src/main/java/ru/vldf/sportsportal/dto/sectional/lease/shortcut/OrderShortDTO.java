@@ -1,13 +1,11 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 public class OrderShortDTO extends AbstractIdentifiedDTO {
@@ -17,9 +15,10 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
     private BigDecimal price;
     private LocalDateTime datetime;
     private LocalDateTime expiration;
-    private URI playgroundURL;
+    private Boolean byOwner;
+    private URI orderURL;
     private URI customerURL;
-    private List<OrderPositionDTO> positions;
+    private List<ReservationResumeDTO> reservations;
 
 
     @Override
@@ -69,12 +68,21 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public URI getPlaygroundURL() {
-        return playgroundURL;
+    public Boolean getByOwner() {
+        return byOwner;
     }
 
-    public OrderShortDTO setPlaygroundURL(URI playgroundURL) {
-        this.playgroundURL = playgroundURL;
+    public OrderShortDTO setByOwner(Boolean byOwner) {
+        this.byOwner = byOwner;
+        return this;
+    }
+
+    public URI getOrderURL() {
+        return orderURL;
+    }
+
+    public OrderShortDTO setOrderURL(URI orderURL) {
+        this.orderURL = orderURL;
         return this;
     }
 
@@ -87,57 +95,12 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public List<OrderPositionDTO> getPositions() {
-        return positions;
+    public List<ReservationResumeDTO> getReservations() {
+        return reservations;
     }
 
-    public OrderShortDTO setPositions(List<OrderPositionDTO> positions) {
-        this.positions = positions;
+    public OrderShortDTO setReservations(List<ReservationResumeDTO> reservations) {
+        this.reservations = reservations;
         return this;
-    }
-
-
-    public static class OrderPositionDTO implements DataTransferObject {
-
-        private LocalDate date;
-        private LocalTime startTime;
-        private LocalTime endTime;
-        private BigDecimal price;
-
-        public LocalDate getDate() {
-            return date;
-        }
-
-        public OrderPositionDTO setDate(LocalDate date) {
-            this.date = date;
-            return this;
-        }
-
-        public LocalTime getStartTime() {
-            return startTime;
-        }
-
-        public OrderPositionDTO setStartTime(LocalTime startTime) {
-            this.startTime = startTime;
-            return this;
-        }
-
-        public LocalTime getEndTime() {
-            return endTime;
-        }
-
-        public OrderPositionDTO setEndTime(LocalTime endTime) {
-            this.endTime = endTime;
-            return this;
-        }
-
-        public BigDecimal getPrice() {
-            return price;
-        }
-
-        public OrderPositionDTO setPrice(BigDecimal price) {
-            this.price = price;
-            return this;
-        }
     }
 }

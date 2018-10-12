@@ -23,7 +23,7 @@ public interface LoginMapper {
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"}),
-            @Mapping(target = "roles", source = "roles")
+            @Mapping(target = "username", source = "name")
     })
     LoginDTO toLoginDTO(UserEntity entity);
 
@@ -36,7 +36,7 @@ public interface LoginMapper {
         return new IdentifiedUser(
                 entity.getId(),
                 User.builder()
-                        .username(entity.getLogin())
+                        .username(entity.getEmail())
                         .password(entity.getPassword())
                         .roles(roles.toArray(new String[0]))
                         .build()

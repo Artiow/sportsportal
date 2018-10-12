@@ -39,7 +39,7 @@ public class SportController {
 
     @GetMapping("/list")
     @ApiOperation("получить страницу с видами спорта")
-    public PageDTO<SportDTO> get(PageDividerDTO pageDividerDTO) {
-        return sportService.get(pageDividerDTO);
+    public PageDTO<SportDTO> getList(PageDividerDTO pageDividerDTO) {
+        return sportService.getList(pageDividerDTO);
     }
 }

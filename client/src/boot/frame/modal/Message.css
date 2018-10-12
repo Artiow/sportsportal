@@ -1,0 +1,16 @@
+.Message {
+    padding: 15px 25px;
+    border-radius: 0.25em;
+}
+
+.Message.alert {
+    margin-bottom: 0;
+}
+
+.Message.alert .progress{
+    margin-top: 5%;
+}
+
+.Message.alert p:last-child {
+    margin-bottom: 0;
+}

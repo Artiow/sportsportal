@@ -10,10 +10,9 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
     @NotNull
     private Integer id;
 
-    private String login;
-    private String name;
-    private String surname;
-    private String patronymic;
+    private String email;
+    private String username;
+    private String phone;
     private URI userURL;
     private URI avatarURL;
 
@@ -29,39 +28,30 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public UserLinkDTO setLogin(String login) {
-        this.login = login;
+    public UserLinkDTO setEmail(String email) {
+        this.email = email;
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public UserLinkDTO setName(String name) {
-        this.name = name;
+    public UserLinkDTO setUsername(String username) {
+        this.username = username;
         return this;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getPhone() {
+        return phone;
     }
 
-    public UserLinkDTO setSurname(String surname) {
-        this.surname = surname;
-        return this;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public UserLinkDTO setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
+    public UserLinkDTO setPhone(String phone) {
+        this.phone = phone;
         return this;
     }
 

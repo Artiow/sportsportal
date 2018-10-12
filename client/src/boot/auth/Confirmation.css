@@ -1,0 +1,8 @@
+.Confirmation .stage.stage-processed {
+    margin-top: 25px;
+}
+
+.Confirmation .stage.stage-failed {
+    max-width: 630px;
+    margin: 25px auto;
+}

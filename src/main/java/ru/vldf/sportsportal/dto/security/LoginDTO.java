@@ -1,25 +1,45 @@
 package ru.vldf.sportsportal.dto.security;
 
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 
 import java.net.URI;
 import java.util.List;
 
-public class LoginDTO implements DataTransferObject {
+public class LoginDTO extends AbstractIdentifiedDTO {
 
-    private String login;
+    private Integer id;
+    private String email;
+    private String username;
     private URI userURL;
     private URI avatarURL;
     private List<String> roles;
 
 
-    public String getLogin() {
-        return login;
+    @Override
+    public Integer getId() {
+        return id;
     }
 
-    public LoginDTO setLogin(String login) {
-        this.login = login;
+    @Override
+    public LoginDTO setId(Integer id) {
+        this.id = id;
         return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public URI getUserURL() {

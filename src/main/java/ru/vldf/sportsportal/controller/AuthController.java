@@ -11,8 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.TokenDTO;
-import ru.vldf.sportsportal.service.UserService;
+import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 
@@ -26,18 +27,18 @@ public class AuthController {
     @Value("${api.path.common.user}")
     private String userPath;
 
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
 
     /**
      * Returns token by logged user.
      *
-     * @param login    {@link String} users login
+     * @param email    {@link String} users email
      * @param password {@link String} users password
      * @return {@link TokenDTO} token data
      * @throws UsernameNotFoundException if user not found
@@ -45,9 +46,9 @@ public class AuthController {
      */
     @GetMapping("/login")
     @ApiOperation("получить токен")
-    public TokenDTO login(@RequestParam String login, @RequestParam String password)
+    public TokenDTO login(@RequestParam String email, @RequestParam String password)
             throws UsernameNotFoundException, JwtException {
-        return userService.login(login, password);
+        return authService.login(email, password);
     }
 
     /**
@@ -64,13 +65,13 @@ public class AuthController {
     @ApiOperation("верификация")
     public TokenDTO verify(@RequestParam String accessToken)
             throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
-        return userService.verify(accessToken);
+        return authService.verify(accessToken);
     }
 
     /**
      * Register new user.
      *
-     * @param userDTO new user data
+     * @param userDTO {@link UserDTO} new user data
      * @return new user location
      * @throws ResourceCannotCreateException if user cannot create
      */
@@ -78,6 +79,36 @@ public class AuthController {
     @ApiOperation("регистрация")
     public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
             throws ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(userPath, userService.register(userDTO))).build();
+        return ResponseEntity.created(buildURL(userPath, authService.register(userDTO))).build();
+    }
+
+    /**
+     * Init confirmation for user and send him confirmation email.
+     *
+     * @param id   user identifier
+     * @param host {@link String} confirmation link host
+     * @return no content
+     * @throws ResourceNotFoundException     if user could not found
+     * @throws ResourceCannotUpdateException if could not sent email
+     */
+    @PutMapping("/confirm/{id}")
+    @ApiOperation("отправить письмо для подтверждения электронной почты")
+    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam String host) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        authService.initConfirmation(id, host);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * User confirmation.
+     *
+     * @param confirmToken @link String} user's confirmation token
+     * @return no content
+     * @throws ResourceNotFoundException if user not found by confirm code
+     */
+    @PutMapping("/confirm")
+    @ApiOperation("подтвердить пользователя")
+    public ResponseEntity<Void> confirm(@RequestParam String confirmToken) throws ResourceNotFoundException {
+        authService.confirm(confirmToken);
+        return ResponseEntity.noContent().build();
     }
 }

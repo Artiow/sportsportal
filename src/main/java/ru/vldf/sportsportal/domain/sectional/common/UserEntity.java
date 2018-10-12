@@ -12,8 +12,8 @@ import java.util.Collection;
 public class UserEntity extends AbstractVersionedEntity {
 
     @Basic
-    @Column(name = "login", nullable = false)
-    private String login;
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Basic
     @Column(name = "password", nullable = false)
@@ -28,16 +28,20 @@ public class UserEntity extends AbstractVersionedEntity {
     private String surname;
 
     @Basic
-    @Column(name = "patronymic", nullable = false)
+    @Column(name = "patronymic")
     private String patronymic;
 
     @Basic
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Basic
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
+
+    @Basic
+    @Column(name = "confirm_code")
+    private String confirmCode;
 
     @OneToOne
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
@@ -59,12 +63,12 @@ public class UserEntity extends AbstractVersionedEntity {
     private Collection<PlaygroundEntity> playgrounds;
 
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -115,6 +119,14 @@ public class UserEntity extends AbstractVersionedEntity {
         this.phone = phone;
     }
 
+    public String getConfirmCode() {
+        return confirmCode;
+    }
+
+    public void setConfirmCode(String confirmCode) {
+        this.confirmCode = confirmCode;
+    }
+
     public PictureEntity getAvatar() {
         return avatar;
     }
@@ -145,5 +157,18 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

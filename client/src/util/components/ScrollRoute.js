@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Route, withRouter} from 'react-router-dom';
 
-class ScrollRoute extends Component {
+export default withRouter(class ScrollRoute extends React.Component {
+
     componentDidUpdate(prevProps) {
         if (this.props.location !== prevProps.location) {
             window.scrollTo(0, 0)
@@ -12,6 +13,4 @@ class ScrollRoute extends Component {
         const {component: Component, ...rest} = this.props;
         return <Route {...rest} render={props => (<Component {...props} />)}/>;
     }
-}
-
-export default withRouter(ScrollRoute);
+});

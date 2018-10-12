@@ -1,0 +1,63 @@
+.PlaygroundFilter form.card {
+    padding: 15px;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card {
+    margin-bottom: 5px;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card:last-child {
+    margin-bottom: 0;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-header {
+    padding: 0;
+    background: 0;
+    border: 0;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-header a {
+    text-decoration: none;
+    text-align: left;
+    font-weight: 500;
+    color: #343a40;
+    width: 100%;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-header a:hover {
+    color: black;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body {
+    border-top: 1px solid rgba(0, 0, 0, .125);
+    padding-top: 15px;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge-sub {
+    display: inline-block;
+    min-width: 21px;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge span.badge-param {
+    margin: 0 3px 0 0;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox {
+    margin-bottom: 2px;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox:last-child {
+    margin-bottom: 0;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox input,
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox label {
+    font-weight: 500;
+    color: #343a40;
+}
+
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox input:hover,
+.PlaygroundFilter form.card div.filter-accordion .card .card-body .CustomCheckbox label:hover {
+    cursor: pointer;
+    color: black;
+}

@@ -1,0 +1,24 @@
+.PlaygroundSubmitOrderModal table thead tr th {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.PlaygroundSubmitOrderModal .modal-body .row {
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+}
+
+.PlaygroundSubmitOrderModal .modal-body .row .col-1 {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.PlaygroundSubmitOrderModal .modal-body .row .col-10 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.PlaygroundSubmitOrderModal .modal-body .row .col-1 button {
+    height: 50px;
+    width: 100%;
+}

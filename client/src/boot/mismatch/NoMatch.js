@@ -1,7 +1,8 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import './NoMatch.css';
 
-function NoMatch() {
+export default function NoMatch() {
     return (
         <div className="NoMatch page-wrap d-flex flex-row align-items-center">
             <div className="container">
@@ -9,12 +10,10 @@ function NoMatch() {
                     <div className="col-md-12 text-center">
                         <span className="d-block display-1">404</span>
                         <div className="mb-4 lead">Страница, которую вы ищите, не найдена.</div>
-                        <a href="/" className="btn btn-link">На домашнюю страницу</a>
+                        <Link to={'/'} className="btn btn-link">На домашнюю страницу</Link>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
-export default NoMatch;

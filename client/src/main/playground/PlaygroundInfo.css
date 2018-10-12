@@ -1,0 +1,36 @@
+.PlaygroundInfo .container.content-container {
+    padding: 0;
+}
+
+.PlaygroundInfo .container.content-container .row {
+    margin: 15px 0;
+    padding: 10px 0;
+    border-radius: .25rem;
+    background-color: #f8f9fa;
+}
+
+.PlaygroundInfo .container.content-container .row:first-child {
+    margin-top: 0;
+}
+
+.PlaygroundInfo .container.content-container .row:last-child {
+    margin-bottom: 0;
+}
+
+.PlaygroundInfo .container.content-container .row .row-h {
+    font-weight: 300;
+}
+
+.PlaygroundInfo .container.content-container .row.header-row h1.header-h {
+    margin-bottom: 0;
+}
+
+.PlaygroundInfo .container.content-container .row.feature-row .info-h.info-infra {
+    padding: .25rem .75rem;
+}
+
+.PlaygroundInfo .container.content-container .row.feature-row ul li {
+    padding: .5rem .75rem;
+    background: inherit;
+    font-weight: 300;
+}

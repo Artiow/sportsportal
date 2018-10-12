@@ -17,6 +17,21 @@ public class PlaygroundFilterDTO extends StringSearcherDTO {
     private Integer minRate;
 
 
+    @Override
+    public PlaygroundFilterDTO setPageSize(Integer pageSize) {
+        return (PlaygroundFilterDTO) super.setPageSize(pageSize);
+    }
+
+    @Override
+    public PlaygroundFilterDTO setPageNum(Integer pageNum) {
+        return (PlaygroundFilterDTO) super.setPageNum(pageNum);
+    }
+
+    @Override
+    public PlaygroundFilterDTO setSearchString(String searchString) {
+        return (PlaygroundFilterDTO) super.setSearchString(searchString);
+    }
+
     public Collection<String> getFeatureCodes() {
         return featureCodes;
     }

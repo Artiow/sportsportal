@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.generic;
 
-public class ResourceCannotUpdateException extends Exception {
+public class ResourceCannotUpdateException extends AbstractResourceException {
 
     public ResourceCannotUpdateException(String message) {
         super(message);

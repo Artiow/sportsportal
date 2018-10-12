@@ -8,7 +8,7 @@ import java.util.List;
 public class UserShortDTO extends AbstractIdentifiedDTO {
 
     private Integer id;
-    private String login;
+    private String email;
     private String name;
     private String surname;
     private String patronymic;
@@ -30,12 +30,12 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
         return this;
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public UserShortDTO setLogin(String login) {
-        this.login = login;
+    public UserShortDTO setEmail(String email) {
+        this.email = email;
         return this;
     }
 
