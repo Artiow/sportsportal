@@ -18,6 +18,9 @@ export default class PlaygroundSearcher extends React.Component {
         super(props);
         this.state = {page: null};
         this.filter = {pageNum: 0, pageSize: PlaygroundSearcher.DEFAULT_PAGE_SIZE};
+    }
+
+    componentDidMount() {
         this.query(this.filter);
     }
 

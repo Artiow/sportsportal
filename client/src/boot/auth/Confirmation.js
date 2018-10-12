@@ -16,6 +16,9 @@ export default class Confirmation extends React.Component {
             stage: Confirmation.STAGE.PROCESSED,
             errorMessage: null
         };
+    }
+
+    componentDidMount() {
         this.confirmQuery();
     }
 
