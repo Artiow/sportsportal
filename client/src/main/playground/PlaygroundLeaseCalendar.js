@@ -7,6 +7,7 @@ import {restoreReservation, saveReservation} from '../../util/reservationSaver';
 import verify, {getToken} from '../../util/verification';
 import apiUrl, {env} from '../../boot/constants';
 import axios from 'axios';
+import qs from 'qs';
 import './PlaygroundLeaseCalendar.css';
 
 export default class PlaygroundLeaseCalendar extends React.Component {
@@ -42,9 +43,9 @@ export default class PlaygroundLeaseCalendar extends React.Component {
             schedule: null,
             dateList: null,
             timeList: null,
-            reservation: null,
             halfHourAvailable: null,
             fullHourRequired: null,
+            reservation: [],
             access: false,
             owner: false
         };
@@ -126,12 +127,22 @@ export default class PlaygroundLeaseCalendar extends React.Component {
     }
 
     restore(id, version) {
-        const restoredReservation = restoreReservation(id, version);
-        if (restoredReservation != null) {
-            const reservation = [];
-            // todo: restore!
+        axios.get(apiUrl('/leaseapi/playground/' + id + '/check'), {
+            params: {
+                version: version,
+                reservations: restoreReservation(id, version)
+            },
+            paramsSerializer: params => {
+                return qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        }).then(response => {
+            console.log('Playground Lease Calendar (query [check]):', response);
+            const reservation = response.data.reservations;
+            reservation.forEach((value, index, array) => array[index] = value.replace(/:\d\d$/, ''));
             this.setState({reservation: reservation});
-        }
+        }).catch(error => {
+            console.error('Playground Lease Calendar (query [check]):', ((error.response != null) ? error.response : error));
+        });
     }
 
     query(id, version, from, to) {
@@ -147,6 +158,9 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                     console.log('Playground Lease Calendar (query [short]):', response);
                     self.ownersURLs = response.data.ownersURLs;
                     self.setAuthority();
+                })
+                .catch(error => {
+                    console.error('Playground Lease Calendar (query [short]):', ((error.response != null) ? error.response : error));
                 });
             const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price;
             const array = Object.entries(data.grid.schedule);

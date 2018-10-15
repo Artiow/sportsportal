@@ -159,6 +159,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * reservation times.
      *
      * @param id           {@link Integer} playground identifier
+     * @param version      {@link Long} playground version
      * @param reservations {@link Collection<LocalDateTime>} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if playground not found
@@ -168,26 +169,25 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             rollbackFor = {ResourceNotFoundException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public ReservationListDTO check(Integer id, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
+    public ReservationListDTO check(Integer id, Long version, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
-            Iterator<LocalDateTime> iterator = reservations.iterator();
-            while (iterator.hasNext()) {
-                LocalDateTime localDateTime = iterator.next();
-                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localDateTime.toLocalTime()));
-                if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
-                    iterator.remove();
-                } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
-                    iterator.remove();
+            if (!version.equals(playgroundEntity.getVersion())) {
+                return new ReservationListDTO().setReservations(new ArrayList<>(0));
+            } else {
+                Iterator<LocalDateTime> iterator = reservations.iterator();
+                while (iterator.hasNext()) {
+                    LocalDateTime localDateTime = iterator.next();
+                    Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localDateTime.toLocalTime()));
+                    if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
+                        iterator.remove();
+                    } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
+                        iterator.remove();
+                    }
                 }
+                reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
+                return new ReservationListDTO().setReservations((reservations instanceof List) ? (List<LocalDateTime>) reservations : new ArrayList<>(reservations));
             }
-            reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
-            return new ReservationListDTO()
-                    .setReservations(
-                            (reservations instanceof List)
-                                    ? (List<LocalDateTime>) reservations
-                                    : new ArrayList<>(reservations)
-                    );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }

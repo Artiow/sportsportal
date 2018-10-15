@@ -20,7 +20,7 @@ export default function verify(successCallback, failureCallback) {
             })
             .catch(function (error) {
                 logout();
-                console.error('verify:', ((error.response != null) ? error.response : error));
+                console.warn('verify:', ((error.response != null) ? error.response : error));
                 call(failureCallback, error);
             })
     } else call(failureCallback, undefined);

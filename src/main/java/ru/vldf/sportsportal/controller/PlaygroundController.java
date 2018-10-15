@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.controller;
 
+import com.google.common.collect.Collections2;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -139,17 +139,21 @@ public class PlaygroundController {
      * reservation times.
      *
      * @param id           playground identifier
+     * @param version      playground version
      * @param reservations {@link Collection<String>} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if requested playground not found
      */
     @GetMapping("/{id}/check")
     @ApiOperation("проверить доступность бронирования")
-    public ReservationListDTO check(@PathVariable int id, @RequestParam Collection<String> reservations)
-            throws ResourceNotFoundException {
-        List<LocalDateTime> validReservations = new ArrayList<>(reservations.size());
-        for (String datetime : reservations) validReservations.add(LocalDateTime.parse(datetime));
-        return playgroundService.check(id, validReservations);
+    public ReservationListDTO check(
+            @PathVariable int id,
+            @RequestParam long version,
+            @RequestParam(required = false) Collection<String> reservations
+    ) throws ResourceNotFoundException {
+        return reservations != null
+                ? playgroundService.check(id, version, Collections2.transform(reservations, LocalDateTime::parse))
+                : new ReservationListDTO().setReservations(new ArrayList<>());
     }
 
     /**
