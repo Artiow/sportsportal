@@ -10,6 +10,10 @@ import java.time.LocalTime;
 @Component
 public class JavaTimeMapper {
 
+    public static LocalTime MIN_TIME = LocalTime.MIN;
+    public static LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
+    public static LocalDateTime MIN = LocalDateTime.of(MIN_DATE, MIN_TIME);
+
     public LocalDate toLocalDate(Timestamp timestamp) {
         if (timestamp == null) {
             return null;
@@ -23,7 +27,7 @@ public class JavaTimeMapper {
             return null;
         }
 
-        return Timestamp.valueOf(LocalDateTime.of(localDate, LocalTime.MIN));
+        return Timestamp.valueOf(LocalDateTime.of(localDate, MIN_TIME));
     }
 
     public LocalTime toLocalTime(Timestamp timestamp) {
@@ -39,7 +43,7 @@ public class JavaTimeMapper {
             return null;
         }
 
-        return Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localTime));
+        return Timestamp.valueOf(LocalDateTime.of(MIN_DATE, localTime));
     }
 
     public LocalDateTime toLocalDateTime(Timestamp timestamp) {

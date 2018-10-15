@@ -44,6 +44,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
+    private JavaTimeMapper javaTimeMapper;
 
 
     @Autowired
@@ -70,6 +71,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     @Autowired
     public void setPlaygroundMapper(PlaygroundMapper playgroundMapper) {
         this.playgroundMapper = playgroundMapper;
+    }
+
+    @Autowired
+    public void setJavaTimeMapper(JavaTimeMapper javaTimeMapper) {
+        this.javaTimeMapper = javaTimeMapper;
     }
 
 
@@ -178,7 +184,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 Iterator<LocalDateTime> iterator = reservations.iterator();
                 while (iterator.hasNext()) {
                     LocalDateTime localDateTime = iterator.next();
-                    Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localDateTime.toLocalTime()));
+                    Timestamp reservedTime = javaTimeMapper.toTimestamp(localDateTime.toLocalTime());
                     if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
                         iterator.remove();
                     } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
@@ -230,7 +236,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
-                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
+                Timestamp reservedTime = javaTimeMapper.toTimestamp(datetime.toLocalTime());
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
                     throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notWorkingTime.message"));
                 }
