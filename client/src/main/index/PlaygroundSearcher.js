@@ -38,7 +38,7 @@ export default class PlaygroundSearcher extends React.Component {
             params: filter,
             paramsSerializer: serializer
         }).then(function (response) {
-            console.log('PlaygroundSearcher (query):', response);
+            console.debug('PlaygroundSearcher (query):', response);
             self.setState({page: response.data});
         }).catch(function (error) {
             console.error('PlaygroundSearcher (query):', ((error.response != null) ? error.response : error));

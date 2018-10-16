@@ -29,7 +29,7 @@ export default class Login extends React.Component {
             })
             .then(function (response) {
                 login(response.data);
-                console.log('Login (query):', response);
+                console.debug('Login (query):', response);
                 window.location.replace('/');
             })
             .catch(function (error) {
@@ -53,9 +53,7 @@ export default class Login extends React.Component {
 
     handleInputChange(event) {
         const target = event.target;
-        this.setState({
-            [target.id]: target.value
-        });
+        this.setState({[target.name]: target.value});
     }
 
     handleRegClick(event) {
@@ -74,10 +72,14 @@ export default class Login extends React.Component {
                 </div>
                 <form onSubmit={this.handleSubmit.bind(this)}>
                     <div>
-                        <input type="email" className="form-control" id="email" placeholder="Электронная почта"
+                        <input id="log_form_email" name="email"
+                               type="email" autoComplete="email"
+                               className="form-control" placeholder="Электронная почта"
                                onChange={this.handleInputChange.bind(this)}
                                required="required"/>
-                        <input type="password" className="form-control" id="password" placeholder="Пароль"
+                        <input id="log_form_password" name="password"
+                               type="password" autoComplete="password"
+                               className="form-control" placeholder="Пароль"
                                onChange={this.handleInputChange.bind(this)}
                                required="required"/>
                     </div>

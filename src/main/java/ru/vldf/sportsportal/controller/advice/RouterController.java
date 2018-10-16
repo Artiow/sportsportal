@@ -19,6 +19,29 @@ import java.util.Optional;
 public class RouterController implements ErrorController {
 
     /**
+     * Returns CSRF state message.
+     *
+     * @return object {@link Object} with message
+     */
+    @ResponseBody
+    @GetMapping("/csrf")
+    public Object toCsrf() {
+        return new Object() {
+
+            private String message = "CSRF protection is disabled as unnecessary";
+
+            public String getMessage() {
+                return message;
+            }
+
+            public Object setMessage(String message) {
+                this.message = message;
+                return this;
+            }
+        };
+    }
+
+    /**
      * Returns redirect to swagger page from associated paths.
      *
      * @return redirect to swagger page
@@ -34,7 +57,6 @@ public class RouterController implements ErrorController {
      * @param request {@link HttpServletRequest} that contains error status
      * @throws Exception that corresponds to an error
      */
-    @ResponseBody
     @GetMapping("/error")
     public void handleError(HttpServletRequest request) throws Exception {
         HttpStatus status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
@@ -42,22 +64,18 @@ public class RouterController implements ErrorController {
                 .map(Integer::valueOf)
                 .map(HttpStatus::resolve)
                 .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
-        String message = String.format("%s. Error request: %s", status.getReasonPhrase(),
-                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).map(Object::toString).orElse("undefined uri")
+        String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(),
+                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).map(Object::toString).orElse("undefined")
         );
         switch (status) {
-            case NOT_FOUND: {
+            case NOT_FOUND:
                 throw new HandlerNotFoundException(message);
-            }
-            case UNAUTHORIZED: {
+            case UNAUTHORIZED:
                 throw new UnauthorizedAccessException(message);
-            }
-            case FORBIDDEN: {
+            case FORBIDDEN:
                 throw new ForbiddenAccessException(message);
-            }
-            default: {
+            default:
                 throw new Exception(message);
-            }
         }
     }
 

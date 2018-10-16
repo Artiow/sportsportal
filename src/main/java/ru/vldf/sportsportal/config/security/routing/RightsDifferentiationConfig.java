@@ -3,7 +3,6 @@ package ru.vldf.sportsportal.config.security.routing;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -23,7 +22,6 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
     private Map<String, RequestMatcher> routeMap;
 
 
-    @Autowired
     @PostConstruct
     private void setRouteParams() throws Exception {
 

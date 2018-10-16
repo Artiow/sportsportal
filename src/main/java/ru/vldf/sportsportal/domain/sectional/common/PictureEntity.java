@@ -58,4 +58,17 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PictureEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

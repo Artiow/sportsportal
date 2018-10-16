@@ -63,7 +63,7 @@ export default class PlaygroundFilter extends React.Component {
     uploadFilterDictionaryData(uri, dictionary) {
         axios.get(apiUrl(uri))
             .then(response => {
-                console.log(`PlaygroundFilter (query [${dictionary}]):`, response);
+                console.debug(`PlaygroundFilter (query [${dictionary}]):`, response);
                 this.dictionary[dictionary] = response.data.content;
             })
             .catch(error => {

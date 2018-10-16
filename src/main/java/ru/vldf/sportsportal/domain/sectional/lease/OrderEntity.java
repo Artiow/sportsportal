@@ -96,4 +96,17 @@ public class OrderEntity extends AbstractVersionedEntity {
     public void setReservations(Collection<ReservationEntity> reservations) {
         this.reservations = reservations;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

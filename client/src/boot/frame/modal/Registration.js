@@ -1,7 +1,7 @@
 import React from 'react';
 import InputMask from 'react-input-mask';
 import {Link} from 'react-router-dom';
-import apiUrl, {ID} from '../../constants';
+import apiUrl from '../../constants';
 import axios from 'axios';
 import './Registration.css';
 
@@ -23,7 +23,7 @@ export default class Registration extends React.Component {
         axios
             .post(apiUrl('/auth/register'), obj)
             .then(function (response) {
-                console.log('Registration (query):', response);
+                console.debug('Registration (query):', response);
                 const locationArray = response.headers.location.split('/');
                 const onSuccess = self.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
@@ -115,16 +115,19 @@ class RegistrationForm extends React.Component {
                 </div>
                 <div className="form-row-main-container">
                     <div className="form-row-container">
-                        <InputField identifier={'name'} placeholder={'Имя'} required={'required'}
+                        <InputField identifier={'name'} placeholder={'Имя'}
                                     errorMessage={this.state.errorMessages.name}
-                                    onChange={this.handleInputChange.bind(this)}/>
-                        <InputField identifier={'surname'} placeholder={'Фамилия'} required={'required'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
+                        <InputField identifier={'surname'} placeholder={'Фамилия'}
                                     errorMessage={this.state.errorMessages.surname}
-                                    onChange={this.handleInputChange.bind(this)}/>
-                        <InputField type={'email'}
-                                    identifier={'email'} placeholder={'Email'} required={'required'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
+                        <InputField identifier={'email'} placeholder={'Email'}
+                                    type={'email'} autoComplete="email"
                                     errorMessage={this.state.errorMessages.email}
-                                    onChange={this.handleInputChange.bind(this)}/>
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
                     </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                         secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
@@ -156,11 +159,12 @@ function InputField(props) {
                 {props.placeholder}
             </label>
             <div className="col-sm-9">
-                <InputMask id={ID() + props.identifier}
+                <InputMask id={`reg_form_${props.identifier}`}
                            type={(props.type != null) ? props.type : 'text'}
                            name={props.identifier} placeholder={props.placeholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            maskChar={props.maskChar} mask={props.mask}
+                           autoComplete={props.autoComplete}
                            onChange={props.onChange}
                            required={props.required}/>
                 <div style={(!error) ? {display: 'none'} : {display: 'block'}}
@@ -181,7 +185,8 @@ function PasswordInputField(props) {
                     {props.firstPlaceholder}
                 </label>
                 <div className="col-sm-9">
-                    <input id={ID() + props.firstIdentifier} type="password"
+                    <input id={`reg_form_${props.firstIdentifier}`}
+                           type="password" autoComplete="new-password"
                            name={props.firstIdentifier} placeholder={props.firstPlaceholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            onChange={props.onChange}
@@ -191,7 +196,8 @@ function PasswordInputField(props) {
             <div className="form-row">
                 <label htmlFor={props.secondIdentifier} className="col-sm-3 col-form-label"/>
                 <div className="col-sm-9">
-                    <input id={ID() + props.secondIdentifier} type="password"
+                    <input id={`reg_form_${props.secondIdentifier}`}
+                           type="password" autoComplete="new-password"
                            name={props.secondIdentifier} placeholder={props.secondPlaceholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            onChange={props.onChange}

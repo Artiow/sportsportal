@@ -78,8 +78,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         verify((data) => {
             const login = data.login;
             this.setState({access: !(login.roles.indexOf(env.ROLE.USER) < 0)});
-            this.userURL = login.userURL;
-            this.setAuthority();
+            this.calculateAuthority(login.userURL, null);
         });
         this.restore(
             this.playgroundId,
@@ -93,10 +92,14 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         );
     }
 
-    setAuthority() {
+    calculateAuthority(userURL, ownersURLs) {
+        if (userURL) this.userURL = userURL;
+        if (ownersURLs) this.ownersURLs = ownersURLs;
         const user = this.userURL;
         const owners = this.ownersURLs;
-        this.setState({owner: ((user != null) && (owners != null)) ? !(owners.indexOf(user) < 0) : false})
+        if ((user != null) && (owners != null)) {
+            this.setState({owner: !(owners.indexOf(user) < 0)})
+        }
     }
 
     handleOffset(event) {
@@ -136,7 +139,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
                 return qs.stringify(params, {arrayFormat: 'repeat'})
             }
         }).then(response => {
-            console.log('Playground Lease Calendar (query [check]):', response);
+            console.debug('Playground Lease Calendar (query [check]):', response);
             const reservation = response.data.reservations;
             reservation.forEach((value, index, array) => array[index] = value.replace(/:\d\d$/, ''));
             this.setState({reservation: reservation});
@@ -149,20 +152,12 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         const self = this;
         axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
         ).then(function (response) {
-            console.log('Playground Lease Calendar (query):', response);
+            console.debug('Playground Lease Calendar (query):', response);
             const dateList = [];
             const timeList = [];
             const data = response.data;
-            axios.get(data.playgroundURL + '/short')
-                .then(response => {
-                    console.log('Playground Lease Calendar (query [short]):', response);
-                    self.ownersURLs = response.data.ownersURLs;
-                    self.setAuthority();
-                })
-                .catch(error => {
-                    console.error('Playground Lease Calendar (query [short]):', ((error.response != null) ? error.response : error));
-                });
-            const price = data.halfHourAvailable ? Math.floor(data.price / 2) : data.price;
+            self.calculateAuthority(null, data.playground.ownersURLs);
+            const price = data.halfHourAvailable ? Math.floor(data.playground.price / 2) : data.playground.price;
             const array = Object.entries(data.grid.schedule);
             Object.entries(array[0][1]).forEach(item => {
                 timeList.push(item[0])
@@ -260,7 +255,7 @@ export default class PlaygroundLeaseCalendar extends React.Component {
         }, {
             headers: {Authorization: getToken(),}
         }).then(function (response) {
-            console.log('Playground Lease Calendar (submit):', response);
+            console.debug('Playground Lease Calendar (submit):', response);
             const locationArray = response.headers.location.split('/');
             window.location.replace('/order/id' + locationArray[locationArray.length - 1]);
         }).catch(function (error) {

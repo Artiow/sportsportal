@@ -202,4 +202,17 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     public void setPhotos(Collection<PictureEntity> photos) {
         this.photos = photos;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlaygroundEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

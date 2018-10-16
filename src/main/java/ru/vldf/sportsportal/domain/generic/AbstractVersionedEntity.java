@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.domain.generic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class AbstractVersionedEntity extends AbstractIdentifiedEntity {
@@ -26,16 +27,12 @@ public abstract class AbstractVersionedEntity extends AbstractIdentifiedEntity {
         if (this == o) return true;
         if (!(o instanceof AbstractVersionedEntity)) return false;
         if (!super.equals(o)) return false;
-
         AbstractVersionedEntity that = (AbstractVersionedEntity) o;
-
-        return getVersion().equals(that.getVersion());
+        return Objects.equals(getVersion(), that.getVersion());
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + getVersion().hashCode();
-        return result;
+        return Objects.hash(super.hashCode(), getVersion());
     }
 }

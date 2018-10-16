@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.domain.generic;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class AbstractIdentifiedEntity implements DomainObject {
@@ -24,14 +25,12 @@ public abstract class AbstractIdentifiedEntity implements DomainObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AbstractIdentifiedEntity)) return false;
-
         AbstractIdentifiedEntity that = (AbstractIdentifiedEntity) o;
-
-        return getId().equals(that.getId());
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return getId().hashCode();
+        return Objects.hash(getId());
     }
 }

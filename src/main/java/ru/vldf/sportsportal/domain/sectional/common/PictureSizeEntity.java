@@ -35,4 +35,17 @@ public class PictureSizeEntity extends AbstractDictionaryEntity {
     public void setHeight(Short height) {
         this.height = height;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PictureSizeEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

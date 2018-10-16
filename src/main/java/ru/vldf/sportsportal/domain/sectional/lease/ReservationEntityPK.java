@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Embeddable
 public class ReservationEntityPK implements Serializable {
@@ -32,5 +33,20 @@ public class ReservationEntityPK implements Serializable {
 
     public void setDatetime(Timestamp reservedDate) {
         this.datetime = reservedDate;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReservationEntityPK)) return false;
+        ReservationEntityPK that = (ReservationEntityPK) o;
+        return Objects.equals(getPlayground(), that.getPlayground()) &&
+                Objects.equals(getDatetime(), that.getDatetime());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPlayground(), getDatetime());
     }
 }

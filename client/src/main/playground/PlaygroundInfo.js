@@ -23,7 +23,7 @@ export default class PlaygroundInfo extends React.Component {
         axios.get(
             apiUrl('/leaseapi/playground/' + this.id)
         ).then(function (response) {
-            console.log('PlaygroundInfo (query):', response);
+            console.debug('PlaygroundInfo (query):', response);
             self.setState({content: response.data});
         }).catch(function (error) {
             console.error('PlaygroundInfo (query):', ((error.response != null) ? error.response : error));
