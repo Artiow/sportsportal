@@ -1,13 +1,14 @@
 import React from 'react';
-import {withAuthContext} from '../Application';
+import {Link} from 'react-router-dom';
+import {withAppContext} from '../Application';
 import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Confirmation.css';
 
-export default withAuthContext(class Confirmation extends React.Component {
+export default withAppContext(class Confirmation extends React.Component {
 
-    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
     static STAGE = Object.freeze({PROCESSED: 1, SUCCESS: 2, FAILED: 3});
 
     constructor(props) {
@@ -58,7 +59,7 @@ export default withAuthContext(class Confirmation extends React.Component {
                         </div>
                     );
                 case Confirmation.STAGE.SUCCESS:
-                    this.props.auth.reLogin();
+                    this.props.app.reLogin();
                     return (null);
                 case Confirmation.STAGE.FAILED:
                     return (
@@ -66,7 +67,8 @@ export default withAuthContext(class Confirmation extends React.Component {
                             <h4 className="alert-heading">Не удалось подтвердить вашу учетную запись!</h4>
                             <p>Произошла ошибка при подтверждении вашей учетной записи.</p>
                             <hr/>
-                            <p>{this.state.errorMessage}</p>
+                            <p>{this.state.errorMessage}! <Link to={'/'} className="alert-link">Вернуться на главную
+                                страницу</Link>.</p>
                         </div>
                     );
                 default:

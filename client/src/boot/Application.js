@@ -12,16 +12,16 @@ import NoMatch from './mismatch/NoMatch';
 import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
 import PlaygroundInfo from '../main/playground/PlaygroundInfo';
 import OrderInfo from '../main/order/OrderInfo';
-import verify from '../util/verification';
+import verify, {logout} from '../util/verification';
 
-const AuthContext = React.createContext(null);
+const AppContext = React.createContext(null);
 
-export function withAuthContext(Component) {
+export function withAppContext(Component) {
     return function ContextualComponent(props) {
         return (
-            <AuthContext.Consumer>
-                {auth => <Component {...props} auth={auth}/>}
-            </AuthContext.Consumer>
+            <AppContext.Consumer>
+                {app => <Component {...props} app={app}/>}
+            </AppContext.Consumer>
         )
     }
 }
@@ -32,7 +32,8 @@ export default withRouter(class Application extends React.Component {
         this.state = {
             credentials: null,
             reVerify: this.reVerify.bind(this),
-            reLogin: this.reLogin.bind(this)
+            reLogin: this.reLogin.bind(this),
+            logout: this.logout.bind(this)
         }
     }
 
@@ -54,9 +55,17 @@ export default withRouter(class Application extends React.Component {
         this.props.history.push('/');
     }
 
+    logout(event) {
+        if (event != null) event.preventDefault();
+        logout();
+        this.setState({
+            credentials: null
+        });
+    }
+
     render() {
         return (
-            <AuthContext.Provider
+            <AppContext.Provider
                 value={this.state}>
                 <Switch>
                     <ScrollRoute exact path='/' component={IndexFrame}/>
@@ -66,7 +75,7 @@ export default withRouter(class Application extends React.Component {
                     <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
                     <ScrollRoute component={NoMatch}/>
                 </Switch>
-            </AuthContext.Provider>
+            </AppContext.Provider>
         );
     }
 })

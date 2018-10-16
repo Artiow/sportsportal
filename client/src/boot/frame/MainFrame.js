@@ -1,6 +1,6 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import verify from '../../util/verification';
+import {withAppContext} from '../Application';
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
 import Login from './modal/Login';
@@ -9,100 +9,103 @@ import Registration from './modal/Registration'
 import Header from './sections/Header';
 import Footer from './sections/Footer';
 
-export default withRouter(class MainFrame extends React.Component {
+const FrameContext = React.createContext(null);
 
-    static ANIMATION_TIMEOUT = 300;
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            isAuthorized: false,
-            credential: null
-        }
-    }
-
-    static reLogin(event) {
-        if (event != null) event.preventDefault();
-        localStorage.setItem('re_login', true);
-        window.location.replace('/');
-    }
-
-    static switch(currentModal, nextModal) {
-        setTimeout(() => nextModal.activate(), MainFrame.ANIMATION_TIMEOUT);
-        currentModal.activate('hide');
-    }
-
-    componentDidMount() {
-        if (localStorage.getItem('re_login')) {
-            localStorage.removeItem('re_login');
-            this.showLoginModal();
-        } else {
-            this.queryVerify();
-        }
-    }
-
-    queryLogout() {
-        this.setState({
-            isAuthorized: false,
-            credential: null
-        });
-        localStorage.clear();
-        if (this.props.location.pathname !== '/') {
-            localStorage.setItem('re_login', true);
-            this.props.history.push('/');
-        } else {
-            this.showLoginModal();
-        }
-    }
-
-    queryVerify() {
-        verify(
-            data => this.setState({
-                isAuthorized: true,
-                credential: data.login
-            }),
-            error => this.setState({
-                isAuthorized: false,
-                credential: null
-            })
-        );
-    }
-
-    showLoginModal() {
-        this.loginForm.activate();
-    }
-
-    reShowLoginModal() {
-        MainFrame.switch(this.registrationForm, this.loginForm);
-    }
-
-    reShowRegistrationModal() {
-        MainFrame.switch(this.loginForm, this.registrationForm);
-    }
-
-    render() {
+export function withFrameContext(Component) {
+    return function ContextualComponent(props) {
         return (
-            <div className="MainFrame">
-                <Header {...this.props.header}
-                        onLogin={this.showLoginModal.bind(this)}
-                        onLogout={this.queryLogout.bind(this)}
-                        username={
-                            this.state.isAuthorized
-                                ? this.state.credential.username
-                                : undefined
-                        }/>
-                <MainContainer{...this.props.main}>
-                    {this.props.children}
-                </MainContainer>
-                <Footer {...this.props.footer}/>
-                <LoginModal ref={modal => this.loginForm = modal}
-                            onRegClick={this.reShowRegistrationModal.bind(this)}/>
-                <RegistrationModal ref={modal => this.registrationForm = modal}
-                                   onLogClick={this.reShowLoginModal.bind(this)}/>
-            </div>
+            <FrameContext.Consumer>
+                {frame => <Component {...props} frame={frame}/>}
+            </FrameContext.Consumer>
         )
     }
-})
+}
+
+export default withAppContext(withRouter(
+    class MainFrame extends React.Component {
+
+        static ANIMATION_TIMEOUT = 300;
+
+        constructor(props) {
+            super(props);
+            const credentials = this.props.app.credentials;
+            const isAuthorized = !!credentials;
+            this.state = {
+                isAuthorized: isAuthorized,
+                credential: isAuthorized ? credentials.login : null
+            }
+        }
+
+        static switch(currentModal, nextModal) {
+            setTimeout(() => nextModal.activate(), MainFrame.ANIMATION_TIMEOUT);
+            currentModal.activate('hide');
+        }
+
+        componentDidMount() {
+            if (localStorage.getItem('re_login')) {
+                localStorage.removeItem('re_login');
+                this.showLoginModal();
+            }
+        }
+
+        componentWillReceiveProps(nextProps) {
+            const credentials = nextProps.app.credentials;
+            const isAuthorized = !!credentials;
+            this.setState({
+                isAuthorized: isAuthorized,
+                credential: isAuthorized ? credentials.login : null
+            })
+        }
+
+        queryLogout() {
+            localStorage.clear();
+            this.props.app.logout();
+            if (this.props.location.pathname !== '/') {
+                this.props.app.reLogin();
+            } else {
+                this.showLoginModal();
+            }
+        }
+
+        showLoginModal() {
+            this.loginForm.activate();
+        }
+
+        reShowLoginModal() {
+            MainFrame.switch(this.registrationForm, this.loginForm);
+        }
+
+        reShowRegistrationModal() {
+            MainFrame.switch(this.loginForm, this.registrationForm);
+        }
+
+        render() {
+            return (
+                <FrameContext.Provider
+                    value={this.state}>
+                    <div className="MainFrame">
+                        <Header {...this.props.header}
+                                onLogin={this.showLoginModal.bind(this)}
+                                onLogout={this.queryLogout.bind(this)}
+                                username={
+                                    this.state.isAuthorized
+                                        ? this.state.credential.username
+                                        : undefined
+                                }/>
+                        <MainContainer{...this.props.main}>
+                            {this.props.children}
+                        </MainContainer>
+                        <Footer {...this.props.footer}/>
+                        <LoginModal ref={modal => this.loginForm = modal}
+                                    onRegClick={this.reShowRegistrationModal.bind(this)}/>
+                        <RegistrationModal ref={modal => this.registrationForm = modal}
+                                           onLogClick={this.reShowLoginModal.bind(this)}/>
+                    </div>
+                </FrameContext.Provider>
+            )
+        }
+    }
+))
 
 class LoginModal extends React.Component {
 

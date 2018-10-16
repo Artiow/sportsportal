@@ -7,7 +7,7 @@ import './Registration.css';
 
 export default class Registration extends React.Component {
 
-    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
 
     constructor(props) {
         super(props);
