@@ -1,4 +1,5 @@
 import React from 'react';
+import verify from "../../util/verification";
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
 import Login from './modal/Login';
@@ -10,6 +11,13 @@ import Footer from './sections/Footer';
 export default class MainFrame extends React.Component {
 
     static ANIMATION_TIMEOUT = 300;
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            credential: null
+        }
+    }
 
     static reLogin(event) {
         if (event != null) event.preventDefault();
@@ -26,7 +34,25 @@ export default class MainFrame extends React.Component {
         if (localStorage.getItem('re_login')) {
             localStorage.removeItem('re_login');
             this.showLoginModal();
+        } else {
+            this.queryVerify();
         }
+    }
+
+    queryLogout() {
+        this.setState({
+            isAuthorized: false,
+            nickname: null
+        });
+        localStorage.clear();
+        MainFrame.reLogin()
+    }
+
+    queryVerify() {
+        verify(
+            data => this.setState({credential: data.login.username}),
+            error => this.setState({credential: null})
+        );
     }
 
     showLoginModal() {
@@ -45,8 +71,9 @@ export default class MainFrame extends React.Component {
         return (
             <div className="MainFrame">
                 <Header {...this.props.header}
+                        credential={this.state.credential}
                         onLogin={this.showLoginModal.bind(this)}
-                        onLogout={MainFrame.reLogin}/>
+                        onLogout={this.queryLogout.bind(this)}/>
                 <MainContainer{...this.props.main}>
                     {this.props.children}
                 </MainContainer>

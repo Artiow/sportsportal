@@ -1,6 +1,5 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import verify, {getLogin} from '../../../util/verification';
 import {env} from '../../constants'
 import logo from '../logo.png';
 import './Header.css';
@@ -10,9 +9,9 @@ export default function Header(props) {
         <header className="Header">
             <div className="container">
                 <div className="row">
-                    <MainBlock {...props}/>
-                    <AuthBlock onLogin={props.onLogin}
-                               onLogout={props.onLogout}/>
+                    <MainBlock breadcrumb={props.breadcrumb}/>
+                    <AuthBlock onLogin={props.onLogin} onLogout={props.onLogout}
+                               nickname={props.credential}/>
                 </div>
             </div>
         </header>
@@ -65,16 +64,19 @@ function MainBreadcrumb(props) {
 class AuthBlock extends React.Component {
     constructor(props) {
         super(props);
-        const login = getLogin();
-        const logged = (login != null);
         this.state = {
-            isAuthorized: logged,
-            nickname: logged ? login.username : null
+            isAuthorized: !!props.nickname,
+            nickname: props.nickname ? props.nickname : null
         };
     }
 
-    componentDidMount() {
-        this.queryVerify();
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.nickname !== this.props.nickname) {
+            this.setState({
+                isAuthorized: !!nextProps.nickname,
+                nickname: nextProps.nickname ? nextProps.nickname : null
+            })
+        }
     }
 
     handleLogin(event) {
@@ -85,32 +87,8 @@ class AuthBlock extends React.Component {
 
     handleLogout(event) {
         event.preventDefault();
-        this.queryLogout();
         const onLogout = this.props.onLogout;
         if (typeof onLogout === 'function') onLogout(event);
-    }
-
-    queryLogout() {
-        localStorage.clear();
-        this.setState({
-            isAuthorized: false,
-            nickname: null
-        });
-    }
-
-    queryVerify() {
-        const self = this;
-        verify(function (data) {
-            self.setState({
-                isAuthorized: true,
-                nickname: data.login.username
-            })
-        }, function (error) {
-            self.setState({
-                isAuthorized: false,
-                nickname: null
-            });
-        });
     }
 
     render() {
