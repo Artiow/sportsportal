@@ -45,8 +45,15 @@ export default withRouter(class Application extends React.Component {
     reVerify(event) {
         if (event != null) event.preventDefault();
         verify(
-            data => this.setState({credentials: data}),
-            error => this.setState({credential: null})
+            data => this.setState({
+                credentials: {
+                    token: data.tokenType + ' ' + data.tokenHash,
+                    login: data.login
+                }
+            }),
+            error => this.setState({
+                credentials: null
+            })
         );
     }
 

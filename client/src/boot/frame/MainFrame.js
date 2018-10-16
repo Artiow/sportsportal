@@ -15,7 +15,7 @@ export function withFrameContext(Component) {
     return function ContextualComponent(props) {
         return (
             <FrameContext.Consumer>
-                {frame => <Component {...props} frame={frame}/>}
+                {main => <Component {...props} main={main}/>}
             </FrameContext.Consumer>
         )
     }
@@ -28,11 +28,18 @@ export default withAppContext(withRouter(
 
         constructor(props) {
             super(props);
-            const credentials = this.props.app.credentials;
-            const isAuthorized = !!credentials;
             this.state = {
+                user: MainFrame.calcUser(this.props.app.credentials),
+                showLogin: this.showLoginModal.bind(this)
+            }
+        }
+
+        static calcUser(credentials) {
+            const isAuthorized = !!credentials;
+            return {
                 isAuthorized: isAuthorized,
-                credential: isAuthorized ? credentials.login : null
+                token: isAuthorized ? credentials.token : null,
+                login: isAuthorized ? credentials.login : null
             }
         }
 
@@ -49,11 +56,8 @@ export default withAppContext(withRouter(
         }
 
         componentWillReceiveProps(nextProps) {
-            const credentials = nextProps.app.credentials;
-            const isAuthorized = !!credentials;
             this.setState({
-                isAuthorized: isAuthorized,
-                credential: isAuthorized ? credentials.login : null
+                user: MainFrame.calcUser(nextProps.app.credentials)
             })
         }
 
@@ -72,7 +76,8 @@ export default withAppContext(withRouter(
             }
         }
 
-        showLoginModal() {
+        showLoginModal(event) {
+            if (event != null) event.preventDefault();
             this.loginForm.activate();
         }
 
@@ -93,8 +98,8 @@ export default withAppContext(withRouter(
                                 onLogin={this.showLoginModal.bind(this)}
                                 onLogout={this.queryLogout.bind(this)}
                                 username={
-                                    this.state.isAuthorized
-                                        ? this.state.credential.username
+                                    this.state.user.isAuthorized
+                                        ? this.state.user.login.username
                                         : undefined
                                 }/>
                         <MainContainer{...this.props.main}>

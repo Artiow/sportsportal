@@ -35,17 +35,3 @@ export function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('login');
 }
-
-export function getToken() {
-    const token = localStorage.getItem('token');
-    return (token != null) ? token : null;
-}
-
-export function getLogin() {
-    const login = localStorage.getItem('login');
-    try {
-        return JSON.parse(login);
-    } catch (e) {
-        return null;
-    }
-}
