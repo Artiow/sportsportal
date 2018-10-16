@@ -11,7 +11,7 @@ export default function Header(props) {
                 <div className="row">
                     <MainBlock breadcrumb={props.breadcrumb}/>
                     <AuthBlock onLogin={props.onLogin} onLogout={props.onLogout}
-                               nickname={props.credential}/>
+                               username={props.username}/>
                 </div>
             </div>
         </header>
@@ -65,16 +65,16 @@ class AuthBlock extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isAuthorized: !!props.nickname,
-            nickname: props.nickname ? props.nickname : null
+            isAuthorized: !!props.username,
+            username: props.username ? props.username : null
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.nickname !== this.props.nickname) {
+        if (nextProps.username !== this.props.username) {
             this.setState({
-                isAuthorized: !!nextProps.nickname,
-                nickname: nextProps.nickname ? nextProps.nickname : null
+                isAuthorized: !!nextProps.username,
+                username: nextProps.username ? nextProps.username : null
             })
         }
     }
@@ -99,7 +99,7 @@ class AuthBlock extends React.Component {
                         <Link to="/home"
                               className="row">
                             <i className="fa fa-user col-1"/>
-                            <span className="col-11 col-label">{this.state.nickname}</span>
+                            <span className="col-11 col-label">{this.state.username}</span>
                         </Link>
                         <Link to="/logout" className="row"
                               onClick={this.handleLogout.bind(this)}>

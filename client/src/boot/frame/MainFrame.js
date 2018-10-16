@@ -1,5 +1,6 @@
 import React from 'react';
-import verify from "../../util/verification";
+import {withRouter} from 'react-router-dom';
+import verify from '../../util/verification';
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
 import Login from './modal/Login';
@@ -8,13 +9,14 @@ import Registration from './modal/Registration'
 import Header from './sections/Header';
 import Footer from './sections/Footer';
 
-export default class MainFrame extends React.Component {
+export default withRouter(class MainFrame extends React.Component {
 
     static ANIMATION_TIMEOUT = 300;
 
     constructor(props) {
         super(props);
         this.state = {
+            isAuthorized: false,
             credential: null
         }
     }
@@ -42,16 +44,23 @@ export default class MainFrame extends React.Component {
     queryLogout() {
         this.setState({
             isAuthorized: false,
-            nickname: null
+            credential: null
         });
         localStorage.clear();
-        MainFrame.reLogin()
+        localStorage.setItem('re_login', true);
+        this.props.history.push('/');
     }
 
     queryVerify() {
         verify(
-            data => this.setState({credential: data.login.username}),
-            error => this.setState({credential: null})
+            data => this.setState({
+                isAuthorized: true,
+                credential: data.login
+            }),
+            error => this.setState({
+                isAuthorized: false,
+                credential: null
+            })
         );
     }
 
@@ -71,9 +80,13 @@ export default class MainFrame extends React.Component {
         return (
             <div className="MainFrame">
                 <Header {...this.props.header}
-                        credential={this.state.credential}
                         onLogin={this.showLoginModal.bind(this)}
-                        onLogout={this.queryLogout.bind(this)}/>
+                        onLogout={this.queryLogout.bind(this)}
+                        username={
+                            this.state.isAuthorized
+                                ? this.state.credential.username
+                                : undefined
+                        }/>
                 <MainContainer{...this.props.main}>
                     {this.props.children}
                 </MainContainer>
@@ -85,7 +98,7 @@ export default class MainFrame extends React.Component {
             </div>
         )
     }
-}
+})
 
 class LoginModal extends React.Component {
 
