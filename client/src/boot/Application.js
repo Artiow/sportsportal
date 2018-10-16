@@ -12,7 +12,7 @@ import NoMatch from './mismatch/NoMatch';
 import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
 import PlaygroundInfo from '../main/playground/PlaygroundInfo';
 import OrderInfo from '../main/order/OrderInfo';
-import verify, {logout} from '../util/verification';
+import verify, {login, logout} from '../util/verification';
 
 const AppContext = React.createContext(null);
 
@@ -33,7 +33,8 @@ export default withRouter(class Application extends React.Component {
             credentials: null,
             reVerify: this.reVerify.bind(this),
             reLogin: this.reLogin.bind(this),
-            logout: this.logout.bind(this)
+            logout: this.logout.bind(this),
+            login: this.login.bind(this)
         }
     }
 
@@ -61,6 +62,11 @@ export default withRouter(class Application extends React.Component {
         this.setState({
             credentials: null
         });
+    }
+
+    login(data) {
+        login(data);
+        this.reVerify()
     }
 
     render() {

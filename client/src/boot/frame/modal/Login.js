@@ -1,7 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import apiUrl from '../../constants';
-import {login} from '../../../util/verification';
 import axios from 'axios';
 import './Login.css';
 
@@ -28,9 +27,9 @@ export default class Login extends React.Component {
                 }
             })
             .then(function (response) {
-                login(response.data);
                 console.debug('Login (query):', response);
-                window.location.replace('/');
+                const onSuccess = self.props.onSuccess;
+                if (typeof onSuccess === 'function') onSuccess(response.data);
             })
             .catch(function (error) {
                 let errorMessage;

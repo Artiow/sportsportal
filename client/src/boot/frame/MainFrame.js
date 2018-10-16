@@ -57,6 +57,11 @@ export default withAppContext(withRouter(
             })
         }
 
+        queryLogin(data) {
+            this.loginForm.activate('hide');
+            this.props.app.login(data);
+        }
+
         queryLogout() {
             localStorage.clear();
             this.props.app.logout();
@@ -97,6 +102,7 @@ export default withAppContext(withRouter(
                         </MainContainer>
                         <Footer {...this.props.footer}/>
                         <LoginModal ref={modal => this.loginForm = modal}
+                                    onSuccess={this.queryLogin.bind(this)}
                                     onRegClick={this.reShowRegistrationModal.bind(this)}/>
                         <RegistrationModal ref={modal => this.registrationForm = modal}
                                            onLogClick={this.reShowLoginModal.bind(this)}/>
@@ -127,7 +133,8 @@ class LoginModal extends React.Component {
                             </button>
                         </div>
                         <div className="modal-body">
-                            <Login onRegClick={this.props.onRegClick}/>
+                            <Login onSuccess={this.props.onSuccess}
+                                   onRegClick={this.props.onRegClick}/>
                         </div>
                     </div>
                 </div>
