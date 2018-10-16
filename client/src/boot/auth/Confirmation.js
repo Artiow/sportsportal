@@ -1,11 +1,11 @@
 import React from 'react';
-import MainFrame from '../frame/MainFrame';
+import {withAuthContext} from '../Application';
 import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Confirmation.css';
 
-export default class Confirmation extends React.Component {
+export default withAuthContext(class Confirmation extends React.Component {
 
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
     static STAGE = Object.freeze({PROCESSED: 1, SUCCESS: 2, FAILED: 3});
@@ -58,7 +58,7 @@ export default class Confirmation extends React.Component {
                         </div>
                     );
                 case Confirmation.STAGE.SUCCESS:
-                    MainFrame.reLogin();
+                    this.props.auth.reLogin();
                     return (null);
                 case Confirmation.STAGE.FAILED:
                     return (
@@ -78,4 +78,4 @@ export default class Confirmation extends React.Component {
                 <div className="container">{contentByStage(this.state.stage)}</div>
             </div>);
     }
-}
+})

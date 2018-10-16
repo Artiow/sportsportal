@@ -47,8 +47,12 @@ export default withRouter(class MainFrame extends React.Component {
             credential: null
         });
         localStorage.clear();
-        localStorage.setItem('re_login', true);
-        this.props.history.push('/');
+        if (this.props.location.pathname !== '/') {
+            localStorage.setItem('re_login', true);
+            this.props.history.push('/');
+        } else {
+            this.showLoginModal();
+        }
     }
 
     queryVerify() {

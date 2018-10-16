@@ -1,5 +1,5 @@
 import React from 'react';
-import {Switch} from 'react-router-dom';
+import {Switch, withRouter} from 'react-router-dom';
 import '../../node_modules/jquery/dist/jquery.min';
 import '../../node_modules/popper.js/dist/umd/popper';
 import '../../node_modules/bootstrap/dist/js/bootstrap.min';
@@ -12,19 +12,64 @@ import NoMatch from './mismatch/NoMatch';
 import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
 import PlaygroundInfo from '../main/playground/PlaygroundInfo';
 import OrderInfo from '../main/order/OrderInfo';
+import verify from '../util/verification';
 
-export default function Application(props) {
-    return (
-        <Switch>
-            <ScrollRoute exact path='/' component={IndexFrame}/>
-            <ScrollRoute exact path='/home' component={HomeFrame}/>
-            <ScrollRoute exact path='/confirm' component={Confirmation}/>
-            <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
-            <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
-            <ScrollRoute component={NoMatch}/>
-        </Switch>
-    );
+const AuthContext = React.createContext(null);
+
+export function withAuthContext(Component) {
+    return function ContextualComponent(props) {
+        return (
+            <AuthContext.Consumer>
+                {auth => <Component {...props} auth={auth}/>}
+            </AuthContext.Consumer>
+        )
+    }
 }
+
+export default withRouter(class Application extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            credentials: null,
+            reVerify: this.reVerify.bind(this),
+            reLogin: this.reLogin.bind(this)
+        }
+    }
+
+    componentDidMount() {
+        this.reVerify();
+    }
+
+    reVerify(event) {
+        if (event != null) event.preventDefault();
+        verify(
+            data => this.setState({credentials: data}),
+            error => this.setState({credential: null})
+        );
+    }
+
+    reLogin(event) {
+        if (event != null) event.preventDefault();
+        localStorage.setItem('re_login', true);
+        this.props.history.push('/');
+    }
+
+    render() {
+        return (
+            <AuthContext.Provider
+                value={this.state}>
+                <Switch>
+                    <ScrollRoute exact path='/' component={IndexFrame}/>
+                    <ScrollRoute exact path='/home' component={HomeFrame}/>
+                    <ScrollRoute exact path='/confirm' component={Confirmation}/>
+                    <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
+                    <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
+                    <ScrollRoute component={NoMatch}/>
+                </Switch>
+            </AuthContext.Provider>
+        );
+    }
+})
 
 function IndexFrame(props) {
     const frameProps = {header: {breadcrumb: []}};
