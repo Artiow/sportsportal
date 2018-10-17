@@ -17,29 +17,35 @@ export default class Registration extends React.Component {
         }
     }
 
+    reset() {
+        this.submitForm.reset();
+        this.setState({
+            errorMessage: null,
+            errorMessages: {}
+        });
+    }
+
     queryRegistration(obj) {
-        const self = this;
         this.setState({errorMessage: null, errorMessages: {}});
         axios
             .post(apiUrl('/auth/register'), obj)
-            .then(function (response) {
+            .then(response => {
                 console.debug('Registration (query):', response);
                 const locationArray = response.headers.location.split('/');
-                const onSuccess = self.props.onSuccess;
+                const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
             })
-            .catch(function (error) {
+            .catch(error => {
                 const errorResponse = error.response;
                 if (errorResponse != null) {
                     const data = errorResponse.data;
                     const message = data.message;
                     const errors = data.errors;
                     console.warn('Registration (query):', errorResponse);
-                    if (errors != null) self.setState({errorMessage: message, errorMessages: errors});
-                    else self.setState({errorMessage: message});
+                    this.setState({errorMessage: message, errorMessages: errors});
                 } else {
                     console.error('Registration (query):', error);
-                    self.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
+                    this.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
                 }
             })
     }
@@ -47,7 +53,8 @@ export default class Registration extends React.Component {
     render() {
         return (
             <div className="Registration">
-                <RegistrationForm errorMessage={this.state.errorMessage}
+                <RegistrationForm ref={form => this.submitForm = form}
+                                  errorMessage={this.state.errorMessage}
                                   errorMessages={this.state.errorMessages}
                                   onSubmit={this.queryRegistration.bind(this)}
                                   onLogClick={this.props.onLogClick}/>
@@ -61,14 +68,22 @@ class RegistrationForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            surname: '',
-            email: '',
-            password: '',
-            confirm: '',
+            name: null,
+            surname: null,
+            email: null,
+            password: null,
+            confirm: null,
             errorMessage: ((props.errorMessage != null) ? props.errorMessage : null),
             errorMessages: ((props.errorMessages != null) ? props.errorMessages : {})
         }
+    }
+
+    reset() {
+        this.submitForm.reset();
+        this.setState({
+            errorMessage: ((this.props.errorMessage != null) ? this.props.errorMessage : null),
+            errorMessages: ((this.props.errorMessages != null) ? this.props.errorMessages : {})
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -108,7 +123,9 @@ class RegistrationForm extends React.Component {
 
     render() {
         return (
-            <form className="RegistrationForm" onSubmit={this.handleSubmit.bind(this)}>
+            <form className="RegistrationForm"
+                  onSubmit={this.handleSubmit.bind(this)}
+                  ref={form => this.submitForm = form}>
                 <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
                      className="alert alert-warning">
                     {this.state.errorMessage}

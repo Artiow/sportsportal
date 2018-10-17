@@ -17,8 +17,12 @@ export default class Login extends React.Component {
         };
     }
 
+    reset() {
+        this.submitForm.reset();
+        this.setState({errorMessage: null});
+    }
+
     queryLogin() {
-        const self = this;
         axios
             .get(apiUrl('/auth/login'), {
                 params: {
@@ -26,22 +30,17 @@ export default class Login extends React.Component {
                     password: this.state.password
                 }
             })
-            .then(function (response) {
+            .then(response => {
                 console.debug('Login (query):', response);
-                const onSuccess = self.props.onSuccess;
+                const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(response.data);
             })
-            .catch(function (error) {
+            .catch(error => {
                 let errorMessage;
                 const errorResponse = error.response;
-                if (errorResponse != null) {
-                    console.warn('Login (query):', errorResponse);
-                    errorMessage = errorResponse.data.message;
-                } else {
-                    console.error('Login (query):', error);
-                    errorMessage = Login.UNEXPECTED_ERROR_MESSAGE;
-                }
-                self.setState({errorMessage: errorMessage});
+                console.warn('Login (query):', errorResponse ? errorResponse : error);
+                errorMessage = errorResponse ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE;
+                this.setState({errorMessage: errorMessage});
             })
     }
 
@@ -69,7 +68,8 @@ export default class Login extends React.Component {
                         {this.state.errorMessage ? this.state.errorMessage : 'Введите свой адрес почты и пароль'}
                     </p>
                 </div>
-                <form onSubmit={this.handleSubmit.bind(this)}>
+                <form onSubmit={this.handleSubmit.bind(this)}
+                      ref={form => this.submitForm = form}>
                     <div>
                         <input id="log_form_email" name="email"
                                type="email" autoComplete="email"

@@ -45,7 +45,7 @@ export default withAppContext(withRouter(
 
         static switch(currentModal, nextModal) {
             setTimeout(() => nextModal.activate(), MainFrame.ANIMATION_TIMEOUT);
-            currentModal.activate('hide');
+            currentModal.activate('hide', MainFrame.ANIMATION_TIMEOUT);
         }
 
         componentDidMount() {
@@ -62,7 +62,7 @@ export default withAppContext(withRouter(
         }
 
         queryLogin(data) {
-            this.loginForm.activate('hide');
+            this.loginForm.activate('hide', MainFrame.ANIMATION_TIMEOUT);
             this.props.app.login(data);
         }
 
@@ -120,8 +120,17 @@ export default withAppContext(withRouter(
 
 class LoginModal extends React.Component {
 
-    activate(options) {
+    static ANIMATION_TIMEOUT = 300;
+
+    activate(options, timeout) {
         this.modal.activate(options);
+        if (options) this.reset(timeout);
+    }
+
+    reset(timeout) {
+        setTimeout(() => {
+            this.body.reset()
+        }, timeout ? timeout : 0);
     }
 
     render() {
@@ -133,12 +142,16 @@ class LoginModal extends React.Component {
                             <h5 className="modal-title">
                                 Авторизация
                             </h5>
-                            <button type="button" className="close" data-dismiss="modal">
+                            <button type="button" className="close" data-dismiss="modal"
+                                    onClick={event => {
+                                        this.reset(LoginModal.ANIMATION_TIMEOUT)
+                                    }}>
                                 <span>&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <Login onSuccess={this.props.onSuccess}
+                            <Login ref={body => this.body = body}
+                                   onSuccess={this.props.onSuccess}
                                    onRegClick={this.props.onRegClick}/>
                         </div>
                     </div>
@@ -150,6 +163,8 @@ class LoginModal extends React.Component {
 
 class RegistrationModal extends React.Component {
 
+    static ANIMATION_TIMEOUT = 300;
+
     static STAGE = Object.freeze({REGISTRATION: 1, MESSAGE: 2});
     static INIT_STAGE = RegistrationModal.STAGE.REGISTRATION;
 
@@ -158,9 +173,16 @@ class RegistrationModal extends React.Component {
         this.state = {stage: RegistrationModal.INIT_STAGE}
     }
 
-    activate(options) {
+    activate(options, timeout) {
         this.setState({stage: RegistrationModal.INIT_STAGE});
         this.modal.activate(options);
+        if (options) this.reset(timeout);
+    }
+
+    reset(timeout) {
+        setTimeout(() => {
+            this.body.reset()
+        }, timeout ? timeout : 0);
     }
 
     sendMessage(userId, userEmail) {
@@ -177,7 +199,10 @@ class RegistrationModal extends React.Component {
                             <h5 className="modal-title">
                                 Регистрация
                             </h5>
-                            <button type="button" className="close" data-dismiss="modal">
+                            <button type="button" className="close" data-dismiss="modal"
+                                    onClick={event => {
+                                        this.reset(RegistrationModal.ANIMATION_TIMEOUT)
+                                    }}>
                                 <span>&times;</span>
                             </button>
                         </div>
@@ -186,7 +211,8 @@ class RegistrationModal extends React.Component {
                                 switch (this.state.stage) {
                                     case RegistrationModal.STAGE.REGISTRATION:
                                         return (
-                                            <Registration onSuccess={this.sendMessage.bind(this)}
+                                            <Registration ref={body => this.body = body}
+                                                          onSuccess={this.sendMessage.bind(this)}
                                                           onLogClick={this.props.onLogClick}/>
                                         );
                                     case RegistrationModal.STAGE.MESSAGE:

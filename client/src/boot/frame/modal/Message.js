@@ -17,7 +17,6 @@ export default class Message extends React.Component {
     }
 
     sendMessage(id, email) {
-        const self = this;
         this.setState({
             stage: Message.STAGE.SENDING,
             email: email
@@ -27,13 +26,13 @@ export default class Message extends React.Component {
                 params: {host: window.location.origin},
                 paramsSerializer: (params => qs.stringify(params))
             })
-            .then(function (response) {
+            .then(response => {
                 console.debug('Message (send):', response);
-                self.setState({stage: Message.STAGE.SUCCESS})
+                this.setState({stage: Message.STAGE.SUCCESS})
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.error('Message (send):', ((error.response != null) ? error.response : error));
-                self.setState({stage: Message.STAGE.FAILED})
+                this.setState({stage: Message.STAGE.FAILED})
             })
     }
 
