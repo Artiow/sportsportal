@@ -19,13 +19,12 @@ export default class PlaygroundInfo extends React.Component {
     }
 
     query() {
-        const self = this;
         axios.get(
             apiUrl('/leaseapi/playground/' + this.id)
-        ).then(function (response) {
+        ).then(response => {
             console.debug('PlaygroundInfo (query):', response);
-            self.setState({content: response.data});
-        }).catch(function (error) {
+            this.setState({content: response.data});
+        }).catch(error => {
             console.error('PlaygroundInfo (query):', ((error.response != null) ? error.response : error));
         })
     }
@@ -33,18 +32,20 @@ export default class PlaygroundInfo extends React.Component {
     render() {
         const photoExtractor = photoItems => {
             const photos = [];
-            if (photoItems != null) photoItems.forEach(function (item, i, arr) {
-                photos.push(item.url + '?size=mdh');
-            });
+            if (photoItems != null) {
+                photoItems.forEach(value => photos.push(value.url + '?size=mdh'));
+            }
             return photos;
         };
         const featureBuilder = capabilityItems => {
             const featureLines = [];
             if ((capabilityItems != null) && (capabilityItems.length > 0)) {
-                capabilityItems.forEach(function (item, i, arr) {
-                    const name = item.name;
+                capabilityItems.forEach((value, index) => {
+                    const name = value.name;
                     featureLines.push(
-                        <li className="list-group-item" key={i}>{(name.charAt(0).toUpperCase() + name.slice(1))}</li>
+                        <li className="list-group-item" key={index}>
+                            {(name.charAt(0).toUpperCase() + name.slice(1))}
+                        </li>
                     );
                 });
                 return (<ul className="list-group list-group-flush">{featureLines}</ul>);
@@ -78,9 +79,9 @@ export default class PlaygroundInfo extends React.Component {
                                 <h4 className="row-h info-h info-price">
                                     <span className="mr-md-2">Стоимость:</span>
                                     <span className="badge badge-secondary">
-                                                <span>{Math.floor(playground.price)}</span>
-                                                <i className="fa fa-rub ml-1"/>/час
-                                            </span>
+                                        <span>{Math.floor(playground.price)}</span>
+                                        <i className="fa fa-rub ml-1"/>/час
+                                    </span>
                                 </h4>
                                 {(features != null) ? (
                                     <h5 className="row-h info-h info-infra">Инфраструктура:</h5>

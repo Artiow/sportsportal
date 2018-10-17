@@ -41,8 +41,8 @@ function PlaygroundContainer(props) {
     let container = [];
     const content = props.content;
     if ((content !== null) && (content.length > 0)) {
-        content.forEach(function (item, i, arr) {
-            container.push(<PlaygroundCard key={i} playground={item}/>);
+        content.forEach((value, index) => {
+            container.push(<PlaygroundCard key={index} playground={value}/>);
         });
     }
     return (<div className="PlaygroundContainer row">{container}</div>);

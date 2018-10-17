@@ -16,21 +16,34 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
             if (rawSchedule.has(date)) rawSchedule.get(date).push(time);
             else rawSchedule.set(date, [time]);
         });
-        rawSchedule.forEach(value => value.sort());
-        return Array.from(rawSchedule).sort();
+        let maxHeight = 0;
+        rawSchedule.forEach(value => {
+            value.sort();
+            if (value.length > maxHeight) {
+                maxHeight = value.length
+            }
+        });
+        return {
+            schedule: Array.from(rawSchedule).sort(),
+            height: maxHeight
+        }
     };
 
     constructor(props) {
         super(props);
+        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation);
         this.state = {
-            schedule: PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation),
+            schedule: schedule,
+            maxHeight: height,
             offset: 0
         }
     }
 
     componentWillReceiveProps(nextProps) {
+        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(nextProps.reservation);
         this.setState({
-            schedule: PlaygroundSubmitOrderModal.calcSchedule(nextProps.reservation),
+            schedule: schedule,
+            maxHeight: height,
             offset: 0
         });
     }
@@ -51,12 +64,9 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
         const schedule = this.state.schedule;
         const length = Math.min(schedule.length, PlaygroundSubmitOrderModal.MAX_LENGTH + offset);
 
-        let maxHeight = 0;
         const headerLine = [];
         for (let i = offset; i < length; i++) {
             const value = schedule[i];
-            const currentHeight = value[1].length;
-            if (currentHeight > maxHeight) maxHeight = currentHeight;
             const date = value[0];
             const dateClass = new Date(date);
             headerLine.push(
@@ -71,10 +81,15 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
         }
 
         const body = [];
-        for (let i = 0; i < maxHeight; i++) {
+        for (let i = 0; i < this.state.maxHeight; i++) {
             const row = [];
             for (let j = offset; j < length; j++) {
-                row.push(<td key={j}>{schedule[j][1][i]}</td>)
+                const time = schedule[j][1][i];
+                row.push((time) ? (
+                    <td key={j}>{time}</td>
+                ) : (
+                    <td key={j}>&nbsp;</td>
+                ))
             }
             body.push(<tr key={i}>{row}</tr>);
         }

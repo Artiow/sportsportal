@@ -24,7 +24,6 @@ export default withAppContext(class Confirmation extends React.Component {
     }
 
     confirmQuery() {
-        const self = this;
         const confirmToken = qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token;
         console.debug('Accepted Token (confirmation):', confirmToken);
         axios
@@ -32,14 +31,14 @@ export default withAppContext(class Confirmation extends React.Component {
                 params: {confirmToken: confirmToken},
                 paramsSerializer: (params => qs.stringify(params))
             })
-            .then(function (response) {
+            .then(response => {
                 console.debug('Confirmation (query):', response);
-                self.setState({stage: Confirmation.STAGE.SUCCESS});
+                this.setState({stage: Confirmation.STAGE.SUCCESS});
             })
-            .catch(function (error) {
+            .catch(error => {
                 const errorResponse = error.response;
                 console.error('Confirmation (query):', ((errorResponse != null) ? errorResponse : error));
-                self.setState({
+                this.setState({
                     stage: Confirmation.STAGE.FAILED,
                     errorMessage: (errorResponse != null) ? errorResponse.data.message : Confirmation.UNEXPECTED_ERROR_MESSAGE
                 });

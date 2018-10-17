@@ -181,6 +181,8 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             if (!version.equals(playgroundEntity.getVersion())) {
                 return new ReservationListDTO().setReservations(new ArrayList<>(0));
             } else {
+                if (!(reservations instanceof List)) reservations = new ArrayList<>(reservations);
+                Collections.sort((List<LocalDateTime>) reservations);
                 Iterator<LocalDateTime> iterator = reservations.iterator();
                 while (iterator.hasNext()) {
                     LocalDateTime localDateTime = iterator.next();

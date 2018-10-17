@@ -54,8 +54,8 @@ function MainBreadcrumb(props) {
     const breadcrumb = props.breadcrumb;
     if (breadcrumb != null) {
         const lastIndex = breadcrumb.length - 1;
-        breadcrumb.forEach(function (item, i, arr) {
-            elements.push(element(item.link, item.title, i, (i === lastIndex)))
+        breadcrumb.forEach((value, index) => {
+            elements.push(element(value.link, value.title, index, (index === lastIndex)))
         })
     }
     return (<ol className="breadcrumb">{elements}</ol>);

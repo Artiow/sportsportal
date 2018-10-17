@@ -142,12 +142,11 @@ export default withFrameContext(
 
         restore(id, version) {
             axios.get(apiUrl('/leaseapi/playground/' + id + '/check'), {
+                paramsSerializer: params =>
+                    qs.stringify(params, {arrayFormat: 'repeat'}),
                 params: {
                     version: version,
                     reservations: restoreReservation(id, version)
-                },
-                paramsSerializer: params => {
-                    return qs.stringify(params, {arrayFormat: 'repeat'})
                 }
             }).then(response => {
                 console.debug('Playground Lease Calendar (query [check]):', response);
@@ -160,22 +159,21 @@ export default withFrameContext(
         }
 
         query(id, version, from, to) {
-            const self = this;
             axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
-            ).then(function (response) {
+            ).then(response => {
                 console.debug('Playground Lease Calendar (query):', response);
+                const data = response.data;
+                this.calculateAuthority(null, data.playground.ownersURLs);
                 const dateList = [];
                 const timeList = [];
-                const data = response.data;
-                self.calculateAuthority(null, data.playground.ownersURLs);
                 const price = data.halfHourAvailable ? Math.floor(data.playground.price / 2) : data.playground.price;
                 const array = Object.entries(data.grid.schedule);
                 Object.entries(array[0][1]).forEach(item => {
                     timeList.push(item[0])
                 });
-                array.forEach(function (item, i, arr) {
-                    arr[i][1] = new Map(Object.entries(item[1]));
-                    const date = item[0];
+                array.forEach((value, index, array) => {
+                    array[index][1] = new Map(Object.entries(value[1]));
+                    const date = value[0];
                     const dateClass = new Date(date);
                     dateList.push({
                         month: env.MONTH_NAMES[dateClass.getMonth()],
@@ -184,7 +182,7 @@ export default withFrameContext(
                     });
                 });
                 const schedule = new Map(array);
-                self.setState({
+                this.setState({
                     price: price,
                     dateList: dateList,
                     timeList: timeList,
@@ -192,7 +190,7 @@ export default withFrameContext(
                     halfHourAvailable: data.halfHourAvailable,
                     fullHourRequired: data.fullHourRequired
                 });
-            }).catch(function (error) {
+            }).catch(error => {
                 console.error('Playground Lease Calendar (query):', ((error.response != null) ? error.response : error));
             });
         }
@@ -265,11 +263,11 @@ export default withFrameContext(
                 reservations: this.state.reservation
             }, {
                 headers: {Authorization: this.props.main.user.token}
-            }).then(function (response) {
+            }).then(response => {
                 console.debug('Playground Lease Calendar (submit):', response);
                 const locationArray = response.headers.location.split('/');
                 this.props.history.push('/order/id' + locationArray[locationArray.length - 1]);
-            }).catch(function (error) {
+            }).catch(error => {
                 console.error('Playground Lease Calendar (submit):', ((error.response != null) ? error.response : error));
             });
         }
@@ -282,13 +280,13 @@ export default withFrameContext(
             const headerLineBuilder = dateList => {
                 const headerLine = [];
                 if ((dateList != null) && (dateList.length > 0)) {
-                    dateList.forEach(function (item, i, arr) {
+                    dateList.forEach((value, index) => {
                         headerLine.push(
-                            <th key={i} className="th-calendar">
-                                <div className="small">{item.month}</div>
+                            <th key={index} className="th-calendar">
+                                <div className="small">{value.month}</div>
                                 <div>
-                                    <span className="mr-1">{item.date.split('-')[2]}</span>
-                                    <span className="ml-1">{item.dayOfWeek.short.toUpperCase()}</span>
+                                    <span className="mr-1">{value.date.split('-')[2]}</span>
+                                    <span className="ml-1">{value.dayOfWeek.short.toUpperCase()}</span>
                                 </div>
                             </th>
                         );
@@ -301,14 +299,14 @@ export default withFrameContext(
                 const reservation = this.state.reservation;
                 const checkedStyle = this.state.owner ? 'btn-primary' : 'btn-success';
                 const updateReservation = this.updateReservation.bind(this);
-                timeList.forEach(function (item, i, arr) {
-                    const rows = [(<td key={0}><span className="badge badge-secondary">{item}</span></td>)];
-                    schedule.forEach(function (value, key, map) {
+                timeList.forEach((time, index) => {
+                    const rows = [(<td key={0}><span className="badge badge-secondary">{time}</span></td>)];
+                    schedule.forEach((value, date) => {
                         const content = (<span>{price}<i className="fa fa-rub ml-1"/></span>);
-                        const datetime = key + 'T' + item;
+                        const datetime = date + 'T' + time;
                         rows.push(
                             <td key={rows.length}>
-                                {value.get(item) ? (
+                                {value.get(time) ? (
                                     <CheckButton value={datetime}
                                                  sizeStyle="btn-sm"
                                                  checkedStyle={checkedStyle}
@@ -327,7 +325,7 @@ export default withFrameContext(
                             </td>
                         )
                     });
-                    table.push(<tr key={i}>{rows}</tr>)
+                    table.push(<tr key={index}>{rows}</tr>)
                 });
                 return (table);
             };
