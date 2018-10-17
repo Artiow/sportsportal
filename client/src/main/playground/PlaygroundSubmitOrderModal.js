@@ -1,5 +1,6 @@
 import React from 'react';
 import {env} from '../../boot/constants';
+import ModalFade from '../../util/components/ModalFade';
 import './PlaygroundSubmitOrderModal.css';
 
 export default class PlaygroundSubmitOrderModal extends React.Component {
@@ -37,6 +38,10 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
             maxHeight: height,
             offset: 0
         }
+    }
+
+    activate(options) {
+        this.modal.activate(options);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -95,7 +100,9 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
         }
 
         return (
-            <div id={this.props.submitId} className="PlaygroundSubmitOrderModal modal fade" tabIndex="-1">
+            <ModalFade className="PlaygroundSubmitOrderModal"
+                       ref={modal => this.modal = modal}
+                       id={this.props.submitId}>
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -157,7 +164,7 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </ModalFade>
         );
     }
 }

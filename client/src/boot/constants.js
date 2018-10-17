@@ -1,4 +1,5 @@
 export const env = Object.freeze({
+    ANIMATION_TIMEOUT: 300,
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
     MAIN_HOST_URL: 'http://localhost:3000',
     API_URL: 'http://localhost:8080',

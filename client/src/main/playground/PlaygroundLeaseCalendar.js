@@ -266,7 +266,10 @@ export default withFrameContext(
             }).then(response => {
                 console.debug('Playground Lease Calendar (submit):', response);
                 const locationArray = response.headers.location.split('/');
-                this.props.history.push('/order/id' + locationArray[locationArray.length - 1]);
+                this.modal.activate('hide');
+                setTimeout(() => {
+                    this.props.history.push('/order/id' + locationArray[locationArray.length - 1])
+                }, env.ANIMATION_TIMEOUT);
             }).catch(error => {
                 console.error('Playground Lease Calendar (submit):', ((error.response != null) ? error.response : error));
             });
@@ -386,6 +389,7 @@ export default withFrameContext(
                                                     userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
                                                     ownerTitle={PlaygroundLeaseCalendar.OWNER_SUBMIT_TITLE}
                                                     submitId="submitOrder" reservation={reservation}
+                                                    ref={modal => this.modal = modal}
                                                     owner={owner} price={totalPrice}/>
                     </form>
                 )

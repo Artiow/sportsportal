@@ -1,6 +1,7 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {withAppContext} from '../Application';
+import {env} from '../constants';
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
 import Login from './modal/Login';
@@ -23,9 +24,6 @@ export function withFrameContext(Component) {
 
 export default withAppContext(withRouter(
     class MainFrame extends React.Component {
-
-        static ANIMATION_TIMEOUT = 300;
-
         constructor(props) {
             super(props);
             this.state = {
@@ -44,8 +42,8 @@ export default withAppContext(withRouter(
         }
 
         static switch(currentModal, nextModal) {
-            setTimeout(() => nextModal.activate(), MainFrame.ANIMATION_TIMEOUT);
-            currentModal.activate('hide', MainFrame.ANIMATION_TIMEOUT);
+            setTimeout(() => nextModal.activate(), env.ANIMATION_TIMEOUT);
+            currentModal.activate('hide', env.ANIMATION_TIMEOUT);
         }
 
         componentDidMount() {
@@ -56,13 +54,13 @@ export default withAppContext(withRouter(
         }
 
         componentWillReceiveProps(nextProps) {
-            this.setState({
-                user: MainFrame.calcUser(nextProps.app.credentials)
-            })
+            const user = MainFrame.calcUser(nextProps.app.credentials);
+            console.debug('MainFrame (user):', user);
+            this.setState({user: user})
         }
 
         queryLogin(data) {
-            this.loginForm.activate('hide', MainFrame.ANIMATION_TIMEOUT);
+            this.loginForm.activate('hide', env.ANIMATION_TIMEOUT);
             this.props.app.login(data);
         }
 
@@ -120,8 +118,6 @@ export default withAppContext(withRouter(
 
 class LoginModal extends React.Component {
 
-    static ANIMATION_TIMEOUT = 300;
-
     activate(options, timeout) {
         this.modal.activate(options);
         if (options) this.reset(timeout);
@@ -144,7 +140,7 @@ class LoginModal extends React.Component {
                             </h5>
                             <button type="button" className="close" data-dismiss="modal"
                                     onClick={event => {
-                                        this.reset(LoginModal.ANIMATION_TIMEOUT)
+                                        this.reset(env.ANIMATION_TIMEOUT)
                                     }}>
                                 <span>&times;</span>
                             </button>
@@ -162,8 +158,6 @@ class LoginModal extends React.Component {
 }
 
 class RegistrationModal extends React.Component {
-
-    static ANIMATION_TIMEOUT = 300;
 
     static STAGE = Object.freeze({REGISTRATION: 1, MESSAGE: 2});
     static INIT_STAGE = RegistrationModal.STAGE.REGISTRATION;
@@ -201,7 +195,7 @@ class RegistrationModal extends React.Component {
                             </h5>
                             <button type="button" className="close" data-dismiss="modal"
                                     onClick={event => {
-                                        this.reset(RegistrationModal.ANIMATION_TIMEOUT)
+                                        this.reset(env.ANIMATION_TIMEOUT)
                                     }}>
                                 <span>&times;</span>
                             </button>
