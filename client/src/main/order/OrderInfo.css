@@ -1,0 +1,11 @@
+.OrderInfo .ContentRow code.receipt {
+    color: #444444;
+    font-size: 1.15rem;
+    padding: 10px 20px;
+    background: white;
+    display: block;
+}
+
+.OrderInfo .ContentRow code.receipt i.fa.fa-rub {
+    font-size: 0.75em;
+}
