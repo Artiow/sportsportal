@@ -1,6 +1,8 @@
 import React from 'react';
 import apiUrl from '../../boot/constants';
 import {withFrameContext} from '../../boot/frame/MainFrame';
+import ContentContainer from '../../util/components/special/ContentContainer';
+import ContentRow from '../../util/components/special/ContentRow';
 import axios from 'axios';
 import './OrderInfo.css';
 
@@ -61,27 +63,19 @@ export default withFrameContext(class OrderInfo extends React.Component {
         };
         const order = this.state.content;
         return order ? (
-            <div className="OrderInfo row">
-                <div className="col-10 offset-1">
-                    <div className="container content-container">
-                        <div className="row header-row">
-                            <div className="col-12">
-                                <h1 className="row-h header-h header-name">
-                                    {`Заказ #${orderId(order.id)}`}
-                                </h1>
-                                <h4 className="row-h header-h header-address">
-                                    статус: {orderStatus(order.paid, order.byOwner)}
-                                </h4>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-12">
-                                <code>{JSON.stringify(this.state.content)}</code>
-                            </div>
-                        </div>
+            <ContentContainer className="OrderInfo">
+                <ContentRow className="header">
+                    <div className="col-12">
+                        <h1>{`Заказ #${orderId(order.id)}`}</h1>
+                        <h4>статус: {orderStatus(order.paid, order.byOwner)}</h4>
                     </div>
-                </div>
-            </div>
+                </ContentRow>
+                <ContentRow>
+                    <div className="col-12">
+                        <code>{JSON.stringify(this.state.content)}</code>
+                    </div>
+                </ContentRow>
+            </ContentContainer>
         ) : (null);
     }
 })
