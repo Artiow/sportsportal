@@ -2,7 +2,7 @@ import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import CheckButton from '../../util/components/CheckButton';
 import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
-import {restoreReservation, saveReservation} from '../../util/reservationSaver';
+import {clearReservation, restoreReservation, saveReservation} from '../../util/reservationSaver';
 import {withFrameContext} from '../../boot/frame/MainFrame'
 import apiUrl, {env} from '../../boot/constants';
 import axios from 'axios';
@@ -267,8 +267,13 @@ export default withFrameContext(
                 console.debug('Playground Lease Calendar (submit):', response);
                 const locationArray = response.headers.location.split('/');
                 this.modal.activate('hide');
+                clearReservation(
+                    this.playgroundId,
+                    this.playgroundVersion
+                );
                 setTimeout(() => {
-                    this.props.history.push('/order/id' + locationArray[locationArray.length - 1])
+                    this.setState({reservation: []});
+                    this.props.history.push('/order/id' + locationArray[locationArray.length - 1]);
                 }, env.ANIMATION_TIMEOUT);
             }).catch(error => {
                 console.error('Playground Lease Calendar (submit):', ((error.response != null) ? error.response : error));
@@ -302,14 +307,14 @@ export default withFrameContext(
                 const reservation = this.state.reservation;
                 const checkedStyle = this.state.owner ? 'btn-primary' : 'btn-success';
                 const updateReservation = this.updateReservation.bind(this);
-                timeList.forEach((time, index) => {
+                timeList.forEach((time, index, array) => {
                     const rows = [(<td key={0}><span className="badge badge-secondary">{time}</span></td>)];
                     schedule.forEach((value, date) => {
                         const content = (<span>{price}<i className="fa fa-rub ml-1"/></span>);
                         const datetime = date + 'T' + time;
                         rows.push(
                             <td key={rows.length}>
-                                {value.get(time) ? (
+                                {(value.get(time) && (value.get(array[index - 1]) || value.get(array[index + 1]))) ? (
                                     <CheckButton value={datetime}
                                                  sizeStyle="btn-sm"
                                                  checkedStyle={checkedStyle}

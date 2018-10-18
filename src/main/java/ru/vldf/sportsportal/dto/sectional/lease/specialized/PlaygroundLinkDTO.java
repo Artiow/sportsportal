@@ -19,6 +19,8 @@ public class PlaygroundLinkDTO extends AbstractVersionedDTO {
     private String address;
     private String phone;
     private Integer rate;
+    private Boolean halfHourAvailable;
+    private Boolean fullHourRequired;
     private BigDecimal price;
     private URI playgroundURL;
     private List<URI> ownersURLs;
@@ -80,6 +82,24 @@ public class PlaygroundLinkDTO extends AbstractVersionedDTO {
 
     public PlaygroundLinkDTO setRate(Integer rate) {
         this.rate = rate;
+        return this;
+    }
+
+    public Boolean getHalfHourAvailable() {
+        return halfHourAvailable;
+    }
+
+    public PlaygroundLinkDTO setHalfHourAvailable(Boolean halfHourAvailable) {
+        this.halfHourAvailable = halfHourAvailable;
+        return this;
+    }
+
+    public Boolean getFullHourRequired() {
+        return fullHourRequired;
+    }
+
+    public PlaygroundLinkDTO setFullHourRequired(Boolean fullHourRequired) {
+        this.fullHourRequired = fullHourRequired;
         return this;
     }
 

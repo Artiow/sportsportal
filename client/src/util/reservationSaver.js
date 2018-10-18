@@ -33,8 +33,8 @@ export function restoreReservation(identifier, version) {
 /**
  * Reservation restore cleaning.
  */
-export function clearReservations() {
-    localStorage.removeItem('reservations');
+export function clearReservation(identifier, version) {
+    saveReservation(identifier, version, []);
 }
 
 /**

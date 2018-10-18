@@ -30,6 +30,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -234,8 +235,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 
-            BigDecimal price = playground.getPrice();
             BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
+            BigDecimal playgroundPrice = playground.getPrice();
+            BigDecimal price = (playground.getHalfHourAvailable())
+                    ? playgroundPrice.divide(BigDecimal.valueOf(200, 2), RoundingMode.HALF_UP)
+                    : playgroundPrice;
+
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
                 Timestamp reservedTime = javaTimeMapper.toTimestamp(datetime.toLocalTime());

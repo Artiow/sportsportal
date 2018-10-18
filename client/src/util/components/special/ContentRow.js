@@ -6,7 +6,7 @@ export default function ContentRow(props) {
     let resultClass = 'ContentRow content-row row';
     if (className) resultClass = resultClass + ` ${className}`;
     return (
-        <div className={resultClass}>
+        <div className={resultClass} {...otherProps}>
             {otherProps.children}
         </div>
     );

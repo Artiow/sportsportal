@@ -157,8 +157,8 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                                 {this.props.owner ? this.props.ownerTitle : this.props.userTitle}
                                 {this.props.owner ? (null) : (
                                     <span className="badge badge-dark ml-1">
-                                    {this.props.price}<i className="fa fa-rub ml-1"/>
-                                </span>
+                                        {this.props.price}<i className="fa fa-rub ml-1"/>
+                                    </span>
                                 )}
                             </button>
                         </div>

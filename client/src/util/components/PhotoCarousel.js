@@ -1,4 +1,5 @@
 import React from 'react';
+import PlacedImg from './PlacedImg';
 
 /**
  * PhotoCarousel by bootstrap carousel.
@@ -23,11 +24,7 @@ export default function PhotoCarousel(props) {
         const carouselInnerItem = (key, active) => {
             return (
                 <div className={active ? 'carousel-item active' : 'carousel-item'} key={key}>
-                    <img className="d-block w-100" src={photos[key]} alt={`${key}`}
-                         onError={(e) => {
-                             e.target.onError = null;
-                             e.target.src = placeimg
-                         }}/>
+                    <PlacedImg className="d-block w-100" src={photos[key]} placeImg={placeimg} alt={`${key}`}/>
                 </div>
             );
         };
