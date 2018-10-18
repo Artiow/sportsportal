@@ -29,18 +29,16 @@ export default class PlaygroundSearcher extends React.Component {
      * @param filter {object} playground filter
      */
     query(filter) {
-        const self = this;
-        const url = apiUrl('/leaseapi/playground/list');
         const serializer = params => {
             return qs.stringify(params, {arrayFormat: 'repeat'})
         };
-        axios.get(url, {
+        axios.get(apiUrl('/leaseapi/playground/list'), {
             params: filter,
             paramsSerializer: serializer
-        }).then(function (response) {
-            console.log('PlaygroundSearcher (query):', response);
-            self.setState({page: response.data});
-        }).catch(function (error) {
+        }).then(response => {
+            console.debug('PlaygroundSearcher (query):', response);
+            this.setState({page: response.data});
+        }).catch(error => {
             console.error('PlaygroundSearcher (query):', ((error.response != null) ? error.response : error));
         })
     }

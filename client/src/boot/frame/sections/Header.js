@@ -1,6 +1,5 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import verify, {getLogin} from '../../../util/verification';
 import {env} from '../../constants'
 import logo from '../logo.png';
 import './Header.css';
@@ -10,9 +9,9 @@ export default function Header(props) {
         <header className="Header">
             <div className="container">
                 <div className="row">
-                    <MainBlock {...props}/>
-                    <AuthBlock onLogin={props.onLogin}
-                               onLogout={props.onLogout}/>
+                    <MainBlock breadcrumb={props.breadcrumb}/>
+                    <AuthBlock onLogin={props.onLogin} onLogout={props.onLogout}
+                               username={props.username}/>
                 </div>
             </div>
         </header>
@@ -55,8 +54,8 @@ function MainBreadcrumb(props) {
     const breadcrumb = props.breadcrumb;
     if (breadcrumb != null) {
         const lastIndex = breadcrumb.length - 1;
-        breadcrumb.forEach(function (item, i, arr) {
-            elements.push(element(item.link, item.title, i, (i === lastIndex)))
+        breadcrumb.forEach((value, index) => {
+            elements.push(element(value.link, value.title, index, (index === lastIndex)))
         })
     }
     return (<ol className="breadcrumb">{elements}</ol>);
@@ -65,16 +64,19 @@ function MainBreadcrumb(props) {
 class AuthBlock extends React.Component {
     constructor(props) {
         super(props);
-        const login = getLogin();
-        const logged = (login != null);
         this.state = {
-            isAuthorized: logged,
-            nickname: logged ? login.username : null
+            isAuthorized: !!props.username,
+            username: props.username ? props.username : null
         };
     }
 
-    componentDidMount() {
-        this.queryVerify();
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.username !== this.props.username) {
+            this.setState({
+                isAuthorized: !!nextProps.username,
+                username: nextProps.username ? nextProps.username : null
+            })
+        }
     }
 
     handleLogin(event) {
@@ -85,32 +87,8 @@ class AuthBlock extends React.Component {
 
     handleLogout(event) {
         event.preventDefault();
-        this.queryLogout();
         const onLogout = this.props.onLogout;
         if (typeof onLogout === 'function') onLogout(event);
-    }
-
-    queryLogout() {
-        localStorage.clear();
-        this.setState({
-            isAuthorized: false,
-            nickname: null
-        });
-    }
-
-    queryVerify() {
-        const self = this;
-        verify(function (data) {
-            self.setState({
-                isAuthorized: true,
-                nickname: data.login.username
-            })
-        }, function (error) {
-            self.setState({
-                isAuthorized: false,
-                nickname: null
-            });
-        });
     }
 
     render() {
@@ -118,10 +96,11 @@ class AuthBlock extends React.Component {
             <div className="AuthBlock col-4">
                 {this.state.isAuthorized ? (
                     <div className="auth">
-                        <Link to="/home"
-                              className="row">
+                        {/* USER LINK DISABLED */}
+                        <Link to="/home" className="row"
+                              onClick={e => e.preventDefault()}>
                             <i className="fa fa-user col-1"/>
-                            <span className="col-11 col-label">{this.state.nickname}</span>
+                            <span className="col-11 col-label">{this.state.username}</span>
                         </Link>
                         <Link to="/logout" className="row"
                               onClick={this.handleLogout.bind(this)}>

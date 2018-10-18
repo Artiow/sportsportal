@@ -22,4 +22,17 @@ public class FeatureEntity extends AbstractDictionaryEntity {
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FeatureEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

@@ -63,7 +63,7 @@ export default class PlaygroundFilter extends React.Component {
     uploadFilterDictionaryData(uri, dictionary) {
         axios.get(apiUrl(uri))
             .then(response => {
-                console.log(`PlaygroundFilter (query [${dictionary}]):`, response);
+                console.debug(`PlaygroundFilter (query [${dictionary}]):`, response);
                 this.dictionary[dictionary] = response.data.content;
             })
             .catch(error => {
@@ -107,11 +107,11 @@ export default class PlaygroundFilter extends React.Component {
         const setCheckboxData = (prefix, content, updater) => {
             const result = [];
             if ((content != null) && (content.length > 0)) {
-                content.forEach(function (item, i, arr) {
+                content.forEach((value, index) => {
                     result.push(
-                        <CustomCheckbox key={i} id={prefix + '_' + item.code} value={item.code}
+                        <CustomCheckbox key={index} id={prefix + '_' + value.code} value={value.code}
                                         onChange={event => updater(event.target.value, event.target.checked)}>
-                            {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                            {value.name.charAt(0).toUpperCase() + value.name.slice(1)}
                         </CustomCheckbox>
                     );
                 });

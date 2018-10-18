@@ -30,6 +30,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     private ReservationRepository reservationRepository;
     private PlaygroundRepository playgroundRepository;
     private PlaygroundMapper playgroundMapper;
+    private JavaTimeMapper javaTimeMapper;
 
 
     @Autowired
@@ -72,6 +74,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         this.playgroundMapper = playgroundMapper;
     }
 
+    @Autowired
+    public void setJavaTimeMapper(JavaTimeMapper javaTimeMapper) {
+        this.javaTimeMapper = javaTimeMapper;
+    }
+
 
     /**
      * Returns requested page with playgrounds.
@@ -83,6 +90,47 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filterDTO) {
         PlaygroundFilter filter = new PlaygroundFilter(filterDTO);
         return new PageDTO<>(playgroundRepository.findAll(filter, filter.getPageRequest()).map(playgroundMapper::toShortDTO));
+    }
+
+    /**
+     * Returns requested playground.
+     *
+     * @param id {@link Integer} playground identifier
+     * @return {@link PlaygroundDTO} playground
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Override
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
+        try {
+            return playgroundMapper.toDTO(playgroundRepository.getOne(id));
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
+    }
+
+    /**
+     * Returns requested playground with short information.
+     *
+     * @param id {@link Integer} playground identifier
+     * @return {@link PlaygroundShortDTO}
+     * @throws ResourceNotFoundException if playground not found
+     */
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    public PlaygroundShortDTO getShort(Integer id) throws ResourceNotFoundException {
+        try {
+            return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+        }
     }
 
     /**
@@ -114,51 +162,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     }
 
     /**
-     * Returns requested playground with short information.
-     *
-     * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundShortDTO}
-     * @throws ResourceNotFoundException if playground not found
-     */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
-    public PlaygroundShortDTO getShort(Integer id) throws ResourceNotFoundException {
-        try {
-            return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
-        }
-    }
-
-    /**
-     * Returns requested playground.
-     *
-     * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundDTO} playground
-     * @throws ResourceNotFoundException if playground not found
-     */
-    @Override
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
-    public PlaygroundDTO get(Integer id) throws ResourceNotFoundException {
-        try {
-            return playgroundMapper.toDTO(playgroundRepository.getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
-        }
-    }
-
-    /**
      * Returns available for reservation times for playground by identifier and collections of checked
      * reservation times.
      *
      * @param id           {@link Integer} playground identifier
+     * @param version      {@link Long} playground version
      * @param reservations {@link Collection<LocalDateTime>} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if playground not found
@@ -168,26 +176,27 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             rollbackFor = {ResourceNotFoundException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public ReservationListDTO check(Integer id, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
+    public ReservationListDTO check(Integer id, Long version, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
-            Iterator<LocalDateTime> iterator = reservations.iterator();
-            while (iterator.hasNext()) {
-                LocalDateTime localDateTime = iterator.next();
-                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), localDateTime.toLocalTime()));
-                if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
-                    iterator.remove();
-                } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
-                    iterator.remove();
+            if (!version.equals(playgroundEntity.getVersion())) {
+                return new ReservationListDTO().setReservations(new ArrayList<>(0));
+            } else {
+                if (!(reservations instanceof List)) reservations = new ArrayList<>(reservations);
+                Collections.sort((List<LocalDateTime>) reservations);
+                Iterator<LocalDateTime> iterator = reservations.iterator();
+                while (iterator.hasNext()) {
+                    LocalDateTime localDateTime = iterator.next();
+                    Timestamp reservedTime = javaTimeMapper.toTimestamp(localDateTime.toLocalTime());
+                    if ((reservedTime.before(playgroundEntity.getOpening())) || (!reservedTime.before(playgroundEntity.getClosing()))) {
+                        iterator.remove();
+                    } else if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playgroundEntity, Timestamp.valueOf(localDateTime))) {
+                        iterator.remove();
+                    }
                 }
+                reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
+                return new ReservationListDTO().setReservations((reservations instanceof List) ? (List<LocalDateTime>) reservations : new ArrayList<>(reservations));
             }
-            reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
-            return new ReservationListDTO()
-                    .setReservations(
-                            (reservations instanceof List)
-                                    ? (List<LocalDateTime>) reservations
-                                    : new ArrayList<>(reservations)
-                    );
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
@@ -226,11 +235,15 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 
-            BigDecimal price = playground.getPrice();
             BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
+            BigDecimal playgroundPrice = playground.getPrice();
+            BigDecimal price = (playground.getHalfHourAvailable())
+                    ? playgroundPrice.divide(BigDecimal.valueOf(200, 2), RoundingMode.HALF_UP)
+                    : playgroundPrice;
+
             Collection<ReservationEntity> reservations = new ArrayList<>(datetimes.size());
             for (LocalDateTime datetime : datetimes) {
-                Timestamp reservedTime = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), datetime.toLocalTime()));
+                Timestamp reservedTime = javaTimeMapper.toTimestamp(datetime.toLocalTime());
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
                     throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notWorkingTime.message"));
                 }

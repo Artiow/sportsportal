@@ -134,7 +134,7 @@ public class PictureService extends AbstractMessageService {
      */
     @Transactional(
             rollbackFor = {ResourceCannotCreateException.class},
-            noRollbackFor = {MaxUploadSizeExceededException.class}
+            noRollbackFor = {MaxUploadSizeExceededException.class, IOException.class}
     )
     public Integer create(MultipartFile picture) throws ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {

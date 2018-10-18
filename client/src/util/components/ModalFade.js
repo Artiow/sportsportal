@@ -12,9 +12,16 @@ export default class ModalFade extends React.Component {
     }
 
     render() {
+        const {
+            tabIndex,
+            className,
+            ...props
+        } = this.props;
         return (
-            <div className="modal fade" tabIndex="-1"
-                 ref={modal => this.modal = modal}>
+            <div className={className ? `${className} modal fade` : 'modal fade'}
+                 ref={modal => this.modal = modal}
+                 tabIndex="-1"
+                 {...props}>
                 {this.props.children}
             </div>
         );

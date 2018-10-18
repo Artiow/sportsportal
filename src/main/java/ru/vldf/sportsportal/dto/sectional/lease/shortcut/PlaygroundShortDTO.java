@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.generic.specific.WorkTimeDTO;
 
 import java.math.BigDecimal;
@@ -8,9 +8,10 @@ import java.net.URI;
 import java.time.LocalTime;
 import java.util.List;
 
-public class PlaygroundShortDTO extends AbstractIdentifiedDTO implements WorkTimeDTO {
+public class PlaygroundShortDTO extends AbstractVersionedDTO implements WorkTimeDTO {
 
     private Integer id;
+    private Long version;
     private String name;
     private String address;
     private String phone;
@@ -35,6 +36,17 @@ public class PlaygroundShortDTO extends AbstractIdentifiedDTO implements WorkTim
     @Override
     public PlaygroundShortDTO setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public Long getVersion() {
+        return version;
+    }
+
+    @Override
+    public PlaygroundShortDTO setVersion(Long version) {
+        this.version = version;
         return this;
     }
 

@@ -3,46 +3,24 @@ package ru.vldf.sportsportal.dto.sectional.lease.specialized;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
-import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
 
 public class PlaygroundGridDTO implements DataTransferObject {
 
-    private URI playgroundURL;
-    private Long playgroundVersion;
-    private BigDecimal price;
+    private PlaygroundLinkDTO playground;
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
     private ReservationGridDTO grid;
 
 
-    public URI getPlaygroundURL() {
-        return playgroundURL;
+    public PlaygroundLinkDTO getPlayground() {
+        return playground;
     }
 
-    public PlaygroundGridDTO setPlaygroundURL(URI playgroundURL) {
-        this.playgroundURL = playgroundURL;
-        return this;
-    }
-
-    public Long getPlaygroundVersion() {
-        return playgroundVersion;
-    }
-
-    public PlaygroundGridDTO setPlaygroundVersion(Long playgroundVersion) {
-        this.playgroundVersion = playgroundVersion;
-        return this;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public PlaygroundGridDTO setPrice(BigDecimal price) {
-        this.price = price;
+    public PlaygroundGridDTO setPlayground(PlaygroundLinkDTO playground) {
+        this.playground = playground;
         return this;
     }
 

@@ -1,13 +1,13 @@
 import React from 'react';
 import InputMask from 'react-input-mask';
 import {Link} from 'react-router-dom';
-import apiUrl, {ID} from '../../constants';
+import apiUrl from '../../constants';
 import axios from 'axios';
 import './Registration.css';
 
 export default class Registration extends React.Component {
 
-    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
 
     constructor(props) {
         super(props);
@@ -17,29 +17,35 @@ export default class Registration extends React.Component {
         }
     }
 
+    reset() {
+        this.submitForm.reset();
+        this.setState({
+            errorMessage: null,
+            errorMessages: {}
+        });
+    }
+
     queryRegistration(obj) {
-        const self = this;
         this.setState({errorMessage: null, errorMessages: {}});
         axios
             .post(apiUrl('/auth/register'), obj)
-            .then(function (response) {
-                console.log('Registration (query):', response);
+            .then(response => {
+                console.debug('Registration (query):', response);
                 const locationArray = response.headers.location.split('/');
-                const onSuccess = self.props.onSuccess;
+                const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
             })
-            .catch(function (error) {
+            .catch(error => {
                 const errorResponse = error.response;
                 if (errorResponse != null) {
                     const data = errorResponse.data;
                     const message = data.message;
                     const errors = data.errors;
                     console.warn('Registration (query):', errorResponse);
-                    if (errors != null) self.setState({errorMessage: message, errorMessages: errors});
-                    else self.setState({errorMessage: message});
+                    this.setState({errorMessage: message, errorMessages: errors});
                 } else {
                     console.error('Registration (query):', error);
-                    self.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
+                    this.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
                 }
             })
     }
@@ -47,7 +53,8 @@ export default class Registration extends React.Component {
     render() {
         return (
             <div className="Registration">
-                <RegistrationForm errorMessage={this.state.errorMessage}
+                <RegistrationForm ref={form => this.submitForm = form}
+                                  errorMessage={this.state.errorMessage}
                                   errorMessages={this.state.errorMessages}
                                   onSubmit={this.queryRegistration.bind(this)}
                                   onLogClick={this.props.onLogClick}/>
@@ -61,14 +68,22 @@ class RegistrationForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            surname: '',
-            email: '',
-            password: '',
-            confirm: '',
+            name: null,
+            surname: null,
+            email: null,
+            password: null,
+            confirm: null,
             errorMessage: ((props.errorMessage != null) ? props.errorMessage : null),
             errorMessages: ((props.errorMessages != null) ? props.errorMessages : {})
         }
+    }
+
+    reset() {
+        this.submitForm.reset();
+        this.setState({
+            errorMessage: ((this.props.errorMessage != null) ? this.props.errorMessage : null),
+            errorMessages: ((this.props.errorMessages != null) ? this.props.errorMessages : {})
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -108,23 +123,28 @@ class RegistrationForm extends React.Component {
 
     render() {
         return (
-            <form className="RegistrationForm" onSubmit={this.handleSubmit.bind(this)}>
+            <form className="RegistrationForm"
+                  onSubmit={this.handleSubmit.bind(this)}
+                  ref={form => this.submitForm = form}>
                 <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
                      className="alert alert-warning">
                     {this.state.errorMessage}
                 </div>
                 <div className="form-row-main-container">
                     <div className="form-row-container">
-                        <InputField identifier={'name'} placeholder={'Имя'} required={'required'}
+                        <InputField identifier={'name'} placeholder={'Имя'}
                                     errorMessage={this.state.errorMessages.name}
-                                    onChange={this.handleInputChange.bind(this)}/>
-                        <InputField identifier={'surname'} placeholder={'Фамилия'} required={'required'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
+                        <InputField identifier={'surname'} placeholder={'Фамилия'}
                                     errorMessage={this.state.errorMessages.surname}
-                                    onChange={this.handleInputChange.bind(this)}/>
-                        <InputField type={'email'}
-                                    identifier={'email'} placeholder={'Email'} required={'required'}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
+                        <InputField identifier={'email'} placeholder={'Email'}
+                                    type={'email'} autoComplete="email"
                                     errorMessage={this.state.errorMessages.email}
-                                    onChange={this.handleInputChange.bind(this)}/>
+                                    onChange={this.handleInputChange.bind(this)}
+                                    required={'required'}/>
                     </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                         secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
@@ -156,11 +176,12 @@ function InputField(props) {
                 {props.placeholder}
             </label>
             <div className="col-sm-9">
-                <InputMask id={ID() + props.identifier}
+                <InputMask id={`reg_form_${props.identifier}`}
                            type={(props.type != null) ? props.type : 'text'}
                            name={props.identifier} placeholder={props.placeholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            maskChar={props.maskChar} mask={props.mask}
+                           autoComplete={props.autoComplete}
                            onChange={props.onChange}
                            required={props.required}/>
                 <div style={(!error) ? {display: 'none'} : {display: 'block'}}
@@ -181,7 +202,8 @@ function PasswordInputField(props) {
                     {props.firstPlaceholder}
                 </label>
                 <div className="col-sm-9">
-                    <input id={ID() + props.firstIdentifier} type="password"
+                    <input id={`reg_form_${props.firstIdentifier}`}
+                           type="password" autoComplete="new-password"
                            name={props.firstIdentifier} placeholder={props.firstPlaceholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            onChange={props.onChange}
@@ -191,7 +213,8 @@ function PasswordInputField(props) {
             <div className="form-row">
                 <label htmlFor={props.secondIdentifier} className="col-sm-3 col-form-label"/>
                 <div className="col-sm-9">
-                    <input id={ID() + props.secondIdentifier} type="password"
+                    <input id={`reg_form_${props.secondIdentifier}`}
+                           type="password" autoComplete="new-password"
                            name={props.secondIdentifier} placeholder={props.secondPlaceholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
                            onChange={props.onChange}

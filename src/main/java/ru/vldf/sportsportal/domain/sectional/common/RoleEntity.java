@@ -22,4 +22,17 @@ public class RoleEntity extends AbstractDictionaryEntity {
     public void setUsers(Collection<UserEntity> users) {
         this.users = users;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RoleEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

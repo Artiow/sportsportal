@@ -1,14 +1,17 @@
 package ru.vldf.sportsportal.dto.sectional.common.specialized;
 
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 
-public class UserLinkDTO extends AbstractIdentifiedDTO {
+public class UserLinkDTO extends AbstractVersionedDTO {
 
     @NotNull
     private Integer id;
+
+    @NotNull
+    private Long version;
 
     private String email;
     private String username;
@@ -25,6 +28,17 @@ public class UserLinkDTO extends AbstractIdentifiedDTO {
     @Override
     public UserLinkDTO setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public Long getVersion() {
+        return version;
+    }
+
+    @Override
+    public UserLinkDTO setVersion(Long version) {
+        this.version = version;
         return this;
     }
 

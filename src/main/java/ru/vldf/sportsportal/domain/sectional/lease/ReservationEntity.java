@@ -5,15 +5,12 @@ import ru.vldf.sportsportal.domain.generic.DomainObject;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Table(name = "reservation", schema = "lease")
-@AssociationOverrides({
-        @AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))
-})
-@AttributeOverrides({
-        @AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))
-})
+@AttributeOverrides({@AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))})
+@AssociationOverrides({@AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))})
 public class ReservationEntity implements DomainObject {
 
     @EmbeddedId
@@ -73,5 +70,19 @@ public class ReservationEntity implements DomainObject {
 
     public void setDatetime(Timestamp datetime) {
         pk.setDatetime(datetime);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReservationEntity)) return false;
+        ReservationEntity entity = (ReservationEntity) o;
+        return Objects.equals(getPk(), entity.getPk());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPk());
     }
 }

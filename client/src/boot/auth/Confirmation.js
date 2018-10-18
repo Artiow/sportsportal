@@ -1,13 +1,14 @@
 import React from 'react';
-import MainFrame from '../frame/MainFrame';
+import {Link} from 'react-router-dom';
+import {withAppContext} from '../Application';
 import apiUrl from '../constants'
 import axios from 'axios';
 import qs from 'qs';
 import './Confirmation.css';
 
-export default class Confirmation extends React.Component {
+export default withAppContext(class Confirmation extends React.Component {
 
-    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка!';
+    static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
     static STAGE = Object.freeze({PROCESSED: 1, SUCCESS: 2, FAILED: 3});
 
     constructor(props) {
@@ -23,22 +24,21 @@ export default class Confirmation extends React.Component {
     }
 
     confirmQuery() {
-        const self = this;
         const confirmToken = qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token;
-        console.log('Accepted Token (confirmation):', confirmToken);
+        console.debug('Accepted Token (confirmation):', confirmToken);
         axios
             .put(apiUrl('/auth/confirm'), '', {
                 params: {confirmToken: confirmToken},
                 paramsSerializer: (params => qs.stringify(params))
             })
-            .then(function (response) {
-                console.log('Confirmation (query):', response);
-                self.setState({stage: Confirmation.STAGE.SUCCESS});
+            .then(response => {
+                console.debug('Confirmation (query):', response);
+                this.setState({stage: Confirmation.STAGE.SUCCESS});
             })
-            .catch(function (error) {
+            .catch(error => {
                 const errorResponse = error.response;
                 console.error('Confirmation (query):', ((errorResponse != null) ? errorResponse : error));
-                self.setState({
+                this.setState({
                     stage: Confirmation.STAGE.FAILED,
                     errorMessage: (errorResponse != null) ? errorResponse.data.message : Confirmation.UNEXPECTED_ERROR_MESSAGE
                 });
@@ -58,7 +58,7 @@ export default class Confirmation extends React.Component {
                         </div>
                     );
                 case Confirmation.STAGE.SUCCESS:
-                    MainFrame.reLogin();
+                    this.props.app.reLogin();
                     return (null);
                 case Confirmation.STAGE.FAILED:
                     return (
@@ -66,7 +66,8 @@ export default class Confirmation extends React.Component {
                             <h4 className="alert-heading">Не удалось подтвердить вашу учетную запись!</h4>
                             <p>Произошла ошибка при подтверждении вашей учетной записи.</p>
                             <hr/>
-                            <p>{this.state.errorMessage}</p>
+                            <p>{this.state.errorMessage}! <Link to={'/'} className="alert-link">Вернуться на главную
+                                страницу</Link>.</p>
                         </div>
                     );
                 default:
@@ -78,4 +79,4 @@ export default class Confirmation extends React.Component {
                 <div className="container">{contentByStage(this.state.stage)}</div>
             </div>);
     }
-}
+})

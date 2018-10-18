@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import StarRate from '../../util/components/StarRate';
+import PlacedImg from '../../util/components/PlacedImg';
 import placeimg from '../../util/img/no-image-white-sm.jpg';
 
 export default function PlaygroundPageableContainer(props) {
@@ -41,8 +42,8 @@ function PlaygroundContainer(props) {
     let container = [];
     const content = props.content;
     if ((content !== null) && (content.length > 0)) {
-        content.forEach(function (item, i, arr) {
-            container.push(<PlaygroundCard key={i} playground={item}/>);
+        content.forEach((value, index) => {
+            container.push(<PlaygroundCard key={index} playground={value}/>);
         });
     }
     return (<div className="PlaygroundContainer row">{container}</div>);
@@ -55,11 +56,7 @@ function PlaygroundCard(props) {
     return (
         <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
-                <img className="card-img" src={photoURL} alt={playground.name}
-                     onError={(e) => {
-                         e.target.onError = null;
-                         e.target.src = placeimg
-                     }}/>
+                <PlacedImg className="card-img" src={photoURL} placeImg={placeimg} alt={playground.name}/>
                 <div className="card-body">
                     <h4 className="card-title mb-1">
                         <small>{playground.name}</small>

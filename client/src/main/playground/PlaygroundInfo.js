@@ -1,5 +1,7 @@
 import React from 'react';
 import PlaygroundLeaseCalendar from './PlaygroundLeaseCalendar';
+import ContentContainer from '../../util/components/special/ContentContainer';
+import ContentRow from '../../util/components/special/ContentRow';
 import PhotoCarousel from '../../util/components/PhotoCarousel';
 import noImage from '../../util/img/no-image-grey-mdh.jpg';
 import StarRate from '../../util/components/StarRate';
@@ -19,13 +21,12 @@ export default class PlaygroundInfo extends React.Component {
     }
 
     query() {
-        const self = this;
         axios.get(
             apiUrl('/leaseapi/playground/' + this.id)
-        ).then(function (response) {
-            console.log('PlaygroundInfo (query):', response);
-            self.setState({content: response.data});
-        }).catch(function (error) {
+        ).then(response => {
+            console.debug('PlaygroundInfo (query):', response);
+            this.setState({content: response.data});
+        }).catch(error => {
             console.error('PlaygroundInfo (query):', ((error.response != null) ? error.response : error));
         })
     }
@@ -33,18 +34,20 @@ export default class PlaygroundInfo extends React.Component {
     render() {
         const photoExtractor = photoItems => {
             const photos = [];
-            if (photoItems != null) photoItems.forEach(function (item, i, arr) {
-                photos.push(item.url + '?size=mdh');
-            });
+            if (photoItems != null) {
+                photoItems.forEach(value => photos.push(value.url + '?size=mdh'));
+            }
             return photos;
         };
         const featureBuilder = capabilityItems => {
             const featureLines = [];
             if ((capabilityItems != null) && (capabilityItems.length > 0)) {
-                capabilityItems.forEach(function (item, i, arr) {
-                    const name = item.name;
+                capabilityItems.forEach((value, index) => {
+                    const name = value.name;
                     featureLines.push(
-                        <li className="list-group-item" key={i}>{(name.charAt(0).toUpperCase() + name.slice(1))}</li>
+                        <li className="list-group-item" key={index}>
+                            {(name.charAt(0).toUpperCase() + name.slice(1))}
+                        </li>
                     );
                 });
                 return (<ul className="list-group list-group-flush">{featureLines}</ul>);
@@ -57,50 +60,39 @@ export default class PlaygroundInfo extends React.Component {
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
         return didLoad ? (
-            <div className="PlaygroundInfo row">
-                <div className="col-10 offset-1">
-                    <div className="container content-container">
-                        <div className="row header-row">
-                            <div className="col-12">
-                                <h1 className="row-h header-h header-name">
-                                    {playground.name}
-                                </h1>
-                                <h4 className="row-h header-h header-address">
-                                    {playground.address}
-                                </h4>
-                                <h6 className="row-h header-h header-rate">
-                                    <StarRate value={playground.rate}/>
-                                </h6>
-                            </div>
-                        </div>
-                        <div className="row feature-row">
-                            <div className="col-4">
-                                <h4 className="row-h info-h info-price">
-                                    <span className="mr-md-2">Стоимость:</span>
-                                    <span className="badge badge-secondary">
-                                                <span>{Math.floor(playground.price)}</span>
-                                                <i className="fa fa-rub ml-1"/>/час
-                                            </span>
-                                </h4>
-                                {(features != null) ? (
-                                    <h5 className="row-h info-h info-infra">Инфраструктура:</h5>
-                                ) : (null)}
-                                {features}
-                            </div>
-                            <div className="col-8">
-                                <PhotoCarousel photos={photos} placeimg={noImage}
-                                               identifier="pg_photo_carousel"/>
-                            </div>
-                        </div>
-                        <div className="row calendar-row">
-                            <div className="col-12">
-                                <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
-                                <PlaygroundLeaseCalendar identifier={this.id} version={playground.version}/>
-                            </div>
-                        </div>
+            <ContentContainer className="PlaygroundInfo">
+                <ContentRow className="header">
+                    <div className="col-12">
+                        <h1 className="header">{playground.name}</h1>
+                        <h4>{playground.address}</h4>
+                        <h6><StarRate value={playground.rate}/></h6>
                     </div>
-                </div>
-            </div>
+                </ContentRow>
+                <ContentRow className="feature">
+                    <div className="col-4">
+                        <h4 className="row-h info-h info-price">
+                            <span className="mr-md-2">Стоимость:</span>
+                            <span className="badge badge-secondary">
+                                <span>{Math.floor(playground.price)}</span>
+                                <i className="fa fa-rub ml-1"/>/час
+                            </span>
+                        </h4>
+                        {(features != null) ? (
+                            <h5 className="feature">Инфраструктура:</h5>
+                        ) : (null)}
+                        {features}
+                    </div>
+                    <div className="col-8">
+                        <PhotoCarousel identifier="pg_photo_carousel" photos={photos} placeimg={noImage}/>
+                    </div>
+                </ContentRow>
+                <ContentRow className="calendar">
+                    <div className="col-12">
+                        <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
+                        <PlaygroundLeaseCalendar identifier={this.id} version={playground.version}/>
+                    </div>
+                </ContentRow>
+            </ContentContainer>
         ) : (null);
     }
 }

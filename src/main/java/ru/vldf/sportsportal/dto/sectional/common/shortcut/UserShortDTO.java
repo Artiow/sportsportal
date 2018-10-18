@@ -1,13 +1,14 @@
 package ru.vldf.sportsportal.dto.sectional.common.shortcut;
 
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 
 import java.net.URI;
 import java.util.List;
 
-public class UserShortDTO extends AbstractIdentifiedDTO {
+public class UserShortDTO extends AbstractVersionedDTO {
 
     private Integer id;
+    private Long version;
     private String email;
     private String name;
     private String surname;
@@ -27,6 +28,17 @@ public class UserShortDTO extends AbstractIdentifiedDTO {
     @Override
     public UserShortDTO setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public Long getVersion() {
+        return version;
+    }
+
+    @Override
+    public UserShortDTO setVersion(Long version) {
+        this.version = version;
         return this;
     }
 

@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import java.math.BigDecimal;
@@ -8,9 +8,10 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class OrderShortDTO extends AbstractIdentifiedDTO {
+public class OrderShortDTO extends AbstractVersionedDTO {
 
     private Integer id;
+    private Long version;
     private Boolean paid;
     private BigDecimal price;
     private LocalDateTime datetime;
@@ -29,6 +30,17 @@ public class OrderShortDTO extends AbstractIdentifiedDTO {
     @Override
     public OrderShortDTO setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public Long getVersion() {
+        return version;
+    }
+
+    @Override
+    public OrderShortDTO setVersion(Long version) {
+        this.version = version;
         return this;
     }
 

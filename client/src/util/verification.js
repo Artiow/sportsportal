@@ -15,12 +15,12 @@ export default function verify(successCallback, failureCallback) {
             .get(apiUrl('/auth/verify'), {params: {accessToken: accessToken}})
             .then(function (response) {
                 login(response.data);
-                console.log('verify:', response);
+                console.debug('verification:', response);
                 call(successCallback, response.data);
             })
             .catch(function (error) {
                 logout();
-                console.error('verify:', ((error.response != null) ? error.response : error));
+                console.warn('verification:', ((error.response != null) ? error.response : error));
                 call(failureCallback, error);
             })
     } else call(failureCallback, undefined);
@@ -34,18 +34,4 @@ export function login(token) {
 export function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('login');
-}
-
-export function getToken() {
-    const token = localStorage.getItem('token');
-    return (token != null) ? token : null;
-}
-
-export function getLogin() {
-    const login = localStorage.getItem('login');
-    try {
-        return JSON.parse(login);
-    } catch (e) {
-        return null;
-    }
 }

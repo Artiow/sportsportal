@@ -3,13 +3,11 @@ package ru.vldf.sportsportal.domain.sectional.lease;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
+import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Collection;
 
 @Entity
@@ -34,11 +32,11 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "opening", nullable = false)
-    private Timestamp opening = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), LocalTime.MIN));
+    private Timestamp opening = Timestamp.valueOf(JavaTimeMapper.MIN);
 
     @Basic
     @Column(name = "closing", nullable = false)
-    private Timestamp closing = Timestamp.valueOf(LocalDateTime.of(LocalDate.of(1, 1, 1), LocalTime.MIN));
+    private Timestamp closing = Timestamp.valueOf(JavaTimeMapper.MIN);
 
     @Basic
     @Column(name = "half_hour_available", nullable = false)
@@ -203,5 +201,18 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
 
     public void setPhotos(Collection<PictureEntity> photos) {
         this.photos = photos;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlaygroundEntity)) return false;
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

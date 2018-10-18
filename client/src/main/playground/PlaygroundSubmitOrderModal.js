@@ -1,11 +1,12 @@
 import React from 'react';
 import {env} from '../../boot/constants';
+import ModalFade from '../../util/components/ModalFade';
 import './PlaygroundSubmitOrderModal.css';
 
 export default class PlaygroundSubmitOrderModal extends React.Component {
 
     static HEADER_TITLE = 'Подтвердите правильность выбора';
-    static MAX_LENGTH = 5;
+    static MAX_LENGTH = 4;
 
     static calcSchedule = (reservation) => {
         const rawSchedule = new Map();
@@ -16,21 +17,38 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
             if (rawSchedule.has(date)) rawSchedule.get(date).push(time);
             else rawSchedule.set(date, [time]);
         });
-        rawSchedule.forEach(value => value.sort());
-        return Array.from(rawSchedule).sort();
+        let maxHeight = 0;
+        rawSchedule.forEach(value => {
+            value.sort();
+            if (value.length > maxHeight) {
+                maxHeight = value.length
+            }
+        });
+        return {
+            schedule: Array.from(rawSchedule).sort(),
+            height: maxHeight
+        }
     };
 
     constructor(props) {
         super(props);
+        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation);
         this.state = {
-            schedule: PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation),
+            schedule: schedule,
+            maxHeight: height,
             offset: 0
         }
     }
 
+    activate(options) {
+        this.modal.activate(options);
+    }
+
     componentWillReceiveProps(nextProps) {
+        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(nextProps.reservation);
         this.setState({
-            schedule: PlaygroundSubmitOrderModal.calcSchedule(nextProps.reservation),
+            schedule: schedule,
+            maxHeight: height,
             offset: 0
         });
     }
@@ -49,14 +67,13 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
     render() {
         const offset = this.state.offset;
         const schedule = this.state.schedule;
-        const length = Math.min(schedule.length, PlaygroundSubmitOrderModal.MAX_LENGTH + offset);
+        const trueLength = schedule.length;
+        const smallMode = trueLength < PlaygroundSubmitOrderModal.MAX_LENGTH;
+        const length = Math.min(trueLength, PlaygroundSubmitOrderModal.MAX_LENGTH + offset);
 
-        let maxHeight = 0;
         const headerLine = [];
         for (let i = offset; i < length; i++) {
             const value = schedule[i];
-            const currentHeight = value[1].length;
-            if (currentHeight > maxHeight) maxHeight = currentHeight;
             const date = value[0];
             const dateClass = new Date(date);
             headerLine.push(
@@ -71,17 +88,24 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
         }
 
         const body = [];
-        for (let i = 0; i < maxHeight; i++) {
+        for (let i = 0; i < this.state.maxHeight; i++) {
             const row = [];
             for (let j = offset; j < length; j++) {
-                row.push(<td key={j}>{schedule[j][1][i]}</td>)
+                const time = schedule[j][1][i];
+                row.push((time) ? (
+                    <td key={j}>{time}</td>
+                ) : (
+                    <td key={j}>&nbsp;</td>
+                ))
             }
             body.push(<tr key={i}>{row}</tr>);
         }
 
         return (
-            <div id={this.props.submitId} className="PlaygroundSubmitOrderModal modal fade" tabIndex="-1">
-                <div className="modal-dialog">
+            <ModalFade id={this.props.submitId}
+                       className="PlaygroundSubmitOrderModal"
+                       ref={modal => this.modal = modal}>
+                <div className={smallMode ? 'modal-dialog modal-sm' : 'modal-dialog'}>
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">{PlaygroundSubmitOrderModal.HEADER_TITLE}</h5>
@@ -89,21 +113,24 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <div className="row">
-                                <div className="col-1">
-                                    {(offset > 0) ? (
-                                        <button type="button" id="btn-sub-prev" className="btn btn-sm btn-outline-dark"
-                                                title="Назад" onClick={this.handleOffset.bind(this)}>
-                                            <i className="fa fa-angle-left"/>
-                                        </button>
-                                    ) : (
-                                        <button disabled="disabled"
-                                                className="btn btn-sm btn-outline-secondary disabled"
-                                                title="Назад">
-                                            <i className="fa fa-angle-left"/>
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="col-10">
+                                {!smallMode ? (
+                                    <div className="col-1">
+                                        {(offset > 0) ? (
+                                            <button id="btn-sub-prev" type="button"
+                                                    className="btn btn-sm btn-outline-dark"
+                                                    title="Назад" onClick={this.handleOffset.bind(this)}>
+                                                <i className="fa fa-angle-left"/>
+                                            </button>
+                                        ) : (
+                                            <button disabled="disabled"
+                                                    className="btn btn-sm btn-outline-secondary disabled"
+                                                    title="Назад">
+                                                <i className="fa fa-angle-left"/>
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (null)}
+                                <div className={smallMode ? 'col-12' : 'col-10'}>
                                     <table className="table table-hover">
                                         <thead className="thead-light">
                                         <tr>{headerLine}</tr>
@@ -111,38 +138,43 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                                         <tbody>{body}</tbody>
                                     </table>
                                 </div>
-                                <div className="col-1">
-                                    {(length < schedule.length) ? (
-                                        <button type="button" id="btn-sub-next" className="btn btn-sm btn-outline-dark"
-                                                title="Вперед" onClick={this.handleOffset.bind(this)}>
-                                            <i className="fa fa-angle-right"/>
-                                        </button>
-                                    ) : (
-                                        <button disabled="disabled"
-                                                className="btn btn-sm btn-outline-secondary disabled"
-                                                title="Назад">
-                                            <i className="fa fa-angle-right"/>
-                                        </button>
-                                    )}
-                                </div>
+                                {!smallMode ? (
+                                    <div className="col-1">
+                                        {(length < schedule.length) ? (
+                                            <button id="btn-sub-next" type="button"
+                                                    className="btn btn-sm btn-outline-dark"
+                                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                                <i className="fa fa-angle-right"/>
+                                            </button>
+                                        ) : (
+                                            <button disabled="disabled"
+                                                    className="btn btn-sm btn-outline-secondary disabled"
+                                                    title="Назад">
+                                                <i className="fa fa-angle-right"/>
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (null)}
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">
-                                {this.props.closeTitle}
-                            </button>
+                            {!smallMode ? (
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">
+                                    {this.props.closeTitle}
+                                </button>
+                            ) : (null)}
                             <button type="submit" className={this.props.owner ? 'btn btn-primary' : 'btn btn-success'}>
                                 {this.props.owner ? this.props.ownerTitle : this.props.userTitle}
                                 {this.props.owner ? (null) : (
                                     <span className="badge badge-dark ml-1">
-                                    {this.props.price}<i className="fa fa-rub ml-1"/>
-                                </span>
+                                        {this.props.price}<i className="fa fa-rub ml-1"/>
+                                    </span>
                                 )}
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </ModalFade>
         );
     }
 }
