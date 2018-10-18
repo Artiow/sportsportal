@@ -6,7 +6,7 @@ import './PlaygroundSubmitOrderModal.css';
 export default class PlaygroundSubmitOrderModal extends React.Component {
 
     static HEADER_TITLE = 'Подтвердите правильность выбора';
-    static MAX_LENGTH = 5;
+    static MAX_LENGTH = 4;
 
     static calcSchedule = (reservation) => {
         const rawSchedule = new Map();
@@ -67,7 +67,9 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
     render() {
         const offset = this.state.offset;
         const schedule = this.state.schedule;
-        const length = Math.min(schedule.length, PlaygroundSubmitOrderModal.MAX_LENGTH + offset);
+        const trueLength = schedule.length;
+        const smallMode = trueLength < PlaygroundSubmitOrderModal.MAX_LENGTH;
+        const length = Math.min(trueLength, PlaygroundSubmitOrderModal.MAX_LENGTH + offset);
 
         const headerLine = [];
         for (let i = offset; i < length; i++) {
@@ -100,10 +102,10 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
         }
 
         return (
-            <ModalFade className="PlaygroundSubmitOrderModal"
-                       ref={modal => this.modal = modal}
-                       id={this.props.submitId}>
-                <div className="modal-dialog">
+            <ModalFade id={this.props.submitId}
+                       className="PlaygroundSubmitOrderModal"
+                       ref={modal => this.modal = modal}>
+                <div className={smallMode ? 'modal-dialog modal-sm' : 'modal-dialog'}>
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">{PlaygroundSubmitOrderModal.HEADER_TITLE}</h5>
@@ -111,21 +113,24 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <div className="row">
-                                <div className="col-1">
-                                    {(offset > 0) ? (
-                                        <button type="button" id="btn-sub-prev" className="btn btn-sm btn-outline-dark"
-                                                title="Назад" onClick={this.handleOffset.bind(this)}>
-                                            <i className="fa fa-angle-left"/>
-                                        </button>
-                                    ) : (
-                                        <button disabled="disabled"
-                                                className="btn btn-sm btn-outline-secondary disabled"
-                                                title="Назад">
-                                            <i className="fa fa-angle-left"/>
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="col-10">
+                                {!smallMode ? (
+                                    <div className="col-1">
+                                        {(offset > 0) ? (
+                                            <button id="btn-sub-prev" type="button"
+                                                    className="btn btn-sm btn-outline-dark"
+                                                    title="Назад" onClick={this.handleOffset.bind(this)}>
+                                                <i className="fa fa-angle-left"/>
+                                            </button>
+                                        ) : (
+                                            <button disabled="disabled"
+                                                    className="btn btn-sm btn-outline-secondary disabled"
+                                                    title="Назад">
+                                                <i className="fa fa-angle-left"/>
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (null)}
+                                <div className={smallMode ? 'col-12' : 'col-10'}>
                                     <table className="table table-hover">
                                         <thead className="thead-light">
                                         <tr>{headerLine}</tr>
@@ -133,26 +138,31 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                                         <tbody>{body}</tbody>
                                     </table>
                                 </div>
-                                <div className="col-1">
-                                    {(length < schedule.length) ? (
-                                        <button type="button" id="btn-sub-next" className="btn btn-sm btn-outline-dark"
-                                                title="Вперед" onClick={this.handleOffset.bind(this)}>
-                                            <i className="fa fa-angle-right"/>
-                                        </button>
-                                    ) : (
-                                        <button disabled="disabled"
-                                                className="btn btn-sm btn-outline-secondary disabled"
-                                                title="Назад">
-                                            <i className="fa fa-angle-right"/>
-                                        </button>
-                                    )}
-                                </div>
+                                {!smallMode ? (
+                                    <div className="col-1">
+                                        {(length < schedule.length) ? (
+                                            <button id="btn-sub-next" type="button"
+                                                    className="btn btn-sm btn-outline-dark"
+                                                    title="Вперед" onClick={this.handleOffset.bind(this)}>
+                                                <i className="fa fa-angle-right"/>
+                                            </button>
+                                        ) : (
+                                            <button disabled="disabled"
+                                                    className="btn btn-sm btn-outline-secondary disabled"
+                                                    title="Назад">
+                                                <i className="fa fa-angle-right"/>
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (null)}
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">
-                                {this.props.closeTitle}
-                            </button>
+                            {!smallMode ? (
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">
+                                    {this.props.closeTitle}
+                                </button>
+                            ) : (null)}
                             <button type="submit" className={this.props.owner ? 'btn btn-primary' : 'btn btn-success'}>
                                 {this.props.owner ? this.props.ownerTitle : this.props.userTitle}
                                 {this.props.owner ? (null) : (
