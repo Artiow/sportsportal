@@ -65,7 +65,7 @@ export default withFrameContext(class OrderInfo extends React.Component {
             return (<span className={`badge badge-${styleClass}`}>{text}</span>)
         };
         const orderListComponent = (reservations, title) => {
-            const orderList = (reservations, halfHourAvailable, viewPrice) => {
+            const orderLine = (reservations, isHalfHour, isPriced) => {
                 const list = [];
                 const reservationMap = new Map();
                 reservations.forEach(value => {
@@ -83,14 +83,14 @@ export default withFrameContext(class OrderInfo extends React.Component {
                     const datetime = key;
                     const day = (env.DAYS_OF_WEEK_NAMES[new Date(datetime).getDay()]).short;
                     const date = datetime.split('T')[0].replace(new RegExp('-', 'g'), '.');
-                    const divider = halfHourAvailable ? 2 : 1;
-                    const mainTime = Math.floor(value.count / divider);
-                    const subTime = (halfHourAvailable && ((value.count % divider) !== 0)) ? '30' : '00';
-                    const time = subTime ? `${mainTime} ч. ${subTime} мин.` : `${mainTime} ч.`;
+                    const count = value.count;
+                    const time = isHalfHour
+                        ? `${Math.floor(count / 2)} ч. ${(isHalfHour && ((count % 2) !== 0)) ? '30' : '00'} мин.`
+                        : `${count} ч.`;
                     list.push(
                         <span key={key}>
                             <br/>{`${date} [${day}] всего ${time}`}
-                            {(() => viewPrice ? (
+                            {(() => isPriced ? (
                                 <span className="ml-2">на сумму {value.price}<i className="fa fa-rub ml-1"/></span>
                             ) : (null))()}
                         </span>
@@ -119,7 +119,7 @@ export default withFrameContext(class OrderInfo extends React.Component {
                                     <hr className="my-2"/>
                                     Объект: {playground.name}
                                     <br/>Адрес: {playground.address}
-                                    {orderList(value.reservations, playground.halfHourAvailable, (value.totalPrice > 0))}
+                                    {orderLine(value.reservations, playground.halfHourAvailable, (value.totalPrice > 0))}
                                     <hr className="my-2"/>
                                     Итого: {value.totalPrice}<i className="fa fa-rub ml-1"/>
                                 </code>
@@ -158,12 +158,6 @@ export default withFrameContext(class OrderInfo extends React.Component {
                         </div>
                     </ContentRow>
                 ) : (null)}
-                <ContentRow>
-                    <div className="col-12">
-                        <h4>JSON</h4>
-                        <code style={{whiteSpace: 'pre'}}>{JSON.stringify(order, null, 2)}</code>
-                    </div>
-                </ContentRow>
             </ContentContainer>
         ) : (null);
     }

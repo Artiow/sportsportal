@@ -3,6 +3,7 @@
     font-size: 1.15rem;
     padding: 10px 20px;
     background: white;
+    min-height: 100%;
     display: block;
 }
 

@@ -304,6 +304,7 @@ export default withFrameContext(
             };
             const tableBuilder = (timeList, price, schedule) => {
                 const table = [];
+                const checked = this.state.fullHourRequired && this.state.halfHourAvailable;
                 const reservation = this.state.reservation;
                 const checkedStyle = this.state.owner ? 'btn-primary' : 'btn-success';
                 const updateReservation = this.updateReservation.bind(this);
@@ -314,7 +315,7 @@ export default withFrameContext(
                         const datetime = date + 'T' + time;
                         rows.push(
                             <td key={rows.length}>
-                                {(value.get(time) && (value.get(array[index - 1]) || value.get(array[index + 1]))) ? (
+                                {(value.get(time) && !(checked && !value.get(array[index - 1]) && !value.get(array[index + 1]))) ? (
                                     <CheckButton value={datetime}
                                                  sizeStyle="btn-sm"
                                                  checkedStyle={checkedStyle}
