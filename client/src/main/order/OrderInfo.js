@@ -6,6 +6,7 @@ import ContentContainer from '../../util/components/special/ContentContainer';
 import ContentRow from '../../util/components/special/ContentRow';
 import PlacedImg from '../../util/components/PlacedImg';
 import StarRate from '../../util/components/StarRate';
+import Timer from '../../util/components/Timer';
 import axios from 'axios';
 import './OrderInfo.css';
 
@@ -132,12 +133,28 @@ export default withFrameContext(class OrderInfo extends React.Component {
         };
         const order = this.state.content;
         const title = order ? `Заказ #${orderId(order.id)}` : null;
+        const expiration = order ? order.expiration : null;
+        let minute = 0;
+        let second = 0;
+        if (expiration) {
+            const pre = (new Date(expiration)).getTime() - (new Date()).getTime();
+            const res = (pre > 0) ? new Date(pre) : new Date(0);
+            minute = res.getMinutes();
+            second = res.getSeconds();
+        }
         return order ? (
             <ContentContainer className="OrderInfo">
                 <ContentRow className="header">
                     <div className="col-12">
                         <h1 className="mb-1">{title}</h1>
                         <h4>статус: {orderStatusComponent(order.paid, order.byOwner)}</h4>
+                        {expiration ? (
+                            <div className="alert alert-danger my-0">
+                                <h4 className="alert-heading">Внимание!</h4>
+                                Бронирование перестанет быть действительным
+                                через <strong><Timer m={minute} s={second}/></strong>
+                            </div>
+                        ) : (null)}
                     </div>
                 </ContentRow>
                 {orderListComponent(order ? order.reservations : null, title)}
