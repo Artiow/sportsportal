@@ -62,7 +62,7 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
             }
             return orderMapper.toDTO(orderEntity);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
         }
     }
 

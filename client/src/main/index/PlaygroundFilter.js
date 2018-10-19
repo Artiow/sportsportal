@@ -164,7 +164,7 @@ export default class PlaygroundFilter extends React.Component {
                                 <h5 className="mb-0">
                                     <a className="btn btn-link" data-toggle="collapse"
                                        data-target="#pg_filter_collapse_3">
-                                        Стоимость часа
+                                        Стоимость часа аренды
                                     </a>
                                 </h5>
                             </div>

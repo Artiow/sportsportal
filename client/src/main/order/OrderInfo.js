@@ -158,23 +158,23 @@ export default withFrameContext(class OrderInfo extends React.Component {
                     </div>
                 </ContentRow>
                 {orderListComponent(order ? order.reservations : null, title)}
-                {!order.paid ? (
-                    <ContentRow>
-                        <div className="col-12">
-                            <div className="btn-group">
-                                <button className="btn btn-danger disabled" disabled={true}>
-                                    Отменить заказ
-                                </button>
+                <ContentRow>
+                    <div className="col-12">
+                        <div className="btn-group">
+                            <button className="btn btn-danger disabled" disabled={true}>
+                                Отменить {order.byOwner ? 'резервирование' : 'бронирование'}
+                            </button>
+                            {!order.paid ? (
                                 <button className="btn btn-success disabled" disabled={true}>
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">
                                         {order.price}<i className="fa fa-rub ml-1"/>
                                     </span>
                                 </button>
-                            </div>
+                            ) : (null)}
                         </div>
-                    </ContentRow>
-                ) : (null)}
+                    </div>
+                </ContentRow>
             </ContentContainer>
         ) : (null);
     }
