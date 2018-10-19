@@ -22,6 +22,9 @@ public class SwaggerConfig {
 
     private static String AUTHORIZATION_NAME = "Token";
 
+    @Value("${api.host}")
+    private String apiHost;
+
     @Value("${api.version}")
     private String apiVersion;
 
@@ -56,6 +59,7 @@ public class SwaggerConfig {
         String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
 
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(apiHost)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(CONTROLLER_PACKAGE))
                 .paths(PathSelectors.any())

@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.6.62</version>
+    <version>0.6.63</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -27,8 +27,10 @@
         <java.version>1.8</java.version>
         <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 
-        <datasource.url.default>jdbc:postgresql://localhost:5432/sportsportal</datasource.url.default>
-        <datasource.url.test>jdbc:postgresql://localhost:5432/sportsportal.test</datasource.url.test>
+        <swagger.host>localhost:8080</swagger.host>
+        <datasource.host>localhost</datasource.host>
+        <datasource.url.default>jdbc:postgresql://${datasource.host}:5432/sportsportal</datasource.url.default>
+        <datasource.url.test>jdbc:postgresql://${datasource.host}:5432/sportsportal.test</datasource.url.test>
         <db.username>postgres</db.username>
         <db.password>postgres</db.password>
 
