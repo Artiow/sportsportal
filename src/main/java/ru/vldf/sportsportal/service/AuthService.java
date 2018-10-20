@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -155,8 +156,7 @@ public class AuthService extends AbstractSecurityService {
             UserEntity user = userRepository().getOne(userDetails.getId());
             if ((!user.getEmail().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
                 throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
-            }
-            return new TokenDTO()
+            } else return new TokenDTO()
                     .setLogin(loginMapper.toLoginDTO(user))
                     .setTokenType(securityService.getTokenType())
                     .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
@@ -176,19 +176,18 @@ public class AuthService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {ResourceCannotCreateException.class},
-            noRollbackFor = {JpaObjectRetrievalFailureException.class}
+            noRollbackFor = {DataAccessException.class}
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
         if (userRepository.existsByEmail(email)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
-        }
-        try {
+        } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
             userEntity.setRoles(new ArrayList<>());
             return userRepository.save(userEntity).getId();
-        } catch (JpaObjectRetrievalFailureException e) {
+        } catch (DataAccessException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
         }
     }
