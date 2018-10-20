@@ -5,7 +5,6 @@ import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +26,7 @@ import ru.vldf.sportsportal.service.subsidiary.MailService;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -176,16 +176,24 @@ public class AuthService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {ResourceCannotCreateException.class},
-            noRollbackFor = {DataAccessException.class}
+            noRollbackFor = {EntityNotFoundException.class, OptimisticLockException.class, DataAccessException.class}
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.hasAnyRole(email)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
         } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
             userEntity.setRoles(new ArrayList<>());
+            if (userRepository.existsByEmail(email)) {
+                try {
+                    userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
+                } catch (EntityNotFoundException ignored) {
+                } catch (OptimisticLockException e) {
+                    throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+                }
+            }
             return userRepository.save(userEntity).getId();
         } catch (DataAccessException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);

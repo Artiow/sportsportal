@@ -53,6 +53,7 @@ public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO>
         acceptor.setPatronymic(donor.getPatronymic());
         acceptor.setAddress(donor.getAddress());
         acceptor.setPhone(donor.getPhone());
+        acceptor.setConfirmCode(donor.getConfirmCode());
         acceptor.setAvatar(donor.getAvatar());
 
         return acceptor;

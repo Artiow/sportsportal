@@ -69,7 +69,7 @@ public class SwaggerConfig {
                 .securityContexts(securityContexts());
     }
 
-    private ApiInfo apiInfo() {
+    public ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title(apiTitle)
                 .version(apiVersion)

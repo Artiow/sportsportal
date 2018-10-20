@@ -15,18 +15,21 @@ public interface AbstractVersionedMapper<E extends AbstractVersionedEntity, D ex
         return acceptor;
     }
 
-    default void check(AbstractVersionedEntity oldObject, AbstractVersionedEntity newObject) throws OptimisticLockException {
-        Long oldVersion = oldObject.getVersion();
-        Long newVersion = newObject.getVersion();
-        if (!oldVersion.equals(newVersion)) {
-            throw new OptimisticLockException(String.format(
-                    "%s failed merge for %s because the entity versions do not match",
-                    this.getClass().getName(),
-                    ((oldObject instanceof HibernateProxy)
-                            ? ((HibernateProxy) oldObject).getHibernateLazyInitializer().getPersistentClass()
-                            : oldObject.getClass())
-                            .getName()
-            ));
+    default void check(AbstractVersionedEntity acceptor, AbstractVersionedEntity donor) throws OptimisticLockException {
+        Long oldVersion = acceptor.getVersion();
+        Long newVersion = donor.getVersion();
+        if (newVersion != null) {
+            if (oldVersion == null) {
+                throw new IllegalArgumentException(String.format(
+                        "%s failed merge for %s because the acceptor entity has no version, but donor version present",
+                        this.getClass().getName(), ((acceptor instanceof HibernateProxy) ? ((HibernateProxy) acceptor).getHibernateLazyInitializer().getPersistentClass() : acceptor.getClass()).getName()
+                ));
+            } else if (!oldVersion.equals(newVersion)) {
+                throw new OptimisticLockException(String.format(
+                        "%s failed merge for %s because the entity versions do not match",
+                        this.getClass().getName(), ((acceptor instanceof HibernateProxy) ? ((HibernateProxy) acceptor).getHibernateLazyInitializer().getPersistentClass() : acceptor.getClass()).getName()
+                ));
+            }
         }
     }
 }

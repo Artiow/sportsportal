@@ -2,14 +2,10 @@ package ru.vldf.sportsportal.service.generic;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public abstract class AbstractSecurityService extends AbstractMessageService {
 
@@ -65,30 +61,6 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     public boolean currentUserHasRole(String roleCode) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (!roleRepository.existsByCode(roleCode)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", roleCode));
-        }
-        return userRepository.existsByIdAndRoleCode(getCurrentUserId(), roleCode);
-    }
-
-    /**
-     * Returns current user role codes.
-     *
-     * @return {@link Collection<String>} role entity codes
-     * @throws UnauthorizedAccessException if user is anonymous
-     */
-    public Collection<String> getCurrentRoleCodes() throws UnauthorizedAccessException {
-        Collection<RoleEntity> roleEntities = getCurrentRoleEntities();
-        Collection<String> roleCodes = new ArrayList<>(roleEntities.size());
-        for (RoleEntity roleEntity : roleEntities) roleCodes.add(roleEntity.getCode());
-        return roleCodes;
-    }
-
-    /**
-     * Returns current user roles.
-     *
-     * @return {@link Collection<RoleEntity>} role entities
-     * @throws UnauthorizedAccessException if user is anonymous
-     */
-    public Collection<RoleEntity> getCurrentRoleEntities() throws UnauthorizedAccessException {
-        return getCurrentUserEntity().getRoles();
+        } else return userRepository.hasRoleByCode(getCurrentUserId(), roleCode);
     }
 }
