@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.config.messages;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
@@ -17,10 +18,23 @@ public class MessageConfig implements MessageContainer {
 
     private MessageSource source;
     private MessageSourceAccessor accessor;
+    private String localeLanguage;
+    private String localeCountry;
+    private Locale locale;
 
     @Autowired
     public MessageConfig(MessageSource messageSource) {
         this.source = messageSource;
+    }
+
+    @Value("${locale.language}")
+    public void setLocaleLanguage(String localeLanguage) {
+        this.localeLanguage = localeLanguage;
+    }
+
+    @Value("${locale.country}")
+    public void setLocaleCountry(String localeCountry) {
+        this.localeCountry = localeCountry;
     }
 
 
@@ -29,7 +43,8 @@ public class MessageConfig implements MessageContainer {
      */
     @PostConstruct
     private void init() {
-        this.accessor = new MessageSourceAccessor(this.source, Locale.getDefault());
+        this.locale = new Locale(localeLanguage, localeCountry);
+        this.accessor = new MessageSourceAccessor(this.source, this.locale);
     }
 
     /**
@@ -40,11 +55,15 @@ public class MessageConfig implements MessageContainer {
     @Bean
     public LocalValidatorFactoryBean getLocalValidatorFactoryBean() {
         LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
-
         factory.setValidationMessageSource(this.source);
         return factory;
     }
 
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
 
     @Override
     public String get(@NotNull String msg) {

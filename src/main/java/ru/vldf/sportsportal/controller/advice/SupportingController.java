@@ -1,13 +1,13 @@
 package ru.vldf.sportsportal.controller.advice;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ru.vldf.sportsportal.config.SwaggerConfig;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.HandlerNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
@@ -16,26 +16,25 @@ import springfox.documentation.service.ApiInfo;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import java.util.Optional;
 
 @ApiIgnore
 @Controller
 public class SupportingController implements ErrorController {
 
-    private String dbVersion;
-
     private SwaggerConfig swaggerConfig;
-
-    @Value("${db.version}")
-    public void setDbVersion(String dbVersion) {
-        this.dbVersion = dbVersion;
-    }
+    private MessageContainer messages;
 
     @Autowired
     public void setSwaggerConfig(SwaggerConfig swaggerConfig) {
         this.swaggerConfig = swaggerConfig;
     }
 
+    @Autowired
+    public void setMessages(MessageContainer messages) {
+        this.messages = messages;
+    }
 
     /**
      * Returns information about api and database version.
@@ -44,18 +43,18 @@ public class SupportingController implements ErrorController {
      */
     @ResponseBody
     @GetMapping("/info")
-    public Object getAppVersion() {
+    public Object getAppInfo() {
         return new Object() {
 
             ApiInfo apiInfo = swaggerConfig.apiInfo();
-            String databaseVersion = dbVersion;
+            Locale locale = messages.getLocale();
 
             public ApiInfo getApiInfo() {
                 return apiInfo;
             }
 
-            public String getDatabaseVersion() {
-                return databaseVersion;
+            public Locale getLocale() {
+                return locale;
             }
         };
     }
