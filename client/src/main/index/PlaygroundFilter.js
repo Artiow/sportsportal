@@ -34,10 +34,12 @@ export default class PlaygroundFilter extends React.Component {
 
     constructor(props) {
         super(props);
-        this.dictionary = {sports: null, features: null};
-        this.uploadFilterDictionaryData('/leaseapi/dict/feature/list', 'features');
-        this.uploadFilterDictionaryData('/leaseapi/dict/sport/list', 'sports');
+        this.dictionary = {
+            sports: null,
+            features: null
+        };
         this.state = {
+            loading: true,
             sportCodes: [],
             featureCodes: [],
             searchString: '',
@@ -55,6 +57,11 @@ export default class PlaygroundFilter extends React.Component {
         return codes;
     }
 
+    componentDidMount() {
+        this.uploadFilterDictionaryData('/leaseapi/dict/feature/list', 'features');
+        this.uploadFilterDictionaryData('/leaseapi/dict/sport/list', 'sports');
+    }
+
     /**
      * Load dictionary and store it in state.
      * @param uri {string}
@@ -65,16 +72,19 @@ export default class PlaygroundFilter extends React.Component {
             .then(response => {
                 console.debug(`PlaygroundFilter (query [${dictionary}]):`, response);
                 this.dictionary[dictionary] = response.data.content;
+                this.updateLoadingStatus();
             })
             .catch(error => {
                 console.error('PlaygroundFilter (query):', ((error.response != null) ? error.response : error));
             })
     }
 
+    updateLoadingStatus() {
+        this.setState({loading: !this.dictionary.features && !this.dictionary.sports});
+    }
+
     handleInputChange(event) {
-        this.setState({
-            searchString: event.target.value
-        });
+        this.setState({searchString: event.target.value});
     }
 
     handleSubmit(event) {
@@ -104,6 +114,7 @@ export default class PlaygroundFilter extends React.Component {
     }
 
     render() {
+        const loading = this.state.loading;
         const setCheckboxData = (prefix, content, updater) => {
             const result = [];
             if ((content != null) && (content.length > 0)) {
@@ -123,17 +134,20 @@ export default class PlaygroundFilter extends React.Component {
                 <form onSubmit={this.handleSubmit.bind(this)} className="card">
                     <div className="input-group mb-3">
                         <input id="searchString" onChange={this.handleInputChange.bind(this)}
-                               type="text" className="form-control"/>
+                               type="text" className="form-control" disabled={loading}/>
                         <div className="input-group-append">
-                            <button className="btn btn-outline-secondary" type="submit">Найти</button>
+                            <button className={'btn btn-outline-secondary' + (loading ? ' disabled' : '')}
+                                    disabled={loading} type="submit">
+                                Найти
+                            </button>
                         </div>
                     </div>
                     <div id="pg_filter_accordion" className="filter-accordion">
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse"
-                                       data-target="#pg_filter_collapse_1">
+                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                       data-toggle="collapse" data-target="#pg_filter_collapse_1">
                                         Виды спорта
                                     </a>
                                 </h5>
@@ -147,8 +161,8 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse"
-                                       data-target="#pg_filter_collapse_2">
+                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                       data-toggle="collapse" data-target="#pg_filter_collapse_2">
                                         Инфраструктура
                                     </a>
                                 </h5>
@@ -162,8 +176,8 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse"
-                                       data-target="#pg_filter_collapse_3">
+                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                       data-toggle="collapse" data-target="#pg_filter_collapse_3">
                                         Стоимость часа аренды
                                     </a>
                                 </h5>
@@ -199,8 +213,8 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className="btn btn-link" data-toggle="collapse"
-                                       data-target="#pg_filter_collapse_4">
+                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                       data-toggle="collapse" data-target="#pg_filter_collapse_4">
                                         Время работы
                                     </a>
                                 </h5>
@@ -219,8 +233,7 @@ export default class PlaygroundFilter extends React.Component {
                                             <span className="badge-param">{this.state.closing}</span>
                                         </span>
                                     </h6>
-                                    <Range min={0} max={48}
-                                           allowCross={false} defaultValue={[0, 48]}
+                                    <Range min={0} max={48} allowCross={false} defaultValue={[0, 48]}
                                            onChange={this.updateTimeCallback}/>
                                 </div>
                             </div>
