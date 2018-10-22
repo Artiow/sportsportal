@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants';
+import apiUrl, {env} from '../../constants';
 import axios from 'axios';
 import './Login.css';
 
@@ -13,7 +13,8 @@ export default class Login extends React.Component {
         this.state = {
             email: null,
             password: null,
-            errorMessage: null
+            errorMessage: null,
+            loading: false
         };
     }
 
@@ -23,6 +24,7 @@ export default class Login extends React.Component {
     }
 
     queryLogin() {
+        this.setState({loading: true});
         axios
             .get(apiUrl('/auth/login'), {
                 params: {
@@ -34,13 +36,14 @@ export default class Login extends React.Component {
                 console.debug('Login (query):', response);
                 const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(response.data);
+                setTimeout(() => this.setState({loading: false}), env.ANIMATION_TIMEOUT);
             })
             .catch(error => {
                 let errorMessage;
                 const errorResponse = error.response;
                 console.warn('Login (query):', errorResponse ? errorResponse : error);
                 errorMessage = errorResponse ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE;
-                this.setState({errorMessage: errorMessage});
+                this.setState({errorMessage: errorMessage, loading: false});
             })
     }
 
@@ -89,7 +92,14 @@ export default class Login extends React.Component {
                                 Нет аккаунта?
                             </Link>
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg btn-block">Авторизация</button>
+                        <button className="btn btn-primary btn-lg btn-block"
+                                disabled={this.state.loading} type="submit">
+                            {(!this.state.loading) ? (
+                                <span>Авторизация</span>
+                            ) : (
+                                <i className="fa fa-refresh fa-spin fa-fw"/>
+                            )}
+                        </button>
                     </div>
                 </form>
             </div>
