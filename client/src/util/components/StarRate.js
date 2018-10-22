@@ -1,4 +1,5 @@
 import React from 'react';
+import './StarRate.css'
 
 /**
  * StarRate by font awesome carousel.
@@ -7,7 +8,9 @@ import React from 'react';
  * @return rate component
  */
 export default function StarRate(props) {
-    const value = props.value;
+    let resultClass = 'StarRate';
+    const {value, className, ...otherProps} = props;
+    if (className) resultClass = resultClass + ` ${className}`;
     let stars = [];
     let i = 0;
     while (i <= (value - 2)) {
@@ -23,6 +26,6 @@ export default function StarRate(props) {
         i += 2;
     }
     return (
-        <span className="StarRate span-star-rate">{stars}</span>
+        <span className={resultClass} {...otherProps}>{stars}</span>
     );
 }

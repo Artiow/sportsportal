@@ -16,7 +16,7 @@ export default class PlaygroundSearcher extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {page: null};
+        this.state = {page: null, loading: true};
         this.filter = {pageNum: 0, pageSize: PlaygroundSearcher.DEFAULT_PAGE_SIZE};
     }
 
@@ -29,15 +29,13 @@ export default class PlaygroundSearcher extends React.Component {
      * @param filter {object} playground filter
      */
     query(filter) {
-        const serializer = params => {
-            return qs.stringify(params, {arrayFormat: 'repeat'})
-        };
+        this.setState({loading: true});
         axios.get(apiUrl('/leaseapi/playground/list'), {
-            params: filter,
-            paramsSerializer: serializer
+            paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
+            params: filter
         }).then(response => {
             console.debug('PlaygroundSearcher (query):', response);
-            this.setState({page: response.data});
+            this.setState({page: response.data, loading: false});
         }).catch(error => {
             console.error('PlaygroundSearcher (query):', ((error.response != null) ? error.response : error));
         })
@@ -47,7 +45,8 @@ export default class PlaygroundSearcher extends React.Component {
         return (
             <div className="PlaygroundSearcher row">
                 <PlaygroundFilter onChange={this.updateFilter}/>
-                <PlaygroundPageableContainer page={this.state.page}/>
+                <PlaygroundPageableContainer loading={this.state.loading}
+                                             content={this.state.page}/>
             </div>
         );
     }
