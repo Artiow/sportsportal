@@ -115,6 +115,7 @@ export default class PlaygroundFilter extends React.Component {
 
     render() {
         const loading = this.state.loading;
+        const inProcess = this.props.inProcess;
         const setCheckboxData = (prefix, content, updater) => {
             const result = [];
             if ((content != null) && (content.length > 0)) {
@@ -136,9 +137,14 @@ export default class PlaygroundFilter extends React.Component {
                         <input id="searchString" onChange={this.handleInputChange.bind(this)}
                                type="text" className="form-control" disabled={loading}/>
                         <div className="input-group-append">
-                            <button className={'btn btn-outline-secondary' + (loading ? ' disabled' : '')}
-                                    disabled={loading} type="submit">
-                                Найти
+                            <button
+                                className={'btn btn-outline-secondary' + ((loading || inProcess) ? ' disabled' : '')}
+                                disabled={(loading || inProcess)} type="submit">
+                                {(!inProcess) ? (
+                                    <span>Найти</span>
+                                ) : (
+                                    <i className="fa fa-refresh fa-spin fa-fw"/>
+                                )}
                             </button>
                         </div>
                     </div>

@@ -1,3 +1,7 @@
+.PlaygroundFilter form button.btn[type="submit"] {
+    min-width: 72px;
+}
+
 .PlaygroundFilter form.card {
     padding: 15px;
 }

@@ -44,9 +44,10 @@ export default class PlaygroundSearcher extends React.Component {
     render() {
         return (
             <div className="PlaygroundSearcher row">
-                <PlaygroundFilter onChange={this.updateFilter}/>
-                <PlaygroundPageableContainer loading={this.state.loading}
-                                             content={this.state.page}/>
+                <PlaygroundFilter inProcess={this.state.loading}
+                                  onChange={this.updateFilter}/>
+                <PlaygroundPageableContainer content={this.state.page}
+                                             loading={this.state.loading}/>
             </div>
         );
     }
