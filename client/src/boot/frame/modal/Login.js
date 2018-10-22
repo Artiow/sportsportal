@@ -14,17 +14,23 @@ export default class Login extends React.Component {
             email: null,
             password: null,
             errorMessage: null,
-            loading: false
+            inProcess: false
         };
     }
 
     reset() {
         this.submitForm.reset();
-        this.setState({errorMessage: null, loading: false});
+        this.setState({
+            errorMessage: null,
+            inProcess: false
+        });
     }
 
     queryLogin() {
-        this.setState({errorMessage: null, loading: true});
+        this.setState({
+            errorMessage: null,
+            inProcess: true
+        });
         axios
             .get(apiUrl('/auth/login'), {
                 params: {
@@ -42,7 +48,7 @@ export default class Login extends React.Component {
                 const errorResponse = error.response;
                 console.warn('Login (query):', errorResponse ? errorResponse : error);
                 errorMessage = errorResponse ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE;
-                this.setState({errorMessage: errorMessage, loading: false});
+                this.setState({errorMessage: errorMessage, inProcess: false});
             })
     }
 
@@ -58,7 +64,7 @@ export default class Login extends React.Component {
 
     handleRegClick(event) {
         event.preventDefault();
-        const onRegClick = this.props.onRegClick;
+        const onRegClick = !this.state.inProcess ? this.props.onRegClick : null;
         if (typeof onRegClick === 'function') onRegClick(event);
     }
 
@@ -92,8 +98,8 @@ export default class Login extends React.Component {
                             </Link>
                         </div>
                         <button className="btn btn-primary btn-lg btn-block"
-                                disabled={this.state.loading} type="submit">
-                            {(!this.state.loading) ? (
+                                disabled={this.state.inProcess} type="submit">
+                            {(!this.state.inProcess) ? (
                                 <span>Авторизация</span>
                             ) : (
                                 <i className="fa fa-refresh fa-spin fa-fw"/>

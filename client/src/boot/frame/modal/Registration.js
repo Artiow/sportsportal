@@ -14,7 +14,7 @@ export default class Registration extends React.Component {
         this.state = {
             errorMessage: null,
             errorMessages: {},
-            loading: false
+            inProcess: false
         }
     }
 
@@ -23,7 +23,7 @@ export default class Registration extends React.Component {
         this.setState({
             errorMessage: null,
             errorMessages: {},
-            loading: false
+            inProcess: false
         });
     }
 
@@ -31,7 +31,7 @@ export default class Registration extends React.Component {
         this.setState({
             errorMessage: null,
             errorMessages: {},
-            loading: true
+            inProcess: true
         });
         axios
             .post(apiUrl('/auth/register'), obj)
@@ -51,13 +51,13 @@ export default class Registration extends React.Component {
                     this.setState({
                         errorMessage: message,
                         errorMessages: errors,
-                        loading: false
+                        inProcess: false
                     });
                 } else {
                     console.error('Registration (query):', error);
                     this.setState({
                         errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE,
-                        loading: false
+                        inProcess: false
                     });
                 }
             })
@@ -66,7 +66,7 @@ export default class Registration extends React.Component {
     render() {
         return (
             <div className="Registration">
-                <RegistrationForm inProcess={this.state.loading}
+                <RegistrationForm inProcess={this.state.inProcess}
                                   ref={form => this.submitForm = form}
                                   errorMessage={this.state.errorMessage}
                                   errorMessages={this.state.errorMessages}
@@ -131,7 +131,7 @@ class RegistrationForm extends React.Component {
 
     handleLogClick(event) {
         event.preventDefault();
-        const onLogClick = this.props.onLogClick;
+        const onLogClick = !this.props.inProcess ? this.props.onLogClick : null;
         if (typeof onLogClick === 'function') onLogClick(event);
     }
 
