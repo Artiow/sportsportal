@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import apiUrl, {env} from '../../constants';
+import apiUrl from '../../constants';
 import axios from 'axios';
 import './Login.css';
 
@@ -20,11 +20,11 @@ export default class Login extends React.Component {
 
     reset() {
         this.submitForm.reset();
-        this.setState({errorMessage: null});
+        this.setState({errorMessage: null, loading: false});
     }
 
     queryLogin() {
-        this.setState({loading: true});
+        this.setState({errorMessage: null, loading: true});
         axios
             .get(apiUrl('/auth/login'), {
                 params: {
@@ -36,7 +36,6 @@ export default class Login extends React.Component {
                 console.debug('Login (query):', response);
                 const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(response.data);
-                setTimeout(() => this.setState({loading: false}), env.ANIMATION_TIMEOUT);
             })
             .catch(error => {
                 let errorMessage;

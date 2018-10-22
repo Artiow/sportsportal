@@ -124,9 +124,9 @@ class LoginModal extends React.Component {
     }
 
     reset(timeout) {
-        setTimeout(() => {
+        if (this.body) setTimeout(() => {
             this.body.reset()
-        }, timeout ? timeout : 0);
+        }, timeout ? timeout : 0)
     }
 
     render() {
@@ -174,9 +174,9 @@ class RegistrationModal extends React.Component {
     }
 
     reset(timeout) {
-        setTimeout(() => {
+        if (this.body) setTimeout(() => {
             this.body.reset()
-        }, timeout ? timeout : 0);
+        }, timeout ? timeout : 0)
     }
 
     sendMessage(userId, userEmail) {
