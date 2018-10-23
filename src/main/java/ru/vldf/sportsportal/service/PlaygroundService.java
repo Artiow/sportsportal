@@ -224,7 +224,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @return {@link Integer} new order identifier
      * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceNotFoundException     if playground not found
-     * @throws ResourceCannotCreateException if playground cannot create
+     * @throws ResourceCannotCreateException if reservation cannot create
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
