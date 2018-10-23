@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
@@ -37,9 +38,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
+
+    @Value("${order.expiration.amount}")
+    private Integer orderExpirationAmount;
+
+    @Value("${order.expiration.unit}")
+    private String orderExpirationUnit;
 
     private OrderRepository orderRepository;
     private ReservationRepository reservationRepository;
@@ -207,7 +217,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param id                 {@link Integer} playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation info
-     * @return new order {@link Integer} identifier
+     * @return {@link Integer} new order identifier
      * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceNotFoundException     if playground not found
      * @throws ResourceCannotCreateException if playground cannot create
@@ -218,16 +228,17 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime expiration = now.plus(orderExpirationAmount, ChronoUnit.valueOf(orderExpirationUnit));
+
             UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
             boolean isOwner = (playground.getOwners().contains(currentUser));
 
-            int EXPIRATION = 15;
-            LocalDateTime now = LocalDateTime.now();
             OrderEntity order = new OrderEntity();
             order.setCustomer(currentUser);
             order.setDatetime(Timestamp.valueOf(now));
-            order.setExpiration(!isOwner ? Timestamp.valueOf(now.plus(EXPIRATION, ChronoUnit.MINUTES)) : null);
+            order.setExpiration(!isOwner ? Timestamp.valueOf(expiration) : null);
 
             List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
             Collections.sort(datetimes);
@@ -268,7 +279,15 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setPrice(sumPrice);
             order.setByOwner(isOwner);
             order.setReservations(reservations);
-            return orderRepository.save(order).getId();
+
+            Integer newOrderId = orderRepository.save(order).getId();
+
+            if (!isOwner) {
+                ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+                executorService.schedule(() -> orderRepository.deleteById(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS);
+            }
+
+            return newOrderId;
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }

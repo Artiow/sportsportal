@@ -38,3 +38,5 @@ protectedRoutePaths:
     httpMethod: POST
   - pattern: /leaseapi/order/*
     httpMethod: GET
+  - pattern: /leaseapi/order/*
+    httpMethod: DELETE
