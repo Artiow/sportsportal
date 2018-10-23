@@ -50,6 +50,12 @@ public class UserEntity extends AbstractVersionedEntity {
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
 
+    @OneToMany(mappedBy = "owner")
+    private Collection<PictureEntity> pictures;
+
+    @ManyToMany(mappedBy = "owners")
+    private Collection<PlaygroundEntity> playgrounds;
+
     @ManyToMany
     @JoinTable(
             schema = "common",
@@ -58,9 +64,6 @@ public class UserEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<RoleEntity> roles;
-
-    @ManyToMany(mappedBy = "owners")
-    private Collection<PlaygroundEntity> playgrounds;
 
 
     public String getEmail() {
@@ -143,12 +146,12 @@ public class UserEntity extends AbstractVersionedEntity {
         this.orders = orders;
     }
 
-    public Collection<RoleEntity> getRoles() {
-        return roles;
+    public Collection<PictureEntity> getPictures() {
+        return pictures;
     }
 
-    public void setRoles(Collection<RoleEntity> roles) {
-        this.roles = roles;
+    public void setPictures(Collection<PictureEntity> pictures) {
+        this.pictures = pictures;
     }
 
     public Collection<PlaygroundEntity> getPlaygrounds() {
@@ -157,6 +160,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
+    }
+
+    public Collection<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<RoleEntity> roles) {
+        this.roles = roles;
     }
 
 

@@ -47,4 +47,4 @@ protectedRoutePaths:
   - pattern: /playground/*
     httpMethod: DELETE
   - pattern: /playground/*/reserve
-    httpMethod: DELETE
+    httpMethod: POST

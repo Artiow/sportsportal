@@ -25,6 +25,10 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     @ManyToMany(mappedBy = "photos")
     private Collection<PlaygroundEntity> playgrounds;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private UserEntity owner;
+
 
     public Long getSize() {
         return size;
@@ -57,6 +61,14 @@ public class PictureEntity extends AbstractIdentifiedEntity {
 
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
+    }
+
+    public UserEntity getOwner() {
+        return owner;
+    }
+
+    public void setOwner(UserEntity owner) {
+        this.owner = owner;
     }
 
 

@@ -12,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.service.PictureService;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.*;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -74,11 +72,12 @@ public class PictureController {
      *
      * @param picture picture {@link MultipartFile} file
      * @return uploaded picture location
+     * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceCannotCreateException if resource cannot create
      */
     @PostMapping
     @ApiOperation("загрузить ресурс")
-    public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws ResourceCannotCreateException {
+    public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         return ResponseEntity
                 .created(buildURL(pictureService.create(picture)))
                 .build();
@@ -89,11 +88,13 @@ public class PictureController {
      *
      * @param id picture identifier
      * @return no content
-     * @throws ResourceNotFoundException if record not found in database
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this picture
+     * @throws ResourceNotFoundException   if picture not found in database
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить ресурс")
-    public ResponseEntity<Void> delete(@PathVariable int id) throws ResourceNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         pictureService.delete(id);
         return ResponseEntity
                 .noContent()

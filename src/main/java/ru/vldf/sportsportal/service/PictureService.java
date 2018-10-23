@@ -16,10 +16,9 @@ import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
-import ru.vldf.sportsportal.service.generic.AbstractMessageService;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceFileNotFoundException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.repository.common.RoleRepository;
+import ru.vldf.sportsportal.repository.common.UserRepository;
+import ru.vldf.sportsportal.service.generic.*;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -41,7 +40,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class PictureService extends AbstractMessageService {
+public class PictureService extends AbstractSecurityService {
+
+    @Value("${code.role.admin}")
+    private String adminRoleCode;
 
     @Value("${file.pattern}")
     private String pattern;
@@ -50,14 +52,15 @@ public class PictureService extends AbstractMessageService {
     private String dir;
 
     private Path pictureDirectory;
+
     private PictureRepository pictureRepository;
     private PictureSizeRepository pictureSizeRepository;
     private PictureSizeMapper pictureSizeMapper;
 
 
     @Autowired
-    public PictureService(MessageContainer messages) {
-        super(messages);
+    public PictureService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
+        super(messages, userRepository, roleRepository);
     }
 
 
@@ -99,7 +102,7 @@ public class PictureService extends AbstractMessageService {
     @Transactional(
             readOnly = true,
             rollbackFor = {ResourceNotFoundException.class, ResourceFileNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
+            noRollbackFor = {EntityNotFoundException.class, MalformedURLException.class}
     )
     public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
@@ -130,25 +133,28 @@ public class PictureService extends AbstractMessageService {
      *
      * @param picture picture {@link MultipartFile}
      * @return {@link Integer} resource identifier
+     * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceCannotCreateException if resource cannot create
      */
     @Transactional(
-            rollbackFor = {ResourceCannotCreateException.class},
+            rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
             noRollbackFor = {MaxUploadSizeExceededException.class, IOException.class}
     )
-    public Integer create(MultipartFile picture) throws ResourceCannotCreateException {
+    public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setSize(picture.getSize());
+            pictureEntity.setOwner(getCurrentUserEntity());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
                 StandardCopyOption option = StandardCopyOption.REPLACE_EXISTING;
                 Files.copy(picture.getInputStream(), resolveFilename(newId, null), option);
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
-                    PictureSize size = pictureSizeMapper.toSize(sizeEntity);
+                    PictureSize size
+                            = pictureSizeMapper.toSize(sizeEntity);
                     Files.copy(
                             resizePicture(picture.getInputStream(), size),
                             resolveFilename(newId, size),
@@ -168,22 +174,30 @@ public class PictureService extends AbstractMessageService {
      * Delete picture by id.
      *
      * @param id {@link Integer} picture identifier
-     * @throws ResourceNotFoundException if record not found in database
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this picture
+     * @throws ResourceNotFoundException   if picture not found in database
      */
     @Transactional(
-            rollbackFor = {ResourceNotFoundException.class}
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class, IOException.class}
     )
-    public void delete(@NotNull Integer id) throws ResourceNotFoundException {
-        if (!pictureRepository.existsById(id)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
-        } else {
-            pictureRepository.deleteById(id);
-            for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
-                try {
-                    Files.delete(resolveFilename(id, pictureSizeMapper.toSize(sizeEntity)));
-                } catch (IOException ignored) {
+    public void delete(@NotNull Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        try {
+            PictureEntity pictureEntity = pictureRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(pictureEntity.getOwner()))) {
+                throw new ForbiddenAccessException(mGet("sportsportal.common.Picture.forbidden.message"));
+            } else {
+                pictureRepository.delete(pictureEntity);
+                for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
+                    try {
+                        Files.delete(resolveFilename(id, pictureSizeMapper.toSize(sizeEntity)));
+                    } catch (IOException ignored) {
+                    }
                 }
             }
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
         }
     }
 
