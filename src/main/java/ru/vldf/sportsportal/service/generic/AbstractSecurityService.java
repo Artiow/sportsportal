@@ -18,6 +18,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         this.roleRepository = roleRepository;
     }
 
+
     public UserRepository userRepository() {
         return userRepository;
     }
@@ -26,15 +27,30 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         return roleRepository;
     }
 
+
     /**
      * Returns authenticated user id.
      *
-     * @return user id
+     * @return {@link Integer} user id
      * @throws UnauthorizedAccessException if user is anonymous
      */
     public Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        } catch (ClassCastException | NullPointerException e) {
+            throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
+        }
+    }
+
+    /**
+     * Returns authenticated user email.
+     *
+     * @return {@link String} user email
+     * @throws UnauthorizedAccessException if user is anonymous
+     */
+    public String getCurrentUserEmail() throws UnauthorizedAccessException {
+        try {
+            return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         } catch (ClassCastException | NullPointerException e) {
             throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
@@ -51,16 +67,29 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     }
 
     /**
+     * Checks if the user is current.
+     *
+     * @param userEntity {@link UserEntity} checked user
+     * @return true if successful, false otherwise
+     * @throws UnauthorizedAccessException if current user is anonymous
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
+        return getCurrentUserId().equals(userEntity.getId());
+    }
+
+    /**
      * Check whether the user has the necessary rights.
      *
-     * @param roleCode {@link String} role code
+     * @param code {@link String} role code
      * @return <tt>true</tt> if current user has role by code
      * @throws UnauthorizedAccessException if user is anonymous
      * @throws ResourceNotFoundException   if role code not exist
      */
-    public boolean currentUserHasRole(String roleCode) throws UnauthorizedAccessException, ResourceNotFoundException {
-        if (!roleRepository.existsByCode(roleCode)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", roleCode));
-        } else return userRepository.hasRoleByCode(getCurrentUserId(), roleCode);
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
+        if (!roleRepository.existsByCode(code)) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", code));
+        } else return userRepository.hasRoleByCode(getCurrentUserEmail(), code);
     }
 }

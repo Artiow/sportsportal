@@ -13,8 +13,8 @@ public interface UserRepository extends AbstractIdentifiedRepository<UserEntity>
 
     boolean existsByEmail(String email);
 
-    @Query("select case when (count(u) > 0) then true else false end from UserEntity u join u.roles r where (u.id = :id) and (r.code = :code)")
-    boolean hasRoleByCode(@Param("id") Integer id, @Param("code") String code);
+    @Query("select case when (count(u) > 0) then true else false end from UserEntity u join u.roles r where (u.email = :email) and (r.code = :code)")
+    boolean hasRoleByCode(@Param("email") String email, @Param("code") String code);
 
     @Query("select case when (count(u) > 0) then true else false end from UserEntity u join u.roles r where (u.email = :email)")
     boolean hasAnyRole(@Param("email") String email);
