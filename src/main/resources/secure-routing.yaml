@@ -1,6 +1,20 @@
 # secure routing
 
 publicRoutePaths:
+- pattern: /dict/*
+  httpMethod: GET
+- pattern: /picture/*
+  httpMethod: GET
+- pattern: /playground/*
+  httpMethod: GET
+- pattern: /playground/list
+  httpMethod: GET
+- pattern: /playground/*/grid
+  httpMethod: GET
+- pattern: /playground/*/check
+  httpMethod: GET
+- pattern: /playground/*/short
+  httpMethod: GET
 - pattern: /auth/login
   httpMethod: GET
 - pattern: /auth/verify
@@ -14,29 +28,23 @@ publicRoutePaths:
 
 protectedRoutePaths:
   ADMIN:
-  - pattern: /*/*
-    httpMethod: POST
-  - pattern: /*/*/*
-    httpMethod: PUT
-  - pattern: /*/*/*
+  - pattern: /user/*
     httpMethod: DELETE
 
   USER:
-  - pattern: /user
-    httpMethod: POST
-  - pattern: /user/*
-    httpMethod: PUT
-  - pattern: /user/*
+  - pattern: /order/*
+    httpMethod: GET
+  - pattern: /order/*
     httpMethod: DELETE
   - pattern: /picture
     httpMethod: POST
   - pattern: /picture/*
-    httpMethod: PUT
-  - pattern: /picture/*
     httpMethod: DELETE
-  - pattern: /leaseapi/playground/*/reserve
+  - pattern: /playground
     httpMethod: POST
-  - pattern: /leaseapi/order/*
-    httpMethod: GET
-  - pattern: /leaseapi/order/*
+  - pattern: /playground/*
+    httpMethod: PUT
+  - pattern: /playground/*
+    httpMethod: DELETE
+  - pattern: /playground/*/reserve
     httpMethod: DELETE
