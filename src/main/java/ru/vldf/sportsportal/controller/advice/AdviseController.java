@@ -132,6 +132,12 @@ public class AdviseController {
         return warnDTO(ex, "Unauthorized Access Attempt.");
     }
 
+    @ExceptionHandler(ForbiddenAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleForbiddenAccessException(ForbiddenAccessException ex) {
+        return warnDTO(ex, "Forbidden Access Attempt.");
+    }
+
     @ExceptionHandler({NoHandlerFoundException.class, HandlerNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleNoHandlerFoundException(Exception ex) {
