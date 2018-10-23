@@ -7,6 +7,8 @@ import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
+import java.util.Collection;
+
 public abstract class AbstractSecurityService extends AbstractMessageService {
 
     private UserRepository userRepository;
@@ -59,7 +61,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     /**
      * Returns authenticated user.
      *
-     * @return user entity
+     * @return {@link UserEntity} user entity
      * @throws UnauthorizedAccessException if user is anonymous
      */
     public UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
@@ -70,12 +72,24 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * Checks if the user is current.
      *
      * @param userEntity {@link UserEntity} checked user
-     * @return true if successful, false otherwise
+     * @return <tt>true</tt> if successful, false otherwise
      * @throws UnauthorizedAccessException if current user is anonymous
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
         return getCurrentUserId().equals(userEntity.getId());
+    }
+
+    /**
+     * Checks if the current user in collection of users.
+     *
+     * @param userEntityCollection {@link Collection<UserEntity>} checked collection of user
+     * @return <tt>true</tt> if successful, false otherwise
+     * @throws UnauthorizedAccessException if current user is anonymous
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isContainCurrentUser(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
+        return userEntityCollection.contains(getCurrentUserEntity());
     }
 
     /**

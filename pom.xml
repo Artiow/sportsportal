@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -31,6 +31,7 @@
         <locale.country>RU</locale.country>
 
         <swagger.host>localhost:8080</swagger.host>
+
         <datasource.host>localhost</datasource.host>
         <datasource.url.default>jdbc:postgresql://${datasource.host}:5432/sportsportal</datasource.url.default>
         <datasource.url.test>jdbc:postgresql://${datasource.host}:5432/sportsportal.test</datasource.url.test>

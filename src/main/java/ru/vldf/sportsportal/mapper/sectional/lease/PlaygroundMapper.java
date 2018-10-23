@@ -66,6 +66,8 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "reservations", ignore = true),
+            @Mapping(target = "owners", ignore = true),
+            @Mapping(target = "photos", ignore = true)
     })
     PlaygroundEntity toEntity(PlaygroundDTO dto);
 
