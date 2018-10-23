@@ -41,7 +41,7 @@ public class SecurityService {
      * @return encoded json
      */
     public String login(IdentifiedUserDetails identifiedUserDetails) throws JwtException {
-        return tokenService.generate(mapper.toMap(identifiedUserDetails));
+        return tokenService.genAccessToken(mapper.toMap(identifiedUserDetails));
     }
 
     /**

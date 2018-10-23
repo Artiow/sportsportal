@@ -32,6 +32,7 @@ public class UserDetailsMapper {
     }
 
 
+    @SuppressWarnings("unused")
     private static class IdentifiedUserDetailsDTO implements IdentifiedUserDetails {
 
         private int id;
@@ -116,6 +117,7 @@ public class UserDetailsMapper {
         }
     }
 
+    @SuppressWarnings("unused")
     private static class GrantedAuthorityDTO implements GrantedAuthority {
 
         private String role;
