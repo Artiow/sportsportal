@@ -30,7 +30,7 @@ export default class PlaygroundSearcher extends React.Component {
      */
     query(filter) {
         this.setState({loading: true});
-        axios.get(apiUrl('/leaseapi/playground/list'), {
+        axios.get(apiUrl('/playground/list'), {
             paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
             params: filter
         }).then(response => {

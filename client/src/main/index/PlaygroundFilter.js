@@ -58,8 +58,8 @@ export default class PlaygroundFilter extends React.Component {
     }
 
     componentDidMount() {
-        this.uploadFilterDictionaryData('/leaseapi/dict/feature/list', 'features');
-        this.uploadFilterDictionaryData('/leaseapi/dict/sport/list', 'sports');
+        this.uploadFilterDictionaryData('/dict/feature/list', 'features');
+        this.uploadFilterDictionaryData('/dict/sport/list', 'sports');
     }
 
     /**

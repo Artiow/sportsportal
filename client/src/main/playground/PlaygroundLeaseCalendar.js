@@ -141,7 +141,7 @@ export default withFrameContext(
         }
 
         restore(id, version) {
-            axios.get(apiUrl('/leaseapi/playground/' + id + '/check'), {
+            axios.get(apiUrl('/playground/' + id + '/check'), {
                 paramsSerializer: params =>
                     qs.stringify(params, {arrayFormat: 'repeat'}),
                 params: {
@@ -159,7 +159,7 @@ export default withFrameContext(
         }
 
         query(id, version, from, to) {
-            axios.get(apiUrl('/leaseapi/playground/' + id + '/grid'), {params: {from: from, to: to}}
+            axios.get(apiUrl('/playground/' + id + '/grid'), {params: {from: from, to: to}}
             ).then(response => {
                 console.debug('Playground Lease Calendar (query):', response);
                 const data = response.data;
@@ -259,7 +259,7 @@ export default withFrameContext(
 
         submit(event) {
             event.preventDefault();
-            axios.post(apiUrl('/leaseapi/playground/' + this.playgroundId + '/reserve'), {
+            axios.post(apiUrl('/playground/' + this.playgroundId + '/reserve'), {
                 reservations: this.state.reservation
             }, {
                 headers: {Authorization: this.props.main.user.token}

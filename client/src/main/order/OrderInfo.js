@@ -31,7 +31,7 @@ export default withFrameContext(class OrderInfo extends React.Component {
     query(token) {
         if (token) {
             axios.get(
-                apiUrl('/leaseapi/order/' + this.identifier), {
+                apiUrl('/order/' + this.identifier), {
                     headers: {Authorization: token}
                 }
             ).then(response => {
