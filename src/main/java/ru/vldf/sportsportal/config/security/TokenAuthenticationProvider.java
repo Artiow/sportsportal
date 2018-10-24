@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.config.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.service.security.SecurityService;
+import ru.vldf.sportsportal.service.security.SecurityProvider;
 
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private MessageContainer messages;
 
-    private SecurityService security;
+    private SecurityProvider security;
 
     @Autowired
     public void setMessages(MessageContainer messages) {
@@ -26,7 +27,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     }
 
     @Autowired
-    public void setSecurity(SecurityService security) {
+    public void setSecurity(SecurityProvider security) {
         this.security = security;
     }
 
@@ -55,11 +56,12 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
-
         try {
             return security.authentication(auth.getCredentials().toString());
         } catch (SignatureException e) {
             throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.provider.insufficientToken.message"), e);
+        } catch (ExpiredJwtException e) {
+            throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.expiredToken.message"), e);
         } catch (JwtException e) {
             throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
         }

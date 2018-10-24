@@ -7,15 +7,15 @@ import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 @Service
-public class SecurityService {
+public class SecurityService implements SecurityProvider {
 
-    private TokenService tokenService;
+    private TokenEncoder tokenEncoder;
 
     private UserDetailsMapper mapper;
 
     @Autowired
-    public void setTokenService(TokenService tokenService) {
-        this.tokenService = tokenService;
+    public void setTokenEncoder(TokenEncoder tokenEncoder) {
+        this.tokenEncoder = tokenEncoder;
     }
 
     @Autowired
@@ -30,7 +30,7 @@ public class SecurityService {
      * @return tokenType
      */
     public String getTokenType() {
-        return tokenService.getTokenType();
+        return tokenEncoder.getTokenType();
     }
 
 
@@ -41,7 +41,7 @@ public class SecurityService {
      * @return encoded json
      */
     public String login(IdentifiedUserDetails identifiedUserDetails) throws JwtException {
-        return tokenService.genAccessToken(mapper.toMap(identifiedUserDetails));
+        return tokenEncoder.getAccessToken(mapper.toMap(identifiedUserDetails));
     }
 
     /**
@@ -50,7 +50,8 @@ public class SecurityService {
      * @param token - encoded json
      * @return user data
      */
+    @Override
     public IdentifiedUserDetails authentication(String token) throws JwtException {
-        return mapper.toIdentifiedUserDetails(tokenService.verify(token));
+        return mapper.toIdentifiedUserDetails(tokenEncoder.verify(token));
     }
 }
