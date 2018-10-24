@@ -8,6 +8,7 @@ import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 @Service
+@SuppressWarnings("deprecation")
 public class SecurityService implements SecurityProvider {
 
     private TokenEncoder tokenEncoder;
@@ -35,24 +36,24 @@ public class SecurityService implements SecurityProvider {
     }
 
 
+    @Override
+    public Pair<String, String> authorization(Integer userId) throws JwtException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Pair<String, String> authorization(String refreshToken) throws JwtException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IdentifiedUserDetails authentication(String accessToken) throws JwtException {
+        return mapper.toIdentifiedUserDetails(tokenEncoder.verify(accessToken));
+    }
+
     @Deprecated
     @SuppressWarnings("DeprecatedIsStillUsed")
     public String login(IdentifiedUserDetails identifiedUserDetails) throws JwtException {
         return tokenEncoder.getAccessToken(mapper.toMap(identifiedUserDetails));
-    }
-
-    @Override
-    public Pair<String, String> authorization(Integer userId) {
-        return null;
-    }
-
-    @Override
-    public Pair<String, String> authorization(String refreshToken) {
-        return null;
-    }
-
-    @Override
-    public IdentifiedUserDetails authentication(String accessToken) {
-        return mapper.toIdentifiedUserDetails(tokenEncoder.verify(accessToken));
     }
 }

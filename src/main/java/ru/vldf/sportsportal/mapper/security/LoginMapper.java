@@ -18,6 +18,8 @@ import java.util.ArrayList;
         componentModel = "spring",
         uses = {UserURLMapper.class, PictureURLMapper.class, RoleMapper.class}
 )
+@Deprecated
+@SuppressWarnings("DeprecatedIsStillUsed")
 public interface LoginMapper {
 
     @Mappings({

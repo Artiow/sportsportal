@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Map;
 
 @Component
+@Deprecated
+@SuppressWarnings("DeprecatedIsStillUsed")
 public class UserDetailsMapper {
 
     private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
