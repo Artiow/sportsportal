@@ -5,6 +5,8 @@ import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
 import java.net.URI;
 import java.util.List;
 
+@Deprecated
+@SuppressWarnings("DeprecatedIsStillUsed")
 public class LoginDTO extends AbstractIdentifiedDTO {
 
     private Integer id;

@@ -2,6 +2,8 @@ package ru.vldf.sportsportal.dto.security;
 
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
+@Deprecated
+@SuppressWarnings("DeprecatedIsStillUsed")
 public class TokenDTO implements DataTransferObject {
 
     private String tokenHash;
