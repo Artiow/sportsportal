@@ -100,10 +100,7 @@ public class AuthService extends AbstractSecurityService {
      * @return {@link JwtPairDTO} token pair
      */
     public JwtPairDTO login(@NotNull String email, @NotNull String password) {
-        Pair<String, String> jwtPair = securityProvider.authentication(email, password);
-        return new JwtPairDTO()
-                .setAccessToken(jwtPair.getFirst())
-                .setRefreshToken(jwtPair.getSecond());
+        return buildJwtPair(securityProvider.authentication(email, password));
     }
 
     /**
@@ -113,10 +110,7 @@ public class AuthService extends AbstractSecurityService {
      * @return {@link JwtPairDTO} token pair
      */
     public JwtPairDTO refresh(@NotNull String refreshToken) {
-        Pair<String, String> jwtPair = securityProvider.refresh(refreshToken);
-        return new JwtPairDTO()
-                .setAccessToken(jwtPair.getFirst())
-                .setRefreshToken(jwtPair.getSecond());
+        return buildJwtPair(securityProvider.refresh(refreshToken));
     }
 
     /**
@@ -202,6 +196,18 @@ public class AuthService extends AbstractSecurityService {
             userEntity.setRoles(roleRepository().findAllByCode(userRoleCode));
             userRepository.save(userEntity);
         }
+    }
+
+    /**
+     * Returns built jwt pair.
+     *
+     * @param jwtPair {@link Pair} raw jwt pair
+     * @return {@link JwtPairDTO} built jwt pair
+     */
+    private JwtPairDTO buildJwtPair(Pair<String, String> jwtPair) {
+        return new JwtPairDTO()
+                .setAccessToken(jwtPair.getFirst())
+                .setRefreshToken(jwtPair.getSecond());
     }
 
     /**

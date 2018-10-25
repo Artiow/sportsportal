@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.security;
+package ru.vldf.sportsportal.service.security.encoder;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class TokenEncoder implements ExpiringClock {
+public class JwtEncoder implements Encoder, ExpiringClock {
 
     private static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
@@ -69,26 +69,6 @@ public class TokenEncoder implements ExpiringClock {
 
 
     /**
-     * Generate access JWT.
-     *
-     * @param payload {@link Map} token payload
-     * @return {@link String} encoded json
-     */
-    public String getAccessToken(final Map<String, Object> payload) throws JwtException {
-        return generate(payload, ExpirationType.ACCESS);
-    }
-
-    /**
-     * Generate refresh JWT.
-     *
-     * @param payload {@link Map} token payload
-     * @return {@link String} encoded json
-     */
-    public String getRefreshToken(final Map<String, Object> payload) throws JwtException {
-        return generate(payload, ExpirationType.REFRESH);
-    }
-
-    /**
      * Generate JWT.
      *
      * @param payload {@link Map} token payload
@@ -112,12 +92,17 @@ public class TokenEncoder implements ExpiringClock {
                 .compact();
     }
 
-    /**
-     * Returns payload of parsed JWT.
-     *
-     * @param token {@link String} JWT
-     * @return map of token payload
-     */
+    @Override
+    public String getAccessToken(final Map<String, Object> payload) throws JwtException {
+        return generate(payload, ExpirationType.ACCESS);
+    }
+
+    @Override
+    public String getRefreshToken(final Map<String, Object> payload) throws JwtException {
+        return generate(payload, ExpirationType.REFRESH);
+    }
+
+    @Override
     public Map<String, Object> verify(final String token) throws JwtException {
         return Jwts
                 .parser()

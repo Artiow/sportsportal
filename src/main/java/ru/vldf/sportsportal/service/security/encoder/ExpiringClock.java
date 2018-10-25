@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.security;
+package ru.vldf.sportsportal.service.security.encoder;
 
 import io.jsonwebtoken.Clock;
 
