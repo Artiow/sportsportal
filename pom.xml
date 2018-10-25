@@ -239,6 +239,7 @@
                     <locations>filesystem:database/migration</locations>
                     <schemas>
                         <schema>flyway</schema>
+                        <schema>security</schema>
                         <schema>common</schema>
                         <schema>lease</schema>
                     </schemas>
@@ -250,14 +251,6 @@
                         <id>test</id>
                         <configuration>
                             <url>${datasource.url.test}</url>
-                            <user>${db.username}</user>
-                            <password>${db.password}</password>
-                            <locations>filesystem:database/migration</locations>
-                            <schemas>
-                                <schema>flyway</schema>
-                                <schema>common</schema>
-                                <schema>lease</schema>
-                            </schemas>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,7 +1,8 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CLEANING SPORTSPORTAL DATABASE 0.4.1
+-- CLEANING SPORTSPORTAL DATABASE 0.4.3
 
 truncate table
+security.key,
 common.role,
 common.picture,
 common.picture_size,
@@ -18,6 +19,8 @@ lease.order,
 lease.reservation
 cascade;
 
+alter sequence security.key_id_seq
+  restart with 1;
 alter sequence common.role_id_seq
   restart with 1;
 alter sequence common.picture_id_seq

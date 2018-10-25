@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.common;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -43,9 +44,12 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "confirm_code")
     private String confirmCode;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
+
+    @OneToMany(mappedBy = "user")
+    private Collection<KeyEntity> keys;
 
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
@@ -136,6 +140,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setAvatar(PictureEntity avatar) {
         this.avatar = avatar;
+    }
+
+    public Collection<KeyEntity> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(Collection<KeyEntity> keys) {
+        this.keys = keys;
     }
 
     public Collection<OrderEntity> getOrders() {
