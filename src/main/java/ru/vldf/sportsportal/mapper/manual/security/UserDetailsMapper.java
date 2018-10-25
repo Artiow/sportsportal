@@ -1,0 +1,31 @@
+package ru.vldf.sportsportal.mapper.manual.security;
+
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Component;
+import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
+import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUser;
+import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+@Component
+public class UserDetailsMapper {
+
+    public IdentifiedUserDetails toDetails(UserEntity entity) {
+        Collection<RoleEntity> roleEntities = entity.getRoles();
+        Collection<String> rawRoles = new ArrayList<>(roleEntities.size());
+        for (RoleEntity roleEntity : roleEntities) {
+            rawRoles.add(roleEntity.getCode().toUpperCase());
+        }
+
+        String[] roles = rawRoles.toArray(new String[0]);
+        return new IdentifiedUser(entity.getId(), User.builder()
+                .username(entity.getEmail())
+                .password(entity.getPassword())
+                .roles(roles)
+                .build()
+        );
+    }
+}

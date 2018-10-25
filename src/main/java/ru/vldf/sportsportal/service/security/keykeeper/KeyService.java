@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
-import ru.vldf.sportsportal.mapper.security.UserDetailsMapper;
+import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.repository.security.KeyRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
@@ -55,13 +55,16 @@ public class KeyService implements KeyProvider {
 
 
     @Override
-    @Transactional
+    @Transactional(
+            rollbackFor = {UsernameNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
+    )
     public Pair<Payload, Payload> authentication(String email, String password) {
         UserEntity userEntity;
         try {
             userEntity = userRepository.findByEmail(email);
             if (userEntity == null) {
-                throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userRepository.message"));
+                throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
             } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                 throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
             }
@@ -96,9 +99,24 @@ public class KeyService implements KeyProvider {
     }
 
     @Override
-    @Transactional
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {BadCredentialsException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
     public IdentifiedUserDetails authorization(Payload accessKey) {
-        throw new UnsupportedOperationException();
+        try {
+            KeyEntity keyEntity = keyRepository.getOne(accessKey.getKeyId());
+            if (!keyEntity.getType().equals(KeyType.ACCESS.name())) {
+                // todo: set message
+                throw new BadCredentialsException("message says that token type invalid");
+            } else {
+                return detailsMapper.toDetails(keyEntity.getUser());
+            }
+        } catch (EntityNotFoundException e) {
+            // todo: set message
+            throw new BadCredentialsException("message says that token not found");
+        }
     }
 
     @Override

@@ -4,7 +4,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -60,9 +61,9 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
         } catch (SignatureException e) {
             throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.provider.insufficientToken.message"), e);
         } catch (ExpiredJwtException e) {
-            throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.expiredToken.message"), e);
+            throw new CredentialsExpiredException(messages.get("sportsportal.auth.provider.expiredToken.message"), e);
         } catch (JwtException e) {
-            throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
+            throw new BadCredentialsException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
         }
     }
 }
