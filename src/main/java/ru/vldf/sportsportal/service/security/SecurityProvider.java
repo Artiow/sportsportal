@@ -27,4 +27,11 @@ public interface SecurityProvider {
      * @param accessToken {@link String} access token
      */
     void logout(String accessToken);
+
+    /**
+     * Logout all user sessions by access token.
+     *
+     * @param accessToken {@link String} access token
+     */
+    void logoutAll(String accessToken);
 }

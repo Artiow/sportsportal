@@ -52,6 +52,11 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
         keyProvider.logout(payloadMapper.toPayload(encoder.verify(accessToken)));
     }
 
+    @Override
+    public void logoutAll(String accessToken) {
+        keyProvider.logoutAll(payloadMapper.toPayload(encoder.verify(accessToken)));
+    }
+
     /**
      * Returns generated token pair.
      *

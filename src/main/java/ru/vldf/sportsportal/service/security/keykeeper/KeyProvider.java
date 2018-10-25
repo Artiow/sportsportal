@@ -38,4 +38,11 @@ public interface KeyProvider {
      * @param accessKey {@link Payload} access token payload
      */
     void logout(Payload accessKey);
+
+    /**
+     * Logout all user sessions by access token payload.
+     *
+     * @param accessKey {@link String} access token payload
+     */
+    void logoutAll(Payload accessKey);
 }

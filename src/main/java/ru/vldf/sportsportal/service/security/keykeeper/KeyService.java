@@ -31,4 +31,10 @@ public class KeyService implements KeyProvider {
     public void logout(Payload accessKey) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    @Transactional
+    public void logoutAll(Payload accessKey) {
+        throw new UnsupportedOperationException();
+    }
 }
