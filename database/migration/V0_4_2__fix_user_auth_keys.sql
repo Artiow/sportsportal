@@ -15,15 +15,15 @@ create table security.key
     constraint key_pk
     primary key,
 
-  type       varchar(15) not null,
+  uuid       uuid        not null,
 
-  related_id integer     not null
-    constraint key_related_id_fk
-    references security.key,
+  type       varchar(15) not null,
 
   user_id    integer     not null
     constraint key_user_id_fk
     references common."user",
 
-  uuid       varchar(60) not null
+  related_id integer
+    constraint key_related_id_fk
+    references security.key
 );

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
@@ -39,7 +39,7 @@ public class AuthService extends AbstractSecurityService {
     @Value("${api.path.auth.confirm}")
     private String confirmPath;
 
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     private SecurityProvider securityProvider;
     private MailService mailService;
@@ -52,7 +52,7 @@ public class AuthService extends AbstractSecurityService {
     }
 
     @Autowired
-    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 

@@ -45,4 +45,9 @@ public interface KeyProvider {
      * @param accessKey {@link String} access token payload
      */
     void logoutAll(Payload accessKey);
+
+
+    enum KeyType {
+        ACCESS, REFRESH
+    }
 }
