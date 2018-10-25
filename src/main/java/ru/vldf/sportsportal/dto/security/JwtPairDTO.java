@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.dto.security;
 
-public class JwtPair {
+public class JwtPairDTO {
 
     private String accessToken;
     private String refreshToken;
@@ -10,7 +10,7 @@ public class JwtPair {
         return accessToken;
     }
 
-    public JwtPair setAccessToken(String accessToken) {
+    public JwtPairDTO setAccessToken(String accessToken) {
         this.accessToken = accessToken;
         return this;
     }
@@ -19,7 +19,7 @@ public class JwtPair {
         return refreshToken;
     }
 
-    public JwtPair setRefreshToken(String refreshToken) {
+    public JwtPairDTO setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
         return this;
     }

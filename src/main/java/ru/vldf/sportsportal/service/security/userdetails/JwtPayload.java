@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.security;
+package ru.vldf.sportsportal.service.security.userdetails;
 
 import java.util.UUID;
 

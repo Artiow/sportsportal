@@ -4,7 +4,6 @@ import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "key", schema = "security")
@@ -12,13 +11,13 @@ public class KeyEntity extends AbstractVersionedEntity {
 
     @Basic
     @Column(name = "uuid", nullable = false)
-    private UUID uuid;
+    private String uuid;
 
     @Basic
     @Column(name = "type", nullable = false)
     private String type;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "related_id", referencedColumnName = "id")
     private KeyEntity related;
 
@@ -27,11 +26,11 @@ public class KeyEntity extends AbstractVersionedEntity {
     private UserEntity user;
 
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

@@ -26,29 +26,9 @@ public class TokenEncoder implements ExpiringClock {
     private TimeUnit refreshTokenUnit;
     private Long refreshTokenLifetime;
 
-    private String tokenType;
     private String issuer;
     private String sign;
 
-
-    /**
-     * Getting used token type.
-     *
-     * @return tokenType
-     */
-    public String getTokenType() {
-        return tokenType;
-    }
-
-    @Value("${jwt.token-type}")
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
-    }
-
-    @Value("${jwt.issuer}")
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
 
     @Value("${jwt.access.lifetime.amount}")
     public void setAccessTokenLifetime(Long accessTokenLifetime) {
@@ -68,6 +48,11 @@ public class TokenEncoder implements ExpiringClock {
     @Value("${jwt.refresh.lifetime.unit}")
     public void setRefreshTokenUnit(TimeUnit refreshTokenUnit) {
         this.refreshTokenUnit = refreshTokenUnit;
+    }
+
+    @Value("${jwt.issuer}")
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
     }
 
 
