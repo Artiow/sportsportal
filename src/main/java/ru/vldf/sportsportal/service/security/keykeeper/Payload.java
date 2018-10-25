@@ -1,8 +1,8 @@
-package ru.vldf.sportsportal.service.security.userdetails;
+package ru.vldf.sportsportal.service.security.keykeeper;
 
 import java.util.UUID;
 
-public class JwtPayload {
+public class Payload {
 
     private Integer userId;
     private Integer keyId;
@@ -13,7 +13,7 @@ public class JwtPayload {
         return userId;
     }
 
-    public JwtPayload setUserId(Integer userId) {
+    public Payload setUserId(Integer userId) {
         this.userId = userId;
         return this;
     }
@@ -22,7 +22,7 @@ public class JwtPayload {
         return keyId;
     }
 
-    public JwtPayload setKeyId(Integer keyId) {
+    public Payload setKeyId(Integer keyId) {
         this.keyId = keyId;
         return this;
     }
@@ -31,7 +31,7 @@ public class JwtPayload {
         return uuid;
     }
 
-    public JwtPayload setUuid(UUID uuid) {
+    public Payload setUuid(UUID uuid) {
         this.uuid = uuid;
         return this;
     }

@@ -1,32 +1,30 @@
 package ru.vldf.sportsportal.service.security;
 
 import org.springframework.data.util.Pair;
-import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 public interface SecurityProvider {
 
     /**
-     * Returns pair (access and refresh) of JWT by user.
+     * Returns pair (access and refresh) of token by user credentials.
      *
-     * @param userEntity {@link UserEntity} user
-     * @return {@link Pair} pair of jwt
+     * @param username {@link String} user username
+     * @param password {@link String} user password
+     * @return {@link Pair} pair (access and refresh) of token
      */
-    Pair<String, String> authorization(UserEntity userEntity);
+    Pair<String, String> authentication(String username, String password);
 
     /**
-     * Returns pair (access and refresh) of JWT by refresh JWT.
+     * Returns pair (access and refresh) of token by refresh token.
      *
-     * @param refreshToken {@link String} refresh jwt
-     * @return {@link Pair} pair of jwt
+     * @param refreshToken {@link String} refresh token
+     * @return {@link Pair} pair (access and refresh) of token
      */
-    Pair<String, String> authorization(String refreshToken);
+    Pair<String, String> refresh(String refreshToken);
 
     /**
-     * Returns IdentifiedUserDetails by JWT.
+     * Logout user by access token.
      *
-     * @param accessToken {@link String} access jwt
-     * @return {@link IdentifiedUserDetails} user details
+     * @param accessToken {@link String} access token
      */
-    IdentifiedUserDetails authentication(String accessToken);
+    void logout(String accessToken);
 }

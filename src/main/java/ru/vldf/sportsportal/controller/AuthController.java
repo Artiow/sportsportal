@@ -1,21 +1,18 @@
 package ru.vldf.sportsportal.controller;
 
-import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
-import ru.vldf.sportsportal.dto.security.TokenDTO;
+import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.SentDataCorruptedException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -36,36 +33,28 @@ public class AuthController {
 
 
     /**
-     * Returns token by logged user.
+     * Returns token pair by logged user.
      *
      * @param email    {@link String} users email
      * @param password {@link String} users password
-     * @return {@link TokenDTO} token data
-     * @throws UsernameNotFoundException if user not found
-     * @throws JwtException              if could not parse jwt
+     * @return {@link JwtPairDTO} token pair
      */
     @GetMapping("/login")
-    @ApiOperation("получить токен")
-    public TokenDTO login(@RequestParam String email, @RequestParam String password)
-            throws UsernameNotFoundException, JwtException {
+    @ApiOperation("получить пару токенов")
+    public JwtPairDTO login(@RequestParam String email, @RequestParam String password) {
         return authService.login(email, password);
     }
 
     /**
-     * Returns token by users access token.
+     * Refresh token pair by users refresh token.
      *
-     * @param accessToken {@link String} users access token
-     * @return {@link TokenDTO} token data
-     * @throws UsernameNotFoundException  if user not found
-     * @throws ResourceNotFoundException  if user not found
-     * @throws SentDataCorruptedException if token not valid
-     * @throws JwtException               if could not parse jwt
+     * @param refreshToken {@link String} users refresh token
+     * @return {@link JwtPairDTO} token pair
      */
-    @GetMapping("/verify")
-    @ApiOperation("верификация")
-    public TokenDTO verify(@RequestParam String accessToken)
-            throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
-        return authService.verify(accessToken);
+    @GetMapping("/refresh")
+    @ApiOperation("обновить пару токенов")
+    public JwtPairDTO refresh(@RequestParam String refreshToken) {
+        return authService.refresh(refreshToken);
     }
 
     /**

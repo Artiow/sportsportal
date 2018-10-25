@@ -17,7 +17,7 @@ publicRoutePaths:
   httpMethod: GET
 - pattern: /auth/login
   httpMethod: GET
-- pattern: /auth/verify
+- pattern: /auth/refresh
   httpMethod: GET
 - pattern: /auth/register
   httpMethod: POST

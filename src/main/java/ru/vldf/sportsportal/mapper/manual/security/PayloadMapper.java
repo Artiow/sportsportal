@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-import ru.vldf.sportsportal.service.security.userdetails.JwtPayload;
+import ru.vldf.sportsportal.service.security.keykeeper.Payload;
 
 import java.util.Map;
 
 @Component
-public class JwtPayloadMapper {
+public class PayloadMapper {
 
     private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -17,11 +17,11 @@ public class JwtPayloadMapper {
     };
 
 
-    public Map<String, Object> toMap(JwtPayload payload) {
+    public Map<String, Object> toMap(Payload payload) {
         return mapper.convertValue(payload, mapTypeReference);
     }
 
-    public JwtPayload toJwtPayload(Map<String, Object> map) {
-        return mapper.convertValue(map, JwtPayload.class);
+    public Payload toPayload(Map<String, Object> map) {
+        return mapper.convertValue(map, Payload.class);
     }
 }
