@@ -76,7 +76,7 @@ public class AuthController {
      * @param accessToken {@link String} users access token
      * @return no content
      */
-    @PutMapping("/logoutAll")
+    @PutMapping("/logout-all")
     @ApiOperation("аннулровать все токены")
     public ResponseEntity<Void> logoutAll(String accessToken) {
         authService.logoutAll(accessToken);

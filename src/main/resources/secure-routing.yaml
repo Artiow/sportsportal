@@ -19,6 +19,10 @@ publicRoutePaths:
   httpMethod: GET
 - pattern: /auth/refresh
   httpMethod: GET
+- pattern: /auth/logout
+  httpMethod: PUT
+- pattern: /auth/logout-all
+  httpMethod: PUT
 - pattern: /auth/register
   httpMethod: POST
 - pattern: /auth/confirm
