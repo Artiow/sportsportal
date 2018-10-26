@@ -44,6 +44,10 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "confirm_code")
     private String confirmCode;
 
+    @Basic
+    @Column(name = "locked", nullable = false)
+    private Boolean isLocked = false;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
@@ -57,7 +61,7 @@ public class UserEntity extends AbstractVersionedEntity {
     @ManyToMany(mappedBy = "owners")
     private Collection<PlaygroundEntity> playgrounds;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<KeyEntity> keys;
 
     @ManyToMany
@@ -132,6 +136,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setConfirmCode(String confirmCode) {
         this.confirmCode = confirmCode;
+    }
+
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
     }
 
     public PictureEntity getAvatar() {

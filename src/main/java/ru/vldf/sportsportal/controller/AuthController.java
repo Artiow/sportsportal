@@ -58,6 +58,32 @@ public class AuthController {
     }
 
     /**
+     * Logout user.
+     *
+     * @param accessToken {@link String} users access token
+     * @return no content
+     */
+    @PutMapping("/logout")
+    @ApiOperation("аннулровать текущий токен")
+    public ResponseEntity<Void> logout(String accessToken) {
+        authService.logout(accessToken);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Logout all user sessions.
+     *
+     * @param accessToken {@link String} users access token
+     * @return no content
+     */
+    @PutMapping("/logoutAll")
+    @ApiOperation("аннулровать все токены")
+    public ResponseEntity<Void> logoutAll(String accessToken) {
+        authService.logoutAll(accessToken);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Register new user.
      *
      * @param userDTO {@link UserDTO} new user data

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,6 @@ import ru.vldf.sportsportal.repository.security.KeyRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -57,9 +57,10 @@ public class KeyService implements KeyProvider {
 
 
     @Override
-    @Transactional(noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class})
+    @Transactional(noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class, LockedException.class})
     public Pair<Payload, Payload> authentication(String email, String password) {
         UserEntity userEntity;
+
         try {
             userEntity = userRepository.findByEmail(email);
             if (userEntity == null) {
@@ -71,15 +72,23 @@ public class KeyService implements KeyProvider {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
         }
 
-        KeyEntity keyEntity = new KeyEntity();
-        keyEntity.setUser(userEntity);
-        keyEntity.setType(KeyType.ACCESS.name());
-        keyEntity.setRelated(new KeyEntity());
-        keyEntity.getRelated().setUser(userEntity);
-        keyEntity.getRelated().setType(KeyType.REFRESH.name());
-        keyEntity.getRelated().setRelated(keyEntity);
-
-        return getGeneratedPayloadPair(keyEntity);
+        if (userEntity.getLocked()) {
+            throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
+        } else if (!(userEntity.getKeys().size() < 20)) {
+            userEntity.setLocked(true);
+            userEntity.getKeys().clear();
+            userRepository.save(userEntity);
+            throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
+        } else {
+            KeyEntity keyEntity = new KeyEntity();
+            keyEntity.setUser(userEntity);
+            keyEntity.setType(KeyType.ACCESS.name());
+            keyEntity.setRelated(new KeyEntity());
+            keyEntity.getRelated().setUser(userEntity);
+            keyEntity.getRelated().setType(KeyType.REFRESH.name());
+            keyEntity.getRelated().setRelated(keyEntity);
+            return getGeneratedPayloadPair(keyEntity);
+        }
     }
 
     @Override
@@ -104,7 +113,7 @@ public class KeyService implements KeyProvider {
     @Transactional
     public void logoutAll(Payload accessKey) {
         UserEntity userEntity = getValidatedKeyEntity(accessKey, KeyType.ACCESS).getUser();
-        userEntity.setKeys(Collections.emptyList());
+        userEntity.getKeys().clear();
         userRepository.save(userEntity);
     }
 

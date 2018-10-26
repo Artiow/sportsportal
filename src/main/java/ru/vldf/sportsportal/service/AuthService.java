@@ -93,6 +93,24 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
+     * Logout user.
+     *
+     * @param accessToken {@link String} access token
+     */
+    public void logout(@NotNull String accessToken) {
+        securityProvider.logout(accessToken);
+    }
+
+    /**
+     * Logout all user sessions.
+     *
+     * @param accessToken {@link String} access token
+     */
+    public void logoutAll(@NotNull String accessToken) {
+        securityProvider.logoutAll(accessToken);
+    }
+
+    /**
      * Register new user and returns his id.
      *
      * @param userDTO {@link UserDTO} full user data
