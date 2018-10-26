@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
-import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
@@ -71,26 +70,6 @@ public class AuthService extends AbstractSecurityService {
         this.userMapper = userMapper;
     }
 
-
-    /**
-     * Returns users short data by user id.
-     *
-     * @param id {@link Integer} user identifier
-     * @return {@link UserShortDTO} users data
-     * @throws ResourceNotFoundException if user with sent id not found
-     */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
-    public UserShortDTO get(@NotNull Integer id) throws ResourceNotFoundException {
-        try {
-            return userMapper.toShortDTO(userRepository().getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", id), e);
-        }
-    }
 
     /**
      * Logging user and returns pair of token.

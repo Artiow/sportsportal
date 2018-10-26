@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service.security.keykeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -108,14 +109,14 @@ public class KeyService implements KeyProvider {
         try {
             KeyEntity keyEntity = keyRepository.getOne(accessKey.getKeyId());
             if (!keyEntity.getType().equals(KeyType.ACCESS.name())) {
-                // todo: set message
-                throw new BadCredentialsException("message says that token type invalid");
+                throw new BadCredentialsException(messages.get("sportsportal.auth.key.invalidToken.message"));
+            } else if (!keyEntity.getUuid().equals(accessKey.getUuid())) {
+                throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.key.insufficientToken.message"));
             } else {
                 return detailsMapper.toDetails(keyEntity.getUser());
             }
         } catch (EntityNotFoundException e) {
-            // todo: set message
-            throw new BadCredentialsException("message says that token not found");
+            throw new BadCredentialsException(messages.get("sportsportal.auth.key.tokenNotFound.message"));
         }
     }
 

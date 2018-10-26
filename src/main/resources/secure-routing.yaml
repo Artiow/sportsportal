@@ -32,6 +32,8 @@ protectedRoutePaths:
     httpMethod: DELETE
 
   USER:
+  - pattern: /user/*
+    httpMethod: GET
   - pattern: /order/*
     httpMethod: GET
   - pattern: /order/*
