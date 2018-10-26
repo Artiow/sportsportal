@@ -17,6 +17,7 @@ import ru.vldf.sportsportal.repository.security.KeyRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -56,10 +57,7 @@ public class KeyService implements KeyProvider {
 
 
     @Override
-    @Transactional(
-            rollbackFor = {UsernameNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
-    )
+    @Transactional(noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class})
     public Pair<Payload, Payload> authentication(String email, String password) {
         UserEntity userEntity;
         try {
@@ -73,68 +71,92 @@ public class KeyService implements KeyProvider {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
         }
 
-        UUID accessKey = UUID.randomUUID();
-        UUID refreshKey = UUID.randomUUID();
-
         KeyEntity keyEntity = new KeyEntity();
         keyEntity.setUser(userEntity);
         keyEntity.setType(KeyType.ACCESS.name());
-        keyEntity.setUuid(accessKey);
         keyEntity.setRelated(new KeyEntity());
         keyEntity.getRelated().setUser(userEntity);
         keyEntity.getRelated().setType(KeyType.REFRESH.name());
-        keyEntity.getRelated().setUuid(refreshKey);
         keyEntity.getRelated().setRelated(keyEntity);
-        keyEntity = keyRepository.save(keyEntity);
 
-        return Pair.of(
-                new Payload()
-                        .setUserId(userEntity.getId())
-                        .setKeyId(keyEntity.getId())
-                        .setUuid(accessKey),
-                new Payload()
-                        .setUserId(userEntity.getId())
-                        .setKeyId(keyEntity.getRelated().getId())
-                        .setUuid(refreshKey)
-        );
+        return getGeneratedPayloadPair(keyEntity);
     }
 
     @Override
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {BadCredentialsException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
+    @Transactional(readOnly = true)
     public IdentifiedUserDetails authorization(Payload accessKey) {
+        return detailsMapper.toDetails(getValidatedKeyEntity(accessKey, KeyType.ACCESS).getUser());
+    }
+
+    @Override
+    @Transactional
+    public Pair<Payload, Payload> refresh(Payload refreshKey) {
+        return getGeneratedPayloadPair(getValidatedKeyEntity(refreshKey, KeyType.REFRESH));
+    }
+
+    @Override
+    @Transactional
+    public void logout(Payload accessKey) {
+        keyRepository.delete(getValidatedKeyEntity(accessKey, KeyType.ACCESS));
+    }
+
+    @Override
+    @Transactional
+    public void logoutAll(Payload accessKey) {
+        UserEntity userEntity = getValidatedKeyEntity(accessKey, KeyType.ACCESS).getUser();
+        userEntity.setKeys(Collections.emptyList());
+        userRepository.save(userEntity);
+    }
+
+    private KeyEntity getValidatedKeyEntity(Payload key, KeyType requiredKeyType) throws BadCredentialsException, InsufficientAuthenticationException {
         try {
-            KeyEntity keyEntity = keyRepository.getOne(accessKey.getKeyId());
-            if (!keyEntity.getType().equals(KeyType.ACCESS.name())) {
-                throw new BadCredentialsException(messages.get("sportsportal.auth.key.invalidToken.message"));
-            } else if (!keyEntity.getUuid().equals(accessKey.getUuid())) {
+            KeyEntity keyEntity = keyRepository.getOne(key.getKeyId());
+            if (!keyEntity.getType().equals(requiredKeyType.name())) {
+                throw new BadCredentialsException(messages.get("sportsportal.auth.key.invalidTokenType.message"));
+            } else if (!keyEntity.getUuid().equals(key.getUuid())) {
                 throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.key.insufficientToken.message"));
             } else {
-                return detailsMapper.toDetails(keyEntity.getUser());
+                return keyEntity;
             }
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException(messages.get("sportsportal.auth.key.tokenNotFound.message"));
         }
     }
 
-    @Override
-    @Transactional
-    public Pair<Payload, Payload> refresh(Payload refreshKey) {
-        throw new UnsupportedOperationException();
-    }
+    private Pair<Payload, Payload> getGeneratedPayloadPair(KeyEntity keyEntity) throws IllegalArgumentException {
+        KeyType directKeyType;
+        KeyType relatedKeyType;
 
-    @Override
-    @Transactional
-    public void logout(Payload accessKey) {
-        throw new UnsupportedOperationException();
-    }
+        try {
+            directKeyType = KeyType.valueOf(keyEntity.getType());
+            relatedKeyType = KeyType.valueOf(keyEntity.getRelated().getType());
+        } catch (NullPointerException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("One or more keys has no type or null", e);
+        }
 
-    @Override
-    @Transactional
-    public void logoutAll(Payload accessKey) {
-        throw new UnsupportedOperationException();
+        if (directKeyType.equals(relatedKeyType)) {
+            throw new IllegalArgumentException("Keys must be of a different type");
+        } else if (!directKeyType.equals(KeyType.ACCESS)) {
+            keyEntity = keyEntity.getRelated();
+        }
+
+        UUID newAccessKey = UUID.randomUUID();
+        UUID newRefreshKey = UUID.randomUUID();
+        keyEntity.setUuid(newAccessKey);
+        keyEntity.getRelated().setUuid(newRefreshKey);
+        keyEntity = keyRepository.save(keyEntity);
+
+        Integer userId = keyEntity.getUser().getId();
+
+        return Pair.of(
+                new Payload()
+                        .setUserId(userId)
+                        .setKeyId(keyEntity.getId())
+                        .setUuid(newAccessKey),
+                new Payload()
+                        .setUserId(userId)
+                        .setKeyId(keyEntity.getRelated().getId())
+                        .setUuid(newRefreshKey)
+        );
     }
 }
