@@ -33,8 +33,10 @@ function refresh(refreshToken, thenCallback, catchCallback) {
             call(thenCallback, response.data)
         })
         .catch(function (error) {
-            console.warn('Authentication:', (error.response ? error.response : error));
             clear();
+            const response = error.response ? error.response : error;
+            console.warn('Authentication:', response);
+            call(thenCallback, response)
         })
 }
 
