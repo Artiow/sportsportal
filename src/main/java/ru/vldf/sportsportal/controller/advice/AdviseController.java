@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
@@ -137,6 +138,12 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleSignatureException(SignatureException ex) {
         return warnDTO(ex, "Unauthorized Access Attempt.");
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleAccountStatusException(AccountStatusException ex) {
+        return warnDTO(ex, "Forbidden Account Status Access Attempt.");
     }
 
     @ExceptionHandler(ForbiddenAccessException.class)

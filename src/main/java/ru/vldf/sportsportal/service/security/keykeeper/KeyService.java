@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service.security.keykeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,9 +16,13 @@ import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.repository.security.KeyRepository;
+import ru.vldf.sportsportal.service.security.encoder.ExpirationType;
+import ru.vldf.sportsportal.service.security.encoder.ExpiringClockProvider;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -25,6 +30,7 @@ public class KeyService implements KeyProvider {
 
     private MessageContainer messages;
     private PasswordEncoder passwordEncoder;
+    private ExpiringClockProvider clockProvider;
 
     private KeyRepository keyRepository;
     private UserRepository userRepository;
@@ -38,6 +44,11 @@ public class KeyService implements KeyProvider {
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setClockProvider(ExpiringClockProvider clockProvider) {
+        this.clockProvider = clockProvider;
     }
 
     @Autowired
@@ -57,7 +68,7 @@ public class KeyService implements KeyProvider {
 
 
     @Override
-    @Transactional(noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class, LockedException.class})
+    @Transactional(noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class, DisabledException.class, LockedException.class})
     public Pair<Payload, Payload> authentication(String email, String password) {
         UserEntity userEntity;
 
@@ -67,6 +78,8 @@ public class KeyService implements KeyProvider {
                 throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
             } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                 throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
+            } else if (userEntity.getDisabled()) {
+                throw new DisabledException(messages.get("sportsportal.auth.service.accountDisabled.message"));
             }
         } catch (EntityNotFoundException | BadCredentialsException e) {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
@@ -82,10 +95,10 @@ public class KeyService implements KeyProvider {
         } else {
             KeyEntity keyEntity = new KeyEntity();
             keyEntity.setUser(userEntity);
-            keyEntity.setType(KeyType.ACCESS.name());
+            keyEntity.setType(ExpirationType.ACCESS.name());
             keyEntity.setRelated(new KeyEntity());
             keyEntity.getRelated().setUser(userEntity);
-            keyEntity.getRelated().setType(KeyType.REFRESH.name());
+            keyEntity.getRelated().setType(ExpirationType.REFRESH.name());
             keyEntity.getRelated().setRelated(keyEntity);
             return getGeneratedPayloadPair(keyEntity);
         }
@@ -94,30 +107,30 @@ public class KeyService implements KeyProvider {
     @Override
     @Transactional(readOnly = true)
     public IdentifiedUserDetails authorization(Payload accessKey) {
-        return detailsMapper.toDetails(getValidatedKeyEntity(accessKey, KeyType.ACCESS).getUser());
+        return detailsMapper.toDetails(getValidatedKeyEntity(accessKey, ExpirationType.ACCESS).getUser());
     }
 
     @Override
     @Transactional
     public Pair<Payload, Payload> refresh(Payload refreshKey) {
-        return getGeneratedPayloadPair(getValidatedKeyEntity(refreshKey, KeyType.REFRESH));
+        return getGeneratedPayloadPair(getValidatedKeyEntity(refreshKey, ExpirationType.REFRESH));
     }
 
     @Override
     @Transactional
     public void logout(Payload accessKey) {
-        keyRepository.delete(getValidatedKeyEntity(accessKey, KeyType.ACCESS));
+        keyRepository.delete(getValidatedKeyEntity(accessKey, ExpirationType.ACCESS));
     }
 
     @Override
     @Transactional
     public void logoutAll(Payload accessKey) {
-        UserEntity userEntity = getValidatedKeyEntity(accessKey, KeyType.ACCESS).getUser();
+        UserEntity userEntity = getValidatedKeyEntity(accessKey, ExpirationType.ACCESS).getUser();
         userEntity.getKeys().clear();
         userRepository.save(userEntity);
     }
 
-    private KeyEntity getValidatedKeyEntity(Payload key, KeyType requiredKeyType) throws BadCredentialsException, InsufficientAuthenticationException {
+    private KeyEntity getValidatedKeyEntity(Payload key, ExpirationType requiredKeyType) throws BadCredentialsException, InsufficientAuthenticationException {
         try {
             KeyEntity keyEntity = keyRepository.getOne(key.getKeyId());
             if (!keyEntity.getType().equals(requiredKeyType.name())) {
@@ -133,26 +146,33 @@ public class KeyService implements KeyProvider {
     }
 
     private Pair<Payload, Payload> getGeneratedPayloadPair(KeyEntity keyEntity) throws IllegalArgumentException {
-        KeyType directKeyType;
-        KeyType relatedKeyType;
+        ExpirationType directKeyType;
+        ExpirationType relatedKeyType;
 
         try {
-            directKeyType = KeyType.valueOf(keyEntity.getType());
-            relatedKeyType = KeyType.valueOf(keyEntity.getRelated().getType());
+            directKeyType = ExpirationType.valueOf(keyEntity.getType());
+            relatedKeyType = ExpirationType.valueOf(keyEntity.getRelated().getType());
         } catch (NullPointerException | IllegalArgumentException e) {
             throw new IllegalArgumentException("One or more keys has no type or null", e);
         }
 
         if (directKeyType.equals(relatedKeyType)) {
             throw new IllegalArgumentException("Keys must be of a different type");
-        } else if (!directKeyType.equals(KeyType.ACCESS)) {
+        } else if (!directKeyType.equals(ExpirationType.ACCESS)) {
             keyEntity = keyEntity.getRelated();
         }
 
         UUID newAccessKey = UUID.randomUUID();
         UUID newRefreshKey = UUID.randomUUID();
+        Pair<Date, Date> newAccessDates = clockProvider.gen(ExpirationType.ACCESS);
+        Pair<Date, Date> refreshDates = clockProvider.gen(ExpirationType.REFRESH);
+
         keyEntity.setUuid(newAccessKey);
+        keyEntity.setIssuedAt(new Timestamp(newAccessDates.getFirst().getTime()));
+        keyEntity.setExpiredAt(new Timestamp(newAccessDates.getSecond().getTime()));
         keyEntity.getRelated().setUuid(newRefreshKey);
+        keyEntity.getRelated().setIssuedAt(new Timestamp(refreshDates.getFirst().getTime()));
+        keyEntity.getRelated().setExpiredAt(new Timestamp(refreshDates.getSecond().getTime()));
         keyEntity = keyRepository.save(keyEntity);
 
         Integer userId = keyEntity.getUser().getId();

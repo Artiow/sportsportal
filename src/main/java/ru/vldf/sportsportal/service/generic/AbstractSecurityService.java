@@ -14,6 +14,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
 
+
     public AbstractSecurityService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
         super(messages);
         this.userRepository = userRepository;
@@ -39,20 +40,6 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     public Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        } catch (ClassCastException | NullPointerException e) {
-            throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
-        }
-    }
-
-    /**
-     * Returns authenticated user email.
-     *
-     * @return {@link String} user email
-     * @throws UnauthorizedAccessException if user is anonymous
-     */
-    public String getCurrentUserEmail() throws UnauthorizedAccessException {
-        try {
-            return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         } catch (ClassCastException | NullPointerException e) {
             throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
@@ -104,6 +91,6 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     public boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (!roleRepository.existsByCode(code)) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", code));
-        } else return userRepository.hasRoleByCode(getCurrentUserEmail(), code);
+        } else return userRepository.hasRoleByCode(getCurrentUserId(), code);
     }
 }

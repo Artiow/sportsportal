@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------------------------
--- CLEANING SPORTSPORTAL DATABASE 0.4.4
+-- CLEANING SPORTSPORTAL DATABASE 0.4.6
 
 truncate table
 security.key,

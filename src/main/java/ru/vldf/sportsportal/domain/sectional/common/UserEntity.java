@@ -48,6 +48,10 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "locked", nullable = false)
     private Boolean isLocked = false;
 
+    @Basic
+    @Column(name = "disabled", nullable = false)
+    private Boolean isDisabled = true;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
@@ -144,6 +148,14 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setLocked(Boolean locked) {
         isLocked = locked;
+    }
+
+    public Boolean getDisabled() {
+        return isDisabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        isDisabled = disabled;
     }
 
     public PictureEntity getAvatar() {

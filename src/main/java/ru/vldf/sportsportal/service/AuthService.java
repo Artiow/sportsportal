@@ -26,7 +26,7 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -124,15 +124,17 @@ public class AuthService extends AbstractSecurityService {
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.hasAnyRole(email)) {
+        if (userRepository.isEnabledByEmail(email)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
         } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
-            userEntity.setRoles(new ArrayList<>());
+            userEntity.setRoles(Collections.emptyList());
+            userEntity.setDisabled(true);
             if (userRepository.existsByEmail(email)) {
                 try {
                     userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
-                } catch (EntityNotFoundException ignored) {
+                } catch (EntityNotFoundException e) {
+                    throw new RuntimeException(mGet("sportsportal.common.User.cannotCreate.message"), e);
                 } catch (OptimisticLockException e) {
                     throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
                 }
@@ -189,6 +191,7 @@ public class AuthService extends AbstractSecurityService {
         if (userEntity == null) {
             throw new ResourceNotFoundException(mGet("sportsportal.common.User.notExistByConfirmCode.message"));
         } else {
+            userEntity.setDisabled(false);
             userEntity.setConfirmCode(null);
             userEntity.setRoles(roleRepository().findAllByCode(userRoleCode));
             userRepository.save(userEntity);
