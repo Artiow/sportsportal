@@ -7,8 +7,21 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             const token = get();
             if (token) {
-                // todo: getting access token
-            } else reject(null);
+                if (isNotExpired(token.access)) {
+                    resolve(token.access);
+                } else if (isNotExpired(token.refresh)) {
+                    refresh(token.refresh)
+                        .then(data => resolve(data.accessToken))
+                        .catch(data => reject(data));
+                } else {
+                    clear();
+                    console.warn('Authentication [access]: stored tokens was expired');
+                    reject(null);
+                }
+            } else {
+                console.warn('Authentication [access]: no stored tokens');
+                reject(null);
+            }
         });
     }
 
@@ -37,6 +50,15 @@ export default class Authentication {
     }
 }
 
+function isNotExpired(token) {
+    const ALLOWABLE_DELAY_SEC = 150; // assumption by slow communication channel
+    return Math.floor(Date.now() / 1000) < (parse(token).exp - ALLOWABLE_DELAY_SEC);
+}
+
+function parse(token) {
+    return JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+}
+
 function refresh(refreshToken) {
     return new Promise((resolve, reject) => {
         axios
@@ -51,7 +73,7 @@ function refresh(refreshToken) {
             .catch(error => {
                 clear();
                 const response = error.response;
-                console.warn('Authentication [refresh]:', response ? response : error);
+                console.error('Authentication [refresh]:', response ? response : error);
                 reject((response && response.data) ? response.data : null)
             })
     });
