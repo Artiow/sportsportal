@@ -2,7 +2,6 @@ export const env = Object.freeze({
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
     MAIN_HOST_URL: 'http://localhost:3000',
     API_URL: 'http://localhost:8080',
-    AUTHORIZATION_SCHEMA: 'Bearer',
     ANIMATION_TIMEOUT: 325,
     MONTH_NAMES: [
         'январь',

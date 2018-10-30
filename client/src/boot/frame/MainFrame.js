@@ -27,7 +27,7 @@ export default withAppContext(withRouter(
         constructor(props) {
             super(props);
             this.state = {
-                user: MainFrame.calcUser(this.props.app.credentials),
+                user: MainFrame.calcUser(this.props.app.principal),
                 showLogin: this.showLoginModal.bind(this)
             }
         }
@@ -54,7 +54,7 @@ export default withAppContext(withRouter(
         }
 
         componentWillReceiveProps(nextProps) {
-            const user = MainFrame.calcUser(nextProps.app.credentials);
+            const user = MainFrame.calcUser(nextProps.app.principal);
             console.debug('MainFrame (user):', user);
             this.setState({user: user})
         }
@@ -68,7 +68,7 @@ export default withAppContext(withRouter(
             localStorage.clear();
             this.props.app.logout();
             if (this.props.location.pathname !== '/') {
-                this.props.app.reLogin();
+                this.props.app.preLogin();
             } else {
                 this.showLoginModal();
             }

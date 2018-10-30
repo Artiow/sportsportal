@@ -1,5 +1,7 @@
 import React from 'react';
 import {Switch, withRouter} from 'react-router-dom';
+import Authentication from '../connector/Authentication';
+import User from '../connector/User';
 import '../../node_modules/jquery/dist/jquery.min';
 import '../../node_modules/popper.js/dist/umd/popper';
 import '../../node_modules/bootstrap/dist/js/bootstrap.min';
@@ -12,16 +14,15 @@ import NoMatch from './mismatch/NoMatch';
 import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
 import PlaygroundInfo from '../main/playground/PlaygroundInfo';
 import OrderInfo from '../main/order/OrderInfo';
-import verify, {login, logout} from '../util/verification';
 
-const AppContext = React.createContext(null);
+const ApplicationContext = React.createContext(null);
 
 export function withAppContext(Component) {
     return function ContextualComponent(props) {
         return (
-            <AppContext.Consumer>
-                {app => <Component {...props} app={app}/>}
-            </AppContext.Consumer>
+            <ApplicationContext.Consumer>
+                {application => <Component {...props} application={application}/>}
+            </ApplicationContext.Consumer>
         )
     }
 }
@@ -30,55 +31,60 @@ export default withRouter(class Application extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            credentials: null,
-            reVerify: this.reVerify.bind(this),
-            reLogin: this.reLogin.bind(this),
+            principal: null,
+            preLogin: this.preLogin.bind(this),
             logout: this.logout.bind(this),
             login: this.login.bind(this)
         }
     }
 
     componentDidMount() {
-        this.reVerify();
+        this.login();
     }
 
-    reVerify(event) {
+    preLogin(event) {
         if (event != null) event.preventDefault();
-        verify(
-            data => this.setState({
-                credentials: {
-                    token: data.tokenType + ' ' + data.tokenHash,
-                    login: data.login
-                }
-            }),
-            error => this.setState({
-                credentials: null
-            })
-        );
-    }
-
-    reLogin(event) {
-        if (event != null) event.preventDefault();
-        localStorage.setItem('re_login', true);
+        localStorage.setItem('pre_login', true);
         this.props.history.push('/');
     }
 
     logout(event) {
         if (event != null) event.preventDefault();
-        logout();
-        this.setState({
-            credentials: null
-        });
+        Authentication.logout()
+            .then(() => {
+                console.debug('Application [logout]: logout successful');
+                this.setState({principal: null});
+            })
+            .catch(error => {
+                console.error('Application [logout]:', error ? error : 'logout error');
+                this.setState({principal: null});
+            });
     }
 
-    login(data) {
-        login(data);
-        this.reVerify()
+    login(event) {
+        if (event != null) event.preventDefault();
+        Authentication.access()
+            .then(token => {
+                console.debug('Application [login]: access granted');
+                User.get(JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).userId)
+                    .then(data => {
+                        console.debug('Application [login]: login successful');
+                        this.setState({principal: data});
+                    })
+                    .catch(error => {
+                        console.error('Application [login]:', error ? error : 'user data getting error');
+                        this.setState({principal: null});
+                    });
+            })
+            .catch(error => {
+                console.error('Application [login]:', error ? error : 'access denied');
+                this.setState({principal: null});
+            })
     }
 
     render() {
         return (
-            <AppContext.Provider
+            <ApplicationContext.Provider
                 value={this.state}>
                 <Switch>
                     <ScrollRoute exact path='/' component={IndexFrame}/>
@@ -88,7 +94,7 @@ export default withRouter(class Application extends React.Component {
                     <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
                     <ScrollRoute component={NoMatch}/>
                 </Switch>
-            </AppContext.Provider>
+            </ApplicationContext.Provider>
         );
     }
 })

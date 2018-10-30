@@ -58,7 +58,7 @@ export default withAppContext(class Confirmation extends React.Component {
                         </div>
                     );
                 case Confirmation.STAGE.SUCCESS:
-                    this.props.app.reLogin();
+                    this.props.app.preLogin();
                     return (null);
                 case Confirmation.STAGE.FAILED:
                     return (
