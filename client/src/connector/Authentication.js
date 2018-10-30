@@ -3,6 +3,18 @@ import axios from 'axios';
 
 export default class Authentication {
 
+    static register() {
+        return new Promise((resolve, reject) => {
+            // todo: call '/auth/register
+        });
+    }
+
+    static login(login, password) {
+        return new Promise((resolve, reject) => {
+            // todo: call '/auth/login'
+        });
+    }
+
     static access() {
         return new Promise((resolve, reject) => {
             const token = get();
@@ -12,9 +24,11 @@ export default class Authentication {
                 } else if (isNotExpired(token.refresh)) {
                     refresh(token.refresh)
                         .then(data => resolve(data.accessToken))
-                        .catch(data => reject(data));
+                        .catch(error => {
+                            console.error('Authentication [access]: refresh error');
+                            reject(error)
+                        });
                 } else {
-                    clear();
                     console.warn('Authentication [access]: stored tokens was expired');
                     reject(null);
                 }
@@ -25,27 +39,53 @@ export default class Authentication {
         });
     }
 
-    static login(login, password) {
-        return new Promise((resolve, reject) => {
-            // todo: call '/auth/login'
-        });
-    }
-
     static logout() {
         return new Promise((resolve, reject) => {
-            // todo: call '/auth/logout'
+            Authentication.access()
+                .then(token => {
+                    axios
+                        .get(apiUrl('/auth/logout'), {
+                            params: {accessToken: token}
+                        })
+                        .then(response => {
+                            console.debug('Authentication [logout]:', response);
+                            clear();
+                        })
+                        .catch(error => {
+                            const response = error.response;
+                            console.error('Authentication [logout]:', response ? response : error);
+                            reject((response && response.data) ? response.data : null);
+                        })
+                })
+                .catch(error => {
+                    console.error('Authentication [logout]: access error');
+                    reject(null);
+                })
         });
     }
 
     static logoutAll() {
         return new Promise((resolve, reject) => {
-            // todo: call '/auth/logout-all'
-        });
-    }
-
-    static register() {
-        return new Promise((resolve, reject) => {
-            // todo: call '/auth/register
+            Authentication.access()
+                .then(token => {
+                    axios
+                        .get(apiUrl('/auth/logoutAll'), {
+                            params: {accessToken: token}
+                        })
+                        .then(response => {
+                            console.debug('Authentication [logoutAll]:', response);
+                            clear();
+                        })
+                        .catch(error => {
+                            const response = error.response;
+                            console.error('Authentication [logoutAll]:', response ? response : error);
+                            reject((response && response.data) ? response.data : null);
+                        })
+                })
+                .catch(error => {
+                    console.error('Authentication [logoutAll]: access error');
+                    reject(null);
+                })
         });
     }
 }
