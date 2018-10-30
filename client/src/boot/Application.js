@@ -28,13 +28,14 @@ export function withApplicationContext(Component) {
 }
 
 export default withRouter(class Application extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             principal: null,
             preLogin: this.preLogin.bind(this),
-            logout: this.logout.bind(this),
-            login: this.login.bind(this)
+            login: this.login.bind(this),
+            logout: this.logout.bind(this)
         }
     }
 
@@ -43,26 +44,13 @@ export default withRouter(class Application extends React.Component {
     }
 
     preLogin(event) {
-        if (event != null) event.preventDefault();
+        if (event) event.preventDefault();
         localStorage.setItem('pre_login', true);
         this.props.history.push('/');
     }
 
-    logout(event) {
-        if (event != null) event.preventDefault();
-        Authentication.logout()
-            .then(() => {
-                console.debug('Application [logout]: logout successful');
-                this.setState({principal: null});
-            })
-            .catch(error => {
-                console.error('Application [logout]:', error ? error : 'logout error');
-                this.setState({principal: null});
-            });
-    }
-
     login(event) {
-        if (event != null) event.preventDefault();
+        if (event) event.preventDefault();
         Authentication.access()
             .then(token => {
                 console.debug('Application [login]: access granted');
@@ -72,14 +60,19 @@ export default withRouter(class Application extends React.Component {
                         this.setState({principal: data});
                     })
                     .catch(error => {
-                        console.error('Application [login]:', error ? error : 'user data getting error');
+                        console.error('Application [login]: user data getting error');
                         this.setState({principal: null});
                     });
             })
             .catch(error => {
-                console.error('Application [login]:', error ? error : 'access denied');
+                console.warn('Application [login]: access denied');
                 this.setState({principal: null});
-            })
+            });
+    }
+
+    logout(event) {
+        if (event) event.preventDefault();
+        this.setState({principal: null});
     }
 
     render() {

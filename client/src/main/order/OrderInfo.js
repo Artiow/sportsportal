@@ -1,6 +1,6 @@
 import React from 'react';
 import apiUrl, {env} from '../../boot/constants';
-import {withFrameContext} from '../../boot/frame/MainFrame';
+import {withMainFrameContext} from '../../boot/frame/MainFrame';
 import placeimg from '../../util/img/no-image-grey-sm.jpg';
 import ContentContainer from '../../util/components/special/ContentContainer';
 import ContentRow from '../../util/components/special/ContentRow';
@@ -10,7 +10,7 @@ import Timer from '../../util/components/Timer';
 import axios from 'axios';
 import './OrderInfo.css';
 
-export default withFrameContext(class OrderInfo extends React.Component {
+export default withMainFrameContext(class OrderInfo extends React.Component {
 
     static UUID_LENGTH = 10;
 

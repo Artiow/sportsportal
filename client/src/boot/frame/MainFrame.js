@@ -10,34 +10,26 @@ import Registration from './modal/Registration'
 import Header from './sections/Header';
 import Footer from './sections/Footer';
 
-const FrameContext = React.createContext(null);
+const MainFrameContext = React.createContext(null);
 
-export function withFrameContext(Component) {
+export function withMainFrameContext(Component) {
     return function ContextualComponent(props) {
         return (
-            <FrameContext.Consumer>
-                {main => <Component {...props} main={main}/>}
-            </FrameContext.Consumer>
+            <MainFrameContext.Consumer>
+                {mainframe => <Component {...props} mainframe={mainframe}/>}
+            </MainFrameContext.Consumer>
         )
     }
 }
 
 export default withApplicationContext(withRouter(
     class MainFrame extends React.Component {
+
         constructor(props) {
             super(props);
             this.state = {
-                user: MainFrame.calcUser(this.props.app.principal),
+                principal: this.props.application.principal,
                 showLogin: this.showLoginModal.bind(this)
-            }
-        }
-
-        static calcUser(credentials) {
-            const isAuthorized = !!credentials;
-            return {
-                isAuthorized: isAuthorized,
-                token: isAuthorized ? credentials.token : null,
-                login: isAuthorized ? credentials.login : null
             }
         }
 
@@ -47,28 +39,25 @@ export default withApplicationContext(withRouter(
         }
 
         componentDidMount() {
-            if (localStorage.getItem('re_login')) {
-                localStorage.removeItem('re_login');
+            if (localStorage.getItem('pre_login')) {
+                localStorage.removeItem('pre_login');
                 this.showLoginModal();
             }
         }
 
         componentWillReceiveProps(nextProps) {
-            const user = MainFrame.calcUser(nextProps.app.principal);
-            console.debug('MainFrame (user):', user);
-            this.setState({user: user})
+            this.setState({principal: nextProps.application.principal})
         }
 
-        queryLogin(data) {
+        login() {
             this.loginForm.activate('hide', env.ANIMATION_TIMEOUT);
-            this.props.app.login(data);
+            this.props.application.login();
         }
 
-        queryLogout() {
-            localStorage.clear();
-            this.props.app.logout();
+        logout() {
+            this.props.application.logout();
             if (this.props.location.pathname !== '/') {
-                this.props.app.preLogin();
+                this.props.application.preLogin();
             } else {
                 this.showLoginModal();
             }
@@ -89,28 +78,24 @@ export default withApplicationContext(withRouter(
 
         render() {
             return (
-                <FrameContext.Provider
+                <MainFrameContext.Provider
                     value={this.state}>
                     <div className="MainFrame">
                         <Header {...this.props.header}
+                                username={this.state.principal ? this.state.principal.name : undefined}
                                 onLogin={this.showLoginModal.bind(this)}
-                                onLogout={this.queryLogout.bind(this)}
-                                username={
-                                    this.state.user.isAuthorized
-                                        ? this.state.user.login.username
-                                        : undefined
-                                }/>
+                                onLogout={this.logout.bind(this)}/>
                         <MainContainer{...this.props.main}>
                             {this.props.children}
                         </MainContainer>
                         <Footer {...this.props.footer}/>
                         <LoginModal ref={modal => this.loginForm = modal}
-                                    onSuccess={this.queryLogin.bind(this)}
+                                    onSuccess={this.login.bind(this)}
                                     onRegClick={this.reShowRegistrationModal.bind(this)}/>
                         <RegistrationModal ref={modal => this.registrationForm = modal}
                                            onLogClick={this.reShowLoginModal.bind(this)}/>
                     </div>
-                </FrameContext.Provider>
+                </MainFrameContext.Provider>
             )
         }
     }

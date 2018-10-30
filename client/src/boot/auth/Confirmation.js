@@ -19,10 +19,6 @@ export default withApplicationContext(class Confirmation extends React.Component
     }
 
     componentDidMount() {
-        this.confirmQuery();
-    }
-
-    confirmQuery() {
         Authentication.doConfirmation(qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token)
             .then(response => {
                 this.setState({

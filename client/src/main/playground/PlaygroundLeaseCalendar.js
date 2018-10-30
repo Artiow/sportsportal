@@ -3,13 +3,13 @@ import {Link, withRouter} from 'react-router-dom';
 import CheckButton from '../../util/components/CheckButton';
 import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
 import {clearReservation, restoreReservation, saveReservation} from '../../util/reservationSaver';
-import {withFrameContext} from '../../boot/frame/MainFrame'
+import {withMainFrameContext} from '../../boot/frame/MainFrame'
 import apiUrl, {env} from '../../boot/constants';
 import axios from 'axios';
 import qs from 'qs';
 import './PlaygroundLeaseCalendar.css';
 
-export default withFrameContext(
+export default withMainFrameContext(
     withRouter(class PlaygroundLeaseCalendar extends React.Component {
 
         static CLOSE_TITLE = 'Отмена';
