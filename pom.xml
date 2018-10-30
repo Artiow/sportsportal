@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.9.1-beta</version>
+    <version>0.9.11-beta</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -48,9 +48,9 @@
         <io.springfox.version>2.9.2</io.springfox.version>
         <org.imgscalr.version>4.2</org.imgscalr.version>
         <org.flywaydb.version>5.1.1</org.flywaydb.version>
+        <org.postgresql.version>42.2.5</org.postgresql.version>
         <org.hibernate.version>5.3.6.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
-        <org.postgresql.version>42.2.5</org.postgresql.version>
         <org.codehaus.mojo.version>1.5</org.codehaus.mojo.version>
         <org.projectlombok.version>1.18.2</org.projectlombok.version>
         <org.hibernate.validator.version>6.0.13.Final</org.hibernate.validator.version>

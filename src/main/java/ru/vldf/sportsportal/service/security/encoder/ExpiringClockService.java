@@ -5,13 +5,11 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class ExpiringClockService implements ExpiringClock, ExpiringClockProvider {
+public class ExpiringClockService implements ExpiringClockProvider {
 
     @Value("${jwt.access.lifetime.unit}")
     public TimeUnit accessTokenUnit;
@@ -37,12 +35,7 @@ public class ExpiringClockService implements ExpiringClock, ExpiringClockProvide
 
 
     @Override
-    public Date now() {
-        return Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-    @Override
-    public Date exp(Date now, ExpirationType type) {
+    public Pair<Date, Date> gen(ExpirationType type) {
         Long lifetime;
         switch (type) {
             case ACCESS:
@@ -54,12 +47,7 @@ public class ExpiringClockService implements ExpiringClock, ExpiringClockProvide
             default:
                 lifetime = 0L;
         }
-        return new Date(now.getTime() + lifetime);
-    }
-
-    @Override
-    public Pair<Date, Date> gen(ExpirationType type) {
-        Date now = now();
-        return Pair.of(now, exp(now, type));
+        Date now = new Date();
+        return Pair.of(now, new Date(now.getTime() + lifetime));
     }
 }
