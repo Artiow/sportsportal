@@ -1,6 +1,6 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {withAppContext} from '../Application';
+import {withApplicationContext} from '../Application';
 import {env} from '../constants';
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
@@ -22,7 +22,7 @@ export function withFrameContext(Component) {
     }
 }
 
-export default withAppContext(withRouter(
+export default withApplicationContext(withRouter(
     class MainFrame extends React.Component {
         constructor(props) {
             super(props);

@@ -17,7 +17,7 @@ import OrderInfo from '../main/order/OrderInfo';
 
 const ApplicationContext = React.createContext(null);
 
-export function withAppContext(Component) {
+export function withApplicationContext(Component) {
     return function ContextualComponent(props) {
         return (
             <ApplicationContext.Consumer>
