@@ -1,17 +1,83 @@
 import apiUrl from '../boot/constants';
 import axios from 'axios';
+import qs from "qs";
 
 export default class Authentication {
 
-    static register() {
+    static register(body) {
         return new Promise((resolve, reject) => {
-            // todo: call '/auth/register
+            axios
+                .post(apiUrl('/auth/register'), body)
+                .then(response => {
+                    console.debug('Authentication [register]:', response);
+                    const locationArray = response.headers.location.split('/');
+                    resolve(locationArray[locationArray.length - 1]);
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication [register]:', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                })
         });
     }
 
-    static login(login, password) {
+    static initConfirmation(id, host) {
         return new Promise((resolve, reject) => {
-            // todo: call '/auth/login'
+            axios
+                .put(apiUrl('/auth/confirm/' + id), '', {
+                    params: {host: host},
+                    paramsSerializer: (params => qs.stringify(params))
+                })
+                .then(response => {
+                    console.debug('Authentication [initConfirmation]:', response);
+                    resolve();
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication [initConfirmation]:', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                })
+        });
+    }
+
+    static doConfirmation(token) {
+        return new Promise((resolve, reject) => {
+            axios
+                .put(apiUrl('/auth/confirm'), '', {
+                    params: {confirmToken: token},
+                    paramsSerializer: (params => qs.stringify(params))
+                })
+                .then(response => {
+                    console.debug('Authentication [doConfirmation]:', response);
+                    resolve();
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication [doConfirmation]:', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                })
+        });
+    }
+
+    static login(email, password) {
+        return new Promise((resolve, reject) => {
+            axios
+                .get(apiUrl('/auth/login'), {
+                    params: {
+                        email: email,
+                        password: password
+                    }
+                })
+                .then(response => {
+                    set(response.data);
+                    console.debug('Authentication [login]:', response);
+                    resolve(response.data.accessToken);
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication [login]:', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                })
         });
     }
 
@@ -50,6 +116,7 @@ export default class Authentication {
                         .then(response => {
                             console.debug('Authentication [logout]:', response);
                             clear();
+                            resolve();
                         })
                         .catch(error => {
                             const response = error.response;
@@ -75,6 +142,7 @@ export default class Authentication {
                         .then(response => {
                             console.debug('Authentication [logoutAll]:', response);
                             clear();
+                            resolve();
                         })
                         .catch(error => {
                             const response = error.response;
