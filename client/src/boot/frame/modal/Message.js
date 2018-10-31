@@ -37,10 +37,10 @@ export default class Message extends React.Component {
     sendMessage(recipientId) {
         Authentication.initConfirmation(
             recipientId, window.location.origin
-        ).then(response => {
+        ).then(() => {
             console.debug('Message [sending]: success');
             this.setState({stage: Message.STAGE.SUCCESS})
-        }).catch(error => {
+        }).catch(() => {
             console.error('Message [sending]: failed');
             this.setState({stage: Message.STAGE.FAILED})
         });

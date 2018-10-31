@@ -1,7 +1,6 @@
 import React from 'react';
+import Authentication from '../../../connector/Authentication';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants';
-import axios from 'axios';
 import './Login.css';
 
 export default class Login extends React.Component {
@@ -31,25 +30,20 @@ export default class Login extends React.Component {
             errorMessage: null,
             inProcess: true
         });
-        axios
-            .get(apiUrl('/auth/login'), {
-                params: {
-                    email: this.state.email,
-                    password: this.state.password
-                }
-            })
-            .then(response => {
-                console.debug('Login (query):', response);
-                const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(response.data);
-            })
-            .catch(error => {
-                let errorMessage;
-                const errorResponse = error.response;
-                console.warn('Login (query):', errorResponse ? errorResponse : error);
-                errorMessage = errorResponse ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE;
-                this.setState({errorMessage: errorMessage, inProcess: false});
-            })
+        Authentication.login(
+            this.state.email,
+            this.state.password
+        ).then(response => {
+            console.debug('Login [query]: success');
+            const onSuccess = this.props.onSuccess;
+            if (typeof onSuccess === 'function') onSuccess(response);
+        }).catch(error => {
+            (error ? console.warn : console.error)('Login [query]: failed');
+            this.setState({
+                errorMessage: error ? error.message : Login.UNEXPECTED_ERROR_MESSAGE,
+                inProcess: false
+            });
+        });
     }
 
     handleSubmit(event) {

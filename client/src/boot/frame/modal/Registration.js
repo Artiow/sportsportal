@@ -1,8 +1,7 @@
 import React from 'react';
 import InputMask from 'react-input-mask';
+import Authentication from '../../../connector/Authentication';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants';
-import axios from 'axios';
 import './Registration.css';
 
 export default class Registration extends React.Component {
@@ -27,40 +26,36 @@ export default class Registration extends React.Component {
         });
     }
 
-    queryRegistration(obj) {
+    queryRegistration(body) {
         this.setState({
             errorMessage: null,
             errorMessages: {},
             inProcess: true
         });
-        axios
-            .post(apiUrl('/auth/register'), obj)
-            .then(response => {
-                console.debug('Registration (query):', response);
-                const locationArray = response.headers.location.split('/');
+        Authentication.register(body)
+            .then(bodyId => {
+                console.debug('Registration [query]: success');
                 const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
+                if (typeof onSuccess === 'function') onSuccess(bodyId, body.email);
             })
             .catch(error => {
-                const errorResponse = error.response;
-                if (errorResponse != null) {
-                    const data = errorResponse.data;
-                    const message = data.message;
-                    const errors = data.errors;
-                    console.warn('Registration (query):', errorResponse);
+                if (error) {
+                    const message = error.message;
+                    const errors = error.errors;
+                    console.warn('Registration [query]: invalid form data');
                     this.setState({
                         errorMessage: message,
                         errorMessages: errors,
                         inProcess: false
                     });
                 } else {
-                    console.error('Registration (query):', error);
+                    console.error('Registration [query]: failed');
                     this.setState({
                         errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE,
                         inProcess: false
                     });
                 }
-            })
+            });
     }
 
     render() {
