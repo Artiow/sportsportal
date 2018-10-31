@@ -72,6 +72,7 @@ export default withRouter(class Application extends React.Component {
 
     logout(event) {
         if (event) event.preventDefault();
+        console.debug('Application [logout]: logout successful');
         this.setState({principal: null});
     }
 

@@ -90,10 +90,11 @@ export default withApplicationContext(withRouter(
                         </MainContainer>
                         <Footer {...this.props.footer}/>
                         <LoginModal ref={modal => this.loginForm = modal}
-                                    onSuccess={this.login.bind(this)}
-                                    onRegClick={this.reShowRegistrationModal.bind(this)}/>
+                                    onRegClick={this.reShowRegistrationModal.bind(this)}
+                                    onSuccess={this.login.bind(this)}/>
                         <RegistrationModal ref={modal => this.registrationForm = modal}
-                                           onLogClick={this.reShowLoginModal.bind(this)}/>
+                                           onLogClick={this.reShowLoginModal.bind(this)}
+                                           onSuccess={undefined}/>
                     </div>
                 </MainFrameContext.Provider>
             )
@@ -132,8 +133,8 @@ class LoginModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <Login ref={body => this.body = body}
-                                   onSuccess={this.props.onSuccess}
-                                   onRegClick={this.props.onRegClick}/>
+                                   onRegClick={this.props.onRegClick}
+                                   onSuccess={this.props.onSuccess}/>
                         </div>
                     </div>
                 </div>
@@ -145,15 +146,22 @@ class LoginModal extends React.Component {
 class RegistrationModal extends React.Component {
 
     static STAGE = Object.freeze({REGISTRATION: 1, MESSAGE: 2});
-    static INIT_STAGE = RegistrationModal.STAGE.REGISTRATION;
 
     constructor(props) {
         super(props);
-        this.state = {stage: RegistrationModal.INIT_STAGE}
+        this.state = {
+            stage: RegistrationModal.STAGE.REGISTRATION,
+            userEmail: null,
+            userId: null
+        }
     }
 
     activate(options, timeout) {
-        this.setState({stage: RegistrationModal.INIT_STAGE});
+        this.setState({
+            stage: RegistrationModal.STAGE.REGISTRATION,
+            userEmail: null,
+            userId: null
+        });
         this.modal.activate(options);
         if (options) this.reset(timeout);
     }
@@ -165,8 +173,11 @@ class RegistrationModal extends React.Component {
     }
 
     sendMessage(userId, userEmail) {
-        this.setState({stage: RegistrationModal.STAGE.MESSAGE});
-        this.messageForm.sendMessage(userId, userEmail);
+        this.setState({
+            stage: RegistrationModal.STAGE.MESSAGE,
+            userEmail: userEmail,
+            userId: userId
+        });
     }
 
     render() {
@@ -191,12 +202,14 @@ class RegistrationModal extends React.Component {
                                     case RegistrationModal.STAGE.REGISTRATION:
                                         return (
                                             <Registration ref={body => this.body = body}
-                                                          onSuccess={this.sendMessage.bind(this)}
-                                                          onLogClick={this.props.onLogClick}/>
+                                                          onLogClick={this.props.onLogClick}
+                                                          onSuccess={this.sendMessage.bind(this)}/>
                                         );
                                     case RegistrationModal.STAGE.MESSAGE:
                                         return (
-                                            <Message ref={message => this.messageForm = message}/>
+                                            <Message onSuccess={this.props.onSuccess}
+                                                     recipientEmail={this.state.userEmail}
+                                                     recipientId={this.state.userId}/>
                                         );
                                     default:
                                         return null;
