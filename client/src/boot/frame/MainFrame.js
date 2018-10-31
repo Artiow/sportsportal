@@ -1,5 +1,6 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
+import Authentication from '../../connector/Authentication';
 import {withApplicationContext} from '../Application';
 import {env} from '../constants';
 import ModalFade from '../../util/components/ModalFade';
@@ -55,12 +56,19 @@ export default withApplicationContext(withRouter(
         }
 
         logout() {
-            this.props.application.logout();
-            if (this.props.location.pathname !== '/') {
-                this.props.application.preLogin();
-            } else {
-                this.showLoginModal();
-            }
+            Authentication.logout()
+                .then(() => {
+                    console.debug('MainFrame [logout]: logout successful');
+                    this.props.application.logout();
+                    if (this.props.location.pathname !== '/') {
+                        this.props.application.preLogin();
+                    } else {
+                        this.showLoginModal();
+                    }
+                })
+                .catch(() => {
+                    console.debug('MainFrame [logout]: logout failed');
+                })
         }
 
         showLoginModal(event) {

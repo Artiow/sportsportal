@@ -110,7 +110,7 @@ export default class Authentication {
             Authentication.access()
                 .then(token => {
                     axios
-                        .get(apiUrl('/auth/logout'), {
+                        .put(apiUrl('/auth/logout'), '', {
                             params: {accessToken: token}
                         })
                         .then(response => {
@@ -136,7 +136,7 @@ export default class Authentication {
             Authentication.access()
                 .then(token => {
                     axios
-                        .get(apiUrl('/auth/logoutAll'), {
+                        .put(apiUrl('/auth/logoutAll'), '', {
                             params: {accessToken: token}
                         })
                         .then(response => {
