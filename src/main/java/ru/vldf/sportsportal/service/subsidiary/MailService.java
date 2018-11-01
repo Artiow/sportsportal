@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.service.subsidiary;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,16 @@ public class MailService {
 
     private JavaMailSender javaMailSender;
 
+    @Value("${spring.mail.username}")
+    private String sender;
+
     @Autowired
     public void setJavaMailSender(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
 
-    public MailSender sender() {
+    public MailSender sender() throws MessagingException {
         return new MailSender();
     }
 
@@ -30,9 +34,10 @@ public class MailService {
         private MimeMessageHelper helper;
 
 
-        private MailSender() {
+        private MailSender() throws MessagingException {
             message = javaMailSender.createMimeMessage();
             helper = new MimeMessageHelper(message);
+            helper.setFrom(sender);
         }
 
 

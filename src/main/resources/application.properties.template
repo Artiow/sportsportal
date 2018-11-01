@@ -18,10 +18,10 @@ jwt.refresh.lifetime.amount=90
 jwt.refresh.lifetime.unit=DAYS
 ##
 # smtp mail
-spring.mail.port=465
-spring.mail.host=smtp.mail.ru
-spring.mail.username=xxxxx
-spring.mail.password=xxxxx
+spring.mail.port=
+spring.mail.host=
+spring.mail.username=
+spring.mail.password=
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.ssl.enable=true
 ##

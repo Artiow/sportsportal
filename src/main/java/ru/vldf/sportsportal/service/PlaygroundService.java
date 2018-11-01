@@ -284,9 +284,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setByOwner(isOwner);
             order.setReservations(reservations);
 
-            Integer newOrderId = orderRepository.save(order).getId();
+            OrderEntity newOrderEntity = orderRepository.save(order);
+            Integer newOrderId = newOrderEntity.getId();
 
-            if (!isOwner) {
+            // if expiration date set, do scheduled job
+            if (Optional.ofNullable(newOrderEntity.getExpiration()).isPresent()) {
                 ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
                 executorService.schedule(() -> orderRepository.deleteById(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS);
             }
