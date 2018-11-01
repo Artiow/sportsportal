@@ -7,8 +7,6 @@ publicRoutePaths:
   httpMethod: GET
 - pattern: /playground/*
   httpMethod: GET
-- pattern: /playground/list
-  httpMethod: GET
 - pattern: /playground/*/grid
   httpMethod: GET
 - pattern: /playground/*/check

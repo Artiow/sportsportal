@@ -58,7 +58,7 @@ export default withApplicationContext(withRouter(
         logout() {
             Authentication.logout()
                 .then(() => {
-                    console.debug('MainFrame [logout]: logout successful');
+                    console.debug('MainFrame', 'logout', 'logout successful');
                     this.props.application.logout();
                     if (this.props.location.pathname !== '/') {
                         this.props.application.preLogin();
@@ -67,7 +67,7 @@ export default withApplicationContext(withRouter(
                     }
                 })
                 .catch(() => {
-                    console.debug('MainFrame [logout]: logout failed');
+                    console.debug('MainFrame', 'logout', 'logout failed');
                 })
         }
 

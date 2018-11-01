@@ -1,9 +1,7 @@
 import React from 'react';
 import PlaygroundFilter from './PlaygroundFilter';
 import PlaygroundPageableContainer from './PlaygroundPageableContainer';
-import apiUrl from '../../boot/constants';
-import axios from 'axios';
-import qs from 'qs';
+import Playground from '../../connector/Playground';
 
 export default class PlaygroundSearcher extends React.Component {
 
@@ -30,15 +28,14 @@ export default class PlaygroundSearcher extends React.Component {
      */
     query(filter) {
         this.setState({loading: true});
-        axios.get(apiUrl('/playground/list'), {
-            paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
-            params: filter
-        }).then(response => {
-            console.debug('PlaygroundSearcher (query):', response);
-            this.setState({page: response.data, loading: false});
-        }).catch(error => {
-            console.error('PlaygroundSearcher (query):', ((error.response != null) ? error.response : error));
-        })
+        Playground.list(filter)
+            .then(data => {
+                console.debug('PlaygroundSearcher', 'query', data);
+                this.setState({page: data, loading: false});
+            })
+            .catch(error => {
+                console.error('PlaygroundSearcher', 'query', error);
+            });
     }
 
     render() {

@@ -9,21 +9,22 @@ export default class User {
             Authentication.access()
                 .then(token => {
                     axios
-                        .get(apiUrl('/user/' + id), {
+                        .get(apiUrl(`/user/${id}`), {
                             headers: {Authorization: `Bearer ${token}`}
                         })
                         .then(response => {
-                            console.debug('User [get]:', response);
+                            console.debug('User', 'get', response);
                             resolve(response.data);
                         })
                         .catch(error => {
                             const response = error.response;
-                            console.error('User [get]:', response ? response : error);
+                            console.error('User', 'get', response ? response : error);
                             reject((response && response.data) ? response.data : null)
                         })
                 })
                 .catch(error => {
-                    console.error('User [get]: access error');
+                    console.error('User', 'get', 'access error');
+                    reject(null);
                 });
         });
     }
@@ -33,21 +34,22 @@ export default class User {
             Authentication.access()
                 .then(token => {
                     axios
-                        .delete(apiUrl('/user/' + id), {
+                        .delete(apiUrl(`/user/${id}`), {
                             headers: {Authorization: `Bearer ${token}`}
                         })
                         .then(response => {
-                            console.debug('User [delete]:', response);
+                            console.debug('User', 'delete', response);
                             resolve();
                         })
                         .catch(error => {
                             const response = error.response;
-                            console.error('User [delete]:', response ? response : error);
+                            console.error('User', 'delete', response ? response : error);
                             reject((response && response.data) ? response.data : null)
                         })
                 })
                 .catch(error => {
-                    console.error('User [delete]: access error');
+                    console.error('User', 'delete', 'access error');
+                    reject(null);
                 });
         });
     }

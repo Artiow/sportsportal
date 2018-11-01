@@ -34,7 +34,7 @@ export default class Registration extends React.Component {
         });
         Authentication.register(body)
             .then(bodyId => {
-                console.debug('Registration [query]: success');
+                console.debug('Registration', 'query', 'success');
                 const onSuccess = this.props.onSuccess;
                 if (typeof onSuccess === 'function') onSuccess(bodyId, body.email);
             })
@@ -42,14 +42,14 @@ export default class Registration extends React.Component {
                 if (error) {
                     const message = error.message;
                     const errors = error.errors;
-                    console.warn('Registration [query]: invalid form data');
+                    console.warn('Registration', 'query', 'invalid form data');
                     this.setState({
                         errorMessage: message,
                         errorMessages: errors,
                         inProcess: false
                     });
                 } else {
-                    console.error('Registration [query]: failed');
+                    console.error('Registration', 'query', 'failed');
                     this.setState({
                         errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE,
                         inProcess: false

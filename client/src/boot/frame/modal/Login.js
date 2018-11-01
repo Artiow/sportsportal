@@ -34,11 +34,11 @@ export default class Login extends React.Component {
             this.state.email,
             this.state.password
         ).then(response => {
-            console.debug('Login [query]: success');
+            console.debug('Login', 'query', 'success');
             const onSuccess = this.props.onSuccess;
             if (typeof onSuccess === 'function') onSuccess(response);
         }).catch(error => {
-            (error ? console.warn : console.error)('Login [query]: failed');
+            (error ? console.warn : console.error)('Login', 'query', 'failed');
             this.setState({
                 errorMessage: error ? error.message : Login.UNEXPECTED_ERROR_MESSAGE,
                 inProcess: false

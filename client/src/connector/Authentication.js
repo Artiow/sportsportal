@@ -9,13 +9,13 @@ export default class Authentication {
             axios
                 .post(apiUrl('/auth/register'), body)
                 .then(response => {
-                    console.debug('Authentication [register]:', response);
+                    console.debug('Authentication', 'register', response);
                     const locationArray = response.headers.location.split('/');
                     resolve(locationArray[locationArray.length - 1]);
                 })
                 .catch(error => {
                     const response = error.response;
-                    console.warn('Authentication [register]:', response ? response : error);
+                    console.warn('Authentication', 'register', response ? response : error);
                     reject((response && response.data) ? response.data : null)
                 })
         });
@@ -24,17 +24,17 @@ export default class Authentication {
     static initConfirmation(id, host) {
         return new Promise((resolve, reject) => {
             axios
-                .put(apiUrl('/auth/confirm/' + id), '', {
+                .put(apiUrl(`/auth/confirm/${id}`), '', {
                     params: {host: host},
                     paramsSerializer: (params => qs.stringify(params))
                 })
                 .then(response => {
-                    console.debug('Authentication [initConfirmation]:', response);
+                    console.debug('Authentication', 'initConfirmation', response);
                     resolve();
                 })
                 .catch(error => {
                     const response = error.response;
-                    console.warn('Authentication [initConfirmation]:', response ? response : error);
+                    console.warn('Authentication', 'initConfirmation', response ? response : error);
                     reject((response && response.data) ? response.data : null)
                 })
         });
@@ -48,12 +48,12 @@ export default class Authentication {
                     paramsSerializer: (params => qs.stringify(params))
                 })
                 .then(response => {
-                    console.debug('Authentication [doConfirmation]:', response);
+                    console.debug('Authentication', 'doConfirmation', response);
                     resolve();
                 })
                 .catch(error => {
                     const response = error.response;
-                    console.warn('Authentication [doConfirmation]:', response ? response : error);
+                    console.warn('Authentication', 'doConfirmation', response ? response : error);
                     reject((response && response.data) ? response.data : null)
                 })
         });
@@ -70,12 +70,12 @@ export default class Authentication {
                 })
                 .then(response => {
                     set(response.data);
-                    console.debug('Authentication [login]:', response);
+                    console.debug('Authentication', 'login', response);
                     resolve(response.data.accessToken);
                 })
                 .catch(error => {
                     const response = error.response;
-                    console.warn('Authentication [login]:', response ? response : error);
+                    console.warn('Authentication', 'login', response ? response : error);
                     reject((response && response.data) ? response.data : null)
                 })
         });
@@ -91,15 +91,15 @@ export default class Authentication {
                     refresh(token.refresh)
                         .then(data => resolve(data.accessToken))
                         .catch(error => {
-                            console.error('Authentication [access]: refresh error');
+                            console.error('Authentication', 'access', 'refresh error');
                             reject(error)
                         });
                 } else {
-                    console.warn('Authentication [access]: stored tokens was expired');
+                    console.warn('Authentication', 'access', 'stored tokens was expired');
                     reject(null);
                 }
             } else {
-                console.warn('Authentication [access]: no stored tokens');
+                console.warn('Authentication', 'access', 'no stored tokens');
                 reject(null);
             }
         });
@@ -114,18 +114,18 @@ export default class Authentication {
                             params: {accessToken: token}
                         })
                         .then(response => {
-                            console.debug('Authentication [logout]:', response);
+                            console.debug('Authentication', 'logout', response);
                             clear();
                             resolve();
                         })
                         .catch(error => {
                             const response = error.response;
-                            console.error('Authentication [logout]:', response ? response : error);
+                            console.error('Authentication', 'logout', response ? response : error);
                             reject((response && response.data) ? response.data : null);
                         })
                 })
                 .catch(error => {
-                    console.error('Authentication [logout]: access error');
+                    console.error('Authentication', 'logout', 'access error');
                     reject(null);
                 })
         });
@@ -140,18 +140,18 @@ export default class Authentication {
                             params: {accessToken: token}
                         })
                         .then(response => {
-                            console.debug('Authentication [logoutAll]:', response);
+                            console.debug('Authentication', 'logoutAll', response);
                             clear();
                             resolve();
                         })
                         .catch(error => {
                             const response = error.response;
-                            console.error('Authentication [logoutAll]:', response ? response : error);
+                            console.error('Authentication', 'logoutAll', response ? response : error);
                             reject((response && response.data) ? response.data : null);
                         })
                 })
                 .catch(error => {
-                    console.error('Authentication [logoutAll]: access error');
+                    console.error('Authentication', 'logoutAll', 'access error');
                     reject(null);
                 })
         });
@@ -175,13 +175,13 @@ function refresh(refreshToken) {
             })
             .then(response => {
                 set(response.data);
-                console.debug('Authentication [refresh]:', response);
+                console.debug('Authentication', 'refresh', response);
                 resolve(response.data);
             })
             .catch(error => {
                 clear();
                 const response = error.response;
-                console.error('Authentication [refresh]:', response ? response : error);
+                console.error('Authentication', 'refresh', response ? response : error);
                 reject((response && response.data) ? response.data : null)
             })
     });

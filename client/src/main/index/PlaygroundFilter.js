@@ -1,9 +1,8 @@
 import React from 'react';
 import {Range} from 'rc-slider';
+import Dictionary from '../../connector/Dictionary';
 import 'rc-slider/assets/index.css';
 import CustomCheckbox from '../../util/components/CustomCheckbox';
-import apiUrl from '../../boot/constants';
-import axios from 'axios';
 import './PlaygroundFilter.css';
 
 export default class PlaygroundFilter extends React.Component {
@@ -58,25 +57,25 @@ export default class PlaygroundFilter extends React.Component {
     }
 
     componentDidMount() {
-        this.uploadFilterDictionaryData('/dict/feature/list', 'features');
-        this.uploadFilterDictionaryData('/dict/sport/list', 'sports');
+        this.uploadFilterDictionaryData('feature', 'features');
+        this.uploadFilterDictionaryData('sport', 'sports');
     }
 
     /**
      * Load dictionary and store it in state.
-     * @param uri {string}
+     * @param name {string}
      * @param dictionary {string}
      */
-    uploadFilterDictionaryData(uri, dictionary) {
-        axios.get(apiUrl(uri))
-            .then(response => {
-                console.debug(`PlaygroundFilter (query [${dictionary}]):`, response);
-                this.dictionary[dictionary] = response.data.content;
+    uploadFilterDictionaryData(name, dictionary) {
+        Dictionary.list(name)
+            .then(data => {
+                console.debug('PlaygroundFilter', `query:${dictionary}`, data);
+                this.dictionary[dictionary] = data.content;
                 this.updateLoadingStatus();
             })
             .catch(error => {
-                console.error('PlaygroundFilter (query):', ((error.response != null) ? error.response : error));
-            })
+                console.error('PlaygroundFilter', `query:${dictionary}`, error);
+            });
     }
 
     updateLoadingStatus() {

@@ -53,26 +53,26 @@ export default withRouter(class Application extends React.Component {
         if (event) event.preventDefault();
         Authentication.access()
             .then(token => {
-                console.debug('Application [login]: access granted');
+                console.debug('Application', 'login', 'access granted');
                 User.get(JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).userId)
                     .then(data => {
-                        console.debug('Application [login]: login successful');
+                        console.debug('Application', 'login', 'login successful');
                         this.setState({principal: data});
                     })
                     .catch(error => {
-                        console.error('Application [login]: user data getting error');
+                        console.error('Application', 'login', 'user data getting error');
                         this.setState({principal: null});
                     });
             })
             .catch(error => {
-                console.warn('Application [login]: access denied');
+                console.warn('Application', 'login', 'access denied');
                 this.setState({principal: null});
             });
     }
 
     logout(event) {
         if (event) event.preventDefault();
-        console.debug('Application [logout]: logout successful');
+        console.debug('Application', 'logout', ' logout successful');
         this.setState({principal: null});
     }
 
