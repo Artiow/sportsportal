@@ -19,11 +19,18 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     @Column(name = "uploaded", nullable = false)
     private Timestamp uploaded;
 
-    @OneToOne(mappedBy = "avatar")
+    @OneToOne(
+            mappedBy = "avatar",
+            fetch = FetchType.LAZY
+    )
     private UserEntity users;
 
     @ManyToMany(mappedBy = "photos")
     private Collection<PlaygroundEntity> playgrounds;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private UserEntity owner;
 
 
     public Long getSize() {
@@ -57,6 +64,14 @@ public class PictureEntity extends AbstractIdentifiedEntity {
 
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
+    }
+
+    public UserEntity getOwner() {
+        return owner;
+    }
+
+    public void setOwner(UserEntity owner) {
+        this.owner = owner;
     }
 
 

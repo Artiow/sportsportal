@@ -12,10 +12,6 @@ public class ResourceLocationBuilder {
         return buildComponent().toUri();
     }
 
-    public static URI buildURL(@NotNull String prefix) {
-        return buildComponent(prefix).toUri();
-    }
-
     public static URI buildURL(@NotNull Integer identifier) {
         return buildComponent(identifier).toUri();
     }
@@ -27,10 +23,6 @@ public class ResourceLocationBuilder {
 
     private static UriComponents buildComponent() {
         return ServletUriComponentsBuilder.fromCurrentRequest().build();
-    }
-
-    private static UriComponents buildComponent(@NotNull String prefix) {
-        return ServletUriComponentsBuilder.fromCurrentRequest().path(prefix).build();
     }
 
     private static UriComponents buildComponent(@NotNull Integer identifier) {

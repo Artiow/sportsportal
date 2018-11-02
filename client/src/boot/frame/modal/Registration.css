@@ -1,7 +1,6 @@
 .Registration .RegistrationForm .alert {
-    display: none;
-    padding: 5px;
     text-align: center;
+    padding: 5px;
 }
 
 .Registration .RegistrationForm .form-row,

@@ -1,0 +1,12 @@
+.StarRate i.fa.fa-star-rate {
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.StarRate i.fa.fa-star-rate:first-child {
+    margin-left: 0;
+}
+
+.StarRate i.fa.fa-star-rate:last-child {
+    margin-right: 0;
+}

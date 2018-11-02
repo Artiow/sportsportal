@@ -1,6 +1,8 @@
 package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
@@ -37,9 +39,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
+
+    @Value("${code.role.admin}")
+    private String adminRoleCode;
+
+    @Value("${order.expiration.amount}")
+    private Integer orderExpirationAmount;
+
+    @Value("${order.expiration.unit}")
+    private String orderExpirationUnit;
 
     private OrderRepository orderRepository;
     private ReservationRepository reservationRepository;
@@ -207,10 +221,10 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param id                 {@link Integer} playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation info
-     * @return new order {@link Integer} identifier
+     * @return {@link Integer} new order identifier
      * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceNotFoundException     if playground not found
-     * @throws ResourceCannotCreateException if playground cannot create
+     * @throws ResourceCannotCreateException if reservation cannot create
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
@@ -218,16 +232,17 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime expiration = now.plus(orderExpirationAmount, ChronoUnit.valueOf(orderExpirationUnit));
+
             UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
             boolean isOwner = (playground.getOwners().contains(currentUser));
 
-            int EXPIRATION = 15;
-            LocalDateTime now = LocalDateTime.now();
             OrderEntity order = new OrderEntity();
             order.setCustomer(currentUser);
             order.setDatetime(Timestamp.valueOf(now));
-            order.setExpiration(!isOwner ? Timestamp.valueOf(now.plus(EXPIRATION, ChronoUnit.MINUTES)) : null);
+            order.setExpiration(!isOwner ? Timestamp.valueOf(expiration) : null);
 
             List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
             Collections.sort(datetimes);
@@ -268,7 +283,17 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             order.setPrice(sumPrice);
             order.setByOwner(isOwner);
             order.setReservations(reservations);
-            return orderRepository.save(order).getId();
+
+            OrderEntity newOrderEntity = orderRepository.save(order);
+            Integer newOrderId = newOrderEntity.getId();
+
+            // if expiration date set, do scheduled job
+            if (Optional.ofNullable(newOrderEntity.getExpiration()).isPresent()) {
+                ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+                executorService.schedule(() -> orderRepository.deleteById(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS);
+            }
+
+            return newOrderId;
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
@@ -279,16 +304,20 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param playgroundDTO {@link PlaygroundDTO} with playground data
      * @return new playground {@link Integer} identifier
+     * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceCannotCreateException if playground cannot create
      */
     @Override
     @Transactional(
-            rollbackFor = {ResourceCannotCreateException.class},
+            rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
             noRollbackFor = {JpaObjectRetrievalFailureException.class}
     )
-    public Integer create(PlaygroundDTO playgroundDTO) throws ResourceCannotCreateException {
+    public Integer create(PlaygroundDTO playgroundDTO) throws UnauthorizedAccessException, ResourceCannotCreateException {
         try {
-            return playgroundRepository.save(playgroundMapper.toEntity(playgroundDTO)).getId();
+            PlaygroundEntity playgroundEntity = playgroundMapper.toEntity(playgroundDTO);
+            playgroundEntity.setOwners(Collections.singletonList(getCurrentUserEntity()));
+            playgroundEntity.setPhotos(Collections.emptyList());
+            return playgroundRepository.save(playgroundEntity).getId();
         } catch (JpaObjectRetrievalFailureException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.cannotCreate.message"), e);
         }
@@ -299,24 +328,32 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      *
      * @param id            {@link Integer} playground identifier
      * @param playgroundDTO {@link PlaygroundDTO} with new playground data
+     * @throws UnauthorizedAccessException     if authorization is missing
+     * @throws ForbiddenAccessException        if user don't have permission to update this playground
      * @throws ResourceNotFoundException       if playground not found
      * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
      */
     @Override
     @Transactional(
-            rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class, ResourceOptimisticLockException.class},
-            noRollbackFor = {EntityNotFoundException.class, JpaObjectRetrievalFailureException.class, OptimisticLockException.class, OptimisticLockingFailureException.class}
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class, ResourceOptimisticLockException.class},
+            noRollbackFor = {EntityNotFoundException.class, OptimisticLockException.class, OptimisticLockingFailureException.class, DataAccessException.class}
     )
-    public void update(Integer id, PlaygroundDTO playgroundDTO) throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
+    public void update(Integer id, PlaygroundDTO playgroundDTO)
+            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         try {
-            playgroundRepository.save(playgroundMapper.merge(playgroundRepository.getOne(id), playgroundMapper.toEntity(playgroundDTO)));
+            PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
+                throw new ForbiddenAccessException(mGet("sportsportal.lease.Playground.forbidden.message"));
+            } else {
+                playgroundRepository.save(playgroundMapper.merge(playgroundEntity, playgroundMapper.toEntity(playgroundDTO)));
+            }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
-        } catch (JpaObjectRetrievalFailureException e) {
-            throw new ResourceCannotUpdateException(mGet("sportsportal.lease.Playground.cannotUpdate.message"), e);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             throw new ResourceOptimisticLockException(mGet("sportsportal.lease.Playground.optimisticLock.message"), e);
+        } catch (DataAccessException e) {
+            throw new ResourceCannotUpdateException(mGet("sportsportal.lease.Playground.cannotUpdate.message"), e);
         }
     }
 
@@ -324,17 +361,26 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * Delete playground.
      *
      * @param id {@link Integer} playground identifier
-     * @throws ResourceNotFoundException if playground not found
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground
+     * @throws ResourceNotFoundException   if playground not found
      */
     @Override
     @Transactional(
-            rollbackFor = {ResourceNotFoundException.class}
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
     )
-    public void delete(Integer id) throws ResourceNotFoundException {
-        if (!playgroundRepository.existsById(id)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id));
+    public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        try {
+            PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
+                throw new ForbiddenAccessException(mGet("sportsportal.lease.Playground.forbidden.message"));
+            } else {
+                playgroundRepository.delete(playgroundEntity);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
         }
-        playgroundRepository.deleteById(id);
     }
 
 

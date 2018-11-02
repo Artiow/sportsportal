@@ -1,0 +1,6 @@
+.PlaygroundPageableContainer .LoadingSpinner {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    left: 0;
+}

@@ -46,7 +46,10 @@ export default class Timer extends React.Component {
                     second = 59;
                     minute--;
                 }
+            } else if (this.interval) {
+                clearInterval(this.interval);
             }
+
             return {
                 minute: minute,
                 second: second

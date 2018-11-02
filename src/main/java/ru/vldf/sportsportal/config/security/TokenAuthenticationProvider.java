@@ -1,9 +1,11 @@
 package ru.vldf.sportsportal.config.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -11,14 +13,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.service.security.SecurityService;
+import ru.vldf.sportsportal.service.security.AuthorizationProvider;
 
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private MessageContainer messages;
 
-    private SecurityService security;
+    private AuthorizationProvider provider;
 
     @Autowired
     public void setMessages(MessageContainer messages) {
@@ -26,8 +28,8 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     }
 
     @Autowired
-    public void setSecurity(SecurityService security) {
-        this.security = security;
+    public void setProvider(AuthorizationProvider provider) {
+        this.provider = provider;
     }
 
 
@@ -41,7 +43,6 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     @Override
     protected void additionalAuthenticationChecks(UserDetails user, UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
-
     }
 
     /**
@@ -55,13 +56,14 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken auth)
             throws AuthenticationException {
-
         try {
-            return security.authentication(auth.getCredentials().toString());
+            return provider.authorization(auth.getCredentials().toString());
         } catch (SignatureException e) {
             throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.provider.insufficientToken.message"), e);
+        } catch (ExpiredJwtException e) {
+            throw new CredentialsExpiredException(messages.get("sportsportal.auth.provider.expiredToken.message"), e);
         } catch (JwtException e) {
-            throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
+            throw new BadCredentialsException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
         }
     }
 }

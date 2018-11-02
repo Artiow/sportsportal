@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -126,10 +128,28 @@ public class AdviseController {
         return warnDTO(ex, "Unexpected Unauthorized Access Attempt.");
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorDTO handleAuthenticationException(AuthenticationException ex) {
+        return warnDTO(ex, "Unauthorized Access Attempt.");
+    }
+
     @ExceptionHandler(SignatureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleSignatureException(SignatureException ex) {
         return warnDTO(ex, "Unauthorized Access Attempt.");
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleAccountStatusException(AccountStatusException ex) {
+        return warnDTO(ex, "Forbidden Account Status Access Attempt.");
+    }
+
+    @ExceptionHandler(ForbiddenAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleForbiddenAccessException(ForbiddenAccessException ex) {
+        return warnDTO(ex, "Forbidden Access Attempt.");
     }
 
     @ExceptionHandler({NoHandlerFoundException.class, HandlerNotFoundException.class})

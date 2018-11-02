@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,9 +19,9 @@ import java.io.IOException;
 
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private MessageContainer messages;
+    public final static String AUTHORIZATION_SCHEMA = "Bearer";
 
-    private String tokenType;
+    private MessageContainer messages;
 
 
     /**
@@ -36,11 +35,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
     @Autowired
     public void setMessages(MessageContainer messages) {
         this.messages = messages;
-    }
-
-    @Value("${jwt.token-type}")
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
     }
 
 
@@ -63,10 +57,10 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         final String credentials = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (credentials == null) {
             throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.filter.credentialsNotFound.message"));
-        } else if (!credentials.startsWith(tokenType)) {
+        } else if (!credentials.startsWith(AUTHORIZATION_SCHEMA)) {
             throw new BadCredentialsException(messages.get("sportsportal.auth.filter.credentialsNotValid.message"));
         } else {
-            token = credentials.substring(tokenType.length()).trim();
+            token = credentials.substring(AUTHORIZATION_SCHEMA.length()).trim();
         }
 
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, token));

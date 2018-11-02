@@ -32,7 +32,7 @@ public class OrderEntity extends AbstractVersionedEntity {
     @Column(name = "by_owner")
     private Boolean byOwner = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private UserEntity customer;
 

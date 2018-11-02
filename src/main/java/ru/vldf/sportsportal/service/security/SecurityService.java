@@ -1,56 +1,72 @@
 package ru.vldf.sportsportal.service.security;
 
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
+import ru.vldf.sportsportal.mapper.manual.security.PayloadMapper;
+import ru.vldf.sportsportal.service.security.encoder.Encoder;
+import ru.vldf.sportsportal.service.security.keykeeper.KeyProvider;
+import ru.vldf.sportsportal.service.security.keykeeper.Payload;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 @Service
-public class SecurityService {
+public class SecurityService implements SecurityProvider, AuthorizationProvider {
 
-    private TokenService tokenService;
-
-    private UserDetailsMapper mapper;
-
-    @Autowired
-    public void setTokenService(TokenService tokenService) {
-        this.tokenService = tokenService;
-    }
+    private Encoder encoder;
+    private KeyProvider keyProvider;
+    private PayloadMapper payloadMapper;
 
     @Autowired
-    public void setMapper(UserDetailsMapper mapper) {
-        this.mapper = mapper;
+    public void setEncoder(Encoder encoder) {
+        this.encoder = encoder;
+    }
+
+    @Autowired
+    public void setKeyProvider(KeyProvider keyProvider) {
+        this.keyProvider = keyProvider;
+    }
+
+    @Autowired
+    public void setPayloadMapper(PayloadMapper payloadMapper) {
+        this.payloadMapper = payloadMapper;
     }
 
 
-    /**
-     * Getting used token type from token service.
-     *
-     * @return tokenType
-     */
-    public String getTokenType() {
-        return tokenService.getTokenType();
+    @Override
+    public Pair<String, String> authentication(String username, String password) {
+        return getTokenPair(keyProvider.authentication(username, password));
     }
 
+    @Override
+    public IdentifiedUserDetails authorization(String accessToken) {
+        return keyProvider.authorization(payloadMapper.toPayload(encoder.verify(accessToken)));
+    }
 
-    /**
-     * Returns JWT by UserDetails.
-     *
-     * @param identifiedUserDetails - user data
-     * @return encoded json
-     */
-    public String login(IdentifiedUserDetails identifiedUserDetails) throws JwtException {
-        return tokenService.generate(mapper.toMap(identifiedUserDetails));
+    @Override
+    public Pair<String, String> refresh(String refreshToken) {
+        return getTokenPair(keyProvider.refresh(payloadMapper.toPayload(encoder.verify(refreshToken))));
+    }
+
+    @Override
+    public void logout(String accessToken) {
+        keyProvider.logout(payloadMapper.toPayload(encoder.verify(accessToken)));
+    }
+
+    @Override
+    public void logoutAll(String accessToken) {
+        keyProvider.logoutAll(payloadMapper.toPayload(encoder.verify(accessToken)));
     }
 
     /**
-     * Returns UserDetails by JWT.
+     * Returns generated token pair.
      *
-     * @param token - encoded json
-     * @return user data
+     * @param payloadPair {@link Pair} payload pair
+     * @return {@link Pair} generated token pair
      */
-    public IdentifiedUserDetails authentication(String token) throws JwtException {
-        return mapper.toIdentifiedUserDetails(tokenService.verify(token));
+    private Pair<String, String> getTokenPair(Pair<Payload, Payload> payloadPair) {
+        return Pair.of(
+                encoder.getAccessToken(payloadMapper.toMap(payloadPair.getFirst())),
+                encoder.getRefreshToken(payloadMapper.toMap(payloadPair.getSecond()))
+        );
     }
 }

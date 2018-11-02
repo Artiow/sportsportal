@@ -3,10 +3,8 @@ package ru.vldf.sportsportal.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.service.OrderService;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
@@ -39,5 +37,21 @@ public class OrderController {
     @ApiOperation("получить информацию о заказе")
     public OrderDTO get(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         return orderService.get(id);
+    }
+
+    /**
+     * Delete order by id.
+     *
+     * @param id order identifier
+     * @return no content
+     * @throws ResourceNotFoundException   if order not found
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this order
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation("удалить заказ")
+    public ResponseEntity<Void> delete(@PathVariable int id) throws ResourceNotFoundException, UnauthorizedAccessException, ForbiddenAccessException {
+        orderService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

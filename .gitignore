@@ -12,3 +12,6 @@
 /.mvn/
 mvnw.cmd
 mvnw
+
+### Properties ###
+**/application.properties

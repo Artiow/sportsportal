@@ -20,7 +20,7 @@ public class ReservationEntity implements DomainObject {
     @Column(name = "price")
     private BigDecimal price = BigDecimal.valueOf(0, 2);
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private OrderEntity order;
 

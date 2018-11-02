@@ -1,9 +1,7 @@
 import React from 'react';
 import PlaygroundFilter from './PlaygroundFilter';
 import PlaygroundPageableContainer from './PlaygroundPageableContainer';
-import apiUrl from '../../boot/constants';
-import axios from 'axios';
-import qs from 'qs';
+import Playground from '../../connector/Playground';
 
 export default class PlaygroundSearcher extends React.Component {
 
@@ -16,7 +14,7 @@ export default class PlaygroundSearcher extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {page: null};
+        this.state = {page: null, loading: true};
         this.filter = {pageNum: 0, pageSize: PlaygroundSearcher.DEFAULT_PAGE_SIZE};
     }
 
@@ -29,25 +27,24 @@ export default class PlaygroundSearcher extends React.Component {
      * @param filter {object} playground filter
      */
     query(filter) {
-        const serializer = params => {
-            return qs.stringify(params, {arrayFormat: 'repeat'})
-        };
-        axios.get(apiUrl('/leaseapi/playground/list'), {
-            params: filter,
-            paramsSerializer: serializer
-        }).then(response => {
-            console.debug('PlaygroundSearcher (query):', response);
-            this.setState({page: response.data});
-        }).catch(error => {
-            console.error('PlaygroundSearcher (query):', ((error.response != null) ? error.response : error));
-        })
+        this.setState({loading: true});
+        Playground.list(filter)
+            .then(data => {
+                console.debug('PlaygroundSearcher', 'query', data);
+                this.setState({page: data, loading: false});
+            })
+            .catch(error => {
+                console.error('PlaygroundSearcher', 'query', error);
+            });
     }
 
     render() {
         return (
             <div className="PlaygroundSearcher row">
-                <PlaygroundFilter onChange={this.updateFilter}/>
-                <PlaygroundPageableContainer page={this.state.page}/>
+                <PlaygroundFilter inProcess={this.state.loading}
+                                  onChange={this.updateFilter}/>
+                <PlaygroundPageableContainer content={this.state.page}
+                                             loading={this.state.loading}/>
             </div>
         );
     }

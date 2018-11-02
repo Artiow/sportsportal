@@ -1,15 +1,15 @@
 ------------------------------------------------------------------------------------------------------------------------
--- DEMO DATA EXAMPLE 0.3.3 FOR
--- SPORTSPORTAL DATABASE 0.3.3
+-- DEMO DATA EXAMPLE 0.4.6 FOR
+-- SPORTSPORTAL DATABASE 0.4.6
 
 ------------------------------------------------------------------------------------------------------------------------
 -- COMMON
 
 -- user
 
-insert into common."user" (id, name, surname, email, password)
-values (1, 'Иван', 'Иванов', 'root@mail.com', '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2'),
-       (2, 'Максим', 'Максимов', 'user@mail.com', '$2a$10$Tf3DuvW9w.O.j3c5V.kxUeosg.8tFsbINs7rvZhz9U/bRAOSu/cJe');
+insert into common."user" (id, name, surname, email, password, disabled)
+values (1, 'Иван', 'Иванов', 'root@mail.com', '$2a$10$6ugKXFk4PvEWwxapdDTY7e3TLIu3pkRVr4Elf6ltTbImptM..EHc2', false),
+       (2, 'Василий', 'Иванов', 'user@mail.com', '$2a$10$Tf3DuvW9w.O.j3c5V.kxUeosg.8tFsbINs7rvZhz9U/bRAOSu/cJe', false);
 
 alter sequence common.user_id_seq
   restart with 3;

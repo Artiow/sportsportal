@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.common;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -43,12 +44,29 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "confirm_code")
     private String confirmCode;
 
-    @OneToOne
+    @Basic
+    @Column(name = "locked", nullable = false)
+    private Boolean isLocked = false;
+
+    @Basic
+    @Column(name = "disabled", nullable = false)
+    private Boolean isDisabled = true;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
 
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
+
+    @OneToMany(mappedBy = "owner")
+    private Collection<PictureEntity> pictures;
+
+    @ManyToMany(mappedBy = "owners")
+    private Collection<PlaygroundEntity> playgrounds;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<KeyEntity> keys;
 
     @ManyToMany
     @JoinTable(
@@ -58,9 +76,6 @@ public class UserEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<RoleEntity> roles;
-
-    @ManyToMany(mappedBy = "owners")
-    private Collection<PlaygroundEntity> playgrounds;
 
 
     public String getEmail() {
@@ -127,6 +142,22 @@ public class UserEntity extends AbstractVersionedEntity {
         this.confirmCode = confirmCode;
     }
 
+    public Boolean getLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(Boolean locked) {
+        isLocked = locked;
+    }
+
+    public Boolean getDisabled() {
+        return isDisabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        isDisabled = disabled;
+    }
+
     public PictureEntity getAvatar() {
         return avatar;
     }
@@ -143,12 +174,12 @@ public class UserEntity extends AbstractVersionedEntity {
         this.orders = orders;
     }
 
-    public Collection<RoleEntity> getRoles() {
-        return roles;
+    public Collection<PictureEntity> getPictures() {
+        return pictures;
     }
 
-    public void setRoles(Collection<RoleEntity> roles) {
-        this.roles = roles;
+    public void setPictures(Collection<PictureEntity> pictures) {
+        this.pictures = pictures;
     }
 
     public Collection<PlaygroundEntity> getPlaygrounds() {
@@ -157,6 +188,22 @@ public class UserEntity extends AbstractVersionedEntity {
 
     public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
         this.playgrounds = playgrounds;
+    }
+
+    public Collection<KeyEntity> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(Collection<KeyEntity> keys) {
+        this.keys = keys;
+    }
+
+    public Collection<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<RoleEntity> roles) {
+        this.roles = roles;
     }
 
 

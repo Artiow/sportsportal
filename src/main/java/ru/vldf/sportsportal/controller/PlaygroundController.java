@@ -151,6 +151,7 @@ public class PlaygroundController {
             @RequestParam long version,
             @RequestParam(required = false) Collection<String> reservations
     ) throws ResourceNotFoundException {
+        // todo: catch DateTimeParseException!
         return reservations != null
                 ? playgroundService.check(id, version, Collections2.transform(reservations, LocalDateTime::parse))
                 : new ReservationListDTO().setReservations(new ArrayList<>());
@@ -162,7 +163,9 @@ public class PlaygroundController {
      * @param id                 playground identifier
      * @param reservationListDTO {@link ReservationListDTO} reservation data
      * @return new order {@link URI}
-     * @throws ResourceNotFoundException if requested playground not found
+     * @throws UnauthorizedAccessException   if authorization is missing
+     * @throws ResourceNotFoundException     if requested playground not found
+     * @throws ResourceCannotCreateException if reservation cannot create
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
@@ -176,12 +179,13 @@ public class PlaygroundController {
      *
      * @param playgroundDTO {@link PlaygroundDTO} new playground data
      * @return new playgrounds {@link URI}
+     * @throws UnauthorizedAccessException   if authorization is missing
      * @throws ResourceCannotCreateException if playground create update
      */
     @PostMapping
     @ApiOperation("создать площадку")
     public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO)
-            throws ResourceCannotCreateException {
+            throws UnauthorizedAccessException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
@@ -191,6 +195,8 @@ public class PlaygroundController {
      * @param id            playground identifier
      * @param playgroundDTO {@link PlaygroundDTO} playground data
      * @return no content
+     * @throws UnauthorizedAccessException     if authorization is missing
+     * @throws ForbiddenAccessException        if user don't have permission to update this playground
      * @throws ResourceNotFoundException       if playground not found
      * @throws ResourceCannotUpdateException   if playground cannot update
      * @throws ResourceOptimisticLockException if playground was already updated
@@ -198,7 +204,7 @@ public class PlaygroundController {
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
     public ResponseEntity<Void> update(@PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO)
-            throws ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
+            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }
@@ -208,11 +214,14 @@ public class PlaygroundController {
      *
      * @param id playground identifier
      * @return no content
-     * @throws ResourceNotFoundException if playground not found
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground
+     * @throws ResourceNotFoundException   if playground not found
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить площадку")
-    public ResponseEntity<Void> delete(@PathVariable int id) throws ResourceNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable int id)
+            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         playgroundService.delete(id);
         return ResponseEntity.noContent().build();
     }

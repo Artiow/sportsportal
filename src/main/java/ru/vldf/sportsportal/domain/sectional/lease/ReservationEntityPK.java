@@ -1,9 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -11,7 +8,7 @@ import java.util.Objects;
 @Embeddable
 public class ReservationEntityPK implements Serializable {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private PlaygroundEntity playground;
 
     @Basic

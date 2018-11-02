@@ -1,46 +1,34 @@
 import React from 'react';
-import apiUrl, {env} from '../../boot/constants';
-import {withFrameContext} from '../../boot/frame/MainFrame';
+import {env} from '../../boot/constants';
+import {withMainFrameContext} from '../../boot/frame/MainFrame';
+import Order from '../../connector/Order';
 import placeimg from '../../util/img/no-image-grey-sm.jpg';
 import ContentContainer from '../../util/components/special/ContentContainer';
 import ContentRow from '../../util/components/special/ContentRow';
 import PlacedImg from '../../util/components/PlacedImg';
 import StarRate from '../../util/components/StarRate';
 import Timer from '../../util/components/Timer';
-import axios from 'axios';
 import './OrderInfo.css';
 
-export default withFrameContext(class OrderInfo extends React.Component {
+export default withMainFrameContext(class OrderInfo extends React.Component {
 
     static UUID_LENGTH = 10;
 
     constructor(props) {
         super(props);
-        this.identifier = this.props.identifier;
+        this.id = props.identifier;
         this.state = {content: null};
     }
 
     componentDidMount() {
-        this.query(this.props.main.user.token);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.query(nextProps.main.user.token);
-    }
-
-    query(token) {
-        if (token) {
-            axios.get(
-                apiUrl('/leaseapi/order/' + this.identifier), {
-                    headers: {Authorization: token}
-                }
-            ).then(response => {
-                console.debug('OrderInfo (query):', response);
-                this.setState({content: response.data});
-            }).catch(error => {
-                console.error('OrderInfo (query):', ((error.response != null) ? error.response : error));
+        Order.get(this.id)
+            .then(data => {
+                console.error('OrderInfo', 'query', 'success');
+                this.setState({content: data});
             })
-        }
+            .catch(error => {
+                console.error('OrderInfo', 'query', 'failed');
+            });
     }
 
     render() {
@@ -158,23 +146,23 @@ export default withFrameContext(class OrderInfo extends React.Component {
                     </div>
                 </ContentRow>
                 {orderListComponent(order ? order.reservations : null, title)}
-                {!order.paid ? (
-                    <ContentRow>
-                        <div className="col-12">
-                            <div className="btn-group">
-                                <button className="btn btn-danger disabled" disabled={true}>
-                                    Отменить заказ
-                                </button>
+                <ContentRow>
+                    <div className="col-12">
+                        <div className="btn-group">
+                            <button className="btn btn-danger disabled" disabled={true}>
+                                Отменить {order.byOwner ? 'резервирование' : 'бронирование'}
+                            </button>
+                            {!order.paid ? (
                                 <button className="btn btn-success disabled" disabled={true}>
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">
                                         {order.price}<i className="fa fa-rub ml-1"/>
                                     </span>
                                 </button>
-                            </div>
+                            ) : (null)}
                         </div>
-                    </ContentRow>
-                ) : (null)}
+                    </div>
+                </ContentRow>
             </ContentContainer>
         ) : (null);
     }

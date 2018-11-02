@@ -1,33 +1,32 @@
 package ru.vldf.sportsportal.service;
 
-import io.jsonwebtoken.JwtException;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.util.Pair;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
-import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.dto.security.TokenDTO;
+import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
-import ru.vldf.sportsportal.mapper.security.LoginMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.generic.*;
-import ru.vldf.sportsportal.service.security.SecurityService;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.security.SecurityProvider;
 import ru.vldf.sportsportal.service.subsidiary.MailService;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -39,10 +38,10 @@ public class AuthService extends AbstractSecurityService {
     @Value("${api.path.auth.confirm}")
     private String confirmPath;
 
-    private BCryptPasswordEncoder passwordEncoder;
-    private SecurityService securityService;
+    private PasswordEncoder passwordEncoder;
+
+    private SecurityProvider securityProvider;
     private MailService mailService;
-    private LoginMapper loginMapper;
     private UserMapper userMapper;
 
 
@@ -51,25 +50,19 @@ public class AuthService extends AbstractSecurityService {
         super(messages, userRepository, roleRepository);
     }
 
-
     @Autowired
-    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
     @Autowired
-    public void setSecurityService(SecurityService securityService) {
-        this.securityService = securityService;
+    public void setSecurityProvider(SecurityProvider securityProvider) {
+        this.securityProvider = securityProvider;
     }
 
     @Autowired
     public void setMailService(MailService mailService) {
         this.mailService = mailService;
-    }
-
-    @Autowired
-    public void setLoginMapper(LoginMapper loginMapper) {
-        this.loginMapper = loginMapper;
     }
 
     @Autowired
@@ -79,92 +72,42 @@ public class AuthService extends AbstractSecurityService {
 
 
     /**
-     * Returns users short data by user id.
-     *
-     * @param id {@link Integer} user identifier
-     * @return {@link UserShortDTO} users data
-     * @throws ResourceNotFoundException if user with sent id not found
-     */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
-    public UserShortDTO get(@NotNull Integer id) throws ResourceNotFoundException {
-        try {
-            return userMapper.toShortDTO(userRepository().getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", id), e);
-        }
-    }
-
-    /**
-     * Logging user and returns his token.
+     * Logging user and returns pair of token.
      *
      * @param email    {@link String} users email
      * @param password {@link String} users password
-     * @return {@link TokenDTO} token info
-     * @throws UsernameNotFoundException if user not found
-     * @throws JwtException              if could not parse jwt
+     * @return {@link JwtPairDTO} token pair
      */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {UsernameNotFoundException.class, JwtException.class},
-            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
-    )
-    public TokenDTO login(@NotNull String email, @NotNull String password) throws UsernameNotFoundException, JwtException {
-        UserEntity user;
-        try {
-            user = userRepository().findByEmail(email);
-            if (user == null) {
-                throw new EntityNotFoundException(mGet("sportsportal.auth.service.userRepository.message"));
-            } else if (!passwordEncoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException(mGet("sportsportal.auth.service.passwordEncoder.message"));
-            }
-        } catch (EntityNotFoundException | BadCredentialsException e) {
-            throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"), e);
-        }
-        return new TokenDTO()
-                .setLogin(loginMapper.toLoginDTO(user))
-                .setTokenType(securityService.getTokenType())
-                .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
+    public JwtPairDTO login(@NotNull String email, @NotNull String password) {
+        return buildJwtPair(securityProvider.authentication(email, password));
     }
 
     /**
-     * Verify user and returns his token.
+     * Refresh user pair of token.
+     *
+     * @param refreshToken {@link String} refresh token
+     * @return {@link JwtPairDTO} token pair
+     */
+    public JwtPairDTO refresh(@NotNull String refreshToken) {
+        return buildJwtPair(securityProvider.refresh(refreshToken));
+    }
+
+    /**
+     * Logout user.
      *
      * @param accessToken {@link String} access token
-     * @return {@link TokenDTO} token info
-     * @throws UsernameNotFoundException  if user not found
-     * @throws ResourceNotFoundException  if user not found
-     * @throws SentDataCorruptedException if token not valid
-     * @throws JwtException               if could not parse jwt
      */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {UsernameNotFoundException.class, ResourceNotFoundException.class, SentDataCorruptedException.class, JwtException.class},
-            noRollbackFor = {EntityNotFoundException.class, BadCredentialsException.class}
-    )
-    public TokenDTO verify(String accessToken) throws UsernameNotFoundException, ResourceNotFoundException, SentDataCorruptedException, JwtException {
-        final String tokenType = securityService.getTokenType();
-        try {
-            if ((accessToken == null) || (!accessToken.startsWith(tokenType))) {
-                throw new BadCredentialsException(String.format("Sent token null or not starts with \'%s\'", tokenType));
-            }
-            IdentifiedUserDetails userDetails = securityService.authentication(accessToken.substring(tokenType.length()).trim());
-            UserEntity user = userRepository().getOne(userDetails.getId());
-            if ((!user.getEmail().equals(userDetails.getUsername())) || (!user.getPassword().equals(userDetails.getPassword()))) {
-                throw new UsernameNotFoundException(mGet("sportsportal.auth.service.loginError.message"));
-            }
-            return new TokenDTO()
-                    .setLogin(loginMapper.toLoginDTO(user))
-                    .setTokenType(securityService.getTokenType())
-                    .setTokenHash(securityService.login(loginMapper.toIdentifiedUser(user)));
-        } catch (BadCredentialsException e) {
-            throw new SentDataCorruptedException(mGet("sportsportal.auth.filter.credentialsNotValid.message"), e);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGet("sportsportal.auth.service.userRepository.message"), e);
-        }
+    public void logout(@NotNull String accessToken) {
+        securityProvider.logout(accessToken);
+    }
+
+    /**
+     * Logout all user sessions.
+     *
+     * @param accessToken {@link String} access token
+     */
+    public void logoutAll(@NotNull String accessToken) {
+        securityProvider.logoutAll(accessToken);
     }
 
     /**
@@ -176,19 +119,28 @@ public class AuthService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {ResourceCannotCreateException.class},
-            noRollbackFor = {JpaObjectRetrievalFailureException.class}
+            noRollbackFor = {EntityNotFoundException.class, OptimisticLockException.class, DataAccessException.class}
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.isEnabledByEmail(email)) {
             throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
-        }
-        try {
+        } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
-            userEntity.setRoles(new ArrayList<>());
+            userEntity.setRoles(Collections.emptyList());
+            userEntity.setDisabled(true);
+            if (userRepository.existsByEmail(email)) {
+                try {
+                    userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
+                } catch (EntityNotFoundException e) {
+                    throw new RuntimeException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+                } catch (OptimisticLockException e) {
+                    throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+                }
+            }
             return userRepository.save(userEntity).getId();
-        } catch (JpaObjectRetrievalFailureException e) {
+        } catch (DataAccessException e) {
             throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
         }
     }
@@ -196,8 +148,8 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Init confirmation for user.
      *
-     * @param userId      {@link Integer} user identifier
-     * @param confirmHost {@link String} confirmation link host
+     * @param userId        {@link Integer} user identifier
+     * @param confirmOrigin {@link String} confirmation link origin
      * @throws ResourceNotFoundException     if user could not found
      * @throws ResourceCannotUpdateException if could not sent email
      */
@@ -205,14 +157,14 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public void initConfirmation(Integer userId, String confirmHost) throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
         String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
         UserRepository userRepository = userRepository();
         try {
             UserEntity userEntity = userRepository.getOne(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendConfirmationEmail(userEntity.getEmail(), confirmHost, confirmCode);
+                sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
                 userRepository.save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.alreadyConfirmed.message"));
@@ -239,6 +191,7 @@ public class AuthService extends AbstractSecurityService {
         if (userEntity == null) {
             throw new ResourceNotFoundException(mGet("sportsportal.common.User.notExistByConfirmCode.message"));
         } else {
+            userEntity.setDisabled(false);
             userEntity.setConfirmCode(null);
             userEntity.setRoles(roleRepository().findAllByCode(userRoleCode));
             userRepository.save(userEntity);
@@ -246,12 +199,24 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * @param emailAddress {@link String} sending address
-     * @param confirmHost  {@link String} confirm host
-     * @param confirmCode  {@link String} confirm code
+     * Returns built jwt pair.
+     *
+     * @param jwtPair {@link Pair} raw jwt pair
+     * @return {@link JwtPairDTO} built jwt pair
+     */
+    private JwtPairDTO buildJwtPair(Pair<String, String> jwtPair) {
+        return new JwtPairDTO()
+                .setAccessToken(jwtPair.getFirst())
+                .setRefreshToken(jwtPair.getSecond());
+    }
+
+    /**
+     * @param emailAddress  {@link String} sending address
+     * @param confirmOrigin {@link String} confirm host
+     * @param confirmCode   {@link String} confirm code
      * @throws MessagingException if could not sent email
      */
-    private void sendConfirmationEmail(String emailAddress, String confirmHost, String confirmCode) throws MessagingException {
+    private void sendConfirmationEmail(String emailAddress, String confirmOrigin, String confirmCode) throws MessagingException {
         mailService.sender()
                 .setDestination(emailAddress)
                 .setSubject(mGet("sportsportal.email.confirm.subject"))
@@ -261,7 +226,7 @@ public class AuthService extends AbstractSecurityService {
                                 "sportsportal.email.confirm.text.env",
                                 String.format(
                                         "<a href=\"%s\">%s</a>",
-                                        String.format(confirmPath, confirmHost, confirmCode),
+                                        String.format(confirmPath, confirmOrigin, confirmCode),
                                         mGet("sportsportal.email.confirm.text.link")
                                 )
                         )

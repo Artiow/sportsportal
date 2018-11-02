@@ -1,8 +1,7 @@
 import React from 'react';
 import InputMask from 'react-input-mask';
+import Authentication from '../../../connector/Authentication';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants';
-import axios from 'axios';
 import './Registration.css';
 
 export default class Registration extends React.Component {
@@ -13,7 +12,8 @@ export default class Registration extends React.Component {
         super(props);
         this.state = {
             errorMessage: null,
-            errorMessages: {}
+            errorMessages: {},
+            inProcess: false
         }
     }
 
@@ -21,39 +21,48 @@ export default class Registration extends React.Component {
         this.submitForm.reset();
         this.setState({
             errorMessage: null,
-            errorMessages: {}
+            errorMessages: {},
+            inProcess: false
         });
     }
 
-    queryRegistration(obj) {
-        this.setState({errorMessage: null, errorMessages: {}});
-        axios
-            .post(apiUrl('/auth/register'), obj)
-            .then(response => {
-                console.debug('Registration (query):', response);
-                const locationArray = response.headers.location.split('/');
+    queryRegistration(body) {
+        this.setState({
+            errorMessage: null,
+            errorMessages: {},
+            inProcess: true
+        });
+        Authentication.register(body)
+            .then(bodyId => {
+                console.debug('Registration', 'query', 'success');
                 const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(locationArray[locationArray.length - 1], obj.email);
+                if (typeof onSuccess === 'function') onSuccess(bodyId, body.email);
             })
             .catch(error => {
-                const errorResponse = error.response;
-                if (errorResponse != null) {
-                    const data = errorResponse.data;
-                    const message = data.message;
-                    const errors = data.errors;
-                    console.warn('Registration (query):', errorResponse);
-                    this.setState({errorMessage: message, errorMessages: errors});
+                if (error) {
+                    const message = error.message;
+                    const errors = error.errors;
+                    console.warn('Registration', 'query', 'invalid form data');
+                    this.setState({
+                        errorMessage: message,
+                        errorMessages: errors,
+                        inProcess: false
+                    });
                 } else {
-                    console.error('Registration (query):', error);
-                    this.setState({errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE});
+                    console.error('Registration', 'query', 'failed');
+                    this.setState({
+                        errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE,
+                        inProcess: false
+                    });
                 }
-            })
+            });
     }
 
     render() {
         return (
             <div className="Registration">
-                <RegistrationForm ref={form => this.submitForm = form}
+                <RegistrationForm inProcess={this.state.inProcess}
+                                  ref={form => this.submitForm = form}
                                   errorMessage={this.state.errorMessage}
                                   errorMessages={this.state.errorMessages}
                                   onSubmit={this.queryRegistration.bind(this)}
@@ -117,7 +126,7 @@ class RegistrationForm extends React.Component {
 
     handleLogClick(event) {
         event.preventDefault();
-        const onLogClick = this.props.onLogClick;
+        const onLogClick = !this.props.inProcess ? this.props.onLogClick : null;
         if (typeof onLogClick === 'function') onLogClick(event);
     }
 
@@ -154,10 +163,17 @@ class RegistrationForm extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-6 offset-sm-3">
-                        <button type="submit" className="btn btn-primary btn-lg btn-block">Регистрация</button>
+                        <button className="btn btn-primary btn-lg btn-block"
+                                disabled={this.props.inProcess} type="submit">
+                            {(!this.props.inProcess) ? (
+                                <span>Регистрация</span>
+                            ) : (
+                                <i className="fa fa-refresh fa-spin fa-fw"/>
+                            )}
+                        </button>
                         <div className="login">
-                            <Link to="/registration"
-                                  onClick={this.handleLogClick.bind(this)}>
+                            <Link onClick={this.handleLogClick.bind(this)}
+                                  to="/registration">
                                 Авторизация
                             </Link>
                         </div>

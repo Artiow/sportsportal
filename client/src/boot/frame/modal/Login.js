@@ -1,7 +1,6 @@
 import React from 'react';
+import Authentication from '../../../connector/Authentication';
 import {Link} from 'react-router-dom';
-import apiUrl from '../../constants';
-import axios from 'axios';
 import './Login.css';
 
 export default class Login extends React.Component {
@@ -13,35 +12,38 @@ export default class Login extends React.Component {
         this.state = {
             email: null,
             password: null,
-            errorMessage: null
+            errorMessage: null,
+            inProcess: false
         };
     }
 
     reset() {
         this.submitForm.reset();
-        this.setState({errorMessage: null});
+        this.setState({
+            errorMessage: null,
+            inProcess: false
+        });
     }
 
     queryLogin() {
-        axios
-            .get(apiUrl('/auth/login'), {
-                params: {
-                    email: this.state.email,
-                    password: this.state.password
-                }
-            })
-            .then(response => {
-                console.debug('Login (query):', response);
-                const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(response.data);
-            })
-            .catch(error => {
-                let errorMessage;
-                const errorResponse = error.response;
-                console.warn('Login (query):', errorResponse ? errorResponse : error);
-                errorMessage = errorResponse ? errorResponse.data.message : Login.UNEXPECTED_ERROR_MESSAGE;
-                this.setState({errorMessage: errorMessage});
-            })
+        this.setState({
+            errorMessage: null,
+            inProcess: true
+        });
+        Authentication.login(
+            this.state.email,
+            this.state.password
+        ).then(response => {
+            console.debug('Login', 'query', 'success');
+            const onSuccess = this.props.onSuccess;
+            if (typeof onSuccess === 'function') onSuccess(response);
+        }).catch(error => {
+            (error ? console.warn : console.error)('Login', 'query', 'failed');
+            this.setState({
+                errorMessage: error ? error.message : Login.UNEXPECTED_ERROR_MESSAGE,
+                inProcess: false
+            });
+        });
     }
 
     handleSubmit(event) {
@@ -56,7 +58,7 @@ export default class Login extends React.Component {
 
     handleRegClick(event) {
         event.preventDefault();
-        const onRegClick = this.props.onRegClick;
+        const onRegClick = !this.state.inProcess ? this.props.onRegClick : null;
         if (typeof onRegClick === 'function') onRegClick(event);
     }
 
@@ -89,7 +91,14 @@ export default class Login extends React.Component {
                                 Нет аккаунта?
                             </Link>
                         </div>
-                        <button type="submit" className="btn btn-primary btn-lg btn-block">Авторизация</button>
+                        <button className="btn btn-primary btn-lg btn-block"
+                                disabled={this.state.inProcess} type="submit">
+                            {(!this.state.inProcess) ? (
+                                <span>Авторизация</span>
+                            ) : (
+                                <i className="fa fa-refresh fa-spin fa-fw"/>
+                            )}
+                        </button>
                     </div>
                 </form>
             </div>

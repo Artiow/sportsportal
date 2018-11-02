@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>0.6.62</version>
+    <version>1.0.02.RELEASE</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -27,24 +27,22 @@
         <java.version>1.8</java.version>
         <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 
-        <datasource.url.default>jdbc:postgresql://localhost:5432/sportsportal</datasource.url.default>
-        <datasource.url.test>jdbc:postgresql://localhost:5432/sportsportal.test</datasource.url.test>
+        <datasource.host>localhost</datasource.host>
+        <datasource.url.default>jdbc:postgresql://${datasource.host}:5432/sportsportal</datasource.url.default>
+        <datasource.url.test>jdbc:postgresql://${datasource.host}:5432/sportsportal.test</datasource.url.test>
+
         <db.username>postgres</db.username>
         <db.password>postgres</db.password>
-
-        <jmail.port>587</jmail.port>
-        <jmail.host>smtp.gmail.com</jmail.host>
-        <jmail.username>ru.vldf.sportsportal.example@gmail.com</jmail.username>
-        <jmail.password>ru.vldf.sportsportal.example@password</jmail.password>
 
         <io.jsonwebtoken.version>0.9.0</io.jsonwebtoken.version>
         <io.springfox.version>2.9.2</io.springfox.version>
         <org.imgscalr.version>4.2</org.imgscalr.version>
         <org.flywaydb.version>5.1.1</org.flywaydb.version>
+        <org.postgresql.version>42.2.5</org.postgresql.version>
         <org.hibernate.version>5.3.6.Final</org.hibernate.version>
         <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
-        <org.postgresql.version>42.2.5</org.postgresql.version>
         <org.codehaus.mojo.version>1.5</org.codehaus.mojo.version>
+        <org.projectlombok.version>1.18.2</org.projectlombok.version>
         <org.hibernate.validator.version>6.0.13.Final</org.hibernate.validator.version>
         <org.apache.maven.plugins.m-c-p.version>3.5.1</org.apache.maven.plugins.m-c-p.version>
         <org.apache.maven.plugins.m-r-p.version>3.1.0</org.apache.maven.plugins.m-r-p.version>
@@ -63,23 +61,9 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- CUSTOM SERVLET API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- SPRING BOOT -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -92,6 +76,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- CUSTOM SERVLET API -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- POSTGRESQL -->
@@ -129,6 +121,14 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>${org.hibernate.validator.version}</version>
+        </dependency>
+
+        <!-- LOMBOK -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${org.projectlombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- MAPSTRUCT -->
@@ -232,6 +232,7 @@
                     <locations>filesystem:database/migration</locations>
                     <schemas>
                         <schema>flyway</schema>
+                        <schema>security</schema>
                         <schema>common</schema>
                         <schema>lease</schema>
                     </schemas>
@@ -243,14 +244,6 @@
                         <id>test</id>
                         <configuration>
                             <url>${datasource.url.test}</url>
-                            <user>${db.username}</user>
-                            <password>${db.password}</password>
-                            <locations>filesystem:database/migration</locations>
-                            <schemas>
-                                <schema>flyway</schema>
-                                <schema>common</schema>
-                                <schema>lease</schema>
-                            </schemas>
                         </configuration>
                     </execution>
                 </executions>
@@ -271,6 +264,13 @@
                             <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
                             <version>${org.hibernate.version}</version>
+                        </path>
+
+                        <!-- LOMBOK COMPILER FIX -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${org.projectlombok.version}</version>
                         </path>
 
                         <!-- MAPSTRUCT MAPPER GENERATION -->

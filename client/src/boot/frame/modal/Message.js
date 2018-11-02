@@ -1,7 +1,5 @@
-import React from "react";
-import apiUrl from '../../constants';
-import axios from 'axios';
-import qs from 'qs';
+import React from 'react';
+import Authentication from '../../../connector/Authentication';
 import './Message.css';
 
 export default class Message extends React.Component {
@@ -16,24 +14,36 @@ export default class Message extends React.Component {
         }
     }
 
-    sendMessage(id, email) {
+    componentDidMount() {
         this.setState({
             stage: Message.STAGE.SENDING,
-            email: email
+            email: this.props.recipientEmail
         });
-        axios
-            .put(apiUrl('/auth/confirm/' + id), '', {
-                params: {host: window.location.origin},
-                paramsSerializer: (params => qs.stringify(params))
-            })
-            .then(response => {
-                console.debug('Message (send):', response);
-                this.setState({stage: Message.STAGE.SUCCESS})
-            })
-            .catch(error => {
-                console.error('Message (send):', ((error.response != null) ? error.response : error));
-                this.setState({stage: Message.STAGE.FAILED})
-            })
+        this.sendMessage(
+            this.props.recipientId
+        );
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            stage: Message.STAGE.SENDING,
+            email: nextProps.recipientEmail
+        });
+        this.sendMessage(
+            nextProps.recipientId
+        );
+    }
+
+    sendMessage(recipientId) {
+        Authentication.initConfirmation(
+            recipientId, window.location.origin
+        ).then(() => {
+            console.debug('Message', 'sending', 'success');
+            this.setState({stage: Message.STAGE.SUCCESS})
+        }).catch(() => {
+            console.error('Message', 'sending', 'failed');
+            this.setState({stage: Message.STAGE.FAILED})
+        });
     }
 
     render() {

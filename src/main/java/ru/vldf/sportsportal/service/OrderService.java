@@ -57,12 +57,13 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
     public OrderDTO get(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
-            if (!currentUserHasRole(adminRoleCode) && (!getCurrentUserId().equals(orderEntity.getCustomer().getId()))) {
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
                 throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+            } else {
+                return orderMapper.toDTO(orderEntity);
             }
-            return orderMapper.toDTO(orderEntity);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
         }
     }
 
@@ -89,12 +90,60 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
     }
 
     /**
+     * Order payment.
+     *
+     * @param id {@link Integer} order identifier
+     * @throws UnauthorizedAccessException   if authorization is missing
+     * @throws ForbiddenAccessException      if user don't have permission to pay this order
+     * @throws ResourceNotFoundException     if order not found
+     * @throws ResourceCannotUpdateException if order cannot be paid
+     */
+    @Transactional(
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    // todo: remove suppress warning
+    @SuppressWarnings("unused")
+    public void payFor(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
+        try {
+            OrderEntity orderEntity = orderRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
+                throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+            } else if (orderEntity.getPaid()) {
+                throw new ResourceCannotUpdateException(mGetAndFormat("sportsportal.lease.Order.alreadyPaid.message", id));
+            } else {
+                // todo: payment here!
+                // orderEntity.setPaid(true);
+                // orderEntity.setExpiration(null);
+                orderRepository.save(orderEntity);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
+        }
+    }
+
+    /**
      * Delete order.
      *
      * @param id {@link Integer} order identifier
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to delete this order
+     * @throws ResourceNotFoundException   if order not found
      */
-    @Transactional
-    public void delete(Integer id) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "delete"));
+    @Transactional(
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        try {
+            OrderEntity orderEntity = orderRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
+                throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+            } else {
+                orderRepository.delete(orderEntity);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
+        }
     }
 }

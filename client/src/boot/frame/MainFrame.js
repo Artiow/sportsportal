@@ -1,6 +1,7 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {withAppContext} from '../Application';
+import Authentication from '../../connector/Authentication';
+import {withApplicationContext} from '../Application';
 import {env} from '../constants';
 import ModalFade from '../../util/components/ModalFade';
 import MainContainer from './sections/MainContainer';
@@ -10,34 +11,26 @@ import Registration from './modal/Registration'
 import Header from './sections/Header';
 import Footer from './sections/Footer';
 
-const FrameContext = React.createContext(null);
+const MainFrameContext = React.createContext(null);
 
-export function withFrameContext(Component) {
+export function withMainFrameContext(Component) {
     return function ContextualComponent(props) {
         return (
-            <FrameContext.Consumer>
-                {main => <Component {...props} main={main}/>}
-            </FrameContext.Consumer>
+            <MainFrameContext.Consumer>
+                {mainframe => <Component {...props} mainframe={mainframe}/>}
+            </MainFrameContext.Consumer>
         )
     }
 }
 
-export default withAppContext(withRouter(
+export default withApplicationContext(withRouter(
     class MainFrame extends React.Component {
+
         constructor(props) {
             super(props);
             this.state = {
-                user: MainFrame.calcUser(this.props.app.credentials),
+                principal: this.props.application.principal,
                 showLogin: this.showLoginModal.bind(this)
-            }
-        }
-
-        static calcUser(credentials) {
-            const isAuthorized = !!credentials;
-            return {
-                isAuthorized: isAuthorized,
-                token: isAuthorized ? credentials.token : null,
-                login: isAuthorized ? credentials.login : null
             }
         }
 
@@ -47,31 +40,35 @@ export default withAppContext(withRouter(
         }
 
         componentDidMount() {
-            if (localStorage.getItem('re_login')) {
-                localStorage.removeItem('re_login');
+            if (localStorage.getItem('pre_login')) {
+                localStorage.removeItem('pre_login');
                 this.showLoginModal();
             }
         }
 
         componentWillReceiveProps(nextProps) {
-            const user = MainFrame.calcUser(nextProps.app.credentials);
-            console.debug('MainFrame (user):', user);
-            this.setState({user: user})
+            this.setState({principal: nextProps.application.principal})
         }
 
-        queryLogin(data) {
+        login() {
             this.loginForm.activate('hide', env.ANIMATION_TIMEOUT);
-            this.props.app.login(data);
+            this.props.application.login();
         }
 
-        queryLogout() {
-            localStorage.clear();
-            this.props.app.logout();
-            if (this.props.location.pathname !== '/') {
-                this.props.app.reLogin();
-            } else {
-                this.showLoginModal();
-            }
+        logout() {
+            Authentication.logout()
+                .then(() => {
+                    console.debug('MainFrame', 'logout', 'logout successful');
+                    this.props.application.logout();
+                    if (this.props.location.pathname !== '/') {
+                        this.props.application.preLogin();
+                    } else {
+                        this.showLoginModal();
+                    }
+                })
+                .catch(() => {
+                    console.debug('MainFrame', 'logout', 'logout failed');
+                })
         }
 
         showLoginModal(event) {
@@ -89,28 +86,25 @@ export default withAppContext(withRouter(
 
         render() {
             return (
-                <FrameContext.Provider
+                <MainFrameContext.Provider
                     value={this.state}>
                     <div className="MainFrame">
                         <Header {...this.props.header}
+                                username={this.state.principal ? this.state.principal.name : undefined}
                                 onLogin={this.showLoginModal.bind(this)}
-                                onLogout={this.queryLogout.bind(this)}
-                                username={
-                                    this.state.user.isAuthorized
-                                        ? this.state.user.login.username
-                                        : undefined
-                                }/>
+                                onLogout={this.logout.bind(this)}/>
                         <MainContainer{...this.props.main}>
                             {this.props.children}
                         </MainContainer>
                         <Footer {...this.props.footer}/>
                         <LoginModal ref={modal => this.loginForm = modal}
-                                    onSuccess={this.queryLogin.bind(this)}
-                                    onRegClick={this.reShowRegistrationModal.bind(this)}/>
+                                    onRegClick={this.reShowRegistrationModal.bind(this)}
+                                    onSuccess={this.login.bind(this)}/>
                         <RegistrationModal ref={modal => this.registrationForm = modal}
-                                           onLogClick={this.reShowLoginModal.bind(this)}/>
+                                           onLogClick={this.reShowLoginModal.bind(this)}
+                                           onSuccess={undefined}/>
                     </div>
-                </FrameContext.Provider>
+                </MainFrameContext.Provider>
             )
         }
     }
@@ -124,9 +118,9 @@ class LoginModal extends React.Component {
     }
 
     reset(timeout) {
-        setTimeout(() => {
+        if (this.body) setTimeout(() => {
             this.body.reset()
-        }, timeout ? timeout : 0);
+        }, timeout ? timeout : 0)
     }
 
     render() {
@@ -147,8 +141,8 @@ class LoginModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <Login ref={body => this.body = body}
-                                   onSuccess={this.props.onSuccess}
-                                   onRegClick={this.props.onRegClick}/>
+                                   onRegClick={this.props.onRegClick}
+                                   onSuccess={this.props.onSuccess}/>
                         </div>
                     </div>
                 </div>
@@ -160,28 +154,38 @@ class LoginModal extends React.Component {
 class RegistrationModal extends React.Component {
 
     static STAGE = Object.freeze({REGISTRATION: 1, MESSAGE: 2});
-    static INIT_STAGE = RegistrationModal.STAGE.REGISTRATION;
 
     constructor(props) {
         super(props);
-        this.state = {stage: RegistrationModal.INIT_STAGE}
+        this.state = {
+            stage: RegistrationModal.STAGE.REGISTRATION,
+            userEmail: null,
+            userId: null
+        }
     }
 
     activate(options, timeout) {
-        this.setState({stage: RegistrationModal.INIT_STAGE});
+        this.setState({
+            stage: RegistrationModal.STAGE.REGISTRATION,
+            userEmail: null,
+            userId: null
+        });
         this.modal.activate(options);
         if (options) this.reset(timeout);
     }
 
     reset(timeout) {
-        setTimeout(() => {
+        if (this.body) setTimeout(() => {
             this.body.reset()
-        }, timeout ? timeout : 0);
+        }, timeout ? timeout : 0)
     }
 
     sendMessage(userId, userEmail) {
-        this.setState({stage: RegistrationModal.STAGE.MESSAGE});
-        this.messageForm.sendMessage(userId, userEmail);
+        this.setState({
+            stage: RegistrationModal.STAGE.MESSAGE,
+            userEmail: userEmail,
+            userId: userId
+        });
     }
 
     render() {
@@ -206,12 +210,14 @@ class RegistrationModal extends React.Component {
                                     case RegistrationModal.STAGE.REGISTRATION:
                                         return (
                                             <Registration ref={body => this.body = body}
-                                                          onSuccess={this.sendMessage.bind(this)}
-                                                          onLogClick={this.props.onLogClick}/>
+                                                          onLogClick={this.props.onLogClick}
+                                                          onSuccess={this.sendMessage.bind(this)}/>
                                         );
                                     case RegistrationModal.STAGE.MESSAGE:
                                         return (
-                                            <Message ref={message => this.messageForm = message}/>
+                                            <Message onSuccess={this.props.onSuccess}
+                                                     recipientEmail={this.state.userEmail}
+                                                     recipientId={this.state.userId}/>
                                         );
                                     default:
                                         return null;
