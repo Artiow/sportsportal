@@ -151,6 +151,7 @@ public class PlaygroundController {
             @RequestParam long version,
             @RequestParam(required = false) Collection<String> reservations
     ) throws ResourceNotFoundException {
+        // todo: catch DateTimeParseException!
         return reservations != null
                 ? playgroundService.check(id, version, Collections2.transform(reservations, LocalDateTime::parse))
                 : new ReservationListDTO().setReservations(new ArrayList<>());

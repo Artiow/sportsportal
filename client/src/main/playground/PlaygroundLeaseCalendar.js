@@ -1,12 +1,11 @@
 import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
+import Playground from '../../connector/Playground';
 import CheckButton from '../../util/components/CheckButton';
 import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
 import {clearReservation, restoreReservation, saveReservation} from '../../util/reservationSaver';
 import {withMainFrameContext} from '../../boot/frame/MainFrame'
-import apiUrl, {env} from '../../boot/constants';
-import axios from 'axios';
-import qs from 'qs';
+import {env} from '../../boot/constants';
 import './PlaygroundLeaseCalendar.css';
 
 export default withMainFrameContext(
@@ -76,7 +75,7 @@ export default withMainFrameContext(
 
         componentDidMount() {
             this.calculateAccess(
-                this.props.main.user.login
+                this.props.mainframe.principal
             );
             this.restore(
                 this.playgroundId,
@@ -92,14 +91,14 @@ export default withMainFrameContext(
 
         componentWillReceiveProps(nextProps) {
             this.calculateAccess(
-                nextProps.main.user.login
+                nextProps.mainframe.principal
             );
         }
 
-        calculateAccess(login) {
-            if (login) {
-                this.setState({access: !(login.roles.indexOf(env.ROLE.USER) < 0)});
-                this.calculateAuthority(login.userURL, null);
+        calculateAccess(principal) {
+            if (principal) {
+                this.setState({access: !(principal.roles.indexOf(env.ROLE.USER) < 0)});
+                this.calculateAuthority(principal.userURL, null);
             }
         }
 
@@ -141,59 +140,51 @@ export default withMainFrameContext(
         }
 
         restore(id, version) {
-            // todo: Playground.doCheck
-            axios.get(apiUrl('/playground/' + id + '/check'), {
-                paramsSerializer: params =>
-                    qs.stringify(params, {arrayFormat: 'repeat'}),
-                params: {
-                    version: version,
-                    reservations: restoreReservation(id, version)
-                }
-            }).then(response => {
-                console.debug('Playground Lease Calendar (query [check]):', response);
-                const reservation = response.data.reservations;
-                reservation.forEach((value, index, array) => array[index] = value.replace(/:\d\d$/, ''));
-                this.setState({reservation: reservation});
-            }).catch(error => {
-                console.error('Playground Lease Calendar (query [check]):', ((error.response != null) ? error.response : error));
-            });
+            Playground.doCheck(id, version, restoreReservation(id, version))
+                .then(reservations => {
+                    console.debug('PlaygroundLeaseCalendar', 'restore', reservations);
+                    this.setState({reservation: reservations});
+                })
+                .catch(error => {
+                    console.error('PlaygroundLeaseCalendar', 'restore', 'failed');
+                });
         }
 
         query(id, version, from, to) {
-            axios.get(apiUrl('/playground/' + id + '/grid'), {params: {from: from, to: to}}
-            ).then(response => {
-                console.debug('Playground Lease Calendar (query):', response);
-                const data = response.data;
-                this.calculateAuthority(null, data.playground.ownersURLs);
-                const dateList = [];
-                const timeList = [];
-                const price = data.halfHourAvailable ? Math.floor(data.playground.price / 2) : data.playground.price;
-                const array = Object.entries(data.grid.schedule);
-                Object.entries(array[0][1]).forEach(item => {
-                    timeList.push(item[0])
-                });
-                array.forEach((value, index, array) => {
-                    array[index][1] = new Map(Object.entries(value[1]));
-                    const date = value[0];
-                    const dateClass = new Date(date);
-                    dateList.push({
-                        month: env.MONTH_NAMES[dateClass.getMonth()],
-                        dayOfWeek: env.DAYS_OF_WEEK_NAMES[dateClass.getDay()],
-                        date: date
+            Playground.getGrid(id, from, to)
+                .then(data => {
+                    console.debug('PlaygroundLeaseCalendar', 'query', 'success');
+                    this.calculateAuthority(null, data.playground.ownersURLs);
+                    const dateList = [];
+                    const timeList = [];
+                    const price = data.halfHourAvailable ? Math.floor(data.playground.price / 2) : data.playground.price;
+                    const array = Object.entries(data.grid.schedule);
+                    Object.entries(array[0][1]).forEach(item => {
+                        timeList.push(item[0])
                     });
+                    array.forEach((value, index, array) => {
+                        array[index][1] = new Map(Object.entries(value[1]));
+                        const date = value[0];
+                        const dateClass = new Date(date);
+                        dateList.push({
+                            month: env.MONTH_NAMES[dateClass.getMonth()],
+                            dayOfWeek: env.DAYS_OF_WEEK_NAMES[dateClass.getDay()],
+                            date: date
+                        });
+                    });
+                    const schedule = new Map(array);
+                    this.setState({
+                        price: price,
+                        dateList: dateList,
+                        timeList: timeList,
+                        schedule: schedule,
+                        halfHourAvailable: data.halfHourAvailable,
+                        fullHourRequired: data.fullHourRequired
+                    });
+                })
+                .catch(error => {
+                    console.debug('PlaygroundLeaseCalendar', 'query', 'failed');
                 });
-                const schedule = new Map(array);
-                this.setState({
-                    price: price,
-                    dateList: dateList,
-                    timeList: timeList,
-                    schedule: schedule,
-                    halfHourAvailable: data.halfHourAvailable,
-                    fullHourRequired: data.fullHourRequired
-                });
-            }).catch(error => {
-                console.error('Playground Lease Calendar (query):', ((error.response != null) ? error.response : error));
-            });
         }
 
         updateReservation(event) {
@@ -260,25 +251,22 @@ export default withMainFrameContext(
 
         submit(event) {
             event.preventDefault();
-            axios.post(apiUrl('/playground/' + this.playgroundId + '/reserve'), {
-                reservations: this.state.reservation
-            }, {
-                headers: {Authorization: this.props.main.user.token}
-            }).then(response => {
-                console.debug('Playground Lease Calendar (submit):', response);
-                const locationArray = response.headers.location.split('/');
-                this.modal.activate('hide');
-                clearReservation(
-                    this.playgroundId,
-                    this.playgroundVersion
-                );
-                setTimeout(() => {
-                    this.setState({reservation: []});
-                    this.props.history.push('/order/id' + locationArray[locationArray.length - 1]);
-                }, env.ANIMATION_TIMEOUT);
-            }).catch(error => {
-                console.error('Playground Lease Calendar (submit):', ((error.response != null) ? error.response : error));
-            });
+            Playground.doReserve(this.playgroundId, this.state.reservation)
+                .then(orderId => {
+                    console.debug('PlaygroundLeaseCalendar', 'submit', 'success');
+                    this.modal.activate('hide');
+                    clearReservation(
+                        this.playgroundId,
+                        this.playgroundVersion
+                    );
+                    setTimeout(() => {
+                        this.setState({reservation: []});
+                        this.props.history.push(`/order/id${orderId}`);
+                    }, env.ANIMATION_TIMEOUT);
+                })
+                .catch(error => {
+                    console.error('PlaygroundLeaseCalendar', 'submit', 'failed');
+                });
         }
 
         render() {
@@ -378,7 +366,7 @@ export default withMainFrameContext(
                         </table>
                         <div className="order-group">
                             {(!access) ? (
-                                <AuthAlert link="/login" onClick={this.props.main.showLogin}>
+                                <AuthAlert link="/login" onClick={this.props.mainframe.showLogin}>
                                     авторизироваться
                                 </AuthAlert>
                             ) : (null)}

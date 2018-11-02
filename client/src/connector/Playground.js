@@ -76,15 +76,36 @@ export default class Playground {
         });
     }
 
-    static getShort(body) {
+    static getShort(id) {
         return new Promise((resolve, reject) => {
-
+            axios.get(apiUrl(`/playground/${id}/short`))
+                .then(response => {
+                    console.debug('Playground', 'short', response);
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.error('Playground', 'short', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                });
         });
     }
 
     static getGrid(id, from, to) {
         return new Promise((resolve, reject) => {
-
+            axios
+                .get(apiUrl(`/playground/${id}/grid`), {
+                    params: {from: from, to: to}
+                })
+                .then(response => {
+                    console.debug('Playground', 'grid', response);
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.error('Playground', 'grid', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                });
         });
     }
 
@@ -115,7 +136,29 @@ export default class Playground {
 
     static doReserve(id, reservations) {
         return new Promise((resolve, reject) => {
-
+            Authentication.access()
+                .then(token => {
+                    axios
+                        .post(apiUrl(`/playground/${id}/reserve`), {
+                            reservations: reservations
+                        }, {
+                            headers: {Authorization: this.props.main.user.token}
+                        })
+                        .then(response => {
+                            console.debug('Playground', 'reserve', response);
+                            const locationArray = response.headers.location.split('/');
+                            resolve(locationArray[locationArray.length - 1]);
+                        })
+                        .catch(error => {
+                            const response = error.response;
+                            console.error('Playground', 'reserve', response ? response : error);
+                            reject((response && response.data) ? response.data : null)
+                        });
+                })
+                .catch(error => {
+                    console.error('Playground', 'reserve', 'access error');
+                    reject(null);
+                });
         });
     }
 }

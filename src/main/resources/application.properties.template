@@ -39,11 +39,11 @@ code.role.admin=admin
 code.role.user=user
 ##
 # locale config
-locale.language=@locale.language@
-locale.country=@locale.country@
+locale.language=ru
+locale.country=RU
 ##
 # api info
-api.host=@swagger.host@
+api.host=localhost:8080
 api.title=SportsPortal Api
 api.version=@version@
 api.description=SportsPortal by VLDF Api Documentation
