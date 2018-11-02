@@ -148,8 +148,8 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Init confirmation for user.
      *
-     * @param userId      {@link Integer} user identifier
-     * @param confirmHost {@link String} confirmation link host
+     * @param userId        {@link Integer} user identifier
+     * @param confirmOrigin {@link String} confirmation link origin
      * @throws ResourceNotFoundException     if user could not found
      * @throws ResourceCannotUpdateException if could not sent email
      */
@@ -157,14 +157,14 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public void initConfirmation(Integer userId, String confirmHost) throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
         String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
         UserRepository userRepository = userRepository();
         try {
             UserEntity userEntity = userRepository.getOne(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendConfirmationEmail(userEntity.getEmail(), confirmHost, confirmCode);
+                sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
                 userRepository.save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.alreadyConfirmed.message"));
@@ -211,12 +211,12 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * @param emailAddress {@link String} sending address
-     * @param confirmHost  {@link String} confirm host
-     * @param confirmCode  {@link String} confirm code
+     * @param emailAddress  {@link String} sending address
+     * @param confirmOrigin {@link String} confirm host
+     * @param confirmCode   {@link String} confirm code
      * @throws MessagingException if could not sent email
      */
-    private void sendConfirmationEmail(String emailAddress, String confirmHost, String confirmCode) throws MessagingException {
+    private void sendConfirmationEmail(String emailAddress, String confirmOrigin, String confirmCode) throws MessagingException {
         mailService.sender()
                 .setDestination(emailAddress)
                 .setSubject(mGet("sportsportal.email.confirm.subject"))
@@ -226,7 +226,7 @@ public class AuthService extends AbstractSecurityService {
                                 "sportsportal.email.confirm.text.env",
                                 String.format(
                                         "<a href=\"%s\">%s</a>",
-                                        String.format(confirmPath, confirmHost, confirmCode),
+                                        String.format(confirmPath, confirmOrigin, confirmCode),
                                         mGet("sportsportal.email.confirm.text.link")
                                 )
                         )

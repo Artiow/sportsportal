@@ -1,6 +1,6 @@
 {
   "name": "sportsportal",
-  "version": "1.0.0",
+  "version": "1.0.01",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",

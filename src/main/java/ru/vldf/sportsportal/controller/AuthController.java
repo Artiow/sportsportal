@@ -26,8 +26,14 @@ public class AuthController {
     @Value("${api.path.common.user}")
     private String userPath;
 
+    @Value("${api.protocol}")
+    private String apiProtocol;
+
     @Value("${api.host}")
     private String apiHost;
+
+    @Value("${api.path.common.auth}")
+    private String apiPath;
 
     private AuthService authService;
 
@@ -105,17 +111,17 @@ public class AuthController {
     /**
      * Init confirmation for user and send him confirmation email.
      *
-     * @param id   user identifier
-     * @param host {@link String} confirmation link host
+     * @param id     user identifier
+     * @param origin {@link String} confirmation link origin
      * @return no content
      * @throws ResourceNotFoundException     if user could not found
      * @throws ResourceCannotUpdateException if could not sent email
      */
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
-    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam(required = false) String host)
+    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam(required = false) String origin)
             throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.initConfirmation(id, Optional.ofNullable(host).orElse(String.format("%s/", apiHost)));
+        authService.initConfirmation(id, Optional.ofNullable(origin).orElse(String.format("%s://%s%s", apiProtocol, apiHost, apiPath)));
         return ResponseEntity.noContent().build();
     }
 

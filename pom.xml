@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.02.RELEASE</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
