@@ -90,7 +90,26 @@ export default class Playground {
 
     static doCheck(id, version, reservations) {
         return new Promise((resolve, reject) => {
-
+            axios
+                .get(apiUrl(`/playground/${id}/check`), {
+                    paramsSerializer: params =>
+                        qs.stringify(params, {arrayFormat: 'repeat'}),
+                    params: {
+                        version: version,
+                        reservations: reservations
+                    }
+                })
+                .then(response => {
+                    console.debug('Playground', 'check', response);
+                    const reservations = response.data.reservations;
+                    reservations.forEach((value, index, array) => array[index] = value.replace(/:\d\d$/, ''));
+                    resolve(reservations);
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.error('Playground', 'check', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
+                });
         });
     }
 

@@ -141,6 +141,7 @@ export default withMainFrameContext(
         }
 
         restore(id, version) {
+            // todo: Playground.doCheck
             axios.get(apiUrl('/playground/' + id + '/check'), {
                 paramsSerializer: params =>
                     qs.stringify(params, {arrayFormat: 'repeat'}),

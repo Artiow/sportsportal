@@ -1,12 +1,11 @@
 import React from 'react';
+import Playground from '../../connector/Playground';
 import PlaygroundLeaseCalendar from './PlaygroundLeaseCalendar';
 import ContentContainer from '../../util/components/special/ContentContainer';
 import ContentRow from '../../util/components/special/ContentRow';
 import PhotoCarousel from '../../util/components/PhotoCarousel';
 import noImage from '../../util/img/no-image-grey-mdh.jpg';
 import StarRate from '../../util/components/StarRate';
-import apiUrl from '../../boot/constants';
-import axios from 'axios';
 import './PlaygroundInfo.css';
 
 export default class PlaygroundInfo extends React.Component {
@@ -17,18 +16,14 @@ export default class PlaygroundInfo extends React.Component {
     }
 
     componentDidMount() {
-        this.query();
-    }
-
-    query() {
-        axios.get(
-            apiUrl('/playground/' + this.id)
-        ).then(response => {
-            console.debug('PlaygroundInfo (query):', response);
-            this.setState({content: response.data});
-        }).catch(error => {
-            console.error('PlaygroundInfo (query):', ((error.response != null) ? error.response : error));
-        })
+        Playground.get(this.id)
+            .then(data => {
+                console.error('PlaygroundInfo', 'query', 'success');
+                this.setState({content: data});
+            })
+            .catch(error => {
+                console.error('PlaygroundInfo', 'query', 'failed');
+            });
     }
 
     render() {
