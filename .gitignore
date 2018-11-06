@@ -4,10 +4,6 @@
 *.iml
 *.ipr
 
-### Deployment Data ###
-/webapps/
-/target/
-
 ### Maven ###
 /.mvn/
 mvnw.cmd
@@ -15,3 +11,6 @@ mvnw
 
 ### Properties ###
 **/application.properties
+
+### Deployment Data ###
+/webapps/
