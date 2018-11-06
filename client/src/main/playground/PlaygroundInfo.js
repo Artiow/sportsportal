@@ -18,7 +18,7 @@ export default class PlaygroundInfo extends React.Component {
     componentDidMount() {
         Playground.get(this.id)
             .then(data => {
-                console.error('PlaygroundInfo', 'query', 'success');
+                console.debug('PlaygroundInfo', 'query', 'success');
                 this.setState({content: data});
             })
             .catch(error => {
