@@ -13,4 +13,4 @@ mvnw
 **/application.properties
 
 ### Deployment Data ###
-/webapps/
+/target/
