@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.subsidiary;
+package ru.vldf.sportsportal.integration.mail;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,14 +12,17 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class MailService {
 
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
+    private final String sender;
 
-    @Value("${spring.mail.username}")
-    private String sender;
 
     @Autowired
-    public void setJavaMailSender(JavaMailSender javaMailSender) {
+    public MailService(
+            JavaMailSender javaMailSender,
+            @Value("${spring.mail.username}") String sender
+    ) {
         this.javaMailSender = javaMailSender;
+        this.sender = sender;
     }
 
 

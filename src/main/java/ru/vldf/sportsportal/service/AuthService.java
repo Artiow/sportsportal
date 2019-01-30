@@ -12,6 +12,7 @@ import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
+import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -20,7 +21,6 @@ import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
-import ru.vldf.sportsportal.service.subsidiary.MailService;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;

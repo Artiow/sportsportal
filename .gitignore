@@ -1,3 +1,7 @@
+### Production Data ###
+**/application-prod.properties
+**/migration/prod/
+
 ### IntelliJ IDEA ###
 /.idea/
 *.iws
@@ -12,6 +16,3 @@
 /.mvn/
 mvnw.cmd
 mvnw
-
-### Properties ###
-**/application.properties

@@ -4,14 +4,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
-import ru.vldf.sportsportal.mapper.generic.ObjectMapper;
+import ru.vldf.sportsportal.mapper.generic.ModelMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 @Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
-public interface ReservationMapper extends ObjectMapper<ReservationEntity, ReservationResumeDTO.ReservationItemDTO> {
+public interface ReservationMapper extends ModelMapper<ReservationEntity, ReservationResumeDTO.ReservationItemDTO> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
     ReservationResumeDTO.ReservationItemDTO toDTO(ReservationEntity entity);
