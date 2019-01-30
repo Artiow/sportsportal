@@ -13,10 +13,17 @@ const console = (function (nativeConsole) {
         const FILLER = '                                  ';
         return sender + FILLER.substring(sender.length, FILLER.length - action.length) + action;
     };
+
+    // noinspection ES6ModulesDependencies
     return {
-        debug: function (sender, action, message, ...optionalParams) {
-            nativeConsole.debug(' ', prefix(sender, action), message, ...optionalParams);
-        },
+        debug: (process.env.NODE_ENV === 'development') ? (
+            function (sender, action, message, ...optionalParams) {
+                nativeConsole.debug(' ', prefix(sender, action), message, ...optionalParams);
+            }
+        ) : (
+            function (sender, action, message, ...optionalParams) {
+            }
+        ),
         log: function (sender, action, message, ...optionalParams) {
             nativeConsole.log(' ', prefix(sender, action), message, ...optionalParams);
         },

@@ -23,6 +23,8 @@ import java.util.Optional;
 @Controller
 public class SupportingController implements ErrorController {
 
+    private static final String ERROR_PATH = "/error";
+
     private SwaggerConfig swaggerConfig;
     private MessageContainer messages;
 
@@ -93,15 +95,17 @@ public class SupportingController implements ErrorController {
      * @param request {@link HttpServletRequest} that contains error status
      * @throws Exception that corresponds to an error
      */
-    @GetMapping("/error")
+    @GetMapping(ERROR_PATH)
     public void handleError(HttpServletRequest request) throws Exception {
         HttpStatus status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
                 .map(Object::toString)
                 .map(Integer::valueOf)
                 .map(HttpStatus::resolve)
-                .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
+                .orElse(HttpStatus.NOT_FOUND);
         String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(),
-                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).map(Object::toString).orElse("undefined")
+                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
+                        .map(Object::toString)
+                        .orElse(ERROR_PATH)
         );
         switch (status) {
             case NOT_FOUND:
@@ -122,6 +126,6 @@ public class SupportingController implements ErrorController {
      */
     @Override
     public String getErrorPath() {
-        return "/error";
+        return ERROR_PATH;
     }
 }

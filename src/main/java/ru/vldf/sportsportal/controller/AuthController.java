@@ -14,6 +14,8 @@ import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
+import java.util.Optional;
+
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 @RestController
@@ -23,6 +25,15 @@ public class AuthController {
 
     @Value("${api.path.common.user}")
     private String userPath;
+
+    @Value("${api.protocol}")
+    private String apiProtocol;
+
+    @Value("${api.host}")
+    private String apiHost;
+
+    @Value("${api.path.common.auth}")
+    private String apiPath;
 
     private AuthService authService;
 
@@ -100,30 +111,31 @@ public class AuthController {
     /**
      * Init confirmation for user and send him confirmation email.
      *
-     * @param id   user identifier
-     * @param host {@link String} confirmation link host
+     * @param id     user identifier
+     * @param origin {@link String} confirmation link origin
      * @return no content
      * @throws ResourceNotFoundException     if user could not found
      * @throws ResourceCannotUpdateException if could not sent email
      */
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
-    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam String host) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.initConfirmation(id, host);
+    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam(required = false) String origin)
+            throws ResourceNotFoundException, ResourceCannotUpdateException {
+        authService.initConfirmation(id, Optional.ofNullable(origin).orElse(String.format("%s://%s%s", apiProtocol, apiHost, apiPath)));
         return ResponseEntity.noContent().build();
     }
 
     /**
      * User confirmation.
      *
-     * @param confirmToken @link String} user's confirmation token
+     * @param token {@link String} user's confirmation token
      * @return no content
      * @throws ResourceNotFoundException if user not found by confirm code
      */
     @PutMapping("/confirm")
     @ApiOperation("подтвердить пользователя")
-    public ResponseEntity<Void> confirm(@RequestParam String confirmToken) throws ResourceNotFoundException {
-        authService.confirm(confirmToken);
+    public ResponseEntity<Void> confirm(@RequestParam String token) throws ResourceNotFoundException {
+        authService.confirm(token);
         return ResponseEntity.noContent().build();
     }
 }

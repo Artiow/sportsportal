@@ -21,11 +21,11 @@ export default class Authentication {
         });
     }
 
-    static initConfirmation(id, host) {
+    static initConfirmation(id, origin) {
         return new Promise((resolve, reject) => {
             axios
                 .put(apiUrl(`/auth/confirm/${id}`), '', {
-                    params: {host: host},
+                    params: {origin: origin},
                     paramsSerializer: (params => qs.stringify(params))
                 })
                 .then(response => {
@@ -44,8 +44,8 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             axios
                 .put(apiUrl('/auth/confirm'), '', {
-                    params: {confirmToken: token},
-                    paramsSerializer: (params => qs.stringify(params))
+                    paramsSerializer: (params => qs.stringify(params)),
+                    params: {token: token}
                 })
                 .then(response => {
                     console.debug('Authentication', 'doConfirmation', response);

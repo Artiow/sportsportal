@@ -57,7 +57,6 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
-
         return new Docket(DocumentationType.SWAGGER_2)
                 .host(apiHost)
                 .select()

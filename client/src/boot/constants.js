@@ -1,7 +1,7 @@
 export const env = Object.freeze({
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
-    MAIN_HOST_URL: 'http://localhost:3000',
-    API_URL: 'http://localhost:8080',
+    MAIN_HOST_URL: process.env.REACT_APP_MAIN_HOST,
+    API_HOST_URL: process.env.REACT_APP_API_HOST,
     ANIMATION_TIMEOUT: 325,
     MONTH_NAMES: [
         'январь',
@@ -42,12 +42,12 @@ export const env = Object.freeze({
 });
 
 /**
- * Returns depending on {@link API_URL} URL API.
+ * Returns depending on {@link API_HOST_URL} URL API.
  * @param path {string}
  * @return {string}
  */
 export default function apiUrl(path) {
-    return env.API_URL + path;
+    return env.API_HOST_URL + path;
 }
 
 /**
