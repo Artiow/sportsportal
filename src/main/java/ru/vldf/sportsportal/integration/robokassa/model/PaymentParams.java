@@ -7,13 +7,13 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,6 +23,8 @@ public class PaymentParams {
     @JsonProperty("MerchantLogin")
     private String merchantLogin;
 
+    @NotNull
+    @Min(0)
     @Digits(integer = 6, fraction = 2)
     @JsonProperty("OutSum")
     private BigDecimal outSum;
