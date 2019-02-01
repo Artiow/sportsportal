@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.integration.robokassa.RobokassaService;
 
 import javax.validation.constraints.Digits;
@@ -40,5 +37,17 @@ public class PaymentController {
             @RequestParam @NotNull @Min(0) @Digits(integer = 6, fraction = 2) BigDecimal sum
     ) {
         return ResponseEntity.ok(robokassaService.computeLink(sum).toString());
+    }
+
+    @PostMapping("/result")
+    @ApiOperation("результат платежа")
+    public ResponseEntity<String> result(
+            @RequestParam(value = "InvId") Integer id,
+            @RequestParam(value = "OutSum") BigDecimal sum,
+            @RequestParam(value = "Fee") BigDecimal fee,
+            @RequestParam(value = "Email", required = false) String email,
+            @RequestParam(value = "SignatureValue") String sign
+    ) {
+        return ResponseEntity.ok("OK" + id);
     }
 }
