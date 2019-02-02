@@ -106,9 +106,9 @@ public class PictureService extends AbstractSecurityService {
     )
     public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else if ((sizeCode != null) && !pictureSizeRepository.existsByCode(sizeCode)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
                 Resource resource = new UrlResource(resolveFilename(
@@ -118,12 +118,12 @@ public class PictureService extends AbstractSecurityService {
                 if (resource.exists()) {
                     return resource;
                 } else {
-                    throw new ResourceFileNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistByFile.message", id));
+                    throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id));
                 }
             } catch (EntityNotFoundException e) {
-                throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
+                throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
             } catch (MalformedURLException e) {
-                throw new ResourceFileNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistByFile.message", id), e);
+                throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id), e);
             }
         }
     }
@@ -142,7 +142,7 @@ public class PictureService extends AbstractSecurityService {
     )
     public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"));
+            throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setSize(picture.getSize());
@@ -163,9 +163,9 @@ public class PictureService extends AbstractSecurityService {
                 }
                 return newId;
             } catch (MaxUploadSizeExceededException e) {
-                throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
+                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
             } catch (IOException e) {
-                throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"), e);
+                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
             }
         }
     }
@@ -186,7 +186,7 @@ public class PictureService extends AbstractSecurityService {
         try {
             PictureEntity pictureEntity = pictureRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(pictureEntity.getOwner()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.common.Picture.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
             } else {
                 pictureRepository.delete(pictureEntity);
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
@@ -197,7 +197,7 @@ public class PictureService extends AbstractSecurityService {
                 }
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
         }
     }
 

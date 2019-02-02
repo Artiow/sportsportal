@@ -56,12 +56,12 @@ public class UserService extends AbstractSecurityService {
         try {
             UserEntity userEntity = userRepository().getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(userEntity))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.common.User.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.common.User.forbidden.message"));
             } else {
                 return userMapper.toShortDTO(userEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", id), e);
         }
     }
 
@@ -82,12 +82,12 @@ public class UserService extends AbstractSecurityService {
             UserRepository userRepository = userRepository();
             UserEntity userEntity = userRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(userEntity))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.common.User.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.common.User.forbidden.message"));
             } else {
                 userRepository.delete(userEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", id), e);
         }
     }
 }

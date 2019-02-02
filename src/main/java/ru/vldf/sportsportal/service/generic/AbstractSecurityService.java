@@ -41,7 +41,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         } catch (ClassCastException | NullPointerException e) {
-            throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
+            throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (!roleRepository.existsByCode(code)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", code));
+            throw new ResourceNotFoundException(msg("sportsportal.common.Role.notExistByCode.message", code));
         } else return userRepository.hasRoleByCode(getCurrentUserId(), code);
     }
 }

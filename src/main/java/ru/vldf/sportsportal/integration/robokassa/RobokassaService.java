@@ -73,7 +73,7 @@ public class RobokassaService extends AbstractMessageService {
         Payment payment = new Payment();
         payment.setSum(sum);
         payment.setId(ANONYMOUS_PAYMENT_ID);
-        payment.setDescription(mGet(ANONYMOUS_PAYMENT_DESC));
+        payment.setDescription(msg(ANONYMOUS_PAYMENT_DESC));
         return computeLink(payment);
     }
 

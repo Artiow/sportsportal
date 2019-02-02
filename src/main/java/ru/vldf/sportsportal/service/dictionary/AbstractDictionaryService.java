@@ -29,7 +29,7 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
         try {
             return mapper.toDTO(repository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.dictionary.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.dictionary.notExistById.message", id), e);
         }
     }
 
@@ -38,7 +38,7 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
         try {
             return mapper.toDTO(repository.findByCode(code));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.dictionary.notExistByCode.message", code), e);
+            throw new ResourceNotFoundException(msg("sportsportal.dictionary.notExistByCode.message", code), e);
         }
     }
 
@@ -49,16 +49,16 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
 
     @Transactional
     public Integer create(D t) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "create"));
+        throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "create"));
     }
 
     @Transactional
     public void update(Integer id, D t) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "update"));
+        throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "update"));
     }
 
     @Transactional
     public void delete(Integer id) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "delete"));
+        throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "delete"));
     }
 }

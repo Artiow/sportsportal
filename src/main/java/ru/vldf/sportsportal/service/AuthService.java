@@ -125,7 +125,7 @@ public class AuthService extends AbstractSecurityService {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
         if (userRepository.isEnabledByEmail(email)) {
-            throw new ResourceCannotCreateException(mGetAndFormat("sportsportal.common.User.alreadyExistByEmail.message", email));
+            throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", email));
         } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
             userEntity.setRoles(Collections.emptyList());
@@ -134,14 +134,14 @@ public class AuthService extends AbstractSecurityService {
                 try {
                     userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
                 } catch (EntityNotFoundException e) {
-                    throw new RuntimeException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+                    throw new RuntimeException(msg("sportsportal.common.User.cannotCreate.message"), e);
                 } catch (OptimisticLockException e) {
-                    throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+                    throw new ResourceCannotCreateException(msg("sportsportal.common.User.cannotCreate.message"), e);
                 }
             }
             return userRepository.save(userEntity).getId();
         } catch (DataAccessException e) {
-            throw new ResourceCannotCreateException(mGet("sportsportal.common.User.cannotCreate.message"), e);
+            throw new ResourceCannotCreateException(msg("sportsportal.common.User.cannotCreate.message"), e);
         }
     }
 
@@ -167,12 +167,12 @@ public class AuthService extends AbstractSecurityService {
                 sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
                 userRepository.save(userEntity);
             } else {
-                throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.alreadyConfirmed.message"));
+                throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.User.notExistById.message", userId), e);
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", userId), e);
         } catch (MessagingException e) {
-            throw new ResourceCannotUpdateException(mGet("sportsportal.common.User.cannotSendEmail.message"), e);
+            throw new ResourceCannotUpdateException(msg("sportsportal.common.User.cannotSendEmail.message"), e);
         }
     }
 
@@ -189,7 +189,7 @@ public class AuthService extends AbstractSecurityService {
         UserRepository userRepository = userRepository();
         UserEntity userEntity = userRepository.findByConfirmCode(confirmCode);
         if (userEntity == null) {
-            throw new ResourceNotFoundException(mGet("sportsportal.common.User.notExistByConfirmCode.message"));
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByConfirmCode.message"));
         } else {
             userEntity.setDisabled(false);
             userEntity.setConfirmCode(null);
@@ -219,15 +219,15 @@ public class AuthService extends AbstractSecurityService {
     private void sendConfirmationEmail(String emailAddress, String confirmOrigin, String confirmCode) throws MessagingException {
         mailService.sender()
                 .setDestination(emailAddress)
-                .setSubject(mGet("sportsportal.email.confirm.subject"))
+                .setSubject(msg("sportsportal.email.confirm.subject"))
                 .setHtml(String.format(
                         "<p>%s</p>",
-                        mGetAndFormat(
+                        msg(
                                 "sportsportal.email.confirm.text.env",
                                 String.format(
                                         "<a href=\"%s\">%s</a>",
                                         String.format(confirmPath, confirmOrigin, confirmCode),
-                                        mGet("sportsportal.email.confirm.text.link")
+                                        msg("sportsportal.email.confirm.text.link")
                                 )
                         )
                 )).send();

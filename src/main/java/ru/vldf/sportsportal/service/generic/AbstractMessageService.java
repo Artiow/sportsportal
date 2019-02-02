@@ -10,11 +10,11 @@ public abstract class AbstractMessageService {
         this.messages = messages;
     }
 
-    public String mGet(String msg) {
+    public String msg(String msg) {
         return messages.get(msg);
     }
 
-    public String mGetAndFormat(String msg, Object... args) {
+    public String msg(String msg, Object... args) {
         return messages.getAndFormat(msg, args);
     }
 }

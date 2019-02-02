@@ -58,12 +58,12 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else {
                 return orderMapper.toDTO(orderEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
         }
     }
 
@@ -75,7 +75,7 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
      */
     @Transactional
     public Integer create(OrderDTO orderDTO) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "create"));
+        throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "create"));
     }
 
     /**
@@ -86,7 +86,7 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
      */
     @Transactional
     public void update(Integer id, OrderDTO orderDTO) {
-        throw new UnsupportedOperationException(mGetAndFormat("sportsportal.handle.UnsupportedOperationException.message", "update"));
+        throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "update"));
     }
 
     /**
@@ -108,9 +108,9 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else if (orderEntity.getPaid()) {
-                throw new ResourceCannotUpdateException(mGetAndFormat("sportsportal.lease.Order.alreadyPaid.message", id));
+                throw new ResourceCannotUpdateException(msg("sportsportal.lease.Order.alreadyPaid.message", id));
             } else {
                 // todo: payment here!
                 // orderEntity.setPaid(true);
@@ -118,7 +118,7 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
                 orderRepository.save(orderEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
         }
     }
 
@@ -138,12 +138,12 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.lease.Order.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else {
                 orderRepository.delete(orderEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
         }
     }
 }

@@ -123,7 +123,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         try {
             return playgroundMapper.toDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -143,7 +143,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         try {
             return playgroundMapper.toShortDTO(playgroundRepository.getOne(id));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -169,9 +169,9 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                     reservationRepository.findAll(new ReservationFilter(id, from, to))
             );
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         } catch (DataCorruptedException e) {
-            throw new ResourceCorruptedException(mGetAndFormat("sportsportal.lease.Playground.dataCorrupted.message", id), e);
+            throw new ResourceCorruptedException(msg("sportsportal.lease.Playground.dataCorrupted.message", id), e);
         }
     }
 
@@ -212,7 +212,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                 return new ReservationListDTO().setReservations((reservations instanceof List) ? (List<LocalDateTime>) reservations : new ArrayList<>(reservations));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -247,7 +247,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
             Collections.sort(datetimes);
             if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
-                throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notSupportedTime.message"));
+                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 
             BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
@@ -260,11 +260,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             for (LocalDateTime datetime : datetimes) {
                 Timestamp reservedTime = javaTimeMapper.toTimestamp(datetime.toLocalTime());
                 if ((reservedTime.before(playground.getOpening())) || (!reservedTime.before(playground.getClosing()))) {
-                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.notWorkingTime.message"));
+                    throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.notWorkingTime.message"));
                 }
                 Timestamp reservedDatetime = Timestamp.valueOf(datetime);
                 if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playground, reservedDatetime)) {
-                    throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.alreadyReservedTime.message"));
+                    throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.alreadyReservedTime.message"));
                 }
 
                 ReservationEntity reservation = new ReservationEntity();
@@ -295,7 +295,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
 
             return newOrderId;
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
@@ -319,7 +319,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             playgroundEntity.setPhotos(Collections.emptyList());
             return playgroundRepository.save(playgroundEntity).getId();
         } catch (JpaObjectRetrievalFailureException e) {
-            throw new ResourceCannotCreateException(mGet("sportsportal.lease.Playground.cannotCreate.message"), e);
+            throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.cannotCreate.message"), e);
         }
     }
 
@@ -344,16 +344,16 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.lease.Playground.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
             } else {
                 playgroundRepository.save(playgroundMapper.merge(playgroundEntity, playgroundMapper.toEntity(playgroundDTO)));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            throw new ResourceOptimisticLockException(mGet("sportsportal.lease.Playground.optimisticLock.message"), e);
+            throw new ResourceOptimisticLockException(msg("sportsportal.lease.Playground.optimisticLock.message"), e);
         } catch (DataAccessException e) {
-            throw new ResourceCannotUpdateException(mGet("sportsportal.lease.Playground.cannotUpdate.message"), e);
+            throw new ResourceCannotUpdateException(msg("sportsportal.lease.Playground.cannotUpdate.message"), e);
         }
     }
 
@@ -374,12 +374,12 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.lease.Playground.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
             } else {
                 playgroundRepository.delete(playgroundEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.lease.Playground.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
         }
     }
 
