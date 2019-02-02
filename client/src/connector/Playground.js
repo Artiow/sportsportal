@@ -142,7 +142,7 @@ export default class Playground {
                         .post(apiUrl(`/playground/${id}/reserve`), {
                             reservations: reservations
                         }, {
-                            headers: {Authorization: this.props.main.user.token}
+                            headers: {Authorization: `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Playground', 'reserve', response);

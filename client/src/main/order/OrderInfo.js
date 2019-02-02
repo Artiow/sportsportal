@@ -23,7 +23,7 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
     componentDidMount() {
         Order.get(this.id)
             .then(data => {
-                console.error('OrderInfo', 'query', 'success');
+                console.info('OrderInfo', 'query', 'success');
                 this.setState({content: data});
             })
             .catch(error => {

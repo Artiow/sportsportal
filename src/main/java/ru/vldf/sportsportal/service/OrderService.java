@@ -13,7 +13,10 @@ import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.service.generic.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Service
 public class OrderService extends AbstractSecurityService implements AbstractCRUDService<OrderEntity, OrderDTO> {
@@ -37,6 +40,13 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
     @Autowired
     public void setOrderMapper(OrderMapper orderMapper) {
         this.orderMapper = orderMapper;
+    }
+
+
+    @PostConstruct
+    @Transactional
+    public void clearUnpaid() {
+        orderRepository.deleteAll(orderRepository.findAllByPaidIsFalseAndExpirationBefore(Timestamp.valueOf(LocalDateTime.now())));
     }
 
 
