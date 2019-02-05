@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
@@ -78,6 +79,7 @@ public class AuthService extends AbstractSecurityService {
      * @param password {@link String} users password
      * @return {@link JwtPairDTO} token pair
      */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public JwtPairDTO login(@NotNull String email, @NotNull String password) {
         return buildJwtPair(securityProvider.authentication(email, password));
     }
@@ -88,6 +90,7 @@ public class AuthService extends AbstractSecurityService {
      * @param refreshToken {@link String} refresh token
      * @return {@link JwtPairDTO} token pair
      */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public JwtPairDTO refresh(@NotNull String refreshToken) {
         return buildJwtPair(securityProvider.refresh(refreshToken));
     }
@@ -97,6 +100,7 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param accessToken {@link String} access token
      */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void logout(@NotNull String accessToken) {
         securityProvider.logout(accessToken);
     }
@@ -106,6 +110,7 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param accessToken {@link String} access token
      */
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void logoutAll(@NotNull String accessToken) {
         securityProvider.logoutAll(accessToken);
     }
