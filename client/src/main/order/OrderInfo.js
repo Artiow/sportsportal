@@ -17,7 +17,10 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
     constructor(props) {
         super(props);
         this.id = props.identifier;
-        this.state = {content: null};
+        this.state = {
+            content: null,
+            link: null,
+        };
     }
 
     componentDidMount() {
@@ -28,6 +31,14 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             })
             .catch(error => {
                 console.error('OrderInfo', 'query', 'failed');
+            });
+        Order.getLink(this.id)
+            .then(data => {
+                console.info('OrderInfo', 'link', 'success');
+                this.setState({link: data});
+            })
+            .catch(error => {
+                console.error('OrderInfo', 'link', 'failed');
             });
     }
 
@@ -119,7 +130,9 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             }
             return list;
         };
-        const order = this.state.content;
+        const link = this.state.link;
+        const content = this.state.content;
+        const order = content && link ? {...content, link} : null;
         const title = order ? `Заказ #${orderId(order.id)}` : null;
         const expiration = order ? order.expiration : null;
         let minute = 0;
@@ -153,12 +166,12 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
                                 Отменить {order.byOwner ? 'резервирование' : 'бронирование'}
                             </button>
                             {!order.paid ? (
-                                <button className="btn btn-success disabled" disabled={true}>
+                                <a href={link} className="btn btn-success">
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">
                                         {order.price}<i className="fa fa-rub ml-1"/>
                                     </span>
-                                </button>
+                                </a>
                             ) : (null)}
                         </div>
                     </div>

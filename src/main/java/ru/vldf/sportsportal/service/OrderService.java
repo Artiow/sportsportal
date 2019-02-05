@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
+import ru.vldf.sportsportal.integration.robokassa.RobokassaService;
 import ru.vldf.sportsportal.mapper.sectional.lease.OrderMapper;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -24,12 +25,18 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
     @Value("${code.role.admin}")
     private String adminRoleCode;
 
+    private RobokassaService robokassaService;
     private OrderRepository orderRepository;
     private OrderMapper orderMapper;
 
     @Autowired
     public OrderService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
         super(messages, userRepository, roleRepository);
+    }
+
+    @Autowired
+    public void setRobokassaService(RobokassaService robokassaService) {
+        this.robokassaService = robokassaService;
     }
 
     @Autowired
@@ -71,6 +78,33 @@ public class OrderService extends AbstractSecurityService implements AbstractCRU
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else {
                 return orderMapper.toDTO(orderEntity);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
+        }
+    }
+
+    /**
+     * Returns requested order payment link.
+     *
+     * @param id {@link Integer} order identifier
+     * @return {@link String} order link
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to get this order
+     * @throws ResourceNotFoundException   if order not found
+     */
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
+            noRollbackFor = {EntityNotFoundException.class}
+    )
+    public String getLink(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        try {
+            OrderEntity orderEntity = orderRepository.getOne(id);
+            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
+                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
+            } else {
+                return robokassaService.computeLink(orderMapper.toPayment(orderEntity)).toString();
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);

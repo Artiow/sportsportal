@@ -40,6 +40,21 @@ public class OrderController {
     }
 
     /**
+     * Returns order link by  order identifier.
+     *
+     * @param id order identifier
+     * @return {@link String} requested link
+     * @throws UnauthorizedAccessException if authorization is missing
+     * @throws ForbiddenAccessException    if user don't have permission to get this order
+     * @throws ResourceNotFoundException   if order not found
+     */
+    @GetMapping("/{id}/link")
+    @ApiOperation("получить ссылку на оплату заказа")
+    public String getLink(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        return orderService.getLink(id);
+    }
+
+    /**
      * Delete order by id.
      *
      * @param id order identifier

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Namednev Artem
@@ -30,6 +31,7 @@ public class RobokassaService extends AbstractMessageService {
 
     private static final Integer ANONYMOUS_PAYMENT_ID = 0;
     private static final String ANONYMOUS_PAYMENT_DESC = "sportsportal.robokassa.anonymous.description";
+    private static final String IDENTIFIED_PAYMENT_DESC = "sportsportal.robokassa.identified.description";
 
     private static final String BASE = "https://auth.robokassa.ru/Merchant/Index.aspx";
     private static final String TEST_KEY = "IsTest";
@@ -85,7 +87,7 @@ public class RobokassaService extends AbstractMessageService {
     private PaymentParams generateParams(Payment payment) {
         Integer id = payment.getId();
         BigDecimal sum = payment.getSum();
-        String desc = payment.getDescription();
+        String desc = Optional.ofNullable(payment.getDescription()).orElse(description(sum));
 
         PaymentParams params = new PaymentParams();
 
@@ -101,6 +103,10 @@ public class RobokassaService extends AbstractMessageService {
         params.setExpirationDate(payment.getExpiration());
 
         return params;
+    }
+
+    private String description(BigDecimal sum) {
+        return msg(IDENTIFIED_PAYMENT_DESC, sum.toString());
     }
 
 

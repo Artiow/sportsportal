@@ -29,6 +29,31 @@ export default class Order {
         });
     }
 
+    static getLink(id) {
+        return new Promise((resolve, reject) => {
+            Authentication.access()
+                .then(token => {
+                    axios
+                        .get(apiUrl(`/order/${id}/link`), {
+                            headers: {Authorization: `Bearer ${token}`}
+                        })
+                        .then(response => {
+                            console.debug('Order', 'getLink', response);
+                            resolve(response.data);
+                        })
+                        .catch(error => {
+                            const response = error.response;
+                            console.error('Order', 'getLink', response ? response : error);
+                            reject((response && response.data) ? response.data : null)
+                        })
+                })
+                .catch(error => {
+                    console.error('Order', 'getLink', 'access error');
+                    reject(null);
+                });
+        });
+    }
+
     static delete(id) {
         return new Promise((resolve, reject) => {
             Authentication.access()

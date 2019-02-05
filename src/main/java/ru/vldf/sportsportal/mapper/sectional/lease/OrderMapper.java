@@ -8,6 +8,7 @@ import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.OrderLinkDTO;
+import ru.vldf.sportsportal.integration.robokassa.model.Payment;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
@@ -22,6 +23,13 @@ import java.util.Collection;
         uses = {JavaTimeMapper.class, OrderURLMapper.class, PlaygroundMapper.class, UserMapper.class, PictureMapper.class, ReservationMapper.class}
 )
 public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
+
+    @Mappings({
+            @Mapping(target = "sum", source = "price"),
+            @Mapping(target = "description", ignore = true),
+            @Mapping(target = "email", source = "customer.email")
+    })
+    Payment toPayment(OrderEntity entity);
 
     @Mappings({
             @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
