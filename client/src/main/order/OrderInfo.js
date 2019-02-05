@@ -28,17 +28,17 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             .then(data => {
                 console.info('OrderInfo', 'query', 'success');
                 this.setState({content: data});
+                Order.getLink(this.id)
+                    .then(data => {
+                        console.info('OrderInfo', 'link', 'success');
+                        this.setState({link: data});
+                    })
+                    .catch(error => {
+                        console.error('OrderInfo', 'link', 'failed');
+                    });
             })
             .catch(error => {
                 console.error('OrderInfo', 'query', 'failed');
-            });
-        Order.getLink(this.id)
-            .then(data => {
-                console.info('OrderInfo', 'link', 'success');
-                this.setState({link: data});
-            })
-            .catch(error => {
-                console.error('OrderInfo', 'link', 'failed');
             });
     }
 
