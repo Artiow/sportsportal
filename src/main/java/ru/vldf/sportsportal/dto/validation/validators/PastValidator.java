@@ -6,6 +6,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 
+/**
+ * @author Namednev Artem
+ */
 public class PastValidator implements ConstraintValidator<Past, LocalDateTime> {
 
     @Override

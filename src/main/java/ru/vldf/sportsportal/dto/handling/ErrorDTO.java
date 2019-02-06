@@ -7,6 +7,9 @@ import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Namednev Artem
+ */
 public class ErrorDTO implements DataTransferObject {
 
     private final UUID uuid;
@@ -14,7 +17,7 @@ public class ErrorDTO implements DataTransferObject {
     private final String message;
 
     @JsonProperty
-    private final CauseDTO cause;
+    private final Cause cause;
 
 
     public ErrorDTO(UUID uuid, Throwable ex) {
@@ -23,7 +26,7 @@ public class ErrorDTO implements DataTransferObject {
         this.message = ex.getMessage();
         this.cause = Optional
                 .ofNullable(ex.getCause())
-                .map(CauseDTO::new)
+                .map(Cause::new)
                 .orElse(null);
     }
 
@@ -39,7 +42,7 @@ public class ErrorDTO implements DataTransferObject {
         this.exception = exceptionClassName;
         this.message = exceptionMessage;
         this.cause = ((causeClassName != null) && (causeMessage != null))
-                ? new CauseDTO(causeClassName, causeMessage)
+                ? new Cause(causeClassName, causeMessage)
                 : null;
     }
 
@@ -67,18 +70,18 @@ public class ErrorDTO implements DataTransferObject {
     }
 
 
-    private static class CauseDTO {
+    private static class Cause {
 
         private final String exception;
         private final String message;
 
 
-        public CauseDTO(Throwable cause) {
+        public Cause(Throwable cause) {
             this.exception = cause.getClass().getName();
             this.message = cause.getMessage();
         }
 
-        public CauseDTO(String causeClassName, String causeMessage) {
+        public Cause(String causeClassName, String causeMessage) {
             this.exception = causeClassName;
             this.message = causeMessage;
         }

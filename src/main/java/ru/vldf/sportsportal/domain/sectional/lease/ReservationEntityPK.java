@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @Embeddable

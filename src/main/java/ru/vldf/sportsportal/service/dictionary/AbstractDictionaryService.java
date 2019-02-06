@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.service.dictionary;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
-import ru.vldf.sportsportal.dto.generic.AbstractDictionaryDTO;
+import ru.vldf.sportsportal.dto.generic.DictionaryDTO;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
@@ -13,7 +13,7 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
 
-public abstract class AbstractDictionaryService<E extends AbstractDictionaryEntity, D extends AbstractDictionaryDTO> extends AbstractMessageService implements AbstractDictionaryCRUDService<E, D> {
+public abstract class AbstractDictionaryService<E extends AbstractDictionaryEntity, D extends DictionaryDTO> extends AbstractMessageService implements AbstractDictionaryCRUDService<E, D> {
 
     private AbstractWordbookRepository<E> repository;
     private AbstractDictionaryMapper<E, D> mapper;

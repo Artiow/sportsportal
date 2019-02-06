@@ -1,11 +1,18 @@
 package ru.vldf.sportsportal.dto.pagination;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Namednev Artem
+ */
+@Getter
+@Setter
 public class PageDTO<T> implements DataTransferObject {
 
     private List<T> content;
@@ -14,8 +21,7 @@ public class PageDTO<T> implements DataTransferObject {
     private Long totalElements;
     private Integer totalPages;
 
-
-    public PageDTO(Page<T> page) {
+    private PageDTO(Page<T> page) {
         this.content = new ArrayList<>(page.getContent());
         this.pageNumber = page.getNumber();
         this.numberOfElements = page.getNumberOfElements();
@@ -23,24 +29,7 @@ public class PageDTO<T> implements DataTransferObject {
         this.totalPages = page.getTotalPages();
     }
 
-
-    public List<T> getContent() {
-        return content;
-    }
-
-    public Integer getPageNumber() {
-        return pageNumber;
-    }
-
-    public Integer getNumberOfElements() {
-        return numberOfElements;
-    }
-
-    public Long getTotalElements() {
-        return totalElements;
-    }
-
-    public Integer getTotalPages() {
-        return totalPages;
+    public static <T> PageDTO<T> from(Page<T> page) {
+        return new PageDTO<>(page);
     }
 }

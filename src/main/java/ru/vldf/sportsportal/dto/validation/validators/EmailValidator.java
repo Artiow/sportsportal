@@ -5,6 +5,9 @@ import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+/**
+ * @author Namednev Artem
+ */
 public class EmailValidator implements ConstraintValidator<Email, String> {
 
     @Override

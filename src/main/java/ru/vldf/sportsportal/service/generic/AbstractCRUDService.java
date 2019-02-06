@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
 
@@ -17,7 +17,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> {
+public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> {
 
     D get(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 

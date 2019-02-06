@@ -10,6 +10,9 @@ import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 import javax.persistence.*;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @Entity

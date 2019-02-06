@@ -1,9 +1,9 @@
 package ru.vldf.sportsportal.mapper.generic;
 
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
+import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
 
-public interface AbstractIdentifiedMapper<E extends AbstractIdentifiedEntity, D extends AbstractIdentifiedDTO> extends ModelMapper<E, D> {
+public interface AbstractIdentifiedMapper<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> extends ModelMapper<E, D> {
 
     default Integer toInteger(E entity) {
         return entity.getId();

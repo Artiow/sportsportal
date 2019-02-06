@@ -7,6 +7,9 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @MappedSuperclass

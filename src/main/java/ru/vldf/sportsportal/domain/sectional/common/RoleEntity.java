@@ -9,6 +9,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @Entity

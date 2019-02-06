@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @MappedSuperclass

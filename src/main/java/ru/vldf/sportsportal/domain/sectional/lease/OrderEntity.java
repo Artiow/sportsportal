@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @Entity

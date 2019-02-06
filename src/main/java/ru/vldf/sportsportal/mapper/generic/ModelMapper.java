@@ -6,6 +6,9 @@ import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author Namednev Artem
+ */
 public interface ModelMapper<E extends DomainObject, D extends DataTransferObject> {
 
     D toDTO(E entity);

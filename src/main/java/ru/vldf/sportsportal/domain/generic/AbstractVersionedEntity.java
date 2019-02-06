@@ -8,6 +8,9 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.util.Objects;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @MappedSuperclass

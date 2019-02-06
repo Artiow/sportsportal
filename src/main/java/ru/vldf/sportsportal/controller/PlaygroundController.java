@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.*;
@@ -121,12 +121,12 @@ public class PlaygroundController {
      * @param id   playground identifier
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundGridDTO} requested time grid
+     * @return {@link PlaygroundBoardDTO} requested time grid
      * @throws ResourceNotFoundException if requested playground not found
      */
     @GetMapping("/{id}/grid")
     @ApiOperation("получить сетку времени для площадки")
-    public PlaygroundGridDTO getGrid(
+    public PlaygroundBoardDTO getGrid(
             @PathVariable int id,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to

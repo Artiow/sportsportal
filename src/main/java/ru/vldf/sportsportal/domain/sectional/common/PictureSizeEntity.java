@@ -9,6 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * @author Namednev Artem
+ */
 @Getter
 @Setter
 @Entity

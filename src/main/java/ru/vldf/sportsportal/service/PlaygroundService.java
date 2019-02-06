@@ -15,7 +15,7 @@ import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
@@ -153,7 +153,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * @param id   {@link Integer} playground identifier
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundGridDTO}
+     * @return {@link PlaygroundBoardDTO}
      * @throws ResourceNotFoundException  if playground not found
      * @throws ResourceCorruptedException if playground data corrupted
      */
@@ -162,7 +162,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
             noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
     )
-    public PlaygroundGridDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
+    public PlaygroundBoardDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
             return playgroundMapper.makeSchedule(
                     playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,

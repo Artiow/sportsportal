@@ -11,13 +11,13 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
-public interface ReservationMapper extends ModelMapper<ReservationEntity, ReservationResumeDTO.ReservationItemDTO> {
+public interface ReservationMapper extends ModelMapper<ReservationEntity, ReservationResumeDTO.Item> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
-    ReservationResumeDTO.ReservationItemDTO toDTO(ReservationEntity entity);
+    ReservationResumeDTO.Item toDTO(ReservationEntity entity);
 
     @Mapping(target = "pk.datetime", source = "datetime")
-    ReservationEntity toEntity(ReservationResumeDTO.ReservationItemDTO dto);
+    ReservationEntity toEntity(ReservationResumeDTO.Item dto);
 
     @Mapping(target = "playground", source = "pk.playground")
     ReservationResumeDTO toResume(ReservationEntity entity);
