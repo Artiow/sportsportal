@@ -11,15 +11,18 @@ import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Order"})
 @RequestMapping("${api.path.lease.order}")
 public class OrderController {
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @Autowired
-    public void setOrderService(OrderService orderService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 

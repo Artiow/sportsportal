@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.service;
 
+import lombok.Getter;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,14 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
-import ru.vldf.sportsportal.repository.common.RoleRepository;
-import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.*;
 
 import javax.annotation.PostConstruct;
@@ -39,8 +37,17 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class PictureService extends AbstractSecurityService {
+
+    private final PictureRepository pictureRepository;
+    private final PictureSizeRepository pictureSizeRepository;
+    private final PictureSizeMapper pictureSizeMapper;
+
+    private Path pictureDirectory;
 
     @Value("${code.role.admin}")
     private String adminRoleCode;
@@ -51,33 +58,14 @@ public class PictureService extends AbstractSecurityService {
     @Value("${file.location}")
     private String dir;
 
-    private Path pictureDirectory;
-
-    private PictureRepository pictureRepository;
-    private PictureSizeRepository pictureSizeRepository;
-    private PictureSizeMapper pictureSizeMapper;
-
 
     @Autowired
-    public PictureService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages, userRepository, roleRepository);
-    }
-
-
-    @Autowired
-    public void setPictureRepository(PictureRepository pictureRepository) {
+    public PictureService(PictureRepository pictureRepository, PictureSizeRepository pictureSizeRepository, PictureSizeMapper pictureSizeMapper) {
         this.pictureRepository = pictureRepository;
-    }
-
-    @Autowired
-    public void setPictureSizeRepository(PictureSizeRepository pictureSizeRepository) {
         this.pictureSizeRepository = pictureSizeRepository;
-    }
-
-    @Autowired
-    public void setPictureSizeMapper(PictureSizeMapper pictureSizeMapper) {
         this.pictureSizeMapper = pictureSizeMapper;
     }
+
 
     @PostConstruct
     public void setFileStorageLocation() {
@@ -271,6 +259,7 @@ public class PictureService extends AbstractSecurityService {
     }
 
 
+    @Getter
     public static class PictureSize {
 
         private final String value;
@@ -286,22 +275,6 @@ public class PictureService extends AbstractSecurityService {
             this.factor = ((double) this.width) / ((double) this.height);
         }
 
-
-        public String getValue() {
-            return value;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
 
         @Override
         public String toString() {

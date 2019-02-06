@@ -7,15 +7,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
-import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
@@ -30,8 +27,16 @@ import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class AuthService extends AbstractSecurityService {
+
+    private final PasswordEncoder passwordEncoder;
+    private final SecurityProvider securityProvider;
+    private final MailService mailService;
+    private final UserMapper userMapper;
 
     @Value("${code.role.user}")
     private String userRoleCode;
@@ -39,35 +44,17 @@ public class AuthService extends AbstractSecurityService {
     @Value("${api.path.auth.confirm}")
     private String confirmPath;
 
-    private PasswordEncoder passwordEncoder;
-
-    private SecurityProvider securityProvider;
-    private MailService mailService;
-    private UserMapper userMapper;
-
 
     @Autowired
-    public AuthService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages, userRepository, roleRepository);
-    }
-
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+    public AuthService(
+            PasswordEncoder passwordEncoder,
+            SecurityProvider securityProvider,
+            MailService mailService,
+            UserMapper userMapper
+    ) {
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Autowired
-    public void setSecurityProvider(SecurityProvider securityProvider) {
         this.securityProvider = securityProvider;
-    }
-
-    @Autowired
-    public void setMailService(MailService mailService) {
         this.mailService = mailService;
-    }
-
-    @Autowired
-    public void setUserMapper(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
 
@@ -79,7 +66,7 @@ public class AuthService extends AbstractSecurityService {
      * @param password {@link String} users password
      * @return {@link JwtPairDTO} token pair
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public JwtPairDTO login(@NotNull String email, @NotNull String password) {
         return buildJwtPair(securityProvider.authentication(email, password));
     }
@@ -90,7 +77,7 @@ public class AuthService extends AbstractSecurityService {
      * @param refreshToken {@link String} refresh token
      * @return {@link JwtPairDTO} token pair
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public JwtPairDTO refresh(@NotNull String refreshToken) {
         return buildJwtPair(securityProvider.refresh(refreshToken));
     }
@@ -100,7 +87,7 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param accessToken {@link String} access token
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void logout(@NotNull String accessToken) {
         securityProvider.logout(accessToken);
     }
@@ -110,7 +97,7 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param accessToken {@link String} access token
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional
     public void logoutAll(@NotNull String accessToken) {
         securityProvider.logoutAll(accessToken);
     }
@@ -132,7 +119,9 @@ public class AuthService extends AbstractSecurityService {
         if (userRepository.isEnabledByEmail(email)) {
             throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", email));
         } else try {
-            UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
+            // password encoding and user saving
+            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            UserEntity userEntity = userMapper.toEntity(userDTO);
             userEntity.setRoles(Collections.emptyList());
             userEntity.setIsDisabled(true);
             if (userRepository.existsByEmail(email)) {
@@ -198,7 +187,7 @@ public class AuthService extends AbstractSecurityService {
         } else {
             userEntity.setIsDisabled(false);
             userEntity.setConfirmCode(null);
-            userEntity.setRoles(roleRepository().findAllByCode(userRoleCode));
+            userEntity.setRoles(Collections.singletonList(roleRepository().findByCode(userRoleCode)));
             userRepository.save(userEntity);
         }
     }
@@ -210,9 +199,10 @@ public class AuthService extends AbstractSecurityService {
      * @return {@link JwtPairDTO} built jwt pair
      */
     private JwtPairDTO buildJwtPair(Pair<String, String> jwtPair) {
-        return new JwtPairDTO()
-                .setAccessToken(jwtPair.getFirst())
-                .setRefreshToken(jwtPair.getSecond());
+        JwtPairDTO jwtPairDTO = new JwtPairDTO();
+        jwtPairDTO.setAccessToken(jwtPair.getFirst());
+        jwtPairDTO.setRefreshToken(jwtPair.getSecond());
+        return jwtPairDTO;
     }
 
     /**

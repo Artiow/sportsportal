@@ -18,10 +18,15 @@ import java.util.Optional;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Authentication"})
 @RequestMapping("${api.path.common.auth}")
 public class AuthController {
+
+    private final AuthService authService;
 
     @Value("${api.path.common.user}")
     private String userPath;
@@ -35,10 +40,9 @@ public class AuthController {
     @Value("${api.path.common.auth}")
     private String apiPath;
 
-    private AuthService authService;
 
     @Autowired
-    public void setAuthService(AuthService authService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
     }
 

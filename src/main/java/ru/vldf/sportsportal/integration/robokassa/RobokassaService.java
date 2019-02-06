@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.integration.robokassa.model.Payment;
 import ru.vldf.sportsportal.integration.robokassa.model.PaymentParams;
 import ru.vldf.sportsportal.service.generic.AbstractMessageService;
@@ -49,10 +48,8 @@ public class RobokassaService extends AbstractMessageService {
     public RobokassaService(
             @Value("${robokassa.testing:false}") boolean testing,
             @Value("${robokassa.password.one}") String password,
-            @Value("${robokassa.login}") String login,
-            MessageContainer messages
+            @Value("${robokassa.login}") String login
     ) throws URISyntaxException {
-        super(messages);
         this.mapper = new ObjectMapper();
         this.url = new URI(BASE);
         this.testing = testing;

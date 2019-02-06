@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.service.dictionary;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
 import ru.vldf.sportsportal.dto.generic.DictionaryDTO;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
@@ -13,17 +13,19 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
 
-public abstract class AbstractDictionaryService<E extends AbstractDictionaryEntity, D extends DictionaryDTO> extends AbstractMessageService implements AbstractDictionaryCRUDService<E, D> {
+/**
+ * @author Namednev Artem
+ */
+public abstract class AbstractDictionaryService<E extends AbstractDictionaryEntity, D extends DictionaryDTO> extends AbstractMessageService implements DictionaryService<E, D> {
 
+    @Autowired
     private AbstractWordbookRepository<E> repository;
+
+    @Autowired
     private AbstractDictionaryMapper<E, D> mapper;
 
-    public AbstractDictionaryService(MessageContainer messages, AbstractWordbookRepository<E> repository, AbstractDictionaryMapper<E, D> mapper) {
-        super(messages);
-        this.repository = repository;
-        this.mapper = mapper;
-    }
 
+    @Override
     @Transactional(readOnly = true)
     public D get(Integer id) throws ResourceNotFoundException {
         try {
@@ -33,6 +35,7 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public D get(String code) throws ResourceNotFoundException {
         try {
@@ -42,21 +45,25 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public PageDTO<D> getList(PageDividerDTO pageDividerDTO) {
-        return new PageDTO<>(repository.findAll(new PageDivider(pageDividerDTO).getPageRequest()).map(mapper::toDTO));
+        return PageDTO.from(repository.findAll(new PageDivider(pageDividerDTO).getPageRequest()).map(mapper::toDTO));
     }
 
+    @Override
     @Transactional
     public Integer create(D t) {
         throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "create"));
     }
 
+    @Override
     @Transactional
     public void update(Integer id, D t) {
         throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "update"));
     }
 
+    @Override
     @Transactional
     public void delete(Integer id) {
         throw new UnsupportedOperationException(msg("sportsportal.handle.UnsupportedOperationException.message", "delete"));

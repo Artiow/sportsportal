@@ -25,11 +25,10 @@ public class PaymentController {
     private final RobokassaService robokassaService;
 
     @Autowired
-    public PaymentController(
-            RobokassaService robokassaService
-    ) {
+    public PaymentController(RobokassaService robokassaService) {
         this.robokassaService = robokassaService;
     }
+
 
     @GetMapping("/anonymous")
     @ApiOperation("анонимный платеж")

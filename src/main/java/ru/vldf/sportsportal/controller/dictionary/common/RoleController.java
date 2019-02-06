@@ -12,6 +12,9 @@ import ru.vldf.sportsportal.dto.sectional.common.RoleDTO;
 import ru.vldf.sportsportal.service.dictionary.common.RoleService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Dictionary Role"})
 @RequestMapping("${api.path.common.dict.role}")
@@ -20,7 +23,7 @@ public class RoleController {
     private RoleService roleService;
 
     @Autowired
-    public void setRoleService(RoleService roleService) {
+    public RoleController(RoleService roleService) {
         this.roleService = roleService;
     }
 

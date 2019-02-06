@@ -8,6 +8,9 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class ExpiringClockService implements ExpiringClockProvider {
 
@@ -36,6 +39,7 @@ public class ExpiringClockService implements ExpiringClockProvider {
 
     @Override
     public Pair<Date, Date> gen(ExpirationType type) {
+        Date now = new Date();
         Long lifetime;
         switch (type) {
             case ACCESS:
@@ -47,7 +51,6 @@ public class ExpiringClockService implements ExpiringClockProvider {
             default:
                 lifetime = 0L;
         }
-        Date now = new Date();
         return Pair.of(now, new Date(now.getTime() + lifetime));
     }
 }

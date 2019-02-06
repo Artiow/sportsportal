@@ -12,6 +12,9 @@ import ru.vldf.sportsportal.dto.sectional.lease.SportDTO;
 import ru.vldf.sportsportal.service.dictionary.lease.SportService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Dictionary Sport"})
 @RequestMapping("${api.path.lease.dict.sport}")
@@ -20,7 +23,7 @@ public class SportController {
     private SportService sportService;
 
     @Autowired
-    public void setSportService(SportService sportService) {
+    public SportController(SportService sportService) {
         this.sportService = sportService;
     }
 

@@ -12,6 +12,9 @@ import ru.vldf.sportsportal.dto.sectional.common.PictureSizeDTO;
 import ru.vldf.sportsportal.service.dictionary.common.PictureSizeService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Dictionary Picture Size"})
 @RequestMapping("${api.path.common.dict.picturesize}")
@@ -20,7 +23,7 @@ public class PictureSizeController {
     private PictureSizeService pictureSizeService;
 
     @Autowired
-    public void setPictureSizeService(PictureSizeService pictureSizeService) {
+    public PictureSizeController(PictureSizeService pictureSizeService) {
         this.pictureSizeService = pictureSizeService;
     }
 

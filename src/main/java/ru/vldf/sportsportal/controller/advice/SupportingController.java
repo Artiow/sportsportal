@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.controller.advice;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -19,22 +20,21 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * @author Namednev Artem
+ */
 @ApiIgnore
 @Controller
 public class SupportingController implements ErrorController {
 
     private static final String ERROR_PATH = "/error";
 
-    private SwaggerConfig swaggerConfig;
-    private MessageContainer messages;
+    private final SwaggerConfig swaggerConfig;
+    private final MessageContainer messages;
 
     @Autowired
-    public void setSwaggerConfig(SwaggerConfig swaggerConfig) {
+    public SupportingController(SwaggerConfig swaggerConfig, MessageContainer messages) {
         this.swaggerConfig = swaggerConfig;
-    }
-
-    @Autowired
-    public void setMessages(MessageContainer messages) {
         this.messages = messages;
     }
 
@@ -47,17 +47,10 @@ public class SupportingController implements ErrorController {
     @GetMapping("/info")
     public Object getAppInfo() {
         return new Object() {
-
-            ApiInfo apiInfo = swaggerConfig.apiInfo();
-            Locale locale = messages.getLocale();
-
-            public ApiInfo getApiInfo() {
-                return apiInfo;
-            }
-
-            public Locale getLocale() {
-                return locale;
-            }
+            @JsonProperty
+            private ApiInfo apiInfo = swaggerConfig.apiInfo();
+            @JsonProperty
+            private Locale locale = messages.getLocale();
         };
     }
 
@@ -70,12 +63,8 @@ public class SupportingController implements ErrorController {
     @GetMapping("/csrf")
     public Object toCsrf() {
         return new Object() {
-
+            @JsonProperty
             private String message = "CSRF protection is disabled as unnecessary";
-
-            public String getMessage() {
-                return message;
-            }
         };
     }
 

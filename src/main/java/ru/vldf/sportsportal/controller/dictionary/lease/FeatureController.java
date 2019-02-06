@@ -12,6 +12,9 @@ import ru.vldf.sportsportal.dto.sectional.lease.FeatureDTO;
 import ru.vldf.sportsportal.service.dictionary.lease.FeatureService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Dictionary Feature"})
 @RequestMapping("${api.path.lease.dict.feature}")
@@ -20,7 +23,7 @@ public class FeatureController {
     private FeatureService featureService;
 
     @Autowired
-    public void setFeatureService(FeatureService featureService) {
+    public FeatureController(FeatureService featureService) {
         this.featureService = featureService;
     }
 

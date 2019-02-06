@@ -4,13 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.integration.robokassa.RobokassaService;
 import ru.vldf.sportsportal.mapper.sectional.lease.OrderMapper;
-import ru.vldf.sportsportal.repository.common.RoleRepository;
-import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.service.generic.*;
 
@@ -19,33 +16,23 @@ import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
-public class OrderService extends AbstractSecurityService implements AbstractCRUDService<OrderEntity, OrderDTO> {
+public class OrderService extends AbstractSecurityService implements CRUDService<OrderEntity, OrderDTO> {
+
+    private final RobokassaService robokassaService;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     @Value("${code.role.admin}")
     private String adminRoleCode;
 
-    private RobokassaService robokassaService;
-    private OrderRepository orderRepository;
-    private OrderMapper orderMapper;
-
     @Autowired
-    public OrderService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages, userRepository, roleRepository);
-    }
-
-    @Autowired
-    public void setRobokassaService(RobokassaService robokassaService) {
+    public OrderService(RobokassaService robokassaService, OrderRepository orderRepository, OrderMapper orderMapper) {
         this.robokassaService = robokassaService;
-    }
-
-    @Autowired
-    public void setOrderRepository(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-    }
-
-    @Autowired
-    public void setOrderMapper(OrderMapper orderMapper) {
         this.orderMapper = orderMapper;
     }
 

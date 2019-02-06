@@ -11,33 +11,30 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import ru.vldf.sportsportal.util.CharSequenceGenerator;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class JwtEncoder implements Encoder {
 
-    private static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private final static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
-    private ExpiringClockProvider clock;
+    private final ExpiringClockProvider clock;
 
-    @Value("${jwt.issuer}")
-    private String issuer;
-    private String sign;
+    private final String issuer;
+    private final String sign;
 
     @Autowired
-    public void setClock(ExpiringClockProvider clock) {
+    public JwtEncoder(
+            @Value("${jwt.issuer}") String issuer,
+            ExpiringClockProvider clock
+    ) {
+        this.sign = TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
+        this.issuer = issuer;
         this.clock = clock;
-    }
-
-
-    /**
-     * Secret key Base64 generate and encoding.
-     */
-    @PostConstruct
-    private void init() {
-        sign = TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
     }
 
 

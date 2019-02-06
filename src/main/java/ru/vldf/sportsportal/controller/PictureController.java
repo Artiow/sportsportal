@@ -2,8 +2,7 @@ package ru.vldf.sportsportal.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,24 +18,22 @@ import java.io.IOException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
+/**
+ * @author Namednev Artem
+ */
+@Slf4j
 @RestController
 @Api(tags = {"Picture"})
 @RequestMapping("${api.path.common.picture}")
 public class PictureController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PictureController.class);
+    private final ServletContext context;
+    private final PictureService pictureService;
 
-    private ServletContext context;
-
-    private PictureService pictureService;
 
     @Autowired
-    public void setContext(ServletContext context) {
+    public PictureController(ServletContext context, PictureService pictureService) {
         this.context = context;
-    }
-
-    @Autowired
-    public void setPictureService(PictureService pictureService) {
         this.pictureService = pictureService;
     }
 
@@ -59,7 +56,7 @@ public class PictureController {
             contentType = MediaType.parseMediaType(context.getMimeType(resource.getFile().getAbsolutePath()));
         } catch (IOException e) {
             contentType = MediaType.APPLICATION_JSON;
-            logger.info("Could Not Determine Requested File Type.");
+            log.info("Could Not Determine Requested File Type.");
         }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(resource.getFilename()))

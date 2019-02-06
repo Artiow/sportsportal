@@ -17,7 +17,10 @@ import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public interface AbstractCRUDService<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> {
+/**
+ * @author Namednev Artem
+ */
+public interface CRUDService<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> {
 
     D get(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 

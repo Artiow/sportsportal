@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
@@ -20,8 +19,6 @@ import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
-import ru.vldf.sportsportal.repository.common.RoleRepository;
-import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
@@ -37,14 +34,25 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
-public class PlaygroundService extends AbstractSecurityService implements AbstractCRUDService<PlaygroundEntity, PlaygroundDTO> {
+public class PlaygroundService extends AbstractSecurityService implements CRUDService<PlaygroundEntity, PlaygroundDTO> {
+
+    private final OrderRepository orderRepository;
+    private final ReservationRepository reservationRepository;
+    private final PlaygroundRepository playgroundRepository;
+    private final PlaygroundMapper playgroundMapper;
+    private final JavaTimeMapper javaTimeMapper;
 
     @Value("${code.role.admin}")
     private String adminRoleCode;
@@ -55,41 +63,19 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     @Value("${order.expiration.unit}")
     private String orderExpirationUnit;
 
-    private OrderRepository orderRepository;
-    private ReservationRepository reservationRepository;
-    private PlaygroundRepository playgroundRepository;
-    private PlaygroundMapper playgroundMapper;
-    private JavaTimeMapper javaTimeMapper;
-
 
     @Autowired
-    public PlaygroundService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages, userRepository, roleRepository);
-    }
-
-
-    @Autowired
-    public void setOrderRepository(OrderRepository orderRepository) {
+    public PlaygroundService(
+            OrderRepository orderRepository,
+            ReservationRepository reservationRepository,
+            PlaygroundRepository playgroundRepository,
+            PlaygroundMapper playgroundMapper,
+            JavaTimeMapper javaTimeMapper
+    ) {
         this.orderRepository = orderRepository;
-    }
-
-    @Autowired
-    public void setReservationRepository(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-    }
-
-    @Autowired
-    public void setPlaygroundRepository(PlaygroundRepository playgroundRepository) {
         this.playgroundRepository = playgroundRepository;
-    }
-
-    @Autowired
-    public void setPlaygroundMapper(PlaygroundMapper playgroundMapper) {
         this.playgroundMapper = playgroundMapper;
-    }
-
-    @Autowired
-    public void setJavaTimeMapper(JavaTimeMapper javaTimeMapper) {
         this.javaTimeMapper = javaTimeMapper;
     }
 
@@ -103,7 +89,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
     @Transactional(readOnly = true)
     public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filterDTO) {
         PlaygroundFilter filter = new PlaygroundFilter(filterDTO);
-        return new PageDTO<>(playgroundRepository.findAll(filter, filter.getPageRequest()).map(playgroundMapper::toShortDTO));
+        return PageDTO.from(playgroundRepository.findAll(filter, filter.getPageRequest()).map(playgroundMapper::toShortDTO));
     }
 
     /**
@@ -179,9 +165,9 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
      * Returns available for reservation times for playground by identifier and collections of checked
      * reservation times.
      *
-     * @param id           {@link Integer} playground identifier
-     * @param version      {@link Long} playground version
-     * @param reservations {@link Collection<LocalDateTime>} checked reservation times
+     * @param id      {@link Integer} playground identifier
+     * @param version {@link Long} playground version
+     * @param times   {@link Collection<String>} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if playground not found
      */
@@ -190,14 +176,21 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             rollbackFor = {ResourceNotFoundException.class},
             noRollbackFor = {EntityNotFoundException.class}
     )
-    public ReservationListDTO check(Integer id, Long version, Collection<LocalDateTime> reservations) throws ResourceNotFoundException {
+    public ReservationListDTO check(Integer id, Long version, Collection<String> times) throws ResourceNotFoundException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
             if (!version.equals(playgroundEntity.getVersion())) {
-                return new ReservationListDTO().setReservations(new ArrayList<>(0));
+                ReservationListDTO reservationListDTO = new ReservationListDTO();
+                reservationListDTO.setReservations(Collections.emptyList());
+                return reservationListDTO;
             } else {
-                if (!(reservations instanceof List)) reservations = new ArrayList<>(reservations);
-                Collections.sort((List<LocalDateTime>) reservations);
+                List<LocalDateTime> reservations;
+                try {
+                    reservations = times != null ? times.stream().map(LocalDateTime::parse).sorted().collect(Collectors.toList()) : Collections.emptyList();
+                } catch (DateTimeParseException e) {
+                    reservations = Collections.emptyList();
+                }
+
                 Iterator<LocalDateTime> iterator = reservations.iterator();
                 while (iterator.hasNext()) {
                     LocalDateTime localDateTime = iterator.next();
@@ -208,8 +201,11 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
                         iterator.remove();
                     }
                 }
+
                 reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
-                return new ReservationListDTO().setReservations((reservations instanceof List) ? (List<LocalDateTime>) reservations : new ArrayList<>(reservations));
+                ReservationListDTO reservationListDTO = new ReservationListDTO();
+                reservationListDTO.setReservations(reservations);
+                return reservationListDTO;
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);

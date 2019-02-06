@@ -37,11 +37,11 @@ public class LocalDateTimeNormalizer {
         } else return true;
     }
 
-    public static Collection<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired) {
+    public static List<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired) {
         return advancedCheck(dateTimeCollection, halfHourAvailable, fullHourRequired, true);
     }
 
-    public static Collection<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired, boolean timeCheck) {
+    public static List<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired, boolean timeCheck) {
         List<LocalDateTime> dateTimeList = new ArrayList<>(dateTimeCollection);
         ListIterator<LocalDateTime> listIterator;
 
