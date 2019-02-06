@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 import ru.vldf.sportsportal.controller.advice.AdviseController;
 
@@ -23,34 +24,34 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final RightsDifferentiationRouter router;
     private final TokenAuthenticationProvider provider;
 
-    private AdviseController adviseController;
+    private final AdviseController adviseController;
+    private final MessageContainer messages;
 
 
     @Autowired
-    public SecurityConfig(RightsDifferentiationRouter router, TokenAuthenticationProvider provider) {
+    public SecurityConfig(
+            RightsDifferentiationRouter router,
+            TokenAuthenticationProvider provider,
+            AdviseController adviseController,
+            MessageContainer messages
+    ) {
         super();
         this.router = router;
         this.provider = provider;
-    }
-
-    @Autowired
-    public void setAdviseController(AdviseController adviseController) {
         this.adviseController = adviseController;
+        this.messages = messages;
     }
 
 
-    /**
-     * Configure HttpSecurity.
-     *
-     * @param http - security configuration object
-     * @throws Exception - if something goes wrong
-     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -77,11 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     /**
-     * FilterRegistrationBean configuration.
-     * Disable Spring Boot automatic filter registration.
-     *
-     * @param authenticationFilter - custom filter
-     * @return registration bean
+     * FilterRegistrationBean configuration, Spring Boot automatic filter registration disabling.
      */
     @Bean
     public FilterRegistrationBean registrationBean(final TokenAuthenticationFilter authenticationFilter) {
@@ -92,18 +89,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * TokenAuthenticationFilter configuration.
-     *
-     * @return filter bean
-     * @throws Exception - if something goes wrong
+     * TokenAuthenticationFilter configuration, handlers setting.
      */
     @Bean
-    public TokenAuthenticationFilter authenticationFilter()
-            throws Exception {
-
-        final TokenAuthenticationFilter filter
-                = new TokenAuthenticationFilter(router.getAllProtectedPathRequestMatcher());
-
+    public TokenAuthenticationFilter authenticationFilter() throws Exception {
+        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(router, messages);
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(successHandler());
         filter.setAuthenticationFailureHandler(failureHandler());
@@ -112,8 +102,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * AuthenticationSuccessHandler configuration.
-     *
-     * @return success handler bean
      */
     @Bean
     public AuthenticationSuccessHandler successHandler() {
@@ -121,21 +109,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         successHandler.setRedirectStrategy((httpServletRequest, httpServletResponse, s) -> {
             // no redirect
         });
-
         return successHandler;
     }
 
     /**
      * AuthenticationFailureHandler configuration.
-     *
-     * @return failure handler bean
      */
     @Bean
     public AuthenticationFailureHandler failureHandler() {
         return (request, response, ex) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
             ServletOutputStream out = response.getOutputStream();
             new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Unauthorized Access Attempt."));
             out.flush();
@@ -144,15 +128,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * AccessDeniedHandler configuration.
-     *
-     * @return handler bean
      */
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, ex) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
             ServletOutputStream out = response.getOutputStream();
             new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Forbidden Access Attempt."));
             out.flush();

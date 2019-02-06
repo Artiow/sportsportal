@@ -15,6 +15,6 @@ public abstract class AbstractMessageService {
     }
 
     public String msg(String msg, Object... args) {
-        return messages.getAndFormat(msg, args);
+        return messages.get(msg, args);
     }
 }

@@ -37,7 +37,7 @@
     </profiles>
 
     <properties>
-        <start-class>ru.vldf.sportsportal.boot.ApplicationBoot</start-class>
+        <start-class>ru.vldf.sportsportal.ApplicationBoot</start-class>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

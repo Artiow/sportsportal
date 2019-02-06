@@ -13,6 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 public class MessageConfig implements MessageContainer {
 
@@ -75,7 +78,7 @@ public class MessageConfig implements MessageContainer {
     }
 
     @Override
-    public String getAndFormat(@NotNull String msg, Object... args) {
+    public String get(@NotNull String msg, Object... args) {
         return String.format(get(msg), args);
     }
 }

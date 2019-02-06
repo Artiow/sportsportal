@@ -16,10 +16,10 @@ import javax.persistence.MappedSuperclass;
 public abstract class AbstractWordbookEntity extends AbstractIdentifiedEntity {
 
     @Basic
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
     @Basic
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 }

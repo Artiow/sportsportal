@@ -6,6 +6,9 @@ import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * @author Namednev Artem
+ */
 public interface OrderRepository extends AbstractIdentifiedRepository<OrderEntity> {
 
     List<OrderEntity> findAllByPaidIsFalseAndExpirationBefore(Timestamp limit);

@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.boot;
+package ru.vldf.sportsportal;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

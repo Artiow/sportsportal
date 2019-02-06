@@ -11,6 +11,9 @@ import org.springframework.security.web.util.matcher.*;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 public class RightsDifferentiationConfig implements RightsDifferentiationRouter {
 

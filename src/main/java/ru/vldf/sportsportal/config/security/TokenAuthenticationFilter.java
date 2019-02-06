@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,8 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
+import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,23 +16,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author Namednev Artem
+ */
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public final static String AUTHORIZATION_SCHEMA = "Bearer";
 
-    private MessageContainer messages;
+    private final MessageContainer messages;
 
 
     /**
      * Required authentication request matcher setting.
      */
-    protected TokenAuthenticationFilter(RequestMatcher requestMatcher) {
-        super(requestMatcher);
-    }
-
-
-    @Autowired
-    public void setMessages(MessageContainer messages) {
+    public TokenAuthenticationFilter(RightsDifferentiationRouter router, MessageContainer messages) {
+        super(router.getAllProtectedPathRequestMatcher());
         this.messages = messages;
     }
 

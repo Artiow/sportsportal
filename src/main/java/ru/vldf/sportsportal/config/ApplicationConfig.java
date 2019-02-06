@@ -5,6 +5,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 public class ApplicationConfig implements WebMvcConfigurer {
 
