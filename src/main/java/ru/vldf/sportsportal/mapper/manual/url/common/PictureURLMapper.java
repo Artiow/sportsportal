@@ -9,16 +9,15 @@ import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 import java.net.URI;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 @Named("toPictureURL")
 public class PictureURLMapper extends AbstractURLMapper<PictureEntity> {
 
-    @Value("${api.path.common.picture}")
-    private String apiPath;
-
-    @Override
-    protected String getApiPath() {
-        return apiPath;
+    public PictureURLMapper(@Value("${api.path.common.picture}") String apiPath) {
+        super(apiPath);
     }
 
 

@@ -30,31 +30,34 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(
         componentModel = "spring",
         uses = {JavaTimeMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, UserMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
 )
-public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
+public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
             @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
             @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
-    PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
+    public abstract PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
     @Mappings({
             @Mapping(target = "playground", expression = "java(toLinkDTO(entity))"),
             @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
     })
-    PlaygroundBoardDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
+    public abstract PlaygroundBoardDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
             @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
             @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
-    PlaygroundLinkDTO toLinkDTO(PlaygroundEntity entity);
+    public abstract PlaygroundLinkDTO toLinkDTO(PlaygroundEntity entity);
 
     @Mappings({
             @Mapping(target = "name", ignore = true),
@@ -62,7 +65,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             @Mapping(target = "phone", ignore = true),
             @Mapping(target = "rate", ignore = true)
     })
-    PlaygroundEntity toEntity(PlaygroundLinkDTO dto);
+    public abstract PlaygroundEntity toEntity(PlaygroundLinkDTO dto);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
@@ -70,11 +73,11 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
             @Mapping(target = "owners", ignore = true),
             @Mapping(target = "photos", ignore = true)
     })
-    PlaygroundEntity toEntity(PlaygroundDTO dto);
+    public abstract PlaygroundEntity toEntity(PlaygroundDTO dto);
 
     @Override
-    default PlaygroundEntity merge(PlaygroundEntity acceptor, PlaygroundEntity donor) throws OptimisticLockException {
-        AbstractVersionedMapper.super.merge(acceptor, donor);
+    public PlaygroundEntity merge(PlaygroundEntity acceptor, PlaygroundEntity donor) throws OptimisticLockException {
+        super.merge(acceptor, donor);
 
         acceptor.setName(donor.getName());
         acceptor.setAddress(donor.getAddress());
@@ -93,7 +96,7 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         return acceptor;
     }
 
-    default ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) throws DataCorruptedException {
+    public ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) throws DataCorruptedException {
         if (entity == null) {
             return null;
         }
@@ -135,13 +138,13 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
 
         // grid build
         ReservationGridDTO grid = new ReservationGridDTO();
-        grid .setTotalTimes(totalTimes);
-        grid  .setStartTime(LocalTime.of(openTimeHour, openTimeMinute));
-        grid    .setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
+        grid.setTotalTimes(totalTimes);
+        grid.setStartTime(LocalTime.of(openTimeHour, openTimeMinute));
+        grid.setEndTime(LocalTime.of(closeTimeHour, closeTimeMinute));
         return grid;
     }
 
-    default PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate)
+    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate)
             throws DataCorruptedException {
         if (playgroundBoardDTO == null) {
             return null;
@@ -246,24 +249,22 @@ public interface PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEnti
         }
 
         // grid setting
-        playgroundBoardDTO.getGrid()
-                .setSchedule(schedule)
-                .setTotalDays(totalDays)
-                .setStartDate(startDate)
-                .setEndDate(endDate);
-
+        ReservationGridDTO grid = playgroundBoardDTO.getGrid();
+        grid.setSchedule(schedule);
+        grid.setTotalDays(totalDays);
+        grid.setStartDate(startDate);
+        grid.setEndDate(endDate);
         return playgroundBoardDTO;
     }
 
-    default PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations)
+    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations)
             throws DataCorruptedException {
         if ((playgroundBoardDTO == null) || (reservations == null)) {
             return null;
         }
 
         // schedule making
-        Map<LocalDate, Map<LocalTime, Boolean>> schedule =
-                makeSchedule(playgroundBoardDTO, now, startDate, endDate).getGrid().getSchedule();
+        Map<LocalDate, Map<LocalTime, Boolean>> schedule = makeSchedule(playgroundBoardDTO, now, startDate, endDate).getGrid().getSchedule();
 
         // schedule updating
         for (ReservationEntity item : reservations) {

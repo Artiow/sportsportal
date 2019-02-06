@@ -7,12 +7,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 public class JavaTimeMapper {
 
-    public static LocalTime MIN_TIME = LocalTime.MIN;
-    public static LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
-    public static LocalDateTime MIN = LocalDateTime.of(MIN_DATE, MIN_TIME);
+    public final static LocalTime MIN_TIME = LocalTime.MIN;
+    public final static LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
+    public final static LocalDateTime MIN = LocalDateTime.of(MIN_DATE, MIN_TIME);
+
 
     public LocalDate toLocalDate(Timestamp timestamp) {
         if (timestamp == null) {

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import ru.vldf.sportsportal.util.RandomCharsSequenceGenerator;
+import ru.vldf.sportsportal.util.CharSequenceGenerator;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -37,7 +37,7 @@ public class JwtEncoder implements Encoder {
      */
     @PostConstruct
     private void init() {
-        sign = TextCodec.BASE64.encode(RandomCharsSequenceGenerator.generate(16));
+        sign = TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
     }
 
 

@@ -6,19 +6,22 @@ import ru.vldf.sportsportal.dto.sectional.common.PictureSizeDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
 import ru.vldf.sportsportal.service.PictureService;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(componentModel = "spring")
-public interface PictureSizeMapper extends AbstractDictionaryMapper<PictureSizeEntity, PictureSizeDTO> {
+public abstract class PictureSizeMapper extends AbstractDictionaryMapper<PictureSizeEntity, PictureSizeDTO> {
 
-    default PictureService.PictureSize toSize(PictureSizeEntity entity) {
-        if (entity == null) {
-            return null;
-        } else {
+    public PictureService.PictureSize toSize(PictureSizeEntity entity) {
+        if (entity != null) {
             return new PictureService.PictureSize(entity.getCode(), entity.getWidth(), entity.getHeight());
+        } else {
+            return null;
         }
     }
 
-    default PictureSizeEntity merge(PictureSizeEntity acceptor, PictureSizeEntity donor) {
-        AbstractDictionaryMapper.super.merge(acceptor, donor);
+    public PictureSizeEntity merge(PictureSizeEntity acceptor, PictureSizeEntity donor) {
+        super.merge(acceptor, donor);
         acceptor.setWidth(donor.getWidth());
         acceptor.setHeight(donor.getHeight());
         return acceptor;

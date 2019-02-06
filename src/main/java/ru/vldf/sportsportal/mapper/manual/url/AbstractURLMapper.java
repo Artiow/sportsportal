@@ -1,20 +1,30 @@
 package ru.vldf.sportsportal.mapper.manual.url;
 
+import io.jsonwebtoken.lang.Assert;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+/**
+ * @author Namednev Artem
+ */
 public abstract class AbstractURLMapper<T extends AbstractIdentifiedEntity> {
 
-    protected abstract String getApiPath();
+    private final String apiPath;
+
+
+    protected AbstractURLMapper(String apiPath) {
+        Assert.hasText(apiPath);
+        this.apiPath = apiPath;
+    }
 
 
     public URI toURL(Integer id) {
         if (id != null) {
-            return ResourceLocationBuilder.buildURL(getApiPath(), id);
+            return ResourceLocationBuilder.buildURL(apiPath, id);
         } else {
             return null;
         }
@@ -30,11 +40,7 @@ public abstract class AbstractURLMapper<T extends AbstractIdentifiedEntity> {
 
     public Collection<URI> toURL(Collection<T> entityCollection) {
         if (entityCollection != null) {
-            Collection<URI> uriCollection = new ArrayList<>(entityCollection.size());
-            for (T entity : entityCollection) {
-                uriCollection.add(toURL(entity));
-            }
-            return uriCollection;
+            return entityCollection.stream().map(this::toURL).collect(Collectors.toList());
         } else {
             return null;
         }

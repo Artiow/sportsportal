@@ -10,6 +10,9 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 public class UserDetailsMapper {
 

@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.util;
 
 import java.util.Random;
 
-public class RandomCharsSequenceGenerator {
+public class CharSequenceGenerator {
 
     public static String generate(int length) {
         Random random = new Random();

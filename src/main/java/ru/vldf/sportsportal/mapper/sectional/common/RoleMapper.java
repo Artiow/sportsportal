@@ -5,7 +5,10 @@ import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.dto.sectional.common.RoleDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(componentModel = "spring")
-public interface RoleMapper extends AbstractDictionaryMapper<RoleEntity, RoleDTO> {
+public abstract class RoleMapper extends AbstractDictionaryMapper<RoleEntity, RoleDTO> {
 
 }

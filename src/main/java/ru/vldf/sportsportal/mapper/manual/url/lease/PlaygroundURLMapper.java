@@ -9,16 +9,15 @@ import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 import java.net.URI;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 @Named("toPlaygroundURL")
 public class PlaygroundURLMapper extends AbstractURLMapper<PlaygroundEntity> {
 
-    @Value("${api.path.lease.playground}")
-    private String apiPath;
-
-    @Override
-    protected String getApiPath() {
-        return apiPath;
+    public PlaygroundURLMapper(@Value("${api.path.lease.playground}") String apiPath) {
+        super(apiPath);
     }
 
 

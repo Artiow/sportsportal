@@ -18,32 +18,35 @@ import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import javax.persistence.OptimisticLockException;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(
         componentModel = "spring",
         uses = {JavaTimeMapper.class, OrderURLMapper.class, PlaygroundMapper.class, UserMapper.class, PictureMapper.class, ReservationMapper.class}
 )
-public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
+public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
 
     @Mappings({
             @Mapping(target = "description", ignore = true),
             @Mapping(target = "email", source = "customer.email")
     })
-    Payment toPayment(OrderEntity entity);
+    public abstract Payment toPayment(OrderEntity entity);
 
     @Mappings({
             @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
             @Mapping(target = "customerURL", source = "customer", qualifiedByName = {"toUserURL", "fromEntity"})
     })
-    OrderShortDTO toShortDTO(OrderEntity entity);
+    public abstract OrderShortDTO toShortDTO(OrderEntity entity);
 
     @Mappings({
             @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
             @Mapping(target = "customerURL", source = "customer", qualifiedByName = {"toUserURL", "fromEntity"})
     })
-    OrderLinkDTO toLinkDTO(OrderEntity entity);
+    public abstract OrderLinkDTO toLinkDTO(OrderEntity entity);
 
     @Mapping(target = "sum", ignore = true)
-    OrderEntity toEntity(OrderLinkDTO dto);
+    public abstract OrderEntity toEntity(OrderLinkDTO dto);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
@@ -51,11 +54,11 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
             @Mapping(target = "customer", ignore = true),
             @Mapping(target = "reservations", ignore = true)
     })
-    OrderEntity toEntity(OrderDTO dto);
+    public abstract OrderEntity toEntity(OrderDTO dto);
 
     @Override
-    default OrderEntity merge(OrderEntity acceptor, OrderEntity donor) throws OptimisticLockException {
-        AbstractVersionedMapper.super.merge(acceptor, donor);
+    public OrderEntity merge(OrderEntity acceptor, OrderEntity donor) throws OptimisticLockException {
+        super.merge(acceptor, donor);
 
         acceptor.setSum(donor.getSum());
         acceptor.setPaid(donor.getPaid());
@@ -64,7 +67,9 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
         acceptor.setCustomer(donor.getCustomer());
 
         Collection<ReservationEntity> reservations = acceptor.getReservations();
-        if (!reservations.isEmpty()) reservations.clear();
+        if (!reservations.isEmpty()) {
+            reservations.clear();
+        }
         for (ReservationEntity reservation : donor.getReservations()) {
             reservation.setOrder(acceptor);
             reservations.add(reservation);

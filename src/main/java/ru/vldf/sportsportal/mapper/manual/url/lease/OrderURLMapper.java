@@ -9,16 +9,15 @@ import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 import java.net.URI;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 @Named("toOrderURL")
 public class OrderURLMapper extends AbstractURLMapper<OrderEntity> {
 
-    @Value("${api.path.lease.order}")
-    private String apiPath;
-
-    @Override
-    protected String getApiPath() {
-        return apiPath;
+    public OrderURLMapper(@Value("${api.path.lease.order}") String apiPath) {
+        super(apiPath);
     }
 
 
