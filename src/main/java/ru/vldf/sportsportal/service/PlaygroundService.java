@@ -280,7 +280,7 @@ public class PlaygroundService extends AbstractSecurityService implements Abstra
             }
 
             order.setPaid(isOwner);
-            order.setPrice(sumPrice);
+            order.setSum(sumPrice);
             order.setByOwner(isOwner);
             order.setReservations(reservations);
 

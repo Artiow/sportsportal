@@ -24,8 +24,8 @@ public class UserDetailsMapper {
         return new IdentifiedUser(entity.getId(), User.builder()
                 .username(entity.getEmail())
                 .password(entity.getPassword())
-                .accountLocked(entity.getLocked())
-                .disabled(entity.getDisabled())
+                .accountLocked(entity.getIsLocked())
+                .disabled(entity.getIsDisabled())
                 .roles(roles)
                 .build()
         );

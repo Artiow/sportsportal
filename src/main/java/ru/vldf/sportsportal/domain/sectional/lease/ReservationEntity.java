@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "reservation", schema = "lease")
 @AttributeOverrides({@AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))})
@@ -29,30 +33,6 @@ public class ReservationEntity implements DomainObject {
         pk = new ReservationEntityPK();
     }
 
-
-    public ReservationEntityPK getPk() {
-        return pk;
-    }
-
-    public void setPk(ReservationEntityPK pk) {
-        this.pk = pk;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public OrderEntity getOrder() {
-        return order;
-    }
-
-    public void setOrder(OrderEntity order) {
-        this.order = order;
-    }
 
     @Transient
     public PlaygroundEntity getPlayground() {

@@ -1,9 +1,14 @@
 package ru.vldf.sportsportal.domain.generic;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractWordbookEntity extends AbstractIdentifiedEntity {
 
@@ -14,21 +19,4 @@ public abstract class AbstractWordbookEntity extends AbstractIdentifiedEntity {
     @Basic
     @Column(name = "name", nullable = false)
     private String name;
-
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

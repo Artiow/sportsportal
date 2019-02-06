@@ -1,22 +1,18 @@
 package ru.vldf.sportsportal.domain.generic;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractDictionaryEntity extends AbstractWordbookEntity {
 
     @Basic
     @Column(name = "description")
     private String description;
-
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

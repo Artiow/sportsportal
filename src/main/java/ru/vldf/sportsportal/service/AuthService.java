@@ -134,7 +134,7 @@ public class AuthService extends AbstractSecurityService {
         } else try {
             UserEntity userEntity = userMapper.toEntity(userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())));
             userEntity.setRoles(Collections.emptyList());
-            userEntity.setDisabled(true);
+            userEntity.setIsDisabled(true);
             if (userRepository.existsByEmail(email)) {
                 try {
                     userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
@@ -196,7 +196,7 @@ public class AuthService extends AbstractSecurityService {
         if (userEntity == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByConfirmCode.message"));
         } else {
-            userEntity.setDisabled(false);
+            userEntity.setIsDisabled(false);
             userEntity.setConfirmCode(null);
             userEntity.setRoles(roleRepository().findAllByCode(userRoleCode));
             userRepository.save(userEntity);

@@ -25,7 +25,6 @@ import java.util.Collection;
 public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
 
     @Mappings({
-            @Mapping(target = "sum", source = "price"),
             @Mapping(target = "description", ignore = true),
             @Mapping(target = "email", source = "customer.email")
     })
@@ -43,7 +42,7 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
     })
     OrderLinkDTO toLinkDTO(OrderEntity entity);
 
-    @Mapping(target = "price", ignore = true)
+    @Mapping(target = "sum", ignore = true)
     OrderEntity toEntity(OrderLinkDTO dto);
 
     @Mappings({
@@ -58,7 +57,7 @@ public interface OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderD
     default OrderEntity merge(OrderEntity acceptor, OrderEntity donor) throws OptimisticLockException {
         AbstractVersionedMapper.super.merge(acceptor, donor);
 
-        acceptor.setPrice(donor.getPrice());
+        acceptor.setSum(donor.getSum());
         acceptor.setPaid(donor.getPaid());
         acceptor.setDatetime(donor.getDatetime());
         acceptor.setExpiration(donor.getExpiration());

@@ -78,17 +78,17 @@ public class KeyService implements KeyProvider {
                 throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
             } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                 throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
-            } else if (userEntity.getDisabled()) {
+            } else if (userEntity.getIsDisabled()) {
                 throw new DisabledException(messages.get("sportsportal.auth.service.accountDisabled.message"));
             }
         } catch (EntityNotFoundException | BadCredentialsException e) {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
         }
 
-        if (userEntity.getLocked()) {
+        if (userEntity.getIsLocked()) {
             throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
         } else if (!(userEntity.getKeys().size() < 20)) {
-            userEntity.setLocked(true);
+            userEntity.setIsLocked(true);
             userEntity.getKeys().clear();
             userRepository.save(userEntity);
             throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
