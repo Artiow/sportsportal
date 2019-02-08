@@ -8,7 +8,7 @@ import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.OrderLinkDTO;
-import ru.vldf.sportsportal.integration.robokassa.model.Payment;
+import ru.vldf.sportsportal.integration.payment.model.Payment;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
@@ -16,6 +16,7 @@ import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
+import java.net.URI;
 import java.util.Collection;
 
 /**
@@ -55,6 +56,14 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
             @Mapping(target = "reservations", ignore = true)
     })
     public abstract OrderEntity toEntity(OrderDTO dto);
+
+
+    public OrderDTO toDTO(OrderEntity entity, URI paymentLink) {
+        OrderDTO dto = toDTO(entity);
+        dto.setPaymentLink(!entity.getByOwner() ? paymentLink : null);
+        return dto;
+    }
+
 
     @Override
     public OrderEntity merge(OrderEntity acceptor, OrderEntity donor) throws OptimisticLockException {

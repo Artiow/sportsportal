@@ -10,6 +10,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.annotation.PostConstruct;
+import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
 
@@ -53,10 +54,10 @@ public class MessageConfig implements MessageContainer {
     /**
      * Message source for validation messages configuration.
      *
-     * @return LocalValidatorFactoryBean bean
+     * @return {@link Validator} bean
      */
     @Bean
-    public LocalValidatorFactoryBean getLocalValidatorFactoryBean() {
+    public Validator validator() {
         LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
         factory.setValidationMessageSource(this.source);
         return factory;

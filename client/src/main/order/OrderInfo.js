@@ -28,14 +28,6 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             .then(data => {
                 console.info('OrderInfo', 'query', 'success');
                 this.setState({content: data});
-                Order.getLink(this.id)
-                    .then(data => {
-                        console.info('OrderInfo', 'link', 'success');
-                        this.setState({link: data});
-                    })
-                    .catch(error => {
-                        console.error('OrderInfo', 'link', 'failed');
-                    });
             })
             .catch(error => {
                 console.error('OrderInfo', 'query', 'failed');
@@ -130,9 +122,8 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             }
             return list;
         };
-        const link = this.state.link;
-        const content = this.state.content;
-        const order = content && link ? {...content, link} : null;
+        const order = this.state.content;
+        const link = order.paymentLink;
         const title = order ? `Заказ #${orderId(order.id)}` : null;
         const expiration = order ? order.expiration : null;
         let minute = 0;
@@ -165,7 +156,7 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
                             <button className="btn btn-danger disabled" disabled={true}>
                                 Отменить {order.byOwner ? 'резервирование' : 'бронирование'}
                             </button>
-                            {!order.paid ? (
+                            {!order.paid && link ? (
                                 <a href={link} className="btn btn-success">
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">

@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.integration.robokassa.model;
+package ru.vldf.sportsportal.integration.payment.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,7 +17,7 @@ import java.util.Date;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PaymentParams {
+public class PaymentRequest {
 
     @NotBlank
     @JsonProperty("MerchantLogin")

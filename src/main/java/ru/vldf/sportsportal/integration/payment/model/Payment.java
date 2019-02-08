@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.integration.robokassa.model;
+package ru.vldf.sportsportal.integration.payment.model;
 
 import lombok.Getter;
 import lombok.Setter;

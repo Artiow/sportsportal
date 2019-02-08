@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.vldf.sportsportal.integration.robokassa.RobokassaService;
+import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
+import ru.vldf.sportsportal.integration.payment.RobokassaService;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
@@ -44,9 +45,16 @@ public class PaymentController {
             @RequestParam(value = "InvId") Integer id,
             @RequestParam(value = "OutSum") BigDecimal sum,
             @RequestParam(value = "Fee") BigDecimal fee,
-            @RequestParam(value = "Email", required = false) String email,
+            @RequestParam(value = "Email") String email,
             @RequestParam(value = "SignatureValue") String sign
     ) {
+        PaymentCheckDTO paymentCheckDTO = new PaymentCheckDTO();
+        paymentCheckDTO.setInvId(id);
+        paymentCheckDTO.setOutSum(sum);
+        paymentCheckDTO.setFee(fee);
+        paymentCheckDTO.setEmail(email);
+        paymentCheckDTO.setSignatureValue(sign);
+        // todo: payment!
         return ResponseEntity.ok("OK" + id);
     }
 }
