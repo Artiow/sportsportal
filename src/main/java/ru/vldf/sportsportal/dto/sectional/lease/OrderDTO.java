@@ -31,7 +31,7 @@ public class OrderDTO implements VersionedDTO {
     @NotNull(groups = FieldCheck.class)
     @Min(value = 0, groups = FieldCheck.class)
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
-    private BigDecimal price;
+    private BigDecimal sum;
 
     @NotNull(groups = FieldCheck.class)
     private Boolean paid;

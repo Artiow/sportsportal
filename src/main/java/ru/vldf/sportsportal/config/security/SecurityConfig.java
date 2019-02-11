@@ -121,7 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             ServletOutputStream out = response.getOutputStream();
-            new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Unauthorized Access Attempt."));
+            new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Unauthorized access attempt"));
             out.flush();
         };
     }
@@ -135,7 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             ServletOutputStream out = response.getOutputStream();
-            new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Forbidden Access Attempt."));
+            new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Forbidden access attempt"));
             out.flush();
         };
     }

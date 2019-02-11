@@ -17,8 +17,11 @@ import springfox.documentation.service.ApiInfo;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
+
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 /**
  * @author Namednev Artem
@@ -44,13 +47,15 @@ public class SupportingController implements ErrorController {
      * @return object {@link Object} with api info
      */
     @ResponseBody
-    @GetMapping("/info")
+    @GetMapping({"/", "/info"})
     public Object getAppInfo() {
         return new Object() {
             @JsonProperty
-            private ApiInfo apiInfo = swaggerConfig.apiInfo();
+            private ApiInfo info = swaggerConfig.apiInfo();
             @JsonProperty
             private Locale locale = messages.getLocale();
+            @JsonProperty
+            private URI documentation = buildURL("/swagger-ui");
         };
     }
 
@@ -73,7 +78,7 @@ public class SupportingController implements ErrorController {
      *
      * @return redirect to swagger page
      */
-    @GetMapping({"/", "/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
+    @GetMapping({"/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
     public String toSwagger() {
         return "redirect:/swagger-ui.html";
     }

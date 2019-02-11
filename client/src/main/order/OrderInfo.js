@@ -123,7 +123,7 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             return list;
         };
         const order = this.state.content;
-        const link = order.paymentLink;
+        const link = order ? order.paymentLink : null;
         const title = order ? `Заказ #${orderId(order.id)}` : null;
         const expiration = order ? order.expiration : null;
         let minute = 0;
@@ -160,7 +160,7 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
                                 <a href={link} className="btn btn-success">
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">
-                                        {order.price}<i className="fa fa-rub ml-1"/>
+                                        {order.sum}<i className="fa fa-rub ml-1"/>
                                     </span>
                                 </a>
                             ) : (null)}

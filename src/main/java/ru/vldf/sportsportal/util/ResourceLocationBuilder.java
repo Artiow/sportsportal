@@ -1,35 +1,31 @@
 package ru.vldf.sportsportal.util;
 
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponents;
+import org.springframework.util.Assert;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 public class ResourceLocationBuilder {
 
     public static URI buildURL() {
-        return buildComponent().toUri();
+        return fromCurrentRequest().build().toUri();
     }
 
-    public static URI buildURL(@NotNull Integer identifier) {
-        return buildComponent(identifier).toUri();
+    public static URI buildURL(Integer identifier) {
+        Assert.notNull(identifier, "id must not be null");
+        return fromCurrentRequest().path("/" + identifier).build().toUri();
     }
 
-    public static URI buildURL(@NotNull String prefix, @NotNull Integer identifier) {
-        return buildComponent(prefix, identifier).toUri();
+    public static URI buildURL(String path) {
+        Assert.hasLength(path, "path must not be blank");
+        return fromCurrentContextPath().path(path).build().toUri();
     }
 
-
-    private static UriComponents buildComponent() {
-        return ServletUriComponentsBuilder.fromCurrentRequest().build();
-    }
-
-    private static UriComponents buildComponent(@NotNull Integer identifier) {
-        return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + identifier).build();
-    }
-
-    private static UriComponents buildComponent(@NotNull String prefix, @NotNull Integer identifier) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(prefix).path("/" + identifier).build();
+    public static URI buildURL(String path, Integer identifier) {
+        Assert.hasLength(path, "path must not be blank");
+        Assert.notNull(identifier, "id must not be null");
+        return fromCurrentContextPath().path(path).path("/" + identifier).build().toUri();
     }
 }
