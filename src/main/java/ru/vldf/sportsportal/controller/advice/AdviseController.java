@@ -45,26 +45,27 @@ public class AdviseController {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDTO handleThrowable(Throwable ex) {
-        return errorDTO(ex, "Unexpected Internal Server Error");
+        return errorDTO(ex, "Unexpected internal server error");
     }
 
     @ExceptionHandler(JwtException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDTO handleJwtException(JwtException ex) {
-        return errorDTO(ex, "JWT Read/Write Error");
+        return errorDTO(ex, "JWT read/write error");
     }
 
     @ExceptionHandler(ResourceFileNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDTO handleResourceFileNotFoundException(ResourceFileNotFoundException ex) {
-        return errorDTO(ex, "Requested File Not Found");
+        return errorDTO(ex, "Requested file not found");
     }
 
     @ExceptionHandler(ResourceCorruptedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDTO handleResourceCorruptedException(ResourceCorruptedException ex) {
-        return errorDTO(ex, "Requested Resource Corrupted");
+        return errorDTO(ex, "Requested resource corrupted");
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -85,7 +86,7 @@ public class AdviseController {
         String causeClassName = (cause != null) ? cause.getClass().getName() : null;
         String causeMessage = (cause != null) ? cause.getMessage() : null;
         return new ErrorMapDTO(
-                warnUUID("Sent Argument Not Valid"),
+                warnUUID(ex.getMessage()),
                 ex.getClass().getName(),
                 exceptionMessage,
                 causeClassName,
@@ -97,103 +98,113 @@ public class AdviseController {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleConstraintViolationException(ConstraintViolationException ex) {
-        return warnDTO(ex, "Sent Argument Not Valid");
+        return warnDTO(ex, "Sent argument not valid");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return warnDTO(ex, "Sent HTTP Message Not Readable");
+        return warnDTO(ex, "Sent HTTP message not readable");
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        return warnDTO(ex, "Requested HTTP Method Not Supported");
+        return warnDTO(ex, "Requested HTTP method not supported");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
-        return warnDTO(ex, "Sent Request Not Contain Required Parameter");
+        return warnDTO(ex, "Sent request does not contain required parameter");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        return warnDTO(ex, "Sent Request Argument Mismatch");
+        return warnDTO(ex, "Sent request argument mismatch");
     }
 
     @ExceptionHandler(SentDataCorruptedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleSentDataCorruptedException(SentDataCorruptedException ex) {
-        return warnDTO(ex, "Sent Access Token Not Readable");
+        return warnDTO(ex, "Sent access token not readable");
     }
+
 
     @ExceptionHandler(UnauthorizedAccessException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
-        return warnDTO(ex, "Unexpected Unauthorized Access Attempt");
+        return warnDTO(ex, "Unexpected unauthorized access attempt");
     }
 
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleAuthenticationException(AuthenticationException ex) {
-        return warnDTO(ex, "Unauthorized Access Attempt");
+        return warnDTO(ex, "Unauthorized access attempt");
     }
 
     @ExceptionHandler(SignatureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleSignatureException(SignatureException ex) {
-        return warnDTO(ex, "Unauthorized Access Attempt");
+        return warnDTO(ex, "Unauthorized access attempt");
     }
+
 
     @ExceptionHandler(AccountStatusException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDTO handleAccountStatusException(AccountStatusException ex) {
-        return warnDTO(ex, "Forbidden Account Status Access Attempt");
+        return warnDTO(ex, "Forbidden account status access attempt");
     }
 
     @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDTO handleForbiddenAccessException(ForbiddenAccessException ex) {
-        return warnDTO(ex, "Forbidden Access Attempt");
+        return warnDTO(ex, "Forbidden access attempt");
     }
 
-    @ExceptionHandler({NoHandlerFoundException.class, HandlerNotFoundException.class})
+
+    @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDTO handleNoHandlerFoundException(Exception ex) {
-        return warnDTO(ex, "No Handler Found For Request");
+    public ErrorDTO handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        return warnDTO(ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(HandlerNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDTO handleHandlerNotFoundException(HandlerNotFoundException ex) {
+        return warnDTO(ex, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleResourceNotFoundException(ResourceNotFoundException ex) {
-        return warnDTO(ex, "Requested Resource Not Found");
+        return warnDTO(ex, "Requested resource not found");
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDTO handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return warnDTO(ex, "Requested User Not Found");
+        return warnDTO(ex, "Requested user not found");
     }
+
 
     @ExceptionHandler(ResourceCannotCreateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorDTO handleResourceCannotCreateException(ResourceCannotCreateException ex) {
-        return warnDTO(ex, "Sent Resource Cannot Create");
+        return warnDTO(ex, "Sent resource cannot create");
     }
 
     @ExceptionHandler(ResourceCannotUpdateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorDTO handleResourceCannotUpdateException(ResourceCannotUpdateException ex) {
-        return warnDTO(ex, "Sent Resource Cannot Update");
+        return warnDTO(ex, "Sent resource cannot update");
     }
 
     @ExceptionHandler(ResourceOptimisticLockException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorDTO handleResourceOptimisticLockException(ResourceOptimisticLockException ex) {
-        return warnDTO(ex, "Sent Resource Data Already Has Been Changed");
+        return warnDTO(ex, "Sent resource data already has been changed");
     }
 
 
@@ -203,7 +214,7 @@ public class AdviseController {
 
     public UUID errorUUID(Throwable ex, String logMessage) {
         UUID uuid = UUID.randomUUID();
-        log.error(logMessage + " UUID: {}", uuid, ex);
+        log.error(logMessage + ". UUID: {}", uuid, ex);
         return uuid;
     }
 
@@ -213,7 +224,7 @@ public class AdviseController {
 
     public UUID warnUUID(String logMessage) {
         UUID uuid = UUID.randomUUID();
-        log.warn(logMessage + " UUID: {}", uuid);
+        log.warn(logMessage + ". UUID: {}", uuid);
         return uuid;
     }
 }

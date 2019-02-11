@@ -5,10 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
+import ru.vldf.sportsportal.dto.payment.PaymentRequestDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.OrderLinkDTO;
-import ru.vldf.sportsportal.integration.payment.model.Payment;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
@@ -32,7 +32,7 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
             @Mapping(target = "description", ignore = true),
             @Mapping(target = "email", source = "customer.email")
     })
-    public abstract Payment toPayment(OrderEntity entity);
+    public abstract PaymentRequestDTO toPayment(OrderEntity entity);
 
     @Mappings({
             @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),

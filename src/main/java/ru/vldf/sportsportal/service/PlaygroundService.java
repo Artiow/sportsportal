@@ -148,7 +148,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             rollbackFor = {ResourceNotFoundException.class, ResourceCorruptedException.class},
             noRollbackFor = {EntityNotFoundException.class, DataCorruptedException.class}
     )
-    public PlaygroundBoardDTO getGrid(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
+    public PlaygroundBoardDTO getBoard(Integer id, LocalDate from, LocalDate to) throws ResourceNotFoundException, ResourceCorruptedException {
         try {
             return playgroundMapper.makeSchedule(
                     playgroundMapper.toGridDTO(playgroundRepository.getOne(id)), LocalDateTime.now(), from, to,
@@ -286,7 +286,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             // if expiration date set, do scheduled job
             if (Optional.ofNullable(newOrderEntity.getExpiration()).isPresent()) {
                 ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-                executorService.schedule(() -> orderRepository.deleteById(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS);
+                executorService.schedule(() ->
+                        orderRepository.deleteByIdAndPaidIsFalse(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS
+                );
             }
 
             return newOrderId;

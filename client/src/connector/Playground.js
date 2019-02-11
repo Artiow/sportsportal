@@ -91,19 +91,19 @@ export default class Playground {
         });
     }
 
-    static getGrid(id, from, to) {
+    static getBoard(id, from, to) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl(`/playground/${id}/grid`), {
+                .get(apiUrl(`/playground/${id}/board`), {
                     params: {from: from, to: to}
                 })
                 .then(response => {
-                    console.debug('Playground', 'grid', response);
+                    console.debug('Playground', 'board', response);
                     resolve(response.data);
                 })
                 .catch(error => {
                     const response = error.response;
-                    console.error('Playground', 'grid', response ? response : error);
+                    console.error('Playground', 'board', response ? response : error);
                     reject((response && response.data) ? response.data : null)
                 });
         });

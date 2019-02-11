@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.dto.validation.annotations;
 
-import ru.vldf.sportsportal.dto.validation.validators.FutureDateValidator;
-import ru.vldf.sportsportal.dto.validation.validators.FutureLocalDateTimeValidator;
+import ru.vldf.sportsportal.dto.validation.validators.NullOrNotBlankValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,12 +10,12 @@ import java.lang.annotation.*;
  * @author Namednev Artem
  */
 @Documented
-@Constraint(validatedBy = {FutureDateValidator.class, FutureLocalDateTimeValidator.class})
+@Constraint(validatedBy = NullOrNotBlankValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Future {
+public @interface NullOrNotBlank {
 
-    String message() default "{sportsportal.validation.constraints.Future.message}";
+    String message() default "{sportsportal.validation.constraints.NullOrNotBlank.message}";
 
     Class<?>[] groups() default {};
 

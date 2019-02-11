@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.dto.validation.annotations;
 
-import ru.vldf.sportsportal.dto.validation.validators.PastValidator;
+import ru.vldf.sportsportal.dto.validation.validators.PastDateValidator;
+import ru.vldf.sportsportal.dto.validation.validators.PastLocalDateTimeValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -10,7 +11,7 @@ import java.lang.annotation.*;
  * @author Namednev Artem
  */
 @Documented
-@Constraint(validatedBy = PastValidator.class)
+@Constraint(validatedBy = {PastDateValidator.class, PastLocalDateTimeValidator.class})
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Past {

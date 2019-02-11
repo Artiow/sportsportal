@@ -126,14 +126,14 @@ public class PlaygroundController {
      * @return {@link PlaygroundBoardDTO} requested time grid
      * @throws ResourceNotFoundException if requested playground not found
      */
-    @GetMapping("/{id}/grid")
+    @GetMapping("/{id}/board")
     @ApiOperation("получить сетку времени для площадки")
-    public PlaygroundBoardDTO getGrid(
+    public PlaygroundBoardDTO getBoard(
             @PathVariable int id,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) throws ResourceNotFoundException, ResourceCorruptedException {
-        return playgroundService.getGrid(id, from, to);
+        return playgroundService.getBoard(id, from, to);
     }
 
     /**

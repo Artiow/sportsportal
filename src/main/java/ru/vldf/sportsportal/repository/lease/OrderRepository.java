@@ -12,4 +12,6 @@ import java.util.List;
 public interface OrderRepository extends AbstractIdentifiedRepository<OrderEntity> {
 
     List<OrderEntity> findAllByPaidIsFalseAndExpirationBefore(Timestamp limit);
+
+    void deleteByIdAndPaidIsFalse(Integer id);
 }

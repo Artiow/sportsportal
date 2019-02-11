@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
+import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
+import ru.vldf.sportsportal.integration.payment.RobokassaSecurityException;
 import ru.vldf.sportsportal.integration.payment.RobokassaService;
 import ru.vldf.sportsportal.mapper.sectional.lease.OrderMapper;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;
@@ -96,34 +98,32 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     /**
      * Order payment.
      *
-     * @param id {@link Integer} order identifier
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ForbiddenAccessException      if user don't have permission to pay this order
+     * @param check {@link PaymentCheckDTO} payment check
+     * @throws ForbiddenAccessException      if security check failed
      * @throws ResourceNotFoundException     if order not found
      * @throws ResourceCannotUpdateException if order cannot be paid
      */
     @Transactional(
-            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class},
-            noRollbackFor = {EntityNotFoundException.class}
+            rollbackFor = {ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class},
+            noRollbackFor = {EntityNotFoundException.class, RobokassaSecurityException.class}
     )
-    // todo: remove suppress warning
-    @SuppressWarnings("unused")
-    public void payFor(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
+    public String pay(PaymentCheckDTO check) throws ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
+        Integer id = 0; // invalid id
         try {
+            id = robokassaService.payment(check);
             OrderEntity orderEntity = orderRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
-            } else if (orderEntity.getPaid()) {
+            if (orderEntity.getPaid()) {
                 throw new ResourceCannotUpdateException(msg("sportsportal.lease.Order.alreadyPaid.message", id));
             } else {
-                // todo: payment here!
-                // orderEntity.setPaid(true);
-                // orderEntity.setExpiration(null);
+                orderEntity.setPaid(true);
                 orderRepository.save(orderEntity);
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
+        } catch (RobokassaSecurityException e) {
+            throw new ForbiddenAccessException(msg("sportsportal.lease.Order.cannotPaid.message", e.getInvId()), e);
         }
+        return "OK" + id;
     }
 
     /**

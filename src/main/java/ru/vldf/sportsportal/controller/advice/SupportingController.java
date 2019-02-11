@@ -91,11 +91,13 @@ public class SupportingController implements ErrorController {
                 .map(Integer::valueOf)
                 .map(HttpStatus::resolve)
                 .orElse(HttpStatus.NOT_FOUND);
+
         String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(),
                 Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
                         .map(Object::toString)
                         .orElse(ERROR_PATH)
         );
+
         switch (status) {
             case NOT_FOUND:
                 throw new HandlerNotFoundException(message);

@@ -151,7 +151,7 @@ export default withMainFrameContext(
         }
 
         query(id, version, from, to) {
-            Playground.getGrid(id, from, to)
+            Playground.getBoard(id, from, to)
                 .then(data => {
                     console.debug('PlaygroundLeaseCalendar', 'query', 'success');
                     this.calculateAuthority(null, data.playground.ownersURLs);
