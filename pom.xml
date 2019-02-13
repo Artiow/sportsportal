@@ -251,7 +251,8 @@
                         <id>dev</id>
                         <configuration>
                             <locations>
-                                filesystem:database/migration/common,filesystem:database/migration/dev
+                                <location>filesystem:database/migration/common</location>
+                                <location>filesystem:database/migration/dev</location>
                             </locations>
                         </configuration>
                     </execution>
@@ -261,7 +262,8 @@
                         <id>prod</id>
                         <configuration>
                             <locations>
-                                filesystem:database/migration/common,filesystem:database/migration/prod
+                                <location>filesystem:database/migration/common</location>
+                                <location>filesystem:database/migration/prod</location>
                             </locations>
                         </configuration>
                     </execution>
