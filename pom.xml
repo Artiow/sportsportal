@@ -325,7 +325,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven.plugin.war.version}</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/classes/application-prod.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/classes/application-prod.properties</packagingExcludes>
                 </configuration>
             </plugin>
         </plugins>
