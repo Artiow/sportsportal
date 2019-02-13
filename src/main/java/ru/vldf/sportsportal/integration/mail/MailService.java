@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
  * @author Namednev Artem
  */
 @Service
+@SuppressWarnings("ALL")
 public class MailService {
 
     private final JavaMailSender javaMailSender;
