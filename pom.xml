@@ -236,7 +236,6 @@
                     <url>${database.url}</url>
                     <user>${database.username}</user>
                     <password>${database.password}</password>
-                    <locations>filesystem:database/migration/common</locations>
                     <schemas>
                         <schema>flyway</schema>
                         <schema>security</schema>
@@ -251,8 +250,7 @@
                         <id>dev</id>
                         <configuration>
                             <locations>
-                                <location>filesystem:database/migration/common</location>
-                                <location>filesystem:database/migration/dev</location>
+                                filesystem:database/migration/common,filesystem:database/migration/dev
                             </locations>
                         </configuration>
                     </execution>
@@ -262,8 +260,7 @@
                         <id>prod</id>
                         <configuration>
                             <locations>
-                                <location>filesystem:database/migration/common</location>
-                                <location>filesystem:database/migration/prod</location>
+                                filesystem:database/migration/common,filesystem:database/migration/prod
                             </locations>
                         </configuration>
                     </execution>
