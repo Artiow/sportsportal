@@ -99,10 +99,7 @@ public class PictureService extends AbstractSecurityService {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
-                Resource resource = new UrlResource(resolveFilename(
-                        pictureRepository.getOne(id).getId(),
-                        pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))
-                ).toUri());
+                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))).toUri());
                 if (resource.exists()) {
                     return resource;
                 } else {

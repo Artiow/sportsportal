@@ -107,8 +107,9 @@ public class AuthController {
      */
     @PostMapping("/register")
     @ApiOperation("регистрация")
-    public ResponseEntity<Void> register(@RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO)
-            throws ResourceCannotCreateException {
+    public ResponseEntity<Void> register(
+            @RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO
+    ) throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(userPath, authService.register(userDTO))).build();
     }
 
@@ -123,8 +124,9 @@ public class AuthController {
      */
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
-    public ResponseEntity<Void> confirm(@PathVariable int id, @RequestParam(required = false) String origin)
-            throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public ResponseEntity<Void> confirm(
+            @PathVariable int id, @RequestParam(required = false) String origin
+    ) throws ResourceNotFoundException, ResourceCannotUpdateException {
         authService.initConfirmation(id, Optional.ofNullable(origin).orElse(String.format("%s://%s%s", apiProtocol, apiHost, apiPath)));
         return ResponseEntity.noContent().build();
     }

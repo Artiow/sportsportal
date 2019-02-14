@@ -61,7 +61,6 @@ public class PaymentController {
         paymentCheckDTO.setFee(fee);
         paymentCheckDTO.setEmail(email);
         paymentCheckDTO.setSignatureValue(sign);
-        orderService.pay(paymentCheckDTO);
         return ResponseEntity.ok(orderService.pay(paymentCheckDTO));
     }
 }

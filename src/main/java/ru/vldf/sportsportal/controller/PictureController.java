@@ -48,18 +48,20 @@ public class PictureController {
      */
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
-    public ResponseEntity<Resource> download(@PathVariable int id, @RequestParam(name = "size", required = false) String size)
-            throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public ResponseEntity<Resource> download(
+            @PathVariable int id, @RequestParam(name = "size", required = false) String size
+    ) throws ResourceNotFoundException, ResourceFileNotFoundException {
         Resource resource = pictureService.get(id, size);
         MediaType contentType;
+
         try {
             contentType = MediaType.parseMediaType(context.getMimeType(resource.getFile().getAbsolutePath()));
         } catch (IOException e) {
-            contentType = MediaType.APPLICATION_JSON;
-            log.info("Could Not Determine Requested File Type.");
+            contentType = MediaType.APPLICATION_OCTET_STREAM;
         }
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(resource.getFilename()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition(resource.getFilename()))
                 .contentType(contentType)
                 .body(resource);
     }
@@ -105,7 +107,7 @@ public class PictureController {
      * @param filename {@link String} filename
      * @return {@link String} content disposition line
      */
-    private String getContentDisposition(String filename) {
+    private String disposition(String filename) {
         return "inline; filename=\"" + filename + "\"";
     }
 }

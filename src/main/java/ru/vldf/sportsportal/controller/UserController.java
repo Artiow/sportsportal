@@ -38,8 +38,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @ApiOperation("получить пользователя")
-    public UserShortDTO get(@PathVariable int id)
-            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+    public UserShortDTO get(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         return userService.get(id);
     }
 

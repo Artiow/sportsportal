@@ -168,8 +168,9 @@ public class PlaygroundController {
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
-    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO)
-            throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+    public ResponseEntity<Void> reserve(
+            @PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO
+    ) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
@@ -183,8 +184,9 @@ public class PlaygroundController {
      */
     @PostMapping
     @ApiOperation("создать площадку")
-    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO)
-            throws UnauthorizedAccessException, ResourceCannotCreateException {
+    public ResponseEntity<Void> create(
+            @RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO
+    ) throws UnauthorizedAccessException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
@@ -202,8 +204,9 @@ public class PlaygroundController {
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
-    public ResponseEntity<Void> update(@PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO)
-            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
+    public ResponseEntity<Void> update(
+            @PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }
@@ -219,8 +222,7 @@ public class PlaygroundController {
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить площадку")
-    public ResponseEntity<Void> delete(@PathVariable int id)
-            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         playgroundService.delete(id);
         return ResponseEntity.noContent().build();
     }

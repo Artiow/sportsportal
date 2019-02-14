@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
@@ -20,42 +19,23 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig implements MessageContainer {
 
-    private MessageSource source;
-    private MessageSourceAccessor accessor;
-    private String localeLanguage;
-    private String localeCountry;
-    private Locale locale;
+    private final Locale locale;
+    private final MessageSource source;
+    private final MessageSourceAccessor accessor;
+
 
     @Autowired
-    public MessageConfig(MessageSource messageSource) {
+    public MessageConfig(
+            @Value("${locale.country}") String localeCountry,
+            @Value("${locale.language}") String localeLanguage,
+            MessageSource messageSource
+    ) {
         this.source = messageSource;
-    }
-
-    @Value("${locale.language}")
-    public void setLocaleLanguage(String localeLanguage) {
-        this.localeLanguage = localeLanguage;
-    }
-
-    @Value("${locale.country}")
-    public void setLocaleCountry(String localeCountry) {
-        this.localeCountry = localeCountry;
-    }
-
-
-    /**
-     * Accessor configuration.
-     */
-    @PostConstruct
-    private void init() {
         this.locale = new Locale(localeLanguage, localeCountry);
         this.accessor = new MessageSourceAccessor(this.source, this.locale);
     }
 
-    /**
-     * Message source for validation messages configuration.
-     *
-     * @return {@link Validator} bean
-     */
+
     @Bean
     public Validator validator() {
         LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();

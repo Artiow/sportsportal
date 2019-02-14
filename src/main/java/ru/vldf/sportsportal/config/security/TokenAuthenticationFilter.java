@@ -44,36 +44,22 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      * @throws AuthenticationException - if valid token not found in request
      */
     @Override
-    public Authentication attemptAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response
-
-    ) throws AuthenticationException {
-
-        final String token;
-        final String credentials = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (credentials == null) {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        final String credentials;
+        if ((credentials = request.getHeader(HttpHeaders.AUTHORIZATION)) == null) {
             throw new AuthenticationCredentialsNotFoundException(messages.get("sportsportal.auth.filter.credentialsNotFound.message"));
         } else if (!credentials.startsWith(AUTHORIZATION_SCHEMA)) {
             throw new BadCredentialsException(messages.get("sportsportal.auth.filter.credentialsNotValid.message"));
         } else {
-            token = credentials.substring(AUTHORIZATION_SCHEMA.length()).trim();
+            return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, credentials.substring(AUTHORIZATION_SCHEMA.length()).trim()));
         }
-
-        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(null, token));
     }
 
     /**
      * Actions configuration in case of successful authentication.
      */
     @Override
-    protected void successfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain, Authentication authResult
-
-    ) throws IOException, ServletException {
-
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, chain, authResult);
         chain.doFilter(request, response);
     }

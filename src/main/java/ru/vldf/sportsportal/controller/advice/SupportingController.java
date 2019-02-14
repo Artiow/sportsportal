@@ -35,11 +35,13 @@ public class SupportingController implements ErrorController {
     private final SwaggerConfig swaggerConfig;
     private final MessageContainer messages;
 
+
     @Autowired
     public SupportingController(SwaggerConfig swaggerConfig, MessageContainer messages) {
         this.swaggerConfig = swaggerConfig;
         this.messages = messages;
     }
+
 
     /**
      * Returns information about api and database version.
@@ -49,13 +51,14 @@ public class SupportingController implements ErrorController {
     @ResponseBody
     @GetMapping({"/", "/info"})
     public Object getAppInfo() {
+        // noinspection unused
         return new Object() {
             @JsonProperty
             private ApiInfo info = swaggerConfig.apiInfo();
             @JsonProperty
             private Locale locale = messages.getLocale();
             @JsonProperty
-            private URI documentation = buildURL("/swagger-ui");
+            private URI documentation = buildURL("/swagger-ui.html");
         };
     }
 
@@ -67,6 +70,7 @@ public class SupportingController implements ErrorController {
     @ResponseBody
     @GetMapping("/csrf")
     public Object toCsrf() {
+        // noinspection unused
         return new Object() {
             @JsonProperty
             private String message = "CSRF protection is disabled as unnecessary";
