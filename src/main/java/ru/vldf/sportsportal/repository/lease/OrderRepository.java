@@ -1,9 +1,11 @@
 package ru.vldf.sportsportal.repository.lease;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -11,7 +13,9 @@ import java.util.List;
  */
 public interface OrderRepository extends AbstractIdentifiedRepository<OrderEntity> {
 
-    List<OrderEntity> findAllByPaidIsFalseAndExpirationBefore(Timestamp limit);
+    Page<OrderEntity> findAllByCustomer(UserEntity customer, Pageable pageable);
+
+    List<OrderEntity> findAllByPaidIsFalse();
 
     void deleteByIdAndPaidIsFalse(Integer id);
 }

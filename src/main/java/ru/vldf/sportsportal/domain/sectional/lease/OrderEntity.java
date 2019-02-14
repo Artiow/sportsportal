@@ -36,7 +36,7 @@ public class OrderEntity extends AbstractVersionedEntity {
     private Timestamp expiration;
 
     @Basic
-    @Column(name = "by_owner")
+    @Column(name = "by_owner", nullable = false)
     private Boolean byOwner = false;
 
 

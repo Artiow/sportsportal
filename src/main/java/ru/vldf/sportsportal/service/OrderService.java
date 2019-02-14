@@ -3,10 +3,14 @@ package ru.vldf.sportsportal.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
+import ru.vldf.sportsportal.dto.pagination.PageDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.integration.payment.RobokassaSecurityException;
 import ru.vldf.sportsportal.integration.payment.RobokassaService;
 import ru.vldf.sportsportal.mapper.sectional.lease.OrderMapper;
@@ -15,8 +19,6 @@ import ru.vldf.sportsportal.service.generic.*;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 /**
  * @author Namednev Artem
@@ -40,11 +42,22 @@ public class OrderService extends AbstractSecurityService implements CRUDService
 
 
     @PostConstruct
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void clearUnpaid() {
-        orderRepository.deleteAll(orderRepository.findAllByPaidIsFalseAndExpirationBefore(Timestamp.valueOf(LocalDateTime.now())));
+        orderRepository.deleteAll(orderRepository.findAllByPaidIsFalse());
     }
 
+
+    /**
+     * Returns page with current user's orders.
+     *
+     * @param dividerDTO {@link PageDividerDTO} page divider
+     * @return {@link PageDTO} with {@link OrderShortDTO}
+     */
+    @Transactional(readOnly = true)
+    public PageDTO<OrderShortDTO> getList(PageDividerDTO dividerDTO) throws UnauthorizedAccessException {
+        return PageDTO.from(orderRepository.findAllByCustomer(getCurrentUserEntity(), new PageDivider(dividerDTO).getPageRequest()).map(orderMapper::toShortDTO));
+    }
 
     /**
      * Returns requested order.
@@ -116,6 +129,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
                 throw new ResourceCannotUpdateException(msg("sportsportal.lease.Order.alreadyPaid.message", id));
             } else {
                 orderEntity.setPaid(true);
+                orderEntity.setExpiration(null);
                 orderRepository.save(orderEntity);
             }
         } catch (EntityNotFoundException e) {

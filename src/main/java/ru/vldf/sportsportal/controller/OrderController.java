@@ -5,7 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.vldf.sportsportal.dto.pagination.PageDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.service.OrderService;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
@@ -27,6 +30,26 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+
+    /**
+     * Returns requested page with orders for current user.
+     *
+     * @param pageSize {@link Integer} page size
+     * @param pageNum  {@link Integer} page number
+     * @return {@link PageDTO<OrderShortDTO>} page with orders
+     * @throws UnauthorizedAccessException if authorization is missing
+     */
+    @GetMapping("/list")
+    @ApiOperation("получить список своих заказов")
+    public PageDTO<OrderShortDTO> getList(
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer pageNum
+    ) throws UnauthorizedAccessException {
+        PageDividerDTO pageDividerDTO = new PageDividerDTO();
+        pageDividerDTO.setPageSize(pageSize);
+        pageDividerDTO.setPageNum(pageNum);
+        return orderService.getList(pageDividerDTO);
+    }
 
     /**
      * Returns order by identifier with full information.
