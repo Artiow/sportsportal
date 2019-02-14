@@ -13,7 +13,8 @@ import MainFrame from './frame/MainFrame';
 import NoMatch from './mismatch/NoMatch';
 import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
 import PlaygroundInfo from '../main/playground/PlaygroundInfo';
-import OrderInfo from '../main/order/OrderInfo';
+import OrderPage from '../main/order/OrderPage';
+import HomePage from '../main/home/HomePage';
 
 const ApplicationContext = React.createContext(null);
 
@@ -119,7 +120,7 @@ function OrderFrame(props) {
     };
     return (
         <MainFrame {...frameProps}>
-            <OrderInfo identifier={props.match.params.identifier}/>
+            <OrderPage identifier={props.match.params.identifier}/>
         </MainFrame>
     );
 }
@@ -130,7 +131,7 @@ function HomeFrame(props) {
     };
     return (
         <MainFrame {...frameProps}>
-            <main className="Home container"/>
+            <HomePage/>
         </MainFrame>
     );
 }

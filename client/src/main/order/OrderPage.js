@@ -8,9 +8,9 @@ import ContentRow from '../../util/components/special/ContentRow';
 import PlacedImg from '../../util/components/PlacedImg';
 import StarRate from '../../util/components/StarRate';
 import Timer from '../../util/components/Timer';
-import './OrderInfo.css';
+import './OrderPage.css';
 
-export default withMainFrameContext(class OrderInfo extends React.Component {
+export default withMainFrameContext(class OrderPage extends React.Component {
 
     static UUID_LENGTH = 10;
 
@@ -26,18 +26,18 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
     componentDidMount() {
         Order.get(this.id)
             .then(data => {
-                console.info('OrderInfo', 'query', 'success');
+                console.info('OrderPage', 'query', 'success');
                 this.setState({content: data});
             })
             .catch(error => {
-                console.error('OrderInfo', 'query', 'failed');
+                console.error('OrderPage', 'query', 'failed');
             });
     }
 
     render() {
         const orderId = id => {
             let result = '' + id;
-            while (result.length < OrderInfo.UUID_LENGTH)
+            while (result.length < OrderPage.UUID_LENGTH)
                 result = '0' + result;
             return result;
         };
@@ -135,7 +135,7 @@ export default withMainFrameContext(class OrderInfo extends React.Component {
             second = res.getSeconds();
         }
         return order ? (
-            <ContentContainer className="OrderInfo">
+            <ContentContainer className="OrderPage">
                 <ContentRow className="header">
                     <div className="col-12">
                         <h1 className="mb-1">{title}</h1>

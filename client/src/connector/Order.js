@@ -4,6 +4,31 @@ import axios from 'axios';
 
 export default class Order {
 
+    static getList() {
+        return new Promise((resolve, reject) => {
+            Authentication.access()
+                .then(token => {
+                    axios
+                        .get(apiUrl(`/order/list`), {
+                            headers: {Authorization: `Bearer ${token}`}
+                        })
+                        .then(response => {
+                            console.debug('Order', 'list', response);
+                            resolve(response.data);
+                        })
+                        .catch(error => {
+                            const response = error.response;
+                            console.error('Order', 'list', response ? response : error);
+                            reject((response && response.data) ? response.data : null)
+                        })
+                })
+                .catch(error => {
+                    console.error('Order', 'list', 'access error');
+                    reject(null);
+                });
+        });
+    }
+
     static get(id) {
         return new Promise((resolve, reject) => {
             Authentication.access()
