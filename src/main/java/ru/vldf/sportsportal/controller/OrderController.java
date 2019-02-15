@@ -36,7 +36,7 @@ public class OrderController {
      *
      * @param pageSize {@link Integer} page size
      * @param pageNum  {@link Integer} page number
-     * @return {@link PageDTO<OrderShortDTO>} page with orders
+     * @return {@link PageDTO} of {@link OrderShortDTO} page with orders
      * @throws UnauthorizedAccessException if authorization is missing
      */
     @GetMapping("/list")

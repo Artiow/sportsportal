@@ -53,15 +53,15 @@ public class PlaygroundController {
      *
      * @param opening      {@link LocalTime} opening time
      * @param closing      {@link LocalTime} closing time
-     * @param featureCodes {@link Collection<String>} feature codes
-     * @param sportCodes   {@link Collection<String>} sport codes
+     * @param featureCodes {@link Collection} of {@link String} feature codes
+     * @param sportCodes   {@link Collection} of {@link String} sport codes
      * @param startPrice   {@link BigDecimal} minimal playground price
      * @param endPrice     {@link BigDecimal} maximal playground price
      * @param searchString {@link String} search string
      * @param pageSize     {@link Integer} page size
      * @param pageNum      {@link Integer} page number
      * @param minRate      {@link Integer} minimal playground rate
-     * @return {@link PageDTO<PlaygroundShortDTO>} page with playgrounds
+     * @return {@link PageDTO} of {@link PlaygroundShortDTO} page with playgrounds
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
@@ -124,7 +124,8 @@ public class PlaygroundController {
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
      * @return {@link PlaygroundBoardDTO} requested time grid
-     * @throws ResourceNotFoundException if requested playground not found
+     * @throws ResourceNotFoundException  if requested playground not found
+     * @throws ResourceCorruptedException if playground data corrupted
      */
     @GetMapping("/{id}/board")
     @ApiOperation("получить сетку времени для площадки")
@@ -142,7 +143,7 @@ public class PlaygroundController {
      *
      * @param id           playground identifier
      * @param version      playground version
-     * @param reservations {@link Set<String>} checked reservation times
+     * @param reservations {@link Set} of {@link String} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if requested playground not found
      */

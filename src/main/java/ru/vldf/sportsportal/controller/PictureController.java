@@ -41,7 +41,8 @@ public class PictureController {
     /**
      * Download picture by id.
      *
-     * @param id picture identifier
+     * @param id   picture identifier
+     * @param size picture size code
      * @return picture {@link Resource}
      * @throws ResourceNotFoundException     if record not found in database
      * @throws ResourceFileNotFoundException if file not found on disk

@@ -167,7 +167,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
      *
      * @param id      {@link Integer} playground identifier
      * @param version {@link Long} playground version
-     * @param times   {@link Collection<String>} checked reservation times
+     * @param times   {@link Collection} of {@link String} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if playground not found
      */

@@ -79,6 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * FilterRegistrationBean configuration, Spring Boot automatic filter registration disabling.
+     *
+     * @param authenticationFilter {@link TokenAuthenticationFilter} auth filter
+     * @return {@link FilterRegistrationBean} bean
      */
     @Bean
     public FilterRegistrationBean registrationBean(final TokenAuthenticationFilter authenticationFilter) {
@@ -90,6 +93,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * TokenAuthenticationFilter configuration, handlers setting.
+     *
+     * @return {@link TokenAuthenticationFilter} bean
+     * @throws Exception if something goes wrong
      */
     @Bean
     public TokenAuthenticationFilter authenticationFilter() throws Exception {
@@ -102,6 +108,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * AuthenticationSuccessHandler configuration.
+     *
+     * @return {@link AuthenticationSuccessHandler} bean
      */
     @Bean
     public AuthenticationSuccessHandler successHandler() {
@@ -114,6 +122,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * AuthenticationFailureHandler configuration.
+     *
+     * @return {@link AuthenticationFailureHandler} bean
      */
     @Bean
     public AuthenticationFailureHandler failureHandler() {
@@ -128,6 +138,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * AccessDeniedHandler configuration.
+     *
+     * @return {@link AccessDeniedHandler} bean
      */
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {

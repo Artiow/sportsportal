@@ -61,7 +61,6 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @return <tt>true</tt> if successful, false otherwise
      * @throws UnauthorizedAccessException if current user is anonymous
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
         return getCurrentUserId().equals(userEntity.getId());
     }
@@ -69,7 +68,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     /**
      * Checks if the current user in collection of users.
      *
-     * @param userEntityCollection {@link Collection<UserEntity>} checked collection of user
+     * @param userEntityCollection {@link Collection} of {@link UserEntity} checked collection of user
      * @return <tt>true</tt> if successful, false otherwise
      * @throws UnauthorizedAccessException if current user is anonymous
      */
@@ -86,7 +85,6 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @throws UnauthorizedAccessException if user is anonymous
      * @throws ResourceNotFoundException   if role code not exist
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (roleRepository.existsByCode(code)) {
             return userRepository.hasRoleByCode(getCurrentUserId(), code);

@@ -53,6 +53,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
      *
      * @param dividerDTO {@link PageDividerDTO} page divider
      * @return {@link PageDTO} with {@link OrderShortDTO}
+     * @throws UnauthorizedAccessException if authorization is missing
      */
     @Transactional(readOnly = true)
     public PageDTO<OrderShortDTO> getList(PageDividerDTO dividerDTO) throws UnauthorizedAccessException {
@@ -112,6 +113,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
      * Order payment.
      *
      * @param check {@link PaymentCheckDTO} payment check
+     * @return {@link String} payment success code
      * @throws ForbiddenAccessException      if security check failed
      * @throws ResourceNotFoundException     if order not found
      * @throws ResourceCannotUpdateException if order cannot be paid

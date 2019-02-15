@@ -46,6 +46,7 @@ public class UserController {
      * Delete user by sent user id.
      *
      * @param id user identifier
+     * @return {@link ResponseEntity} of {@link Void}
      * @throws ResourceNotFoundException   if user not found
      * @throws UnauthorizedAccessException if authorization is missing
      * @throws ForbiddenAccessException    if user don't have permission to delete this user

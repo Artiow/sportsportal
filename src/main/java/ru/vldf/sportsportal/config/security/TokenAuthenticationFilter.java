@@ -28,6 +28,9 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     /**
      * Required authentication request matcher setting.
+     *
+     * @param router   {@link RightsDifferentiationRouter}
+     * @param messages {@link MessageContainer}
      */
     public TokenAuthenticationFilter(RightsDifferentiationRouter router, MessageContainer messages) {
         super(router.getAllProtectedPathRequestMatcher());
