@@ -9,7 +9,6 @@
 *.ipr
 
 ### Deployment Data ###
-/webapps/
 /target/
 
 ### Maven ###
