@@ -1,15 +1,14 @@
 import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
-import Playground from '../../connector/Playground';
-import CheckButton from '../../util/components/CheckButton';
+import Playground from '../../../connector/Playground';
+import CheckButton from '../../../util/components/CheckButton';
 import PlaygroundSubmitOrderModal from './PlaygroundSubmitOrderModal';
-import {clearReservation, restoreReservation, saveReservation} from '../../util/reservationSaver';
-import {withMainFrameContext} from '../../boot/frame/MainFrame'
-import {env} from '../../boot/constants';
+import {clearReservation, restoreReservation, saveReservation} from '../../../util/reservationSaver';
+import {withMainFrameContext} from '../../../boot/frame/MainFrame'
+import {env} from '../../../boot/constants';
 import './PlaygroundLeaseCalendar.css';
 
-export default withMainFrameContext(
-    withRouter(class PlaygroundLeaseCalendar extends React.Component {
+export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar extends React.Component {
 
         static CLOSE_TITLE = 'Отмена';
         static CANCEL_TITLE = 'Сбросить выбор';

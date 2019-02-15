@@ -1,0 +1,13 @@
+.PlaygroundPage .ContentRow.header h1.header {
+    margin-bottom: 0;
+}
+
+.PlaygroundPage .ContentRow.feature h5.feature {
+    padding: .25rem .75rem;
+}
+
+.PlaygroundPage .ContentRow.feature ul li {
+    padding: .5rem .75rem;
+    background: inherit;
+    font-weight: 300;
+}

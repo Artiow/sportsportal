@@ -1,14 +1,14 @@
 import React from 'react';
 import Playground from '../../connector/Playground';
-import PlaygroundLeaseCalendar from './PlaygroundLeaseCalendar';
+import PlaygroundLeaseCalendar from './components/PlaygroundLeaseCalendar';
 import ContentContainer from '../../util/components/special/ContentContainer';
 import ContentRow from '../../util/components/special/ContentRow';
 import PhotoCarousel from '../../util/components/PhotoCarousel';
 import noImage from '../../util/img/no-image-grey-mdh.jpg';
 import StarRate from '../../util/components/StarRate';
-import './PlaygroundInfo.css';
+import './PlaygroundPage.css';
 
-export default class PlaygroundInfo extends React.Component {
+export default class PlaygroundPage extends React.Component {
     constructor(props) {
         super(props);
         this.id = props.identifier;
@@ -18,11 +18,11 @@ export default class PlaygroundInfo extends React.Component {
     componentDidMount() {
         Playground.get(this.id)
             .then(data => {
-                console.debug('PlaygroundInfo', 'query', 'success');
+                console.debug('PlaygroundPage', 'query', 'success');
                 this.setState({content: data});
             })
             .catch(error => {
-                console.error('PlaygroundInfo', 'query', 'failed');
+                console.error('PlaygroundPage', 'query', 'failed');
             });
     }
 
@@ -55,7 +55,7 @@ export default class PlaygroundInfo extends React.Component {
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
         return didLoad ? (
-            <ContentContainer className="PlaygroundInfo">
+            <ContentContainer className="PlaygroundPage">
                 <ContentRow className="header">
                     <div className="col-12">
                         <h1 className="header">{playground.name}</h1>

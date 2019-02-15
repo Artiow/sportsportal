@@ -1,9 +1,9 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import StarRate from '../../util/components/StarRate';
-import PlacedImg from '../../util/components/PlacedImg';
-import placeimg from '../../util/img/no-image-white-sm.jpg';
-import LoadingSpinner from '../../util/components/LoadingSpinner';
+import StarRate from '../../../util/components/StarRate';
+import PlacedImg from '../../../util/components/PlacedImg';
+import placeimg from '../../../util/img/no-image-white-sm.jpg';
+import LoadingSpinner from '../../../util/components/LoadingSpinner';
 import './PlaygroundPageableContainer.css'
 
 export default function PlaygroundPageableContainer(props) {

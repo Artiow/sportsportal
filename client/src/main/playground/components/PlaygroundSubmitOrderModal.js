@@ -1,12 +1,22 @@
 import React from 'react';
-import {env} from '../../boot/constants';
-import ModalFade from '../../util/components/ModalFade';
+import {env} from '../../../boot/constants';
+import ModalFade from '../../../util/components/ModalFade';
 import './PlaygroundSubmitOrderModal.css';
 
 export default class PlaygroundSubmitOrderModal extends React.Component {
 
     static HEADER_TITLE = 'Подтвердите правильность выбора';
     static MAX_LENGTH = 4;
+
+    constructor(props) {
+        super(props);
+        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation);
+        this.state = {
+            schedule: schedule,
+            maxHeight: height,
+            offset: 0
+        }
+    }
 
     static calcSchedule = (reservation) => {
         const rawSchedule = new Map();
@@ -29,16 +39,6 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
             height: maxHeight
         }
     };
-
-    constructor(props) {
-        super(props);
-        const {schedule, height} = PlaygroundSubmitOrderModal.calcSchedule(this.props.reservation);
-        this.state = {
-            schedule: schedule,
-            maxHeight: height,
-            offset: 0
-        }
-    }
 
     activate(options) {
         this.modal.activate(options);

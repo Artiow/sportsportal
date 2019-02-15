@@ -1,8 +1,8 @@
 import React from 'react';
 import {Range} from 'rc-slider';
-import Dictionary from '../../connector/Dictionary';
+import Dictionary from '../../../connector/Dictionary';
 import 'rc-slider/assets/index.css';
-import CustomCheckbox from '../../util/components/CustomCheckbox';
+import CustomCheckbox from '../../../util/components/CustomCheckbox';
 import './PlaygroundFilter.css';
 
 export default class PlaygroundFilter extends React.Component {
