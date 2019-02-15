@@ -4,6 +4,12 @@ import java.util.Random;
 
 public class CharSequenceGenerator {
 
+    /**
+     * Returns a random generated sequence of characters of a given length.
+     *
+     * @param length the length of generated sequence.
+     * @return random generated sequence of characters of a given length.
+     */
     public static String generate(int length) {
         Random random = new Random();
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

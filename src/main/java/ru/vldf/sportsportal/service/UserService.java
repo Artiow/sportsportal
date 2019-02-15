@@ -34,13 +34,13 @@ public class UserService extends AbstractSecurityService {
 
 
     /**
-     * Returns users short data by user id.
+     * Returns users short data by user identifier.
      *
-     * @param id {@link Integer} user identifier
-     * @return {@link UserShortDTO} users data
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to get this user data
-     * @throws ResourceNotFoundException   if user with sent id not found
+     * @param id the user identifier.
+     * @return users short data.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to get this user data.
+     * @throws ResourceNotFoundException   if user with sent id not found.
      */
     @Transactional(
             readOnly = true,
@@ -61,12 +61,12 @@ public class UserService extends AbstractSecurityService {
     }
 
     /**
-     * Delete user.
+     * Delete user by user identifier.
      *
-     * @param id {@link Integer} user identifier
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this user
-     * @throws ResourceNotFoundException   if user not found
+     * @param id the user identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this user.
+     * @throws ResourceNotFoundException   if user not found.
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},

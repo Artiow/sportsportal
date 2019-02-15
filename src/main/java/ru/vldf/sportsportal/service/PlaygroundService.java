@@ -81,10 +81,10 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
 
     /**
-     * Returns requested page with playgrounds.
+     * Returns requested filtered page with list of playgrounds.
      *
-     * @param filterDTO {@link PlaygroundFilterDTO} filter data
-     * @return {@link PageDTO} with {@link PlaygroundShortDTO}
+     * @param filterDTO the filter parameters.
+     * @return filtered requested page with playgrounds.
      */
     @Transactional(readOnly = true)
     public PageDTO<PlaygroundShortDTO> getList(PlaygroundFilterDTO filterDTO) {
@@ -93,11 +93,11 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
     /**
-     * Returns requested playground.
+     * Returns requested playground by playground identifier.
      *
-     * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundDTO} playground
-     * @throws ResourceNotFoundException if playground not found
+     * @param id the playground identifier.
+     * @return requested playground data.
+     * @throws ResourceNotFoundException if playground not found.
      */
     @Override
     @Transactional(
@@ -114,11 +114,11 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
     /**
-     * Returns requested playground with short information.
+     * Returns requested playground by playground identifier.
      *
-     * @param id {@link Integer} playground identifier
-     * @return {@link PlaygroundShortDTO}
-     * @throws ResourceNotFoundException if playground not found
+     * @param id the playground identifier.
+     * @return requested playground short data.
+     * @throws ResourceNotFoundException if playground not found.
      */
     @Transactional(
             readOnly = true,
@@ -134,14 +134,14 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
     /**
-     * Returns requested playground with time grid info.
+     * Returns requested playground with time board information.
      *
-     * @param id   {@link Integer} playground identifier
-     * @param from {@link Date} first date of grid
-     * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundBoardDTO}
-     * @throws ResourceNotFoundException  if playground not found
-     * @throws ResourceCorruptedException if playground data corrupted
+     * @param id   the playground identifier.
+     * @param from the first date of time board.
+     * @param to   the last date of time board.
+     * @return requested playground with time board information.
+     * @throws ResourceNotFoundException  if playground not found.
+     * @throws ResourceCorruptedException if playground data corrupted.
      */
     @Transactional(
             readOnly = true,
@@ -162,14 +162,13 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
     /**
-     * Returns available for reservation times for playground by identifier and collections of checked
-     * reservation times.
+     * Returns available reservation times for playground.
      *
-     * @param id      {@link Integer} playground identifier
-     * @param version {@link Long} playground version
-     * @param times   {@link Collection} of {@link String} checked reservation times
-     * @return {@link ReservationListDTO} with available for reservation times
-     * @throws ResourceNotFoundException if playground not found
+     * @param id      the playground identifier.
+     * @param version the playground data version.
+     * @param times   the collection of checked reservation times.
+     * @return list of available reservation times.
+     * @throws ResourceNotFoundException if playground not found.
      */
     @Transactional(
             readOnly = true,
@@ -213,14 +212,14 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
     /**
-     * Reserve sent datetimes and returns new order id.
+     * Reserve sent datetimes and returns new created order identifier.
      *
-     * @param id                 {@link Integer} playground identifier
-     * @param reservationListDTO {@link ReservationListDTO} reservation info
-     * @return {@link Integer} new order identifier
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceNotFoundException     if playground not found
-     * @throws ResourceCannotCreateException if reservation cannot create
+     * @param id                 the playground identifier.
+     * @param reservationListDTO the reservation details.
+     * @return new created order identifier.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceNotFoundException     if playground not found.
+     * @throws ResourceCannotCreateException if reservation cannot create.
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class},
@@ -300,10 +299,10 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     /**
      * Saves new playground.
      *
-     * @param playgroundDTO {@link PlaygroundDTO} with playground data
-     * @return new playground {@link Integer} identifier
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceCannotCreateException if playground cannot create
+     * @param playgroundDTO the playground data.
+     * @return new created playground identifier.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceCannotCreateException if playground cannot create.
      */
     @Override
     @Transactional(
@@ -324,13 +323,13 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     /**
      * Update playground data.
      *
-     * @param id            {@link Integer} playground identifier
-     * @param playgroundDTO {@link PlaygroundDTO} with new playground data
-     * @throws UnauthorizedAccessException     if authorization is missing
-     * @throws ForbiddenAccessException        if user don't have permission to update this playground
-     * @throws ResourceNotFoundException       if playground not found
-     * @throws ResourceCannotUpdateException   if playground cannot update
-     * @throws ResourceOptimisticLockException if playground was already updated
+     * @param id            the playground identifier.
+     * @param playgroundDTO the new playground data.
+     * @throws UnauthorizedAccessException     if authorization is missing.
+     * @throws ForbiddenAccessException        if user don't have permission to update this playground.
+     * @throws ResourceNotFoundException       if playground not found.
+     * @throws ResourceCannotUpdateException   if playground cannot update.
+     * @throws ResourceOptimisticLockException if playground was already updated.
      */
     @Override
     @Transactional(
@@ -358,10 +357,10 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     /**
      * Delete playground.
      *
-     * @param id {@link Integer} playground identifier
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this playground
-     * @throws ResourceNotFoundException   if playground not found
+     * @param id the playground identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground.
+     * @throws ResourceNotFoundException   if playground not found.
      */
     @Override
     @Transactional(

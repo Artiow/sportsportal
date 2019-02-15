@@ -79,13 +79,13 @@ public class PictureService extends AbstractSecurityService {
 
 
     /**
-     * Returns picture by id and size code.
+     * Returns picture by identifier and size code.
      *
-     * @param id       {@link Integer} resource identifier
-     * @param sizeCode {@link String} resource size code
-     * @return {@link Resource} picture
-     * @throws ResourceNotFoundException     if record not found in database
-     * @throws ResourceFileNotFoundException if file not found on disk
+     * @param id       the picture identifier.
+     * @param sizeCode the picture size code.
+     * @return picture resource.
+     * @throws ResourceNotFoundException     if record not found in database.
+     * @throws ResourceFileNotFoundException if file not found on disk.
      */
     @Transactional(
             readOnly = true,
@@ -114,12 +114,12 @@ public class PictureService extends AbstractSecurityService {
     }
 
     /**
-     * Create new picture and returns its resource id.
+     * Create new picture and returns its identifier.
      *
-     * @param picture picture {@link MultipartFile}
-     * @return {@link Integer} resource identifier
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceCannotCreateException if resource cannot create
+     * @param picture the picture resource file.
+     * @return new created picture resource identifier.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceCannotCreateException if resource cannot create.
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
@@ -156,12 +156,12 @@ public class PictureService extends AbstractSecurityService {
     }
 
     /**
-     * Delete picture by id.
+     * Delete picture by identifier.
      *
-     * @param id {@link Integer} picture identifier
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this picture
-     * @throws ResourceNotFoundException   if picture not found in database
+     * @param id the picture identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
+     * @throws ResourceNotFoundException   if picture not found in database.
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
@@ -190,10 +190,10 @@ public class PictureService extends AbstractSecurityService {
     /**
      * Returns resized picture.
      *
-     * @param inputStream {@link InputStream} picture bytes
-     * @param size        {@link PictureSize} size
-     * @return {@link InputStream} resized picture bytes
-     * @throws IOException if something goes wrong
+     * @param inputStream the picture input stream.
+     * @param size        the picture size.
+     * @return resized picture input stream.
+     * @throws IOException if something goes wrong.
      */
     private InputStream resizePicture(InputStream inputStream, PictureSize size) throws IOException {
         BufferedImage img = ImageIO.read(inputStream);
@@ -234,20 +234,20 @@ public class PictureService extends AbstractSecurityService {
     /**
      * Resolve picture path.
      *
-     * @param identifier {@link Integer} picture identifier
-     * @param size       {@link PictureSize} picture size
-     * @return {@link Path} picture path
+     * @param identifier the picture identifier.
+     * @param size       the picture size.
+     * @return picture path.
      */
     private Path resolveFilename(@NotNull Integer identifier, PictureSize size) {
         return this.pictureDirectory.resolve(getFilename(identifier, size));
     }
 
     /**
-     * Form picture filename on disk.
+     * Build picture filename on filesystem.
      *
-     * @param identifier {@link Integer} picture identifier
-     * @param size       {@link PictureSize} picture size
-     * @return {@link String} picture filename
+     * @param identifier the picture identifier.
+     * @param size       the picture size.
+     * @return picture filename.
      */
     private String getFilename(@NotNull Integer identifier, PictureSize size) {
         return String.format(
