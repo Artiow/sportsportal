@@ -1,3 +1,7 @@
+### Production Data ###
+**/application-prod.properties
+**/migration/prod/
+
 ### IntelliJ IDEA ###
 /.idea/
 *.iws
@@ -5,13 +9,9 @@
 *.ipr
 
 ### Deployment Data ###
-/webapps/
 /target/
 
 ### Maven ###
 /.mvn/
 mvnw.cmd
 mvnw
-
-### Properties ###
-**/application.properties

@@ -159,7 +159,7 @@ export default class Authentication {
 }
 
 function isNotExpired(token) {
-    const ALLOWABLE_DELAY_SEC = 150; // assumption by slow communication channel
+    const ALLOWABLE_DELAY_SEC = 90; // assumption by slow communication channel
     return Math.floor(Date.now() / 1000) < (parse(token).exp - ALLOWABLE_DELAY_SEC);
 }
 

@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.service;
 
+import lombok.Getter;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,14 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
-import ru.vldf.sportsportal.repository.common.RoleRepository;
-import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.*;
 
 import javax.annotation.PostConstruct;
@@ -39,8 +37,17 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class PictureService extends AbstractSecurityService {
+
+    private final PictureRepository pictureRepository;
+    private final PictureSizeRepository pictureSizeRepository;
+    private final PictureSizeMapper pictureSizeMapper;
+
+    private Path pictureDirectory;
 
     @Value("${code.role.admin}")
     private String adminRoleCode;
@@ -51,33 +58,14 @@ public class PictureService extends AbstractSecurityService {
     @Value("${file.location}")
     private String dir;
 
-    private Path pictureDirectory;
-
-    private PictureRepository pictureRepository;
-    private PictureSizeRepository pictureSizeRepository;
-    private PictureSizeMapper pictureSizeMapper;
-
 
     @Autowired
-    public PictureService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages, userRepository, roleRepository);
-    }
-
-
-    @Autowired
-    public void setPictureRepository(PictureRepository pictureRepository) {
+    public PictureService(PictureRepository pictureRepository, PictureSizeRepository pictureSizeRepository, PictureSizeMapper pictureSizeMapper) {
         this.pictureRepository = pictureRepository;
-    }
-
-    @Autowired
-    public void setPictureSizeRepository(PictureSizeRepository pictureSizeRepository) {
         this.pictureSizeRepository = pictureSizeRepository;
-    }
-
-    @Autowired
-    public void setPictureSizeMapper(PictureSizeMapper pictureSizeMapper) {
         this.pictureSizeMapper = pictureSizeMapper;
     }
+
 
     @PostConstruct
     public void setFileStorageLocation() {
@@ -106,24 +94,21 @@ public class PictureService extends AbstractSecurityService {
     )
     public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else if ((sizeCode != null) && !pictureSizeRepository.existsByCode(sizeCode)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id));
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
-                Resource resource = new UrlResource(resolveFilename(
-                        pictureRepository.getOne(id).getId(),
-                        pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))
-                ).toUri());
+                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))).toUri());
                 if (resource.exists()) {
                     return resource;
                 } else {
-                    throw new ResourceFileNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistByFile.message", id));
+                    throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id));
                 }
             } catch (EntityNotFoundException e) {
-                throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
+                throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
             } catch (MalformedURLException e) {
-                throw new ResourceFileNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistByFile.message", id), e);
+                throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id), e);
             }
         }
     }
@@ -142,7 +127,7 @@ public class PictureService extends AbstractSecurityService {
     )
     public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"));
+            throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setSize(picture.getSize());
@@ -163,9 +148,9 @@ public class PictureService extends AbstractSecurityService {
                 }
                 return newId;
             } catch (MaxUploadSizeExceededException e) {
-                throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
+                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
             } catch (IOException e) {
-                throw new ResourceCannotCreateException(mGet("sportsportal.common.Picture.couldNotStore.message"), e);
+                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
             }
         }
     }
@@ -186,7 +171,7 @@ public class PictureService extends AbstractSecurityService {
         try {
             PictureEntity pictureEntity = pictureRepository.getOne(id);
             if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(pictureEntity.getOwner()))) {
-                throw new ForbiddenAccessException(mGet("sportsportal.common.Picture.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
             } else {
                 pictureRepository.delete(pictureEntity);
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
@@ -197,7 +182,7 @@ public class PictureService extends AbstractSecurityService {
                 }
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Picture.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
         }
     }
 
@@ -271,6 +256,7 @@ public class PictureService extends AbstractSecurityService {
     }
 
 
+    @Getter
     public static class PictureSize {
 
         private final String value;
@@ -286,22 +272,6 @@ public class PictureService extends AbstractSecurityService {
             this.factor = ((double) this.width) / ((double) this.height);
         }
 
-
-        public String getValue() {
-            return value;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
 
         @Override
         public String toString() {

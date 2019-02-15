@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
@@ -8,6 +10,11 @@ import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 import javax.persistence.*;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
+@Getter
+@Setter
 @Entity
 @Table(name = "user", schema = "common")
 public class UserEntity extends AbstractVersionedEntity {
@@ -52,6 +59,7 @@ public class UserEntity extends AbstractVersionedEntity {
     @Column(name = "disabled", nullable = false)
     private Boolean isDisabled = true;
 
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
@@ -76,135 +84,6 @@ public class UserEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<RoleEntity> roles;
-
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getConfirmCode() {
-        return confirmCode;
-    }
-
-    public void setConfirmCode(String confirmCode) {
-        this.confirmCode = confirmCode;
-    }
-
-    public Boolean getLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(Boolean locked) {
-        isLocked = locked;
-    }
-
-    public Boolean getDisabled() {
-        return isDisabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        isDisabled = disabled;
-    }
-
-    public PictureEntity getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(PictureEntity avatar) {
-        this.avatar = avatar;
-    }
-
-    public Collection<OrderEntity> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Collection<OrderEntity> orders) {
-        this.orders = orders;
-    }
-
-    public Collection<PictureEntity> getPictures() {
-        return pictures;
-    }
-
-    public void setPictures(Collection<PictureEntity> pictures) {
-        this.pictures = pictures;
-    }
-
-    public Collection<PlaygroundEntity> getPlaygrounds() {
-        return playgrounds;
-    }
-
-    public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
-        this.playgrounds = playgrounds;
-    }
-
-    public Collection<KeyEntity> getKeys() {
-        return keys;
-    }
-
-    public void setKeys(Collection<KeyEntity> keys) {
-        this.keys = keys;
-    }
-
-    public Collection<RoleEntity> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<RoleEntity> roles) {
-        this.roles = roles;
-    }
 
 
     @Override

@@ -11,6 +11,9 @@ import org.springframework.security.web.util.matcher.*;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 public class RightsDifferentiationConfig implements RightsDifferentiationRouter {
 
@@ -26,8 +29,7 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
     private void setRouteParams() throws Exception {
 
         // yaml mapper init
-        RouteParams params = new ObjectMapper(new YAMLFactory())
-                .readValue(routeResource.getInputStream(), RouteParams.class);
+        RouteParams params = new ObjectMapper(new YAMLFactory()).readValue(routeResource.getInputStream(), RouteParams.class);
 
         // public path config
         List<RoutePath> publicPaths = params.getPublicRoutePaths();

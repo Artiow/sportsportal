@@ -1,22 +1,22 @@
 import React from 'react';
-import PlaygroundFilter from './PlaygroundFilter';
-import PlaygroundPageableContainer from './PlaygroundPageableContainer';
+import PlaygroundFilter from './components/PlaygroundFilter';
+import PlaygroundPageableContainer from './components/PlaygroundPageableContainer';
 import Playground from '../../connector/Playground';
 
 export default class PlaygroundSearcher extends React.Component {
 
     static DEFAULT_PAGE_SIZE = 10;
 
-    updateFilter = newFilter => {
-        this.filter = Object.assign(this.filter, newFilter);
-        this.query(this.filter);
-    };
-
     constructor(props) {
         super(props);
         this.state = {page: null, loading: true};
         this.filter = {pageNum: 0, pageSize: PlaygroundSearcher.DEFAULT_PAGE_SIZE};
     }
+
+    updateFilter = newFilter => {
+        this.filter = Object.assign(this.filter, newFilter);
+        this.query(this.filter);
+    };
 
     componentDidMount() {
         this.query(this.filter);

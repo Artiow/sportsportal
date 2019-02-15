@@ -5,6 +5,9 @@ import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+/**
+ * @author Namednev Artem
+ */
 public class PhoneValidator implements ConstraintValidator<Phone, String> {
 
     @Override

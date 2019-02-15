@@ -9,16 +9,15 @@ import ru.vldf.sportsportal.mapper.manual.url.AbstractURLMapper;
 import java.net.URI;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 @Named("toUserURL")
 public class UserURLMapper extends AbstractURLMapper<UserEntity> {
 
-    @Value("${api.path.common.user}")
-    private String apiPath;
-
-    @Override
-    protected String getApiPath() {
-        return apiPath;
+    public UserURLMapper(@Value("${api.path.common.user}") String apiPath) {
+        super(apiPath);
     }
 
 

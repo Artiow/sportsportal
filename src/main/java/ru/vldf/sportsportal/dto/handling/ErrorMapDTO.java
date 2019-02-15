@@ -1,10 +1,15 @@
 package ru.vldf.sportsportal.dto.handling;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @author Namednev Artem
+ */
 public class ErrorMapDTO extends ErrorDTO {
 
     private final Map<String, String> errors;
@@ -36,6 +41,6 @@ public class ErrorMapDTO extends ErrorDTO {
 
 
     public Map<String, String> getErrors() {
-        return errors;
+        return ImmutableMap.copyOf(errors);
     }
 }

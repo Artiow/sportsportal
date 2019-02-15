@@ -2,6 +2,9 @@ package ru.vldf.sportsportal.service.security.encoder;
 
 import java.util.Map;
 
+/**
+ * @author Namednev Artem
+ */
 public interface Encoder {
 
     /**

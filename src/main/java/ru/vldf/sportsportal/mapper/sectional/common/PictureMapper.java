@@ -8,9 +8,12 @@ import ru.vldf.sportsportal.mapper.generic.AbstractIdentifiedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(uses = {JavaTimeMapper.class, PictureURLMapper.class}, componentModel = "spring")
-public interface PictureMapper extends AbstractIdentifiedMapper<PictureEntity, PictureDTO> {
+public abstract class PictureMapper extends AbstractIdentifiedMapper<PictureEntity, PictureDTO> {
 
     @Mapping(target = "url", source = "id", qualifiedByName = {"toPictureURL", "fromId"})
-    PictureDTO toDTO(PictureEntity entity);
+    public abstract PictureDTO toDTO(PictureEntity entity);
 }

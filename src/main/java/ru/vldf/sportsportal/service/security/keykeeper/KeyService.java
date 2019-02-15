@@ -25,44 +25,35 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author Namednev Artem
+ */
 @Service
 public class KeyService implements KeyProvider {
 
-    private MessageContainer messages;
-    private PasswordEncoder passwordEncoder;
-    private ExpiringClockProvider clockProvider;
+    private final MessageContainer messages;
+    private final PasswordEncoder passwordEncoder;
+    private final ExpiringClockProvider clockProvider;
 
-    private KeyRepository keyRepository;
-    private UserRepository userRepository;
-    private UserDetailsMapper detailsMapper;
+    private final KeyRepository keyRepository;
+    private final UserRepository userRepository;
+    private final UserDetailsMapper detailsMapper;
+
 
     @Autowired
-    public void setMessages(MessageContainer messages) {
+    public KeyService(
+            MessageContainer messages,
+            PasswordEncoder passwordEncoder,
+            ExpiringClockProvider clockProvider,
+            KeyRepository keyRepository,
+            UserRepository userRepository,
+            UserDetailsMapper detailsMapper
+    ) {
         this.messages = messages;
-    }
-
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Autowired
-    public void setClockProvider(ExpiringClockProvider clockProvider) {
         this.clockProvider = clockProvider;
-    }
-
-    @Autowired
-    public void setKeyRepository(KeyRepository keyRepository) {
         this.keyRepository = keyRepository;
-    }
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Autowired
-    public void setDetailsMapper(UserDetailsMapper detailsMapper) {
         this.detailsMapper = detailsMapper;
     }
 
@@ -78,17 +69,17 @@ public class KeyService implements KeyProvider {
                 throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
             } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
                 throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
-            } else if (userEntity.getDisabled()) {
+            } else if (userEntity.getIsDisabled()) {
                 throw new DisabledException(messages.get("sportsportal.auth.service.accountDisabled.message"));
             }
         } catch (EntityNotFoundException | BadCredentialsException e) {
             throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
         }
 
-        if (userEntity.getLocked()) {
+        if (userEntity.getIsLocked()) {
             throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
         } else if (!(userEntity.getKeys().size() < 20)) {
-            userEntity.setLocked(true);
+            userEntity.setIsLocked(true);
             userEntity.getKeys().clear();
             userRepository.save(userEntity);
             throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
@@ -177,15 +168,15 @@ public class KeyService implements KeyProvider {
 
         Integer userId = keyEntity.getUser().getId();
 
-        return Pair.of(
-                new Payload()
-                        .setUserId(userId)
-                        .setKeyId(keyEntity.getId())
-                        .setUuid(newAccessKey),
-                new Payload()
-                        .setUserId(userId)
-                        .setKeyId(keyEntity.getRelated().getId())
-                        .setUuid(newRefreshKey)
-        );
+        Payload newAccessPayload = new Payload();
+        newAccessPayload.setUserId(userId);
+        newAccessPayload.setKeyId(keyEntity.getId());
+        newAccessPayload.setUuid(newAccessKey);
+        Payload newRefreshPayload = new Payload();
+        newRefreshPayload.setUserId(userId);
+        newRefreshPayload.setKeyId(keyEntity.getRelated().getId());
+        newRefreshPayload.setUuid(newRefreshKey);
+
+        return Pair.of(newAccessPayload, newRefreshPayload);
     }
 }

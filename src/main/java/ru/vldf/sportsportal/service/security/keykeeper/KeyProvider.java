@@ -4,6 +4,9 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
+/**
+ * @author Namednev Artem
+ */
 public interface KeyProvider {
 
     /**

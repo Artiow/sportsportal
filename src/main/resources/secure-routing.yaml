@@ -27,6 +27,10 @@ publicRoutePaths:
   httpMethod: PUT
 - pattern: /auth/confirm/*
   httpMethod: PUT
+- pattern: /payment/anonymous
+  httpMethod: GET
+- pattern: /payment/result
+  httpMethod: POST
 
 protectedRoutePaths:
   ADMIN:
@@ -37,6 +41,8 @@ protectedRoutePaths:
   - pattern: /user/*
     httpMethod: GET
   - pattern: /order/*
+    httpMethod: GET
+  - pattern: /order/*/link
     httpMethod: GET
   - pattern: /order/*
     httpMethod: DELETE

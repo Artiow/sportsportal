@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.controller;
 
-import com.google.common.collect.Collections2;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundGridDTO;
+import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.*;
@@ -22,26 +21,29 @@ import ru.vldf.sportsportal.service.generic.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
+/**
+ * @author Namednev Artem
+ */
 @RestController
 @Api(tags = {"Playground"})
 @RequestMapping("${api.path.lease.playground}")
 public class PlaygroundController {
 
+    private final PlaygroundService playgroundService;
+
     @Value("${api.path.lease.order}")
     private String orderPath;
 
-    private PlaygroundService playgroundService;
 
     @Autowired
-    public void setPlaygroundService(PlaygroundService playgroundService) {
+    public PlaygroundController(PlaygroundService playgroundService) {
         this.playgroundService = playgroundService;
     }
 
@@ -75,18 +77,18 @@ public class PlaygroundController {
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer minRate
     ) {
-        return playgroundService.getList(new PlaygroundFilterDTO()
-                .setFeatureCodes(featureCodes)
-                .setSportCodes(sportCodes)
-                .setStartPrice(startPrice)
-                .setEndPrice(endPrice)
-                .setMinRate(minRate)
-                .setOpening(opening)
-                .setClosing(closing)
-                .setSearchString(searchString)
-                .setPageSize(pageSize)
-                .setPageNum(pageNum)
-        );
+        PlaygroundFilterDTO playgroundFilterDTO = new PlaygroundFilterDTO();
+        playgroundFilterDTO.setFeatureCodes(featureCodes);
+        playgroundFilterDTO.setSportCodes(sportCodes);
+        playgroundFilterDTO.setStartPrice(startPrice);
+        playgroundFilterDTO.setEndPrice(endPrice);
+        playgroundFilterDTO.setMinRate(minRate);
+        playgroundFilterDTO.setOpening(opening);
+        playgroundFilterDTO.setClosing(closing);
+        playgroundFilterDTO.setSearchString(searchString);
+        playgroundFilterDTO.setPageSize(pageSize);
+        playgroundFilterDTO.setPageNum(pageNum);
+        return playgroundService.getList(playgroundFilterDTO);
     }
 
     /**
@@ -121,17 +123,17 @@ public class PlaygroundController {
      * @param id   playground identifier
      * @param from {@link Date} first date of grid
      * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundGridDTO} requested time grid
+     * @return {@link PlaygroundBoardDTO} requested time grid
      * @throws ResourceNotFoundException if requested playground not found
      */
-    @GetMapping("/{id}/grid")
+    @GetMapping("/{id}/board")
     @ApiOperation("получить сетку времени для площадки")
-    public PlaygroundGridDTO getGrid(
+    public PlaygroundBoardDTO getBoard(
             @PathVariable int id,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) throws ResourceNotFoundException, ResourceCorruptedException {
-        return playgroundService.getGrid(id, from, to);
+        return playgroundService.getBoard(id, from, to);
     }
 
     /**
@@ -140,7 +142,7 @@ public class PlaygroundController {
      *
      * @param id           playground identifier
      * @param version      playground version
-     * @param reservations {@link Collection<String>} checked reservation times
+     * @param reservations {@link Set<String>} checked reservation times
      * @return {@link ReservationListDTO} with available for reservation times
      * @throws ResourceNotFoundException if requested playground not found
      */
@@ -149,12 +151,9 @@ public class PlaygroundController {
     public ReservationListDTO check(
             @PathVariable int id,
             @RequestParam long version,
-            @RequestParam(required = false) Collection<String> reservations
+            @RequestParam(required = false) Set<String> reservations
     ) throws ResourceNotFoundException {
-        // todo: catch DateTimeParseException!
-        return reservations != null
-                ? playgroundService.check(id, version, Collections2.transform(reservations, LocalDateTime::parse))
-                : new ReservationListDTO().setReservations(new ArrayList<>());
+        return playgroundService.check(id, version, reservations);
     }
 
     /**
@@ -169,8 +168,9 @@ public class PlaygroundController {
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
-    public ResponseEntity<Void> reserve(@PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO)
-            throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+    public ResponseEntity<Void> reserve(
+            @PathVariable int id, @RequestBody @Validated ReservationListDTO reservationListDTO
+    ) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(orderPath, playgroundService.reserve(id, reservationListDTO))).build();
     }
 
@@ -184,8 +184,9 @@ public class PlaygroundController {
      */
     @PostMapping
     @ApiOperation("создать площадку")
-    public ResponseEntity<Void> create(@RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO)
-            throws UnauthorizedAccessException, ResourceCannotCreateException {
+    public ResponseEntity<Void> create(
+            @RequestBody @Validated(PlaygroundDTO.CreateCheck.class) PlaygroundDTO playgroundDTO
+    ) throws UnauthorizedAccessException, ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(playgroundService.create(playgroundDTO))).build();
     }
 
@@ -203,8 +204,9 @@ public class PlaygroundController {
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
-    public ResponseEntity<Void> update(@PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO)
-            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
+    public ResponseEntity<Void> update(
+            @PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }
@@ -220,8 +222,7 @@ public class PlaygroundController {
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить площадку")
-    public ResponseEntity<Void> delete(@PathVariable int id)
-            throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         playgroundService.delete(id);
         return ResponseEntity.noContent().build();
     }

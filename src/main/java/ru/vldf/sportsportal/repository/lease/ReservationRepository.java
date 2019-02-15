@@ -7,6 +7,9 @@ import ru.vldf.sportsportal.repository.JpaExecutableRepository;
 
 import java.sql.Timestamp;
 
+/**
+ * @author Namednev Artem
+ */
 public interface ReservationRepository extends JpaExecutableRepository<ReservationEntity, ReservationEntityPK> {
 
     boolean existsByPkPlaygroundAndPkDatetime(PlaygroundEntity playground, Timestamp datetime);

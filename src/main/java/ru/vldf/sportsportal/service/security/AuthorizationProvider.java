@@ -2,6 +2,9 @@ package ru.vldf.sportsportal.service.security;
 
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
+/**
+ * @author Namednev Artem
+ */
 public interface AuthorizationProvider {
 
     /**

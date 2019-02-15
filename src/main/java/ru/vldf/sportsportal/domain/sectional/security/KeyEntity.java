@@ -9,6 +9,9 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+/**
+ * @author Namednev Artem
+ */
 @Entity
 @Getter
 @Setter

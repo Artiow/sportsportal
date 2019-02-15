@@ -16,11 +16,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Namednev Artem
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
-    private static String AUTHORIZATION_NAME = "Token";
+    private final static String AUTHORIZATION_NAME = "Token";
 
     @Value("${api.host}")
     private String apiHost;
@@ -57,7 +60,6 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
-
         return new Docket(DocumentationType.SWAGGER_2)
                 .host(apiHost)
                 .select()
@@ -88,12 +90,12 @@ public class SwaggerConfig {
     }
 
     private List<SecurityContext> securityContexts() {
-        return Collections.singletonList(SecurityContext.builder().securityReferences(defaultAuth(AUTHORIZATION_NAME)).forPaths(PathSelectors.regex("/.*")).build());
+        return Collections.singletonList(SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.regex("/.*")).build());
     }
 
-    private List<SecurityReference> defaultAuth(String reference) {
+    private List<SecurityReference> defaultAuth() {
         final AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         final AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};
-        return Collections.singletonList(new SecurityReference(reference, authorizationScopes));
+        return Collections.singletonList(new SecurityReference(SwaggerConfig.AUTHORIZATION_NAME, authorizationScopes));
     }
 }

@@ -6,6 +6,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 public class IdentifiedUser extends User implements IdentifiedUserDetails {
 
     private final Integer id;

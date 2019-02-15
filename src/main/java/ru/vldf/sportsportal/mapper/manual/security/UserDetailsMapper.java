@@ -10,6 +10,9 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 public class UserDetailsMapper {
 
@@ -24,8 +27,8 @@ public class UserDetailsMapper {
         return new IdentifiedUser(entity.getId(), User.builder()
                 .username(entity.getEmail())
                 .password(entity.getPassword())
-                .accountLocked(entity.getLocked())
-                .disabled(entity.getDisabled())
+                .accountLocked(entity.getIsLocked())
+                .disabled(entity.getIsDisabled())
                 .roles(roles)
                 .build()
         );

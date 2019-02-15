@@ -1,7 +1,8 @@
 package ru.vldf.sportsportal.dto.sectional.common;
 
-import ru.vldf.sportsportal.dto.generic.AbstractIdentifiedDTO;
-import ru.vldf.sportsportal.dto.generic.AbstractVersionedDTO;
+import lombok.Getter;
+import lombok.Setter;
+import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
@@ -9,7 +10,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
 
-public class UserDTO extends AbstractVersionedDTO {
+/**
+ * @author Namednev Artem
+ */
+@Getter
+@Setter
+public class UserDTO implements VersionedDTO {
 
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
@@ -50,110 +56,6 @@ public class UserDTO extends AbstractVersionedDTO {
 
     @Null(groups = FieldCheck.class)
     private List<RoleDTO> roles;
-
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public UserDTO setId(Integer id) {
-        this.id = id;
-        return this;
-    }
-
-    @Override
-    public Long getVersion() {
-        return version;
-    }
-
-    @Override
-    public AbstractIdentifiedDTO setVersion(Long version) {
-        this.version = version;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public UserDTO setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public UserDTO setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public UserDTO setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public UserDTO setSurname(String surname) {
-        this.surname = surname;
-        return this;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public UserDTO setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-        return this;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public UserDTO setAddress(String address) {
-        this.address = address;
-        return this;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public UserDTO setPhone(String phone) {
-        this.phone = phone;
-        return this;
-    }
-
-    public PictureDTO getAvatar() {
-        return avatar;
-    }
-
-    public UserDTO setAvatar(PictureDTO avatar) {
-        this.avatar = avatar;
-        return this;
-    }
-
-    public List<RoleDTO> getRoles() {
-        return roles;
-    }
-
-    public UserDTO setRoles(List<RoleDTO> roles) {
-        this.roles = roles;
-        return this;
-    }
 
 
     public interface IdCheck extends VersionCheck {

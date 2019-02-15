@@ -13,38 +13,41 @@ import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 
 import javax.persistence.OptimisticLockException;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(
         componentModel = "spring",
         uses = {UserURLMapper.class, PictureURLMapper.class, PictureMapper.class, RoleMapper.class}
 )
-public interface UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO> {
+public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO> {
 
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
-    UserShortDTO toShortDTO(UserEntity entity);
+    public abstract UserShortDTO toShortDTO(UserEntity entity);
 
     @Mappings({
             @Mapping(target = "username", source = "name"),
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
-    UserLinkDTO toLinkDTO(UserEntity entity);
+    public abstract UserLinkDTO toLinkDTO(UserEntity entity);
 
     @Mappings({
             @Mapping(target = "name", ignore = true),
             @Mapping(target = "surname", ignore = true),
             @Mapping(target = "patronymic", ignore = true)
     })
-    UserEntity toEntity(UserLinkDTO dto);
+    public abstract UserEntity toEntity(UserLinkDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    UserEntity toEntity(UserDTO dto);
+    public abstract UserEntity toEntity(UserDTO dto);
 
     @Override
-    default UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {
-        AbstractVersionedMapper.super.merge(acceptor, donor);
+    public UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {
+        super.merge(acceptor, donor);
 
         acceptor.setEmail(donor.getEmail());
         acceptor.setPassword(donor.getPassword());

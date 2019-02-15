@@ -5,7 +5,10 @@ import ru.vldf.sportsportal.domain.sectional.lease.FeatureEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.FeatureDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(componentModel = "spring")
-public interface FeatureMapper extends AbstractDictionaryMapper<FeatureEntity, FeatureDTO> {
+public abstract class FeatureMapper extends AbstractDictionaryMapper<FeatureEntity, FeatureDTO> {
 
 }

@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.service.generic;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -9,24 +9,23 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
 public abstract class AbstractSecurityService extends AbstractMessageService {
 
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
     private RoleRepository roleRepository;
 
 
-    public AbstractSecurityService(MessageContainer messages, UserRepository userRepository, RoleRepository roleRepository) {
-        super(messages);
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-    }
-
-
-    public UserRepository userRepository() {
+    protected UserRepository userRepository() {
         return userRepository;
     }
 
-    public RoleRepository roleRepository() {
+    protected RoleRepository roleRepository() {
         return roleRepository;
     }
 
@@ -37,11 +36,11 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @return {@link Integer} user id
      * @throws UnauthorizedAccessException if user is anonymous
      */
-    public Integer getCurrentUserId() throws UnauthorizedAccessException {
+    protected Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
             return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         } catch (ClassCastException | NullPointerException e) {
-            throw new UnauthorizedAccessException(mGet("sportsportal.auth.filter.credentialsNotFound.message"), e);
+            throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
 
@@ -51,7 +50,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @return {@link UserEntity} user entity
      * @throws UnauthorizedAccessException if user is anonymous
      */
-    public UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
+    protected UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
         return userRepository.getOne(getCurrentUserId());
     }
 
@@ -63,7 +62,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @throws UnauthorizedAccessException if current user is anonymous
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
+    protected boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
         return getCurrentUserId().equals(userEntity.getId());
     }
 
@@ -75,7 +74,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @throws UnauthorizedAccessException if current user is anonymous
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isContainCurrentUser(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
+    protected boolean isContainCurrentUser(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
         return userEntityCollection.contains(getCurrentUserEntity());
     }
 
@@ -88,9 +87,11 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @throws ResourceNotFoundException   if role code not exist
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
-        if (!roleRepository.existsByCode(code)) {
-            throw new ResourceNotFoundException(mGetAndFormat("sportsportal.common.Role.notExistByCode.message", code));
-        } else return userRepository.hasRoleByCode(getCurrentUserId(), code);
+    protected boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
+        if (roleRepository.existsByCode(code)) {
+            return userRepository.hasRoleByCode(getCurrentUserId(), code);
+        } else {
+            throw new ResourceNotFoundException(msg("sportsportal.common.Role.notExistByCode.message", code));
+        }
     }
 }

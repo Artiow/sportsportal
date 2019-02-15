@@ -15,20 +15,19 @@ import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.service.security.AuthorizationProvider;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-    private MessageContainer messages;
+    private final MessageContainer messages;
+    private final AuthorizationProvider provider;
 
-    private AuthorizationProvider provider;
 
     @Autowired
-    public void setMessages(MessageContainer messages) {
+    public TokenAuthenticationProvider(MessageContainer messages, AuthorizationProvider provider) {
         this.messages = messages;
-    }
-
-    @Autowired
-    public void setProvider(AuthorizationProvider provider) {
         this.provider = provider;
     }
 
@@ -41,8 +40,8 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
      * @throws AuthenticationException - if check fails
      */
     @Override
-    protected void additionalAuthenticationChecks(UserDetails user, UsernamePasswordAuthenticationToken auth)
-            throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails user, UsernamePasswordAuthenticationToken auth) throws AuthenticationException {
+
     }
 
     /**
@@ -54,8 +53,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
      * @throws AuthenticationException - if authentication fails
      */
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken auth)
-            throws AuthenticationException {
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken auth) throws AuthenticationException {
         try {
             return provider.authorization(auth.getCredentials().toString());
         } catch (SignatureException e) {

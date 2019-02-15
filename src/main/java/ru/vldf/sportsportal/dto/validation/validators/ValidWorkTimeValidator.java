@@ -1,12 +1,15 @@
 package ru.vldf.sportsportal.dto.validation.validators;
 
-import ru.vldf.sportsportal.dto.generic.specific.WorkTimeDTO;
+import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalTime;
 
+/**
+ * @author Namednev Artem
+ */
 public class ValidWorkTimeValidator implements ConstraintValidator<ValidWorkTime, WorkTimeDTO> {
 
     @Override

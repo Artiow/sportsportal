@@ -1,8 +1,16 @@
 package ru.vldf.sportsportal.domain.generic;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * @author Namednev Artem
+ */
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractIdentifiedEntity implements DomainObject {
 
@@ -10,15 +18,6 @@ public abstract class AbstractIdentifiedEntity implements DomainObject {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
 
     @Override

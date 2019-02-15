@@ -4,25 +4,28 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
-import ru.vldf.sportsportal.mapper.generic.ObjectMapper;
+import ru.vldf.sportsportal.mapper.generic.ModelMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * @author Namednev Artem
+ */
 @Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
-public interface ReservationMapper extends ObjectMapper<ReservationEntity, ReservationResumeDTO.ReservationItemDTO> {
+public abstract class ReservationMapper implements ModelMapper<ReservationEntity, ReservationResumeDTO.Item> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
-    ReservationResumeDTO.ReservationItemDTO toDTO(ReservationEntity entity);
+    public abstract ReservationResumeDTO.Item toDTO(ReservationEntity entity);
 
     @Mapping(target = "pk.datetime", source = "datetime")
-    ReservationEntity toEntity(ReservationResumeDTO.ReservationItemDTO dto);
+    public abstract ReservationEntity toEntity(ReservationResumeDTO.Item dto);
 
     @Mapping(target = "playground", source = "pk.playground")
-    ReservationResumeDTO toResume(ReservationEntity entity);
+    public abstract ReservationResumeDTO toResume(ReservationEntity entity);
 
-    default ReservationResumeDTO toResume(Collection<ReservationEntity> entityCollection) {
+    public ReservationResumeDTO toResume(Collection<ReservationEntity> entityCollection) {
         if ((entityCollection == null) || entityCollection.isEmpty()) {
             return null;
         }
@@ -32,12 +35,13 @@ public interface ReservationMapper extends ObjectMapper<ReservationEntity, Reser
             totalPrice = totalPrice.add(entity.getPrice());
         }
 
-        return toResume(entityCollection.iterator().next())
-                .setReservations(toDTO(entityCollection))
-                .setTotalPrice(totalPrice);
+        ReservationResumeDTO resume = toResume(entityCollection.iterator().next());
+        resume.setReservations(toDTO(entityCollection));
+        resume.setTotalPrice(totalPrice);
+        return resume;
     }
 
-    default List<ReservationResumeDTO> toResumeList(Collection<ReservationEntity> entityCollection) {
+    public List<ReservationResumeDTO> toResumeList(Collection<ReservationEntity> entityCollection) {
         if (entityCollection == null) {
             return null;
         }

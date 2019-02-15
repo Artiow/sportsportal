@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.controller.advice;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -16,27 +17,31 @@ import springfox.documentation.service.ApiInfo;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
+
+/**
+ * @author Namednev Artem
+ */
 @ApiIgnore
 @Controller
 public class SupportingController implements ErrorController {
 
     private static final String ERROR_PATH = "/error";
 
-    private SwaggerConfig swaggerConfig;
-    private MessageContainer messages;
+    private final SwaggerConfig swaggerConfig;
+    private final MessageContainer messages;
+
 
     @Autowired
-    public void setSwaggerConfig(SwaggerConfig swaggerConfig) {
+    public SupportingController(SwaggerConfig swaggerConfig, MessageContainer messages) {
         this.swaggerConfig = swaggerConfig;
-    }
-
-    @Autowired
-    public void setMessages(MessageContainer messages) {
         this.messages = messages;
     }
+
 
     /**
      * Returns information about api and database version.
@@ -44,20 +49,16 @@ public class SupportingController implements ErrorController {
      * @return object {@link Object} with api info
      */
     @ResponseBody
-    @GetMapping("/info")
+    @GetMapping({"/", "/info"})
     public Object getAppInfo() {
+        // noinspection unused
         return new Object() {
-
-            ApiInfo apiInfo = swaggerConfig.apiInfo();
-            Locale locale = messages.getLocale();
-
-            public ApiInfo getApiInfo() {
-                return apiInfo;
-            }
-
-            public Locale getLocale() {
-                return locale;
-            }
+            @JsonProperty
+            private ApiInfo info = swaggerConfig.apiInfo();
+            @JsonProperty
+            private Locale locale = messages.getLocale();
+            @JsonProperty
+            private URI documentation = buildURL("/swagger-ui.html");
         };
     }
 
@@ -69,13 +70,10 @@ public class SupportingController implements ErrorController {
     @ResponseBody
     @GetMapping("/csrf")
     public Object toCsrf() {
+        // noinspection unused
         return new Object() {
-
+            @JsonProperty
             private String message = "CSRF protection is disabled as unnecessary";
-
-            public String getMessage() {
-                return message;
-            }
         };
     }
 
@@ -84,7 +82,7 @@ public class SupportingController implements ErrorController {
      *
      * @return redirect to swagger page
      */
-    @GetMapping({"/", "/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
+    @GetMapping({"/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
     public String toSwagger() {
         return "redirect:/swagger-ui.html";
     }
@@ -102,11 +100,13 @@ public class SupportingController implements ErrorController {
                 .map(Integer::valueOf)
                 .map(HttpStatus::resolve)
                 .orElse(HttpStatus.NOT_FOUND);
+
         String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(),
                 Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
                         .map(Object::toString)
                         .orElse(ERROR_PATH)
         );
+
         switch (status) {
             case NOT_FOUND:
                 throw new HandlerNotFoundException(message);

@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 
@@ -7,6 +9,11 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+/**
+ * @author Namednev Artem
+ */
+@Getter
+@Setter
 @Entity
 @Table(name = "picture", schema = "common")
 public class PictureEntity extends AbstractIdentifiedEntity {
@@ -19,10 +26,8 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     @Column(name = "uploaded", nullable = false)
     private Timestamp uploaded;
 
-    @OneToOne(
-            mappedBy = "avatar",
-            fetch = FetchType.LAZY
-    )
+
+    @OneToOne(mappedBy = "avatar", fetch = FetchType.LAZY)
     private UserEntity users;
 
     @ManyToMany(mappedBy = "photos")
@@ -31,48 +36,6 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserEntity owner;
-
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
-
-    public Timestamp getUploaded() {
-        return uploaded;
-    }
-
-    public void setUploaded(Timestamp uploaded) {
-        this.uploaded = uploaded;
-    }
-
-    public UserEntity getUsers() {
-        return users;
-    }
-
-    public PictureEntity setUsers(UserEntity users) {
-        this.users = users;
-        return this;
-    }
-
-    public Collection<PlaygroundEntity> getPlaygrounds() {
-        return playgrounds;
-    }
-
-    public void setPlaygrounds(Collection<PlaygroundEntity> playgrounds) {
-        this.playgrounds = playgrounds;
-    }
-
-    public UserEntity getOwner() {
-        return owner;
-    }
-
-    public void setOwner(UserEntity owner) {
-        this.owner = owner;
-    }
 
 
     @Override

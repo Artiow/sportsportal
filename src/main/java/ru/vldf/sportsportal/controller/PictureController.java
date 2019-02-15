@@ -2,8 +2,7 @@ package ru.vldf.sportsportal.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,24 +18,22 @@ import java.io.IOException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
+/**
+ * @author Namednev Artem
+ */
+@Slf4j
 @RestController
 @Api(tags = {"Picture"})
 @RequestMapping("${api.path.common.picture}")
 public class PictureController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PictureController.class);
+    private final ServletContext context;
+    private final PictureService pictureService;
 
-    private ServletContext context;
-
-    private PictureService pictureService;
 
     @Autowired
-    public void setContext(ServletContext context) {
+    public PictureController(ServletContext context, PictureService pictureService) {
         this.context = context;
-    }
-
-    @Autowired
-    public void setPictureService(PictureService pictureService) {
         this.pictureService = pictureService;
     }
 
@@ -51,18 +48,20 @@ public class PictureController {
      */
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
-    public ResponseEntity<Resource> download(@PathVariable int id, @RequestParam(name = "size", required = false) String size)
-            throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public ResponseEntity<Resource> download(
+            @PathVariable int id, @RequestParam(name = "size", required = false) String size
+    ) throws ResourceNotFoundException, ResourceFileNotFoundException {
         Resource resource = pictureService.get(id, size);
         MediaType contentType;
+
         try {
             contentType = MediaType.parseMediaType(context.getMimeType(resource.getFile().getAbsolutePath()));
         } catch (IOException e) {
-            contentType = MediaType.APPLICATION_JSON;
-            logger.info("Could Not Determine Requested File Type.");
+            contentType = MediaType.APPLICATION_OCTET_STREAM;
         }
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(resource.getFilename()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition(resource.getFilename()))
                 .contentType(contentType)
                 .body(resource);
     }
@@ -108,7 +107,7 @@ public class PictureController {
      * @param filename {@link String} filename
      * @return {@link String} content disposition line
      */
-    private String getContentDisposition(String filename) {
+    private String disposition(String filename) {
         return "inline; filename=\"" + filename + "\"";
     }
 }

@@ -1,20 +1,21 @@
 package ru.vldf.sportsportal.service.generic;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 
+/**
+ * @author Namednev Artem
+ */
 public abstract class AbstractMessageService {
 
+    @Autowired
     private MessageContainer messages;
 
-    public AbstractMessageService(MessageContainer messages) {
-        this.messages = messages;
-    }
-
-    public String mGet(String msg) {
+    protected String msg(String msg) {
         return messages.get(msg);
     }
 
-    public String mGetAndFormat(String msg, Object... args) {
-        return messages.getAndFormat(msg, args);
+    protected String msg(String msg, Object... args) {
+        return messages.get(msg, args);
     }
 }

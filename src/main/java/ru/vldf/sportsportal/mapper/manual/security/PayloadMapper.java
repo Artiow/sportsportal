@@ -8,12 +8,15 @@ import ru.vldf.sportsportal.service.security.keykeeper.Payload;
 
 import java.util.Map;
 
+/**
+ * @author Namednev Artem
+ */
 @Component
 public class PayloadMapper {
 
-    private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final static ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private static final TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
+    private final static TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
     };
 
 
