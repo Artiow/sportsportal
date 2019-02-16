@@ -49,11 +49,11 @@ public class OrderService extends AbstractSecurityService implements CRUDService
 
 
     /**
-     * Returns page with current user's orders.
+     * Returns requested page with current user's orders.
      *
-     * @param dividerDTO {@link PageDividerDTO} page divider
-     * @return {@link PageDTO} with {@link OrderShortDTO}
-     * @throws UnauthorizedAccessException if authorization is missing
+     * @param dividerDTO the page divider.
+     * @return requested page with orders.
+     * @throws UnauthorizedAccessException if authorization is missing.
      */
     @Transactional(readOnly = true)
     public PageDTO<OrderShortDTO> getList(PageDividerDTO dividerDTO) throws UnauthorizedAccessException {
@@ -61,13 +61,13 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     }
 
     /**
-     * Returns requested order.
+     * Returns requested order by order identifier.
      *
-     * @param id {@link Integer} order identifier
-     * @return {@link OrderDTO} order
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to get this order
-     * @throws ResourceNotFoundException   if order not found
+     * @param id the order identifier.
+     * @return requested order data.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to get this order.
+     * @throws ResourceNotFoundException   if order not found.
      */
     @Transactional(
             readOnly = true,
@@ -90,8 +90,8 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     /**
      * Create new order and returns its identifier.
      *
-     * @param orderDTO {@link OrderDTO} order data
-     * @return new order {@link Integer} identifier
+     * @param orderDTO the new order data.
+     * @return created new order identifier.
      */
     @Transactional
     public Integer create(OrderDTO orderDTO) {
@@ -101,8 +101,8 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     /**
      * Update order data.
      *
-     * @param id       {@link Integer} order identifier
-     * @param orderDTO {@link OrderDTO} new order data
+     * @param id       the order identifier.
+     * @param orderDTO new order data.
      */
     @Transactional
     public void update(Integer id, OrderDTO orderDTO) {
@@ -110,13 +110,13 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     }
 
     /**
-     * Order payment.
+     * Order payment checkout.
      *
-     * @param check {@link PaymentCheckDTO} payment check
-     * @return {@link String} payment success code
-     * @throws ForbiddenAccessException      if security check failed
-     * @throws ResourceNotFoundException     if order not found
-     * @throws ResourceCannotUpdateException if order cannot be paid
+     * @param check the payment check.
+     * @return payment success code.
+     * @throws ForbiddenAccessException      if security check failed.
+     * @throws ResourceNotFoundException     if order not found.
+     * @throws ResourceCannotUpdateException if order cannot be paid.
      */
     @Transactional(
             rollbackFor = {ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class},
@@ -145,10 +145,10 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     /**
      * Delete order.
      *
-     * @param id {@link Integer} order identifier
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this order
-     * @throws ResourceNotFoundException   if order not found
+     * @param id the order identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this order.
+     * @throws ResourceNotFoundException   if order not found.
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
