@@ -62,9 +62,9 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Logging user and returns pair of token.
      *
-     * @param email    {@link String} users email
-     * @param password {@link String} users password
-     * @return {@link JwtPairDTO} token pair
+     * @param email    the users email.
+     * @param password the users password.
+     * @return pair of tokens.
      */
     @Transactional
     public JwtPairDTO login(@NotNull String email, @NotNull String password) {
@@ -72,10 +72,10 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Refresh user pair of token.
+     * Refresh user token pair.
      *
-     * @param refreshToken {@link String} refresh token
-     * @return {@link JwtPairDTO} token pair
+     * @param refreshToken the refresh token.
+     * @return pair of tokens.
      */
     @Transactional
     public JwtPairDTO refresh(@NotNull String refreshToken) {
@@ -85,7 +85,7 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Logout user.
      *
-     * @param accessToken {@link String} access token
+     * @param accessToken the access token.
      */
     @Transactional
     public void logout(@NotNull String accessToken) {
@@ -95,7 +95,7 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Logout all user sessions.
      *
-     * @param accessToken {@link String} access token
+     * @param accessToken the access token.
      */
     @Transactional
     public void logoutAll(@NotNull String accessToken) {
@@ -103,11 +103,11 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Register new user and returns his id.
+     * Register new user and returns its identifier.
      *
-     * @param userDTO {@link UserDTO} full user data
-     * @return {@link Integer} user identifier
-     * @throws ResourceCannotCreateException if user could not create
+     * @param userDTO the user details.
+     * @return new created user identifier.
+     * @throws ResourceCannotCreateException if user could not create.
      */
     @Transactional(
             rollbackFor = {ResourceCannotCreateException.class},
@@ -142,10 +142,10 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Init confirmation for user.
      *
-     * @param userId        {@link Integer} user identifier
-     * @param confirmOrigin {@link String} confirmation link origin
-     * @throws ResourceNotFoundException     if user could not found
-     * @throws ResourceCannotUpdateException if could not sent email
+     * @param userId        the user identifier.
+     * @param confirmOrigin the confirmation link origin.
+     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceCannotUpdateException if could not sent email.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
@@ -171,10 +171,10 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Confirm user and give him user role.
+     * Confirm user and assign its with user role.
      *
-     * @param confirmCode {@link String} user's confirmation code
-     * @throws ResourceNotFoundException if user not found by confirm code
+     * @param confirmCode the user's confirmation code.
+     * @throws ResourceNotFoundException if user not found by confirm code.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class}
@@ -193,10 +193,10 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Returns built jwt pair.
+     * Returns built JWT pair.
      *
-     * @param jwtPair {@link Pair} raw jwt pair
-     * @return {@link JwtPairDTO} built jwt pair
+     * @param jwtPair the raw JWT pair.
+     * @return built JWT pair.
      */
     private JwtPairDTO buildJwtPair(Pair<String, String> jwtPair) {
         JwtPairDTO jwtPairDTO = new JwtPairDTO();
@@ -206,10 +206,12 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * @param emailAddress  {@link String} sending address
-     * @param confirmOrigin {@link String} confirm host
-     * @param confirmCode   {@link String} confirm code
-     * @throws MessagingException if could not sent email
+     * Confirmation email sending.
+     *
+     * @param emailAddress  the sending address.
+     * @param confirmOrigin the confirm host.
+     * @param confirmCode   the confirm code.
+     * @throws MessagingException if could not sent email.
      */
     private void sendConfirmationEmail(String emailAddress, String confirmOrigin, String confirmCode) throws MessagingException {
         mailService.sender()

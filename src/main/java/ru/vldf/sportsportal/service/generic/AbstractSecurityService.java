@@ -31,10 +31,10 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
 
 
     /**
-     * Returns authenticated user id.
+     * Returns authenticated user identifier.
      *
-     * @return {@link Integer} user id
-     * @throws UnauthorizedAccessException if user is anonymous
+     * @return user identifier.
+     * @throws UnauthorizedAccessException if user is anonymous.
      */
     protected Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
@@ -45,10 +45,10 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     }
 
     /**
-     * Returns authenticated user.
+     * Returns authenticated user entity.
      *
-     * @return {@link UserEntity} user entity
-     * @throws UnauthorizedAccessException if user is anonymous
+     * @return user entity.
+     * @throws UnauthorizedAccessException if user is anonymous.
      */
     protected UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
         return userRepository.getOne(getCurrentUserId());
@@ -57,9 +57,9 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     /**
      * Checks if the user is current.
      *
-     * @param userEntity {@link UserEntity} checked user
-     * @return <tt>true</tt> if successful, false otherwise
-     * @throws UnauthorizedAccessException if current user is anonymous
+     * @param userEntity the checked user.
+     * @return {@literal true} if successful, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException if current user is anonymous.
      */
     protected boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
         return getCurrentUserId().equals(userEntity.getId());
@@ -68,9 +68,9 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     /**
      * Checks if the current user in collection of users.
      *
-     * @param userEntityCollection {@link Collection} of {@link UserEntity} checked collection of user
-     * @return <tt>true</tt> if successful, false otherwise
-     * @throws UnauthorizedAccessException if current user is anonymous
+     * @param userEntityCollection the collection of checked users.
+     * @return {@literal true} if successful, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException if current user is anonymous.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean isContainCurrentUser(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
@@ -80,10 +80,10 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     /**
      * Check whether the user has the necessary rights.
      *
-     * @param code {@link String} role code
-     * @return <tt>true</tt> if current user has role by code
-     * @throws UnauthorizedAccessException if user is anonymous
-     * @throws ResourceNotFoundException   if role code not exist
+     * @param code the role code.
+     * @return {@literal true} if current user has role by code, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException if user is anonymous.
+     * @throws ResourceNotFoundException   if role code not exist.
      */
     protected boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (roleRepository.existsByCode(code)) {
