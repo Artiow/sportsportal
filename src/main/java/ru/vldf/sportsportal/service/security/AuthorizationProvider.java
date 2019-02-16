@@ -8,10 +8,10 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 public interface AuthorizationProvider {
 
     /**
-     * Returns IdentifiedUserDetails by access token.
+     * Returns user details by access token.
      *
-     * @param accessToken {@link String} access token
-     * @return {@link IdentifiedUserDetails} user details
+     * @param accessToken the access token.
+     * @return user details.
      */
     IdentifiedUserDetails authorization(String accessToken);
 }

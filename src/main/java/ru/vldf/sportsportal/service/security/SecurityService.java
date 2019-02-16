@@ -63,8 +63,8 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
     /**
      * Returns generated token pair.
      *
-     * @param payloadPair {@link Pair} payload pair
-     * @return {@link Pair} generated token pair
+     * @param payloadPair the payload pair.
+     * @return generated token pair.
      */
     private Pair<String, String> getTokenPair(Pair<Payload, Payload> payloadPair) {
         return Pair.of(

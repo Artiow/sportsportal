@@ -8,33 +8,33 @@ import org.springframework.data.util.Pair;
 public interface SecurityProvider {
 
     /**
-     * Returns pair (access and refresh) of token by user credentials.
+     * Returns token pair (access and refresh) by user credentials.
      *
-     * @param username {@link String} user username
-     * @param password {@link String} user password
-     * @return {@link Pair} pair (access and refresh) of token
+     * @param username the user username.
+     * @param password the user password.
+     * @return token pair (access and refresh).
      */
     Pair<String, String> authentication(String username, String password);
 
     /**
-     * Returns pair (access and refresh) of token by refresh token.
+     * Returns token pair (access and refresh) by refresh token.
      *
-     * @param refreshToken {@link String} refresh token
-     * @return {@link Pair} pair (access and refresh) of token
+     * @param refreshToken the refresh token.
+     * @return token pair (access and refresh).
      */
     Pair<String, String> refresh(String refreshToken);
 
     /**
      * Logout user by access token.
      *
-     * @param accessToken {@link String} access token
+     * @param accessToken the access token.
      */
     void logout(String accessToken);
 
     /**
      * Logout all user sessions by access token.
      *
-     * @param accessToken {@link String} access token
+     * @param accessToken the access token.
      */
     void logoutAll(String accessToken);
 }

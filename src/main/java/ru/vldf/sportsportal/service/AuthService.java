@@ -187,7 +187,7 @@ public class AuthService extends AbstractSecurityService {
         } else {
             userEntity.setIsDisabled(false);
             userEntity.setConfirmCode(null);
-            userEntity.setRoles(Collections.singletonList(roleRepository().findByCode(userRoleCode)));
+            userEntity.getRoles().add(roleRepository().findByCode(userRoleCode));
             userRepository.save(userEntity);
         }
     }
