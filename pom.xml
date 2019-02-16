@@ -23,6 +23,7 @@
             <id>dev</id>
             <properties>
                 <profile>dev</profile>
+                <project.artifactName>${project.artifactId}-${project.version}</project.artifactName>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -32,6 +33,7 @@
             <id>prod</id>
             <properties>
                 <profile>prod</profile>
+                <project.artifactName>ROOT</project.artifactName>
             </properties>
         </profile>
     </profiles>
@@ -328,5 +330,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <finalName>${project.artifactName}</finalName>
     </build>
 </project>
