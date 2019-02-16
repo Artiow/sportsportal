@@ -1,6 +1,5 @@
 ### Production Data ###
 **/application-prod.properties
-**/migration/prod/
 
 ### IntelliJ IDEA ###
 /.idea/
