@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.integration.payment;
 /**
  * @author Namednev Artem
  */
-public class RobokassaSecurityException extends RuntimeException {
+public class RobokassaSecurityException extends RobokassaException {
 
     private Integer invId;
 

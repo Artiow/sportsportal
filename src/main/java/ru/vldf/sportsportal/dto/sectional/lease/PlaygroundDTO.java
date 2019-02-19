@@ -98,8 +98,7 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
 
     }
 
-    private interface FieldCheck extends
-            SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
+    private interface FieldCheck extends SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
 
     }
 }

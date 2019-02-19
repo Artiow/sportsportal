@@ -294,7 +294,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                 const table = [];
                 const checked = this.state.fullHourRequired && this.state.halfHourAvailable;
                 const reservation = this.state.reservation;
-                const checkedStyle = this.state.owner ? 'btn-primary' : 'btn-success';
+                const checkedStyle = this.state.access ? this.state.owner ? 'btn-primary' : 'btn-success' : 'btn-warning';
                 const updateReservation = this.updateReservation.bind(this);
                 timeList.forEach((time, index, array) => {
                     const rows = [(<td key={0}><span className="badge badge-secondary">{time}</span></td>)];
@@ -365,18 +365,20 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         </table>
                         <div className="order-group">
                             {(!access) ? (
-                                <AuthAlert link="/login" onClick={this.props.mainframe.showLogin}>
-                                    авторизироваться
-                                </AuthAlert>
+                                <AuthAlert link="/login" onClick={this.props.mainframe.showLogin}/>
                             ) : (null)}
                             <div className="btn-group">
                                 <CancelButton disabled={!(reservation.length > 0)} onClick={cancel}
                                               title={PlaygroundLeaseCalendar.CANCEL_TITLE}/>
-                                <SubmitButton dataToggle="modal" dataTarget="#submitOrder"
-                                              disabled={(!(reservation.length > 0) || !access)}
-                                              userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
+                                <SubmitButton access={access}
+                                              disabled={!(reservation.length > 0)}
+                                              onForbidden={this.props.mainframe.showLogin}
                                               ownerTitle={PlaygroundLeaseCalendar.OWNER_SUBMIT_TITLE}
-                                              owner={owner} price={totalPrice}/>
+                                              userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
+                                              dataTarget={'submitOrder'}
+                                              dataToggle={'modal'}
+                                              price={totalPrice}
+                                              owner={owner}/>
                             </div>
                         </div>
                         <PlaygroundSubmitOrderModal closeTitle={PlaygroundLeaseCalendar.CLOSE_TITLE}
@@ -394,13 +396,24 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
     })
 )
 
-function AuthAlert(props) {
+function SubmitButton(props) {
+    let finalClass = `btn btn-${props.access ? props.owner ? 'primary' : 'success' : 'warning'}`;
+    if (props.disabled) finalClass += ' disabled';
     return (
-        <div className="alert alert-danger">
-            Необходимо <Link to={props.link} className="alert-link" onClick={props.onClick}>авторизироваться</Link> для
-            того, чтобы сделать заказ!
-        </div>
-    )
+        <button type="button"
+                disabled={props.disabled}
+                data-toggle={props.disabled || !props.access ? undefined : props.dataToggle}
+                data-target={props.disabled || !props.access ? undefined : `#${props.dataTarget}`}
+                onClick={!props.access ? props.onForbidden : undefined}
+                className={finalClass}>
+            {props.owner ? props.ownerTitle : props.userTitle}
+            {props.owner ? (null) : (
+                <span className="badge badge-dark ml-1">
+                    {props.price}<i className="fa fa-rub ml-1"/>
+                </span>
+            )}
+        </button>
+    );
 }
 
 function CancelButton(props) {
@@ -413,22 +426,11 @@ function CancelButton(props) {
     );
 }
 
-function SubmitButton(props) {
+function AuthAlert(props) {
     return (
-        <button type="button" disabled={props.disabled}
-                data-toggle={props.disabled ? undefined : props.dataToggle}
-                data-target={props.disabled ? undefined : props.dataTarget}
-                className={
-                    props.disabled
-                        ? (props.owner ? 'btn btn-primary disabled' : 'btn btn-success disabled')
-                        : (props.owner ? 'btn btn-primary' : 'btn btn-success')
-                }>
-            {props.owner ? props.ownerTitle : props.userTitle}
-            {props.owner ? (null) : (
-                <span className="badge badge-dark ml-1">
-                    {props.price}<i className="fa fa-rub ml-1"/>
-                </span>
-            )}
-        </button>
-    );
+        <div className="alert alert-danger">
+            Необходимо <Link to={props.link} className="alert-link" onClick={props.onClick}>авторизироваться</Link> для
+            того, чтобы сделать заказ!
+        </div>
+    )
 }

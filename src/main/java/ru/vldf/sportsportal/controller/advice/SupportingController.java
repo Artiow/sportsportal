@@ -28,7 +28,7 @@ public class SupportingController implements ErrorController {
     /**
      * Returns CSRF state message.
      *
-     * @return object {@link Object} with message
+     * @return object with message.
      */
     @ResponseBody
     @GetMapping("/csrf")
@@ -43,7 +43,7 @@ public class SupportingController implements ErrorController {
     /**
      * Returns redirect to swagger page from associated paths.
      *
-     * @return redirect to swagger page
+     * @return redirect string to swagger page.
      */
     @GetMapping({"/", "/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
     public String toSwagger() {
@@ -53,8 +53,8 @@ public class SupportingController implements ErrorController {
     /**
      * Unexpected error handler.
      *
-     * @param request {@link HttpServletRequest} that contains error status
-     * @throws Exception that corresponds to an error
+     * @param request the request that contains error status.
+     * @throws Exception that corresponds to an error.
      */
     @GetMapping(ERROR_PATH)
     public void handleError(HttpServletRequest request) throws Exception {
@@ -83,9 +83,9 @@ public class SupportingController implements ErrorController {
     }
 
     /**
-     * Returns error api path.
+     * Returns error path.
      *
-     * @return {@link String} error path
+     * @return error path.
      */
     @Override
     public String getErrorPath() {

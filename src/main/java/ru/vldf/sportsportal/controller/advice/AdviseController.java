@@ -86,7 +86,7 @@ public class AdviseController {
         String causeClassName = (cause != null) ? cause.getClass().getName() : null;
         String causeMessage = (cause != null) ? cause.getMessage() : null;
         return new ErrorMapDTO(
-                warnUUID(ex.getMessage()),
+                warnUUID("Sent body not valid"),
                 ex.getClass().getName(),
                 exceptionMessage,
                 causeClassName,
@@ -219,12 +219,18 @@ public class AdviseController {
     }
 
     public ErrorDTO warnDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(warnUUID(logMessage), ex);
+        return new ErrorDTO(warnUUID(ex, logMessage), ex);
+    }
+
+    public UUID warnUUID(Throwable ex, String logMessage) {
+        UUID uuid = UUID.randomUUID();
+        log.warn("{} cause by {}. UUID: {}", logMessage, ex.toString(), uuid);
+        return uuid;
     }
 
     public UUID warnUUID(String logMessage) {
         UUID uuid = UUID.randomUUID();
-        log.warn(logMessage + ". UUID: {}", uuid);
+        log.warn("{}. UUID: {}", logMessage, uuid);
         return uuid;
     }
 }
