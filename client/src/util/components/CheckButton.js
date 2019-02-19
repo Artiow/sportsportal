@@ -1,4 +1,5 @@
 import React from 'react';
+import './CheckButton.css'
 
 /**
  * CheckButton by bootstrap button.
@@ -8,14 +9,14 @@ import React from 'react';
  */
 export default class CheckButton extends React.Component {
 
-    static className = (props, checked) => {
-        return `CheckButton btn ${props.sizeStyle} ${checked ? props.checkedStyle : props.uncheckedStyle}`;
-    };
-
     constructor(props) {
         super(props);
         this.state = {checked: ((props.checked === 'checked') || (props.checked === true))};
     }
+
+    static className = (props, checked) => {
+        return `CheckButton btn ${props.sizeStyle} ${checked ? props.checkedStyle : props.uncheckedStyle}`;
+    };
 
     componentWillReceiveProps(nextProps) {
         if (this.props.checked !== nextProps.checked) {
