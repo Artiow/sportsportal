@@ -10,7 +10,7 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 public class ResourceLocationBuilder {
 
     public static URI buildURL() {
-        return fromCurrentRequest().build().toUri();
+        return fromCurrentContextPath().build().toUri();
     }
 
     public static URI buildURL(Integer identifier) {

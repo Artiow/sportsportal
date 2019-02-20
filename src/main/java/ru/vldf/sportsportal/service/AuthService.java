@@ -8,6 +8,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
@@ -37,6 +38,17 @@ public class AuthService extends AbstractSecurityService {
     private final SecurityProvider securityProvider;
     private final MailService mailService;
     private final UserMapper userMapper;
+
+
+    @Value("${api.protocol}")
+    private String apiProtocol;
+
+    @Value("${api.host}")
+    private String apiHost;
+
+    @Value("${api.path.common.auth}")
+    private String apiPath;
+
 
     @Value("${code.role.user}")
     private String userRoleCode;
@@ -152,6 +164,10 @@ public class AuthService extends AbstractSecurityService {
             noRollbackFor = {EntityNotFoundException.class}
     )
     public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        if (!StringUtils.hasText(confirmOrigin)) {
+            confirmOrigin = String.format("%s://%s%s", apiProtocol, apiHost, apiPath);
+        }
+
         String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
         UserRepository userRepository = userRepository();
         try {
