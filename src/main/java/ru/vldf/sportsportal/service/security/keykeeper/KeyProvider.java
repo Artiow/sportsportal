@@ -10,42 +10,28 @@ import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 public interface KeyProvider {
 
     /**
-     * Returns pair (access and refresh) of token payload by user credentials.
+     * Returns token payload pair (access and refresh) by user credentials.
      *
-     * @param username {@link String} user username
-     * @param password {@link String} user password
-     * @return {@link Pair} pair (access and refresh) of token payload
-     * @throws UsernameNotFoundException if user not found
+     * @param username the user username.
+     * @param password eth user password.
+     * @return token payload pair (access and refresh).
+     * @throws UsernameNotFoundException if user not found.
      */
     Pair<Payload, Payload> authentication(String username, String password);
 
     /**
-     * Returns IdentifiedUserDetails by access token payload.
+     * Returns token payload pair (access and refresh) by refresh token payload.
      *
-     * @param accessKey {@link Payload} access token payload
-     * @return {@link IdentifiedUserDetails} user details
-     */
-    IdentifiedUserDetails authorization(Payload accessKey);
-
-    /**
-     * Returns pair (access and refresh) of token payload by refresh token payload.
-     *
-     * @param refreshKey {@link Payload} refresh token payload
-     * @return {@link Pair} pair (access and refresh) of token payload
+     * @param refreshKey the refresh token payload.
+     * @return token payload pair (access and refresh).
      */
     Pair<Payload, Payload> refresh(Payload refreshKey);
 
     /**
-     * Logout user by access token payload.
+     * Returns user details by access token payload.
      *
-     * @param accessKey {@link Payload} access token payload
+     * @param accessKey the access token payload.
+     * @return user details.
      */
-    void logout(Payload accessKey);
-
-    /**
-     * Logout all user sessions by access token payload.
-     *
-     * @param accessKey {@link String} access token payload
-     */
-    void logoutAll(Payload accessKey);
+    IdentifiedUserDetails authorization(Payload accessKey);
 }

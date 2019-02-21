@@ -10,7 +10,6 @@ ru.vldf.sportsportal.controller.dictionary.lease
 ru.vldf.sportsportal.domain.generic
 ru.vldf.sportsportal.domain.sectional.common
 ru.vldf.sportsportal.domain.sectional.lease
-ru.vldf.sportsportal.domain.sectional.security
 ru.vldf.sportsportal.dto.generic
 ru.vldf.sportsportal.dto.handling
 ru.vldf.sportsportal.dto.pagination
@@ -39,7 +38,6 @@ ru.vldf.sportsportal.mapper.sectional.lease
 ru.vldf.sportsportal.repository
 ru.vldf.sportsportal.repository.common
 ru.vldf.sportsportal.repository.lease
-ru.vldf.sportsportal.repository.security
 ru.vldf.sportsportal.service
 ru.vldf.sportsportal.service.dictionary
 ru.vldf.sportsportal.service.dictionary.common

@@ -5,7 +5,6 @@ import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
-import ru.vldf.sportsportal.domain.sectional.security.KeyEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -72,9 +71,6 @@ public class UserEntity extends AbstractVersionedEntity {
 
     @ManyToMany(mappedBy = "owners")
     private Collection<PlaygroundEntity> playgrounds;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Collection<KeyEntity> keys;
 
     @ManyToMany
     @JoinTable(

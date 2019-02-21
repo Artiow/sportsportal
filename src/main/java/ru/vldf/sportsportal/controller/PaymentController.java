@@ -5,7 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
 import ru.vldf.sportsportal.integration.payment.RobokassaService;
 import ru.vldf.sportsportal.service.OrderService;
@@ -38,7 +41,7 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/anonymous")
+    @PostMapping("/anonymous")
     @ApiOperation("анонимный платеж")
     public ResponseEntity<String> payment(
             @RequestParam @NotNull @Min(0) @Digits(integer = 6, fraction = 2) BigDecimal sum

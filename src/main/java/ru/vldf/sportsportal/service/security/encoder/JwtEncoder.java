@@ -27,6 +27,7 @@ public class JwtEncoder implements Encoder {
     private final String issuer;
     private final String sign;
 
+
     @Autowired
     public JwtEncoder(
             @Value("${jwt.issuer}") String issuer,
@@ -37,30 +38,6 @@ public class JwtEncoder implements Encoder {
         this.clock = clock;
     }
 
-
-    /**
-     * Generate JWT.
-     *
-     * @param payload {@link Map} token payload
-     * @param type    {@link ExpirationType} token expiration type
-     * @return {@link String} encoded json
-     */
-    public String generate(final Map<String, Object> payload, final ExpirationType type) throws JwtException {
-        final Pair<Date, Date> date = clock
-                .gen(type);
-
-        final Claims claims = Jwts
-                .claims(payload)
-                .setIssuer(issuer)
-                .setIssuedAt(date.getFirst())
-                .setExpiration(date.getSecond());
-
-        return Jwts
-                .builder()
-                .setClaims(claims)
-                .signWith(signatureAlgorithm, sign)
-                .compact();
-    }
 
     @Override
     public String getAccessToken(final Map<String, Object> payload) throws JwtException {
@@ -80,5 +57,30 @@ public class JwtEncoder implements Encoder {
                 .setSigningKey(sign)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+
+    /**
+     * JWT generating.
+     *
+     * @param payload the token payload.
+     * @param type    the token expiration type.
+     * @return encoded json.
+     */
+    private String generate(final Map<String, Object> payload, final ExpirationType type) throws JwtException {
+        final Pair<Date, Date> date = clock
+                .gen(type);
+
+        final Claims claims = Jwts
+                .claims(payload)
+                .setIssuer(issuer)
+                .setIssuedAt(date.getFirst())
+                .setExpiration(date.getSecond());
+
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .signWith(signatureAlgorithm, sign)
+                .compact();
     }
 }

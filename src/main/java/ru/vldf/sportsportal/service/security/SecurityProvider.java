@@ -23,18 +23,4 @@ public interface SecurityProvider {
      * @return token pair (access and refresh).
      */
     Pair<String, String> refresh(String refreshToken);
-
-    /**
-     * Logout user by access token.
-     *
-     * @param accessToken the access token.
-     */
-    void logout(String accessToken);
-
-    /**
-     * Logout all user sessions by access token.
-     *
-     * @param accessToken the access token.
-     */
-    void logoutAll(String accessToken);
 }

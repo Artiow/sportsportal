@@ -80,7 +80,6 @@ public class AuthService extends AbstractSecurityService {
      * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
      * @return pair of tokens.
      */
-    @Transactional
     public JwtPairDTO login(@NotNull String credentials) {
         Assert.hasText(credentials, "Credentials must not be blank");
         String[] arr = new String(Base64Utils.decodeFromString(credentials), StandardCharsets.UTF_8).split(":", 2);
@@ -94,29 +93,8 @@ public class AuthService extends AbstractSecurityService {
      * @param refreshToken the refresh token.
      * @return pair of tokens.
      */
-    @Transactional
     public JwtPairDTO refresh(@NotNull String refreshToken) {
         return buildJwtPair(securityProvider.refresh(refreshToken));
-    }
-
-    /**
-     * Logout user.
-     *
-     * @param accessToken the access token.
-     */
-    @Transactional
-    public void logout(@NotNull String accessToken) {
-        securityProvider.logout(accessToken);
-    }
-
-    /**
-     * Logout all user sessions.
-     *
-     * @param accessToken the access token.
-     */
-    @Transactional
-    public void logoutAll(@NotNull String accessToken) {
-        securityProvider.logoutAll(accessToken);
     }
 
     /**

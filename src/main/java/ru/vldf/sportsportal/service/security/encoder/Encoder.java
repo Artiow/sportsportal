@@ -10,24 +10,24 @@ public interface Encoder {
     /**
      * Generate access token.
      *
-     * @param payload {@link Map} token payload
-     * @return {@link String} access token
+     * @param payload the token payload.
+     * @return access token.
      */
     String getAccessToken(final Map<String, Object> payload);
 
     /**
      * Generate refresh token.
      *
-     * @param payload {@link Map} token payload
-     * @return {@link String} refresh token
+     * @param payload the token payload.
+     * @return refresh token.
      */
     String getRefreshToken(final Map<String, Object> payload);
 
     /**
      * Returns payload of parsed token.
      *
-     * @param token {@link String} token
-     * @return map of token payload
+     * @param token the token.
+     * @return token payload.
      */
     Map<String, Object> verify(final String token);
 }

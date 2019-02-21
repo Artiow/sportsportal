@@ -41,34 +41,6 @@ public class AuthController {
 
 
     /**
-     * Refresh token pair and returns new by user refresh token.
-     *
-     * @param refreshToken the user refresh token.
-     * @return user token pair.
-     */
-    @PutMapping("/refresh")
-    @ApiOperation("обновить пару токенов")
-    public JwtPairDTO refresh(
-            @RequestBody @Validated @NotBlank String refreshToken
-    ) {
-        return authService.refresh(refreshToken);
-    }
-
-    /**
-     * Login user by its credentials and returns token pair.
-     *
-     * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
-     * @return token pair.
-     */
-    @PostMapping("/login")
-    @ApiOperation("получить пару токенов")
-    public JwtPairDTO login(
-            @RequestBody @Validated @NotBlank String credentials
-    ) {
-        return authService.login(credentials);
-    }
-
-    /**
      * Register new user and returns its location.
      *
      * @param userDTO the created user details.
@@ -131,5 +103,33 @@ public class AuthController {
     ) throws ResourceNotFoundException {
         authService.confirm(token);
         return ResponseEntity.status(HttpStatus.SEE_OTHER).header(HttpHeaders.LOCATION, buildURL().toString()).build();
+    }
+
+    /**
+     * Login user by its credentials and returns token pair.
+     *
+     * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
+     * @return token pair.
+     */
+    @PostMapping("/login")
+    @ApiOperation("получить пару токенов")
+    public JwtPairDTO login(
+            @RequestBody @Validated @NotBlank String credentials
+    ) {
+        return authService.login(credentials);
+    }
+
+    /**
+     * Refresh token pair and returns new by user refresh token.
+     *
+     * @param refreshToken the user refresh token.
+     * @return user token pair.
+     */
+    @PutMapping("/refresh")
+    @ApiOperation("обновить пару токенов")
+    public JwtPairDTO refresh(
+            @RequestBody @Validated @NotBlank String refreshToken
+    ) {
+        return authService.refresh(refreshToken);
     }
 }
