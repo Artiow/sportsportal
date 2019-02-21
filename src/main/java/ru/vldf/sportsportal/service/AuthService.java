@@ -8,6 +8,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
@@ -25,6 +27,7 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -74,13 +77,15 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Logging user and returns pair of token.
      *
-     * @param email    the users email.
-     * @param password the users password.
+     * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
      * @return pair of tokens.
      */
     @Transactional
-    public JwtPairDTO login(@NotNull String email, @NotNull String password) {
-        return buildJwtPair(securityProvider.authentication(email, password));
+    public JwtPairDTO login(@NotNull String credentials) {
+        Assert.hasText(credentials, "Credentials must not be blank");
+        String[] arr = new String(Base64Utils.decodeFromString(credentials), StandardCharsets.UTF_8).split(":", 2);
+        if (arr.length == 2) return buildJwtPair(securityProvider.authentication(arr[0], arr[1]));
+        else throw new IllegalArgumentException(msg("sportsportal.auth.service.credentialsError.message"));
     }
 
     /**

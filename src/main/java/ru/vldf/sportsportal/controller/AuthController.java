@@ -65,9 +65,7 @@ public class AuthController {
     public JwtPairDTO login(
             @RequestBody @Validated @NotBlank String credentials
     ) {
-        // todo: do method execution
-        // return authService.login(credentials);
-        throw new UnsupportedOperationException();
+        return authService.login(credentials);
     }
 
     /**
