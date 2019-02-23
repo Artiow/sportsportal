@@ -13,6 +13,7 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +24,11 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig {
 
-    private final static String AUTHORIZATION_NAME = "Token";
+    private final static String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
+
+    private final static String JWT_AUTH_NAME = "JWT authorization";
+    private final static String BASIC_AUTH_NAME = "Basic authorization";
+
 
     @Value("${api.host}")
     private String apiHost;
@@ -52,6 +57,7 @@ public class SwaggerConfig {
     @Value("${api.contact.email}")
     private String apiContactEmail;
 
+
     /**
      * Swagger configuration.
      *
@@ -59,7 +65,6 @@ public class SwaggerConfig {
      */
     @Bean
     public Docket api() {
-        String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
         return new Docket(DocumentationType.SWAGGER_2)
                 .host(apiHost)
                 .select()
@@ -85,17 +90,23 @@ public class SwaggerConfig {
                 )).build();
     }
 
-    private List<ApiKey> securitySchemes() {
-        return Collections.singletonList(new ApiKey(AUTHORIZATION_NAME, HttpHeaders.AUTHORIZATION, "header"));
+    private List<SecurityScheme> securitySchemes() {
+        return Arrays.asList(
+                new ApiKey(JWT_AUTH_NAME, HttpHeaders.AUTHORIZATION, "header"),
+                new BasicAuth(BASIC_AUTH_NAME)
+        );
     }
 
     private List<SecurityContext> securityContexts() {
-        return Collections.singletonList(SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.regex("/.*")).build());
+        return Arrays.asList(
+                SecurityContext.builder().securityReferences(securityReference(SwaggerConfig.JWT_AUTH_NAME, "api access")).forPaths(PathSelectors.regex("^(?!/auth/login).*")).build(),
+                SecurityContext.builder().securityReferences(securityReference(SwaggerConfig.BASIC_AUTH_NAME, "login access")).forPaths(PathSelectors.regex("^/auth/login")).build()
+        );
     }
 
-    private List<SecurityReference> defaultAuth() {
-        final AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        final AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};
-        return Collections.singletonList(new SecurityReference(SwaggerConfig.AUTHORIZATION_NAME, authorizationScopes));
+    private List<SecurityReference> securityReference(String reference, String description) {
+        return Collections.singletonList(
+                new SecurityReference(reference, new AuthorizationScope[]{new AuthorizationScope("global", description)})
+        );
     }
 }

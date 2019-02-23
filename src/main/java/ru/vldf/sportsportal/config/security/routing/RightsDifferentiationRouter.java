@@ -11,7 +11,7 @@ public interface RightsDifferentiationRouter {
 
     Map<String, RequestMatcher> getSecurityRouteMap();
 
-    RequestMatcher getAllProtectedPathRequestMatcher();
+    RequestMatcher getProtectedPathsRequestMatcher();
 
-    RequestMatcher getAllPublicPathRequestMatcher();
+    RequestMatcher getPublicPathsRequestMatcher();
 }

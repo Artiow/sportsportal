@@ -7,8 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
-import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,11 +29,11 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
     /**
      * Required authentication request matcher setting.
      *
-     * @param router   {@link RightsDifferentiationRouter}
-     * @param messages {@link MessageContainer}
+     * @param requiresAuthenticationRequestMatcher {@link RequestMatcher}
+     * @param messages                             {@link MessageContainer}
      */
-    public TokenAuthenticationFilter(RightsDifferentiationRouter router, MessageContainer messages) {
-        super(router.getAllProtectedPathRequestMatcher());
+    public TokenAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher, MessageContainer messages) {
+        super(requiresAuthenticationRequestMatcher);
         this.messages = messages;
     }
 

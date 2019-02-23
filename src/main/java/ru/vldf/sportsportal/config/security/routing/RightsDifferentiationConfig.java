@@ -69,12 +69,12 @@ public class RightsDifferentiationConfig implements RightsDifferentiationRouter 
     }
 
     @Override
-    public RequestMatcher getAllProtectedPathRequestMatcher() {
+    public RequestMatcher getProtectedPathsRequestMatcher() {
         return protectedRequests;
     }
 
     @Override
-    public RequestMatcher getAllPublicPathRequestMatcher() {
+    public RequestMatcher getPublicPathsRequestMatcher() {
         return publicRequests;
     }
 }

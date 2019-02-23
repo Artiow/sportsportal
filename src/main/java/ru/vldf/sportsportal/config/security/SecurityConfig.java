@@ -99,7 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public TokenAuthenticationFilter authenticationFilter() throws Exception {
-        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(router, messages);
+        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(router.getProtectedPathsRequestMatcher(), messages);
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(successHandler());
         filter.setAuthenticationFailureHandler(failureHandler());
