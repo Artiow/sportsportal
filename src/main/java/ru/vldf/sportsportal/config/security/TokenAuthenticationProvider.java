@@ -21,14 +21,14 @@ import ru.vldf.sportsportal.service.security.AuthorizationProvider;
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-    private final MessageContainer messages;
     private final AuthorizationProvider provider;
+    private final MessageContainer messages;
 
 
     @Autowired
-    public TokenAuthenticationProvider(MessageContainer messages, AuthorizationProvider provider) {
-        this.messages = messages;
+    public TokenAuthenticationProvider(AuthorizationProvider provider, MessageContainer messages) {
         this.provider = provider;
+        this.messages = messages;
     }
 
 

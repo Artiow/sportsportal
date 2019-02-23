@@ -13,6 +13,7 @@ import java.util.Map;
 @Setter
 public class RouteParams {
 
-    private List<RoutePath> publicRoutePaths;
-    private Map<String, List<RoutePath>> protectedRoutePaths;
+    private RoutePath loginRoute;
+    private List<RoutePath> publicRoutes;
+    private Map<String, List<RoutePath>> protectedRoutes;
 }

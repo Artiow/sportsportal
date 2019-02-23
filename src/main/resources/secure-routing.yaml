@@ -1,6 +1,10 @@
 # secure routing
 
-publicRoutePaths:
+loginRoute:
+  pattern: /auth/login
+  httpMethod: GET
+
+publicRoutes:
   - pattern: /dict/*/byId/*
     httpMethod: GET
   - pattern: /dict/*/byCode/*
@@ -34,7 +38,7 @@ publicRoutePaths:
   - pattern: /playground/*/short
     httpMethod: GET
 
-protectedRoutePaths:
+protectedRoutes:
   ADMIN:
     - pattern: /user/*
       httpMethod: DELETE

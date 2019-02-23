@@ -1,9 +1,11 @@
 package ru.vldf.sportsportal.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -28,6 +30,12 @@ public class SwaggerConfig {
 
     private final static String JWT_AUTH_NAME = "JWT authorization";
     private final static String BASIC_AUTH_NAME = "Basic authorization";
+
+    private final static String JWT_AUTH_DESCRIPTION = "JWT REST API authorization";
+    private final static String BASIC_AUTH_DESCRIPTION = "Basic login authorization";
+
+    private final String jwtAuthRegex;
+    private final String basicAuthRegex;
 
 
     @Value("${api.host}")
@@ -56,6 +64,14 @@ public class SwaggerConfig {
 
     @Value("${api.contact.email}")
     private String apiContactEmail;
+
+
+    @Autowired
+    public SwaggerConfig(RightsDifferentiationRouter router) {
+        String loginPath = router.getLoginPath();
+        this.jwtAuthRegex = String.format("^(?!%s).*", loginPath);
+        this.basicAuthRegex = String.format("^%s", loginPath);
+    }
 
 
     /**
@@ -99,8 +115,8 @@ public class SwaggerConfig {
 
     private List<SecurityContext> securityContexts() {
         return Arrays.asList(
-                SecurityContext.builder().securityReferences(securityReference(SwaggerConfig.JWT_AUTH_NAME, "api access")).forPaths(PathSelectors.regex("^(?!/auth/login).*")).build(),
-                SecurityContext.builder().securityReferences(securityReference(SwaggerConfig.BASIC_AUTH_NAME, "login access")).forPaths(PathSelectors.regex("^/auth/login")).build()
+                SecurityContext.builder().securityReferences(securityReference(JWT_AUTH_NAME, JWT_AUTH_DESCRIPTION)).forPaths(PathSelectors.regex(jwtAuthRegex)).build(),
+                SecurityContext.builder().securityReferences(securityReference(BASIC_AUTH_NAME, BASIC_AUTH_DESCRIPTION)).forPaths(PathSelectors.regex(basicAuthRegex)).build()
         );
     }
 

@@ -107,6 +107,17 @@ public class AuthController {
     }
 
     /**
+     * Returns current user token pair.
+     *
+     * @return token pair.
+     */
+    @GetMapping("/login")
+    @ApiOperation("получить пару токенов (требуется basic-авторизация)")
+    public JwtPairDTO login() {
+        throw new UnsupportedOperationException("login()");
+    }
+
+    /**
      * Login user by its credentials and returns token pair.
      *
      * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
@@ -114,7 +125,7 @@ public class AuthController {
      * @throws InvalidParameterException if credentials is invalid.
      */
     @PostMapping("/login")
-    @ApiOperation("получить пару токенов")
+    @ApiOperation("получить пару токенов (без basic-авторизации)")
     public JwtPairDTO login(
             @RequestBody @Validated @NotBlank String credentials
     ) throws InvalidParameterException {
