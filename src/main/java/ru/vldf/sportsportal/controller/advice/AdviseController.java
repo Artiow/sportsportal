@@ -32,6 +32,7 @@ import java.util.*;
  */
 @Slf4j
 @RestControllerAdvice
+@SuppressWarnings("SameParameterValue")
 public class AdviseController {
 
     private final MessageContainer messages;
@@ -95,6 +96,12 @@ public class AdviseController {
         );
     }
 
+    @ExceptionHandler(InvalidParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO handleInvalidParameterException(InvalidParameterException ex) {
+        return warnDTO(ex, "Sent argument not valid");
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleConstraintViolationException(ConstraintViolationException ex) {
@@ -123,12 +130,6 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         return warnDTO(ex, "Sent request argument mismatch");
-    }
-
-    @ExceptionHandler(SentDataCorruptedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO handleSentDataCorruptedException(SentDataCorruptedException ex) {
-        return warnDTO(ex, "Sent access token not readable");
     }
 
 
@@ -212,23 +213,24 @@ public class AdviseController {
         return new ErrorDTO(errorUUID(ex, logMessage), ex);
     }
 
-    public UUID errorUUID(Throwable ex, String logMessage) {
+    public ErrorDTO warnDTO(Throwable ex, String logMessage) {
+        return new ErrorDTO(warnUUID(ex, logMessage), ex);
+    }
+
+
+    private UUID errorUUID(Throwable ex, String logMessage) {
         UUID uuid = UUID.randomUUID();
         log.error(logMessage + ". UUID: {}", uuid, ex);
         return uuid;
     }
 
-    public ErrorDTO warnDTO(Throwable ex, String logMessage) {
-        return new ErrorDTO(warnUUID(ex, logMessage), ex);
-    }
-
-    public UUID warnUUID(Throwable ex, String logMessage) {
+    private UUID warnUUID(Throwable ex, String logMessage) {
         UUID uuid = UUID.randomUUID();
         log.warn("{} cause by {}. UUID: {}", logMessage, ex.toString(), uuid);
         return uuid;
     }
 
-    public UUID warnUUID(String logMessage) {
+    private UUID warnUUID(String logMessage) {
         UUID uuid = UUID.randomUUID();
         log.warn("{}. UUID: {}", logMessage, uuid);
         return uuid;

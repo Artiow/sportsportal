@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.service.AuthService;
+import ru.vldf.sportsportal.service.generic.InvalidParameterException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
@@ -110,12 +111,13 @@ public class AuthController {
      *
      * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
      * @return token pair.
+     * @throws InvalidParameterException if credentials is invalid.
      */
     @PostMapping("/login")
     @ApiOperation("получить пару токенов")
     public JwtPairDTO login(
             @RequestBody @Validated @NotBlank String credentials
-    ) {
+    ) throws InvalidParameterException {
         return authService.login(credentials);
     }
 

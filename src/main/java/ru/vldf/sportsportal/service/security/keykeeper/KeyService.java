@@ -15,6 +15,7 @@ import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.UUID;
 
 /**
  * @author Namednev Artem
@@ -45,10 +46,8 @@ public class KeyService implements KeyProvider {
 
     @Override
     public Pair<Payload, Payload> authentication(String email, String password) {
-        UserEntity userEntity;
-
         try {
-            userEntity = userRepository.findByEmail(email);
+            UserEntity userEntity = userRepository.findByEmail(email);
             if (userEntity == null) {
                 throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
             } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
@@ -95,8 +94,10 @@ public class KeyService implements KeyProvider {
         Integer userId = userEntity.getId();
         Payload newAccessPayload = new Payload();
         newAccessPayload.setUserId(userId);
+        newAccessPayload.setKeyUuid(UUID.randomUUID());
         Payload newRefreshPayload = new Payload();
         newRefreshPayload.setUserId(userId);
+        newAccessPayload.setKeyUuid(UUID.randomUUID());
         return Pair.of(newAccessPayload, newRefreshPayload);
     }
 }

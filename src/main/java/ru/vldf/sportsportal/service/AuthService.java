@@ -8,8 +8,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
@@ -17,17 +15,14 @@ import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
+import ru.vldf.sportsportal.util.Base64Credentials;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -79,12 +74,19 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
      * @return pair of tokens.
+     * @throws InvalidParameterException if credentials is invalid.
      */
-    public JwtPairDTO login(@NotNull String credentials) {
-        Assert.hasText(credentials, "Credentials must not be blank");
-        String[] arr = new String(Base64Utils.decodeFromString(credentials), StandardCharsets.UTF_8).split(":", 2);
-        if (arr.length == 2) return buildJwtPair(securityProvider.authentication(arr[0], arr[1]));
-        else throw new IllegalArgumentException(msg("sportsportal.auth.service.credentialsError.message"));
+    public JwtPairDTO login(@NotNull String credentials) throws InvalidParameterException {
+        Base64Credentials base64Credentials;
+        try {
+            base64Credentials = Base64Credentials.decode(credentials);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParameterException(msg("sportsportal.auth.service.credentialsError.message"), e);
+        }
+        return buildJwtPair(securityProvider.authentication(
+                base64Credentials.getUsername(),
+                base64Credentials.getPassword()
+        ));
     }
 
     /**
