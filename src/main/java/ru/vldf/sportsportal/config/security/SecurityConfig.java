@@ -2,10 +2,10 @@ package ru.vldf.sportsportal.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
@@ -60,12 +60,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(basicAuthenticationProvider());
+        auth.authenticationProvider(jwtAuthenticationProvider());
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                // .authenticationProvider(basicAuthenticationProvider())
-                .authenticationProvider(jwtAuthenticationProvider())
-
-                // .addFilterBefore(basicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(basicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -83,24 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    // @Bean
-    public FilterRegistrationBean basicRegistrationBean(final BasicAuthenticationFilter authenticationFilter) {
-        final FilterRegistrationBean<BasicAuthenticationFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(authenticationFilter);
-        bean.setEnabled(false);
-        return bean;
-    }
-
     @Bean
-    public FilterRegistrationBean jwtRegistrationBean(final JWTAuthenticationFilter authenticationFilter) {
-        final FilterRegistrationBean<JWTAuthenticationFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(authenticationFilter);
-        bean.setEnabled(false);
-        return bean;
-    }
-
-
-    // @Bean
     public BasicAuthenticationProvider basicAuthenticationProvider() {
         return configureProvider(new BasicAuthenticationProvider());
     }
@@ -117,9 +103,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    // @Bean
+    @Bean
     public BasicAuthenticationFilter basicAuthenticationFilter() throws Exception {
-        return configureFilter(new BasicAuthenticationFilter(router.getProtectedPathsRequestMatcher()));
+        return configureFilter(new BasicAuthenticationFilter(router.getLoginPathRequestMatcher()));
     }
 
     @Bean
