@@ -1,14 +1,15 @@
 package ru.vldf.sportsportal.config.messages;
 
+import org.springframework.context.support.MessageSourceAccessor;
+
 import javax.validation.constraints.NotNull;
-import java.util.Locale;
 
 /**
  * @author Namednev Artem
  */
 public interface MessageContainer {
 
-    Locale getLocale();
+    MessageSourceAccessor getAccessor();
 
     String get(@NotNull String msg);
 

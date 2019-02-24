@@ -7,6 +7,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.validation.Validator;
@@ -19,7 +20,6 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig implements MessageContainer {
 
-    private final Locale locale;
     private final MessageSource source;
     private final MessageSourceAccessor accessor;
 
@@ -30,9 +30,7 @@ public class MessageConfig implements MessageContainer {
             @Value("${locale.language}") String localeLanguage,
             MessageSource messageSource
     ) {
-        this.source = messageSource;
-        this.locale = new Locale(localeLanguage, localeCountry);
-        this.accessor = new MessageSourceAccessor(this.source, this.locale);
+        this.accessor = new MessageSourceAccessor(this.source = messageSource, new Locale(localeLanguage, localeCountry));
     }
 
 
@@ -45,14 +43,15 @@ public class MessageConfig implements MessageContainer {
 
 
     @Override
-    public Locale getLocale() {
-        return locale;
+    public MessageSourceAccessor getAccessor() {
+        return this.accessor;
     }
 
     @Override
-    public String get(@NotNull String msg) {
+    public String get(String msg) {
         try {
-            return accessor.getMessage(msg);
+            Assert.hasText(msg, "message code must be not blank");
+            return getAccessor().getMessage(msg.trim());
         } catch (NoSuchMessageException e) {
             return '{' + msg + '}';
         }
@@ -60,6 +59,7 @@ public class MessageConfig implements MessageContainer {
 
     @Override
     public String get(@NotNull String msg, Object... args) {
+        Assert.noNullElements(args, "message args must be not null");
         return String.format(get(msg), args);
     }
 }
