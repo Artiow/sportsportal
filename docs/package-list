@@ -2,6 +2,9 @@ ru.vldf.sportsportal
 ru.vldf.sportsportal.config
 ru.vldf.sportsportal.config.messages
 ru.vldf.sportsportal.config.security
+ru.vldf.sportsportal.config.security.components
+ru.vldf.sportsportal.config.security.components.basic
+ru.vldf.sportsportal.config.security.components.jwt
 ru.vldf.sportsportal.config.security.routing
 ru.vldf.sportsportal.controller
 ru.vldf.sportsportal.controller.advice
