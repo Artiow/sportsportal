@@ -113,7 +113,7 @@ public class AuthService extends AbstractSecurityService {
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
         String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.isEnabledByEmail(email)) {
+        if (userRepository.isEnabled(email)) {
             throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", email));
         } else try {
             // password encoding and user saving

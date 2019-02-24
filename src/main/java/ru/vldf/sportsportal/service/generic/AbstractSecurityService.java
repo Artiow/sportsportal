@@ -38,11 +38,33 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      */
     protected Integer getCurrentUserId() throws UnauthorizedAccessException {
         try {
-            return ((IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            return userDetails().getId();
         } catch (ClassCastException | NullPointerException e) {
             throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
+
+    /**
+     * Returns authenticated user email.
+     *
+     * @return user email.
+     * @throws UnauthorizedAccessException if user is anonymous.
+     */
+    protected String getCurrentUserEmail() throws UnauthorizedAccessException {
+        try {
+            return userDetails().getUsername();
+        } catch (ClassCastException | NullPointerException e) {
+            throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
+        }
+    }
+
+    /**
+     * Extract authenticated user user details from security context.
+     */
+    private IdentifiedUserDetails userDetails() throws ClassCastException, NullPointerException {
+        return (IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
 
     /**
      * Returns authenticated user entity.
@@ -53,6 +75,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     protected UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
         return userRepository.getOne(getCurrentUserId());
     }
+
 
     /**
      * Checks if the user is current.
@@ -77,6 +100,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         return userEntityCollection.contains(getCurrentUserEntity());
     }
 
+
     /**
      * Check whether the user has the necessary rights.
      *
@@ -87,7 +111,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      */
     protected boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
         if (roleRepository.existsByCode(code)) {
-            return userRepository.hasRoleByCode(getCurrentUserId(), code);
+            return userRepository.hasRoleByCode(getCurrentUserEmail(), code);
         } else {
             throw new ResourceNotFoundException(msg("sportsportal.common.Role.notExistByCode.message", code));
         }
