@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 public class JwtEncoder implements Encoder {
 
-    private final static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private final static SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     private final ExpiringClockProvider clock;
 
@@ -29,10 +29,7 @@ public class JwtEncoder implements Encoder {
 
 
     @Autowired
-    public JwtEncoder(
-            @Value("${jwt.issuer}") String issuer,
-            ExpiringClockProvider clock
-    ) {
+    public JwtEncoder(@Value("${jwt.issuer}") String issuer, ExpiringClockProvider clock) {
         this.sign = TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
         this.issuer = issuer;
         this.clock = clock;
@@ -61,7 +58,7 @@ public class JwtEncoder implements Encoder {
 
 
     /**
-     * JWT generating.
+     * JSON Web Token generating.
      *
      * @param payload the token payload.
      * @param type    the token expiration type.
@@ -80,7 +77,7 @@ public class JwtEncoder implements Encoder {
         return Jwts
                 .builder()
                 .setClaims(claims)
-                .signWith(signatureAlgorithm, sign)
+                .signWith(SIGNATURE_ALGORITHM, sign)
                 .compact();
     }
 }
