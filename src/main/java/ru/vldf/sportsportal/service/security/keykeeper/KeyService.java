@@ -3,8 +3,6 @@ package ru.vldf.sportsportal.service.security.keykeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
 /**
@@ -45,59 +42,78 @@ public class KeyService implements KeyProvider {
 
 
     @Override
-    public Pair<Payload, Payload> authentication(String email, String password) {
-        try {
-            UserEntity userEntity = userRepository.findByEmail(email);
-            if (userEntity == null) {
-                throw new EntityNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
-            } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
-                throw new BadCredentialsException(messages.get("sportsportal.auth.service.passwordEncoder.message"));
-            } else if (userEntity.getIsLocked()) {
-                throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
-            } else if (userEntity.getIsDisabled()) {
-                throw new DisabledException(messages.get("sportsportal.auth.service.accountDisabled.message"));
-            } else {
-                return getGeneratedPayloadPair(userEntity);
-            }
-        } catch (EntityNotFoundException | BadCredentialsException e) {
-            throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.loginError.message"), e);
-        }
+    public IdentifiedUserDetails authorization(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
+        return userDetailsMapper.toDetails(getUserEntity(email, password));
     }
 
     @Override
-    public Pair<Payload, Payload> refresh(Payload refreshKey) {
-        return getGeneratedPayloadPair(getValidatedUserEntity(refreshKey));
+    public IdentifiedUserDetails authorization(Payload accessKey) throws UsernameNotFoundException {
+        return userDetailsMapper.toDetails(getUserEntity(accessKey.getUserId()));
     }
 
     @Override
-    public IdentifiedUserDetails authorization(Payload accessKey) {
-        return userDetailsMapper.toDetails(getValidatedUserEntity(accessKey));
+    public Pair<Payload, Payload> access(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
+        return getPayloadPair(getUserEntity(email, password).getId(), false);
+    }
+
+    @Override
+    public Pair<Payload, Payload> refresh(Payload refreshKey) throws UsernameNotFoundException {
+        return getPayloadPair(refreshKey.getUserId(), true);
     }
 
 
-    private UserEntity getValidatedUserEntity(Payload key) throws UsernameNotFoundException {
-        try {
-            UserEntity userEntity = userRepository.getOne(key.getUserId());
-            if (userEntity.getIsLocked()) {
-                throw new LockedException(messages.get("sportsportal.auth.service.accountLocked.message"));
-            } else if (userEntity.getIsDisabled()) {
-                throw new DisabledException(messages.get("sportsportal.auth.service.accountDisabled.message"));
-            } else {
-                return userEntity;
-            }
-        } catch (EntityNotFoundException e) {
-            throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.userNotFound.message"));
+    /**
+     * Return user entity by user email and password.
+     *
+     * @param email    the user email.
+     * @param password the user password.
+     * @return user entity.
+     * @throws UsernameNotFoundException if such user does not exist.
+     * @throws BadCredentialsException   if password is wrong.
+     */
+    private UserEntity getUserEntity(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
+        UserEntity userEntity;
+        if ((userEntity = userRepository.findByEmail(email)) == null) {
+            throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.usernameNotFound.message"));
+        } else if (!passwordEncoder.matches(password, userEntity.getPassword())) {
+            throw new BadCredentialsException(messages.get("sportsportal.auth.service.badCredentials.message"));
+        } else {
+            return userEntity;
         }
     }
 
-    private Pair<Payload, Payload> getGeneratedPayloadPair(UserEntity userEntity) throws IllegalArgumentException {
-        Integer userId = userEntity.getId();
-        Payload newAccessPayload = new Payload();
-        newAccessPayload.setUserId(userId);
-        newAccessPayload.setKeyUuid(UUID.randomUUID());
-        Payload newRefreshPayload = new Payload();
-        newRefreshPayload.setUserId(userId);
-        newAccessPayload.setKeyUuid(UUID.randomUUID());
-        return Pair.of(newAccessPayload, newRefreshPayload);
+    /**
+     * Return user entity by user identifier.
+     *
+     * @param userId the user identifier.
+     * @return user entity.
+     * @throws UsernameNotFoundException if such user does not exist.
+     */
+    private UserEntity getUserEntity(Integer userId) throws UsernameNotFoundException {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException(messages.get("sportsportal.auth.service.usernameNotFound.message"))
+        );
+    }
+
+    /**
+     * Returns token payload pair (access and refresh) by user identifier.
+     *
+     * @param userId         the user identifier.
+     * @param existenceCheck {@literal true} if existence check enabled, {@literal false} otherwise.
+     * @return token payload pair (access and refresh).
+     * @throws UsernameNotFoundException if such user does not exist.
+     */
+    private Pair<Payload, Payload> getPayloadPair(Integer userId, boolean existenceCheck) throws UsernameNotFoundException {
+        if (existenceCheck && !userRepository.existsById(userId)) {
+            throw new UsernameNotFoundException(messages.get("sportsportal.auth.service.usernameNotFound.message"));
+        } else {
+            Payload newAccessPayload = new Payload();
+            newAccessPayload.setUserId(userId);
+            newAccessPayload.setKeyUuid(UUID.randomUUID());
+            Payload newRefreshPayload = new Payload();
+            newRefreshPayload.setUserId(userId);
+            newAccessPayload.setKeyUuid(UUID.randomUUID());
+            return Pair.of(newAccessPayload, newRefreshPayload);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.service.security;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
 
 /**
@@ -14,7 +16,7 @@ public interface AuthorizationProvider {
      * @param password the password.
      * @return user details.
      */
-    IdentifiedUserDetails authorization(String username, String password);
+    IdentifiedUserDetails authorization(String username, String password) throws UsernameNotFoundException, BadCredentialsException;
 
     /**
      * Returns user details by access token.
@@ -22,5 +24,5 @@ public interface AuthorizationProvider {
      * @param accessToken the access token.
      * @return user details.
      */
-    IdentifiedUserDetails authorization(String accessToken);
+    IdentifiedUserDetails authorization(String accessToken) throws UsernameNotFoundException;
 }
