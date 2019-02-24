@@ -66,23 +66,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().disable()
                 .csrf().disable();
 
-        ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry authorizeRequests
-                = http.authorizeRequests();
-
+        ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry authorizeRequests = http.authorizeRequests();
         for (Map.Entry<String, RequestMatcher> entry : router.getSecurityRouteMap().entrySet()) {
-            ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) authorizeRequests
-                    .requestMatchers(entry.getValue()))
-                    .hasRole(entry.getKey());
+            ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) authorizeRequests.requestMatchers(entry.getValue())).hasRole(entry.getKey());
         }
     }
 
 
-    /**
-     * FilterRegistrationBean configuration, Spring Boot automatic filter registration disabling.
-     *
-     * @param authenticationFilter {@link TokenAuthenticationFilter} auth filter
-     * @return {@link FilterRegistrationBean} bean
-     */
     @Bean
     public FilterRegistrationBean registrationBean(final TokenAuthenticationFilter authenticationFilter) {
         final FilterRegistrationBean<TokenAuthenticationFilter> bean = new FilterRegistrationBean<>();
@@ -91,12 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return bean;
     }
 
-    /**
-     * TokenAuthenticationFilter configuration, handlers setting.
-     *
-     * @return {@link TokenAuthenticationFilter} bean
-     * @throws Exception if something goes wrong
-     */
+
     @Bean
     public TokenAuthenticationFilter authenticationFilter() throws Exception {
         final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(router.getProtectedPathsRequestMatcher(), messages);
@@ -106,11 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    /**
-     * AuthenticationSuccessHandler configuration.
-     *
-     * @return {@link AuthenticationSuccessHandler} bean
-     */
+
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         final SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
@@ -120,11 +101,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return successHandler;
     }
 
-    /**
-     * AuthenticationFailureHandler configuration.
-     *
-     * @return {@link AuthenticationFailureHandler} bean
-     */
     @Bean
     public AuthenticationFailureHandler failureHandler() {
         return (request, response, ex) -> {
@@ -136,11 +112,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         };
     }
 
-    /**
-     * AccessDeniedHandler configuration.
-     *
-     * @return {@link AccessDeniedHandler} bean
-     */
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, ex) -> {

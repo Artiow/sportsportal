@@ -6,6 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.mapper.manual.security.UserDetailsMapper;
@@ -42,21 +43,25 @@ public class KeyService implements KeyProvider {
 
 
     @Override
+    @Transactional
     public IdentifiedUserDetails authorization(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
         return userDetailsMapper.toDetails(getUserEntity(email, password));
     }
 
     @Override
+    @Transactional
     public IdentifiedUserDetails authorization(Payload accessKey) throws UsernameNotFoundException {
         return userDetailsMapper.toDetails(getUserEntity(accessKey.getUserId()));
     }
 
     @Override
+    @Transactional
     public Pair<Payload, Payload> access(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
         return getPayloadPair(getUserEntity(email, password).getId(), false);
     }
 
     @Override
+    @Transactional
     public Pair<Payload, Payload> refresh(Payload refreshKey) throws UsernameNotFoundException {
         return getPayloadPair(refreshKey.getUserId(), true);
     }
