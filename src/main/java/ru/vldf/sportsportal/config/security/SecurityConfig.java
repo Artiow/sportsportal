@@ -11,14 +11,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
+import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticationFilter;
+import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticationProvider;
+import ru.vldf.sportsportal.config.security.components.jwt.JWTAuthenticationFilter;
+import ru.vldf.sportsportal.config.security.components.jwt.JWTAuthenticationProvider;
 import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 import ru.vldf.sportsportal.controller.advice.AdviseController;
+import ru.vldf.sportsportal.service.security.AuthorizationProvider;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +36,7 @@ import java.util.Map;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final RightsDifferentiationRouter router;
-    private final TokenAuthenticationProvider provider;
+    private final AuthorizationProvider authorizationProvider;
 
     private final AdviseController adviseController;
     private final MessageContainer messages;
@@ -40,13 +45,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public SecurityConfig(
             RightsDifferentiationRouter router,
-            TokenAuthenticationProvider provider,
+            AuthorizationProvider authorizationProvider,
             AdviseController adviseController,
             MessageContainer messages
     ) {
         super();
         this.router = router;
-        this.provider = provider;
+        this.authorizationProvider = authorizationProvider;
         this.adviseController = adviseController;
         this.messages = messages;
     }
@@ -55,8 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authenticationProvider(provider)
-                .addFilterBefore(authenticationFilter(), AnonymousAuthenticationFilter.class)
+                .authenticationProvider(jwtAuthenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).and()
@@ -74,8 +79,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    public FilterRegistrationBean registrationBean(final TokenAuthenticationFilter authenticationFilter) {
-        final FilterRegistrationBean<TokenAuthenticationFilter> bean = new FilterRegistrationBean<>();
+    public FilterRegistrationBean registrationBean(final JWTAuthenticationFilter authenticationFilter) {
+        final FilterRegistrationBean<JWTAuthenticationFilter> bean = new FilterRegistrationBean<>();
         bean.setFilter(authenticationFilter);
         bean.setEnabled(false);
         return bean;
@@ -83,11 +88,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    public TokenAuthenticationFilter authenticationFilter() throws Exception {
-        final TokenAuthenticationFilter filter = new TokenAuthenticationFilter(router.getProtectedPathsRequestMatcher(), messages);
+    public JWTAuthenticationProvider jwtAuthenticationProvider() throws Exception {
+        return configureProvider(new JWTAuthenticationProvider());
+    }
+
+    public <T extends AbstractTokenAuthenticationProvider> T configureProvider(T provider) {
+        provider.setAuthorizationProvider(authorizationProvider);
+        provider.setMessageContainer(messages);
+        return provider;
+    }
+
+
+    @Bean
+    public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        return configureFilter(new JWTAuthenticationFilter(router.getProtectedPathsRequestMatcher()));
+    }
+
+    private <T extends AbstractTokenAuthenticationFilter> T configureFilter(T filter) throws Exception {
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(successHandler());
         filter.setAuthenticationFailureHandler(failureHandler());
+        filter.setMessageContainer(messages);
         return filter;
     }
 
