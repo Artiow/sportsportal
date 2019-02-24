@@ -83,7 +83,7 @@ public class AuthService extends AbstractSecurityService {
         } catch (IllegalArgumentException e) {
             throw new InvalidParameterException(msg("sportsportal.auth.service.credentialsError.message"), e);
         }
-        return buildJwtPair(securityProvider.authentication(
+        return buildJwtPair(securityProvider.access(
                 base64Credentials.getUsername(),
                 base64Credentials.getPassword()
         ));

@@ -14,7 +14,7 @@ public interface SecurityProvider {
      * @param password the user password.
      * @return token pair (access and refresh).
      */
-    Pair<String, String> authentication(String username, String password);
+    Pair<String, String> access(String username, String password);
 
     /**
      * Returns token pair (access and refresh) by refresh token.
