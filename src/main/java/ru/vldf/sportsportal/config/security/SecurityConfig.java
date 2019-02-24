@@ -96,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return configureProvider(new JWTAuthenticationProvider());
     }
 
-    public <T extends AbstractTokenAuthenticationProvider> T configureProvider(T provider) {
+    private <T extends AbstractTokenAuthenticationProvider> T configureProvider(T provider) {
         provider.setAuthorizationProvider(authorizationProvider);
         provider.setMessageContainer(messages);
         return provider;
