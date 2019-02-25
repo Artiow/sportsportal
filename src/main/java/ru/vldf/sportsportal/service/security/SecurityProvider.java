@@ -1,9 +1,6 @@
 package ru.vldf.sportsportal.service.security;
 
 import org.springframework.data.util.Pair;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * @author Namednev Artem
@@ -11,19 +8,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public interface SecurityProvider {
 
     /**
-     * Returns token pair (access and refresh) by user credentials.
+     * Returns token pair (access and refresh) by user identifier.
      *
-     * @param username the user username.
-     * @param password the user password.
+     * @param userId the user identifier.
      * @return token pair (access and refresh).
      */
-    Pair<String, String> access(String username, String password) throws UsernameNotFoundException, BadCredentialsException;
-
-    /**
-     * Returns token pair (access and refresh) by refresh token.
-     *
-     * @param refreshToken the refresh token.
-     * @return token pair (access and refresh).
-     */
-    Pair<String, String> refresh(String refreshToken) throws AuthenticationException;
+    Pair<String, String> login(Integer userId);
 }

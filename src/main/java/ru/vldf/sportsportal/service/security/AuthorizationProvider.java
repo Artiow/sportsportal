@@ -25,5 +25,13 @@ public interface AuthorizationProvider {
      * @param accessToken the access token.
      * @return user details.
      */
-    IdentifiedUserDetails authorization(String accessToken) throws AuthenticationException;
+    IdentifiedUserDetails access(String accessToken) throws AuthenticationException;
+
+    /**
+     * Returns user details by refresh token.
+     *
+     * @param refreshToken the refresh token.
+     * @return user details.
+     */
+    IdentifiedUserDetails refresh(String refreshToken) throws AuthenticationException;
 }

@@ -17,7 +17,6 @@ import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
-import ru.vldf.sportsportal.util.Base64Credentials;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
@@ -70,34 +69,15 @@ public class AuthService extends AbstractSecurityService {
 
 
     /**
-     * Logging user and returns pair of token.
+     * Returns user token pair (access and refresh).
      *
-     * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
-     * @return pair of tokens.
-     * @throws InvalidParameterException if credentials is invalid.
+     * @return token pair.
+     * @throws UnauthorizedAccessException if user authorization is missing.
      */
-    public JwtPairDTO login(@NotNull String credentials) throws InvalidParameterException {
-        Base64Credentials base64Credentials;
-        try {
-            base64Credentials = Base64Credentials.decode(credentials);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidParameterException(msg("sportsportal.auth.service.credentialsError.message"), e);
-        }
-        return buildJwtPair(securityProvider.access(
-                base64Credentials.getUsername(),
-                base64Credentials.getPassword()
-        ));
+    public JwtPairDTO login() throws UnauthorizedAccessException {
+        return buildJwtPair(securityProvider.login(getCurrentUserId()));
     }
 
-    /**
-     * Refresh user token pair.
-     *
-     * @param refreshToken the refresh token.
-     * @return pair of tokens.
-     */
-    public JwtPairDTO refresh(@NotNull String refreshToken) {
-        return buildJwtPair(securityProvider.refresh(refreshToken));
-    }
 
     /**
      * Register new user and returns its identifier.
