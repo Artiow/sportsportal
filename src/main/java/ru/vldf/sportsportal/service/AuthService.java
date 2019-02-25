@@ -75,7 +75,7 @@ public class AuthService extends AbstractSecurityService {
      * @throws UnauthorizedAccessException if user authorization is missing.
      */
     public JwtPairDTO login() throws UnauthorizedAccessException {
-        return buildJwtPair(securityProvider.login(getCurrentUserId()));
+        return buildJwtPair(securityProvider.login(getCurrentUserEntity()));
     }
 
 
