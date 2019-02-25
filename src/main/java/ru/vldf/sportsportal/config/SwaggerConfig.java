@@ -28,14 +28,17 @@ public class SwaggerConfig {
 
     private final static String CONTROLLER_PACKAGE = "ru.vldf.sportsportal.controller";
 
-    private final static String JWT_AUTH_NAME = "JWT authorization";
     private final static String BASIC_AUTH_NAME = "Basic authorization";
+    private final static String ACCESS_AUTH_NAME = "JWT access authorization";
+    private final static String REFRESH_AUTH_NAME = "JWT refresh authorization";
 
-    private final static String JWT_AUTH_DESCRIPTION = "JWT REST API authorization";
     private final static String BASIC_AUTH_DESCRIPTION = "Basic login authorization";
+    private final static String ACCESS_AUTH_DESCRIPTION = "JWT access REST API authorization";
+    private final static String REFRESH_AUTH_DESCRIPTION = "JWT refresh REST API authorization";
 
-    private final String jwtAuthRegex;
     private final String basicAuthRegex;
+    private final String accessAuthRegex;
+    private final String refreshAuthRegex;
 
 
     @Value("${api.host}")
@@ -69,8 +72,9 @@ public class SwaggerConfig {
     @Autowired
     public SwaggerConfig(RightsDifferentiationRouter router) {
         String loginPath = router.getLoginPath();
-        this.jwtAuthRegex = String.format("^(?!%s).*", loginPath);
         this.basicAuthRegex = String.format("^%s", loginPath);
+        this.accessAuthRegex = String.format("^(?!%s).*", loginPath);
+        this.refreshAuthRegex = String.format("^%s", loginPath);
     }
 
 
@@ -108,16 +112,22 @@ public class SwaggerConfig {
 
     private List<SecurityScheme> securitySchemes() {
         return Arrays.asList(
-                new ApiKey(JWT_AUTH_NAME, HttpHeaders.AUTHORIZATION, "header"),
+                new ApiKey(ACCESS_AUTH_NAME, HttpHeaders.AUTHORIZATION, "header"),
+                new ApiKey(REFRESH_AUTH_NAME, HttpHeaders.AUTHORIZATION, "header"),
                 new BasicAuth(BASIC_AUTH_NAME)
         );
     }
 
     private List<SecurityContext> securityContexts() {
         return Arrays.asList(
-                SecurityContext.builder().securityReferences(securityReference(JWT_AUTH_NAME, JWT_AUTH_DESCRIPTION)).forPaths(PathSelectors.regex(jwtAuthRegex)).build(),
-                SecurityContext.builder().securityReferences(securityReference(BASIC_AUTH_NAME, BASIC_AUTH_DESCRIPTION)).forPaths(PathSelectors.regex(basicAuthRegex)).build()
+                securityContext(BASIC_AUTH_NAME, BASIC_AUTH_DESCRIPTION, basicAuthRegex),
+                securityContext(ACCESS_AUTH_NAME, ACCESS_AUTH_DESCRIPTION, accessAuthRegex),
+                securityContext(REFRESH_AUTH_NAME, REFRESH_AUTH_DESCRIPTION, refreshAuthRegex)
         );
+    }
+
+    private SecurityContext securityContext(String name, String description, String pathRegex) {
+        return SecurityContext.builder().securityReferences(securityReference(name, description)).forPaths(PathSelectors.regex(pathRegex)).build();
     }
 
     private List<SecurityReference> securityReference(String reference, String description) {

@@ -6,14 +6,9 @@ import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticati
 /**
  * @author Namednev Artem
  */
-public class JWTAuthenticationFilter extends AbstractTokenAuthenticationFilter<JWTAuthenticationToken> {
+public abstract class JWTAuthenticationFilter<T extends JWTAuthenticationToken> extends AbstractTokenAuthenticationFilter<T> {
 
     public JWTAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher, "bearer");
-    }
-
-    @Override
-    public JWTAuthenticationToken createFrom(String token) {
-        return new JWTAuthenticationToken(token);
     }
 }

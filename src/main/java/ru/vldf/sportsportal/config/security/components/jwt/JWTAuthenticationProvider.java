@@ -7,14 +7,16 @@ import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticati
 /**
  * @author Namednev Artem
  */
-public class JWTAuthenticationProvider extends AbstractTokenAuthenticationProvider<JWTAuthenticationToken> {
+public abstract class JWTAuthenticationProvider<T extends JWTAuthenticationToken> extends AbstractTokenAuthenticationProvider<T> {
 
-    public JWTAuthenticationProvider() {
-        super(JWTAuthenticationToken.class);
+    public JWTAuthenticationProvider(Class<T> type) {
+        super(type);
     }
 
     @Override
     protected UserDetails retrieveUser(JWTAuthenticationToken auth) throws AuthenticationException {
-        return provider.authorization(auth.token());
+        return retrieveUser(auth.token());
     }
+
+    protected abstract UserDetails retrieveUser(String token) throws AuthenticationException;
 }

@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * @author Namednev Artem
  */
-public class JWTAuthenticationToken extends UsernamePasswordAuthenticationToken {
+public abstract class JWTAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
     public JWTAuthenticationToken(String token) {
         super(null, token);

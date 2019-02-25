@@ -21,8 +21,10 @@ import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticati
 import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticationProvider;
 import ru.vldf.sportsportal.config.security.components.basic.BasicAuthenticationFilter;
 import ru.vldf.sportsportal.config.security.components.basic.BasicAuthenticationProvider;
-import ru.vldf.sportsportal.config.security.components.jwt.JWTAuthenticationFilter;
-import ru.vldf.sportsportal.config.security.components.jwt.JWTAuthenticationProvider;
+import ru.vldf.sportsportal.config.security.components.jwt.access.AccessAuthenticationFilter;
+import ru.vldf.sportsportal.config.security.components.jwt.access.AccessAuthenticationProvider;
+import ru.vldf.sportsportal.config.security.components.jwt.refresh.RefreshAuthenticationFilter;
+import ru.vldf.sportsportal.config.security.components.jwt.refresh.RefreshAuthenticationProvider;
 import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 import ru.vldf.sportsportal.controller.advice.AdviseController;
 import ru.vldf.sportsportal.service.security.AuthorizationProvider;
@@ -62,14 +64,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(basicAuthenticationProvider());
-        auth.authenticationProvider(jwtAuthenticationProvider());
+        auth.authenticationProvider(accessAuthenticationProvider());
+        auth.authenticationProvider(refreshAuthenticationProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilterBefore(basicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(accessAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(refreshAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).and()
@@ -92,8 +96,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JWTAuthenticationProvider jwtAuthenticationProvider() {
-        return configureProvider(new JWTAuthenticationProvider());
+    public AccessAuthenticationProvider accessAuthenticationProvider() {
+        return configureProvider(new AccessAuthenticationProvider());
+    }
+
+    @Bean
+    public RefreshAuthenticationProvider refreshAuthenticationProvider() {
+        return configureProvider(new RefreshAuthenticationProvider());
     }
 
     private <T extends AbstractTokenAuthenticationProvider> T configureProvider(T provider) {
@@ -109,8 +118,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        return configureFilter(new JWTAuthenticationFilter(router.getProtectedPathsRequestMatcher()));
+    public AccessAuthenticationFilter accessAuthenticationFilter() throws Exception {
+        return configureFilter(new AccessAuthenticationFilter(router.getProtectedPathsRequestMatcher()));
+    }
+
+    @Bean
+    public RefreshAuthenticationFilter refreshAuthenticationFilter() throws Exception {
+        return configureFilter(new RefreshAuthenticationFilter(router.getLoginPathRequestMatcher()));
     }
 
     private <T extends AbstractTokenAuthenticationFilter> T configureFilter(T filter) throws Exception {

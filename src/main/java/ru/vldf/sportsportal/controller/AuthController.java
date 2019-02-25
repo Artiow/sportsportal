@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.service.AuthService;
-import ru.vldf.sportsportal.service.generic.InvalidParameterException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 
 import javax.validation.constraints.NotBlank;
 
@@ -38,6 +38,19 @@ public class AuthController {
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+
+    /**
+     * Returns user token pair (access and refresh).
+     *
+     * @return token pair.
+     * @throws UnauthorizedAccessException if user authorization is missing.
+     */
+    @GetMapping("/login")
+    @ApiOperation("получить пару токенов")
+    public JwtPairDTO login() throws UnauthorizedAccessException {
+        return authService.login();
     }
 
 
@@ -104,45 +117,5 @@ public class AuthController {
     ) throws ResourceNotFoundException {
         authService.confirm(token);
         return ResponseEntity.status(HttpStatus.SEE_OTHER).header(HttpHeaders.LOCATION, buildURL().toString()).build();
-    }
-
-    /**
-     * Returns current user token pair.
-     *
-     * @return token pair.
-     */
-    @GetMapping("/login")
-    @ApiOperation("получить пару токенов (требуется basic-авторизация)")
-    public JwtPairDTO login() {
-        throw new UnsupportedOperationException("login()");
-    }
-
-    /**
-     * Login user by its credentials and returns token pair.
-     *
-     * @param credentials the user credentials (Base64 encoded {@literal email:password} string).
-     * @return token pair.
-     * @throws InvalidParameterException if credentials is invalid.
-     */
-    @PostMapping("/login")
-    @ApiOperation("получить пару токенов (без basic-авторизации)")
-    public JwtPairDTO login(
-            @RequestBody @Validated @NotBlank String credentials
-    ) throws InvalidParameterException {
-        return authService.login(credentials);
-    }
-
-    /**
-     * Refresh token pair and returns new by user refresh token.
-     *
-     * @param refreshToken the user refresh token.
-     * @return user token pair.
-     */
-    @PutMapping("/refresh")
-    @ApiOperation("обновить пару токенов")
-    public JwtPairDTO refresh(
-            @RequestBody @Validated @NotBlank String refreshToken
-    ) {
-        return authService.refresh(refreshToken);
     }
 }
