@@ -54,6 +54,7 @@
         <maven.plugin.war.version>3.2.2</maven.plugin.war.version>
         <maven.plugin.compiler.version>3.8.0</maven.plugin.compiler.version>
         <maven.plugin.resources.version>3.1.0</maven.plugin.resources.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
         <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
         <io.springfox.version>2.9.2</io.springfox.version>
         <org.imgscalr.version>4.2</org.imgscalr.version>
@@ -184,6 +185,14 @@
             <groupId>org.imgscalr</groupId>
             <artifactId>imgscalr-lib</artifactId>
             <version>${org.imgscalr.version}</version>
+        </dependency>
+
+        <!-- FILEUPLOAD -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons-fileupload.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- TESTING -->
