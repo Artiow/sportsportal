@@ -11,26 +11,6 @@ export default class PlaygroundFilter extends React.Component {
     static MAX_PRICE = 10000;
     static PRICE_STEP = 100;
 
-    updatePriceCallback = range => {
-        this.setState({
-            startPrice: range[0],
-            endPrice: range[1]
-        });
-    };
-
-    updateTimeCallback = range => {
-        const normalize = time => {
-            const normalTime = (time !== 48) ? time : 0;
-            const timeHour = Math.floor(normalTime / 2);
-            const timeMinute = (30 * (normalTime % 2));
-            return ((timeHour < 10) ? ('0' + timeHour) : timeHour) + ':' + ((timeMinute !== 30) ? (timeMinute + '0') : timeMinute)
-        };
-        this.setState({
-            opening: normalize(range[0]),
-            closing: normalize(range[1])
-        });
-    };
-
     constructor(props) {
         super(props);
         this.dictionary = {
@@ -55,6 +35,26 @@ export default class PlaygroundFilter extends React.Component {
         else codes.splice(idx, 1);
         return codes;
     }
+
+    updatePriceCallback = range => {
+        this.setState({
+            startPrice: range[0],
+            endPrice: range[1]
+        });
+    };
+
+    updateTimeCallback = range => {
+        const normalize = time => {
+            const normalTime = (time !== 48) ? time : 0;
+            const timeHour = Math.floor(normalTime / 2);
+            const timeMinute = (30 * (normalTime % 2));
+            return ((timeHour < 10) ? ('0' + timeHour) : timeHour) + ':' + ((timeMinute !== 30) ? (timeMinute + '0') : timeMinute)
+        };
+        this.setState({
+            opening: normalize(range[0]),
+            closing: normalize(range[1])
+        });
+    };
 
     componentDidMount() {
         this.uploadFilterDictionaryData('feature', 'features');

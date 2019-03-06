@@ -21,6 +21,7 @@
 }
 
 .PlaygroundFilter form.card div.filter-accordion .card .card-header a {
+    cursor: pointer !important;
     text-decoration: none;
     text-align: left;
     font-weight: 500;
