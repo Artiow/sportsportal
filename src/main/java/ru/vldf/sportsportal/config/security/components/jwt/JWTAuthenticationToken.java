@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.config.security.components.jwt;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -14,6 +14,6 @@ public abstract class JWTAuthenticationToken extends UsernamePasswordAuthenticat
     }
 
     public String token() {
-        return Optional.ofNullable(getCredentials()).map(Object::toString).orElse(null);
+        return Objects.toString(getCredentials(), null);
     }
 }

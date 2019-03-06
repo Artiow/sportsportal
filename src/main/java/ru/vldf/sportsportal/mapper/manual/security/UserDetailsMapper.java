@@ -4,8 +4,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUser;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUser;
+import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;

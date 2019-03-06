@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.security.userdetails;
+package ru.vldf.sportsportal.service.security.userdetails.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

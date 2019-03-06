@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.mapper.manual.security.PayloadMapper;
 import ru.vldf.sportsportal.service.security.encoder.Encoder;
-import ru.vldf.sportsportal.service.security.keykeeper.KeyProvider;
-import ru.vldf.sportsportal.service.security.keykeeper.Payload;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.security.model.ExpirationType;
+import ru.vldf.sportsportal.service.security.model.Payload;
+import ru.vldf.sportsportal.service.security.userdetails.UserDetailsProvider;
+import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
+
+import java.util.UUID;
 
 /**
  * @author Namednev Artem
@@ -27,7 +30,7 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
     private final MessageContainer messages;
 
     private final Encoder encoder;
-    private final KeyProvider provider;
+    private final UserDetailsProvider provider;
     private final PayloadMapper mapper;
 
 
@@ -35,7 +38,7 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
     public SecurityService(
             MessageContainer messages,
             Encoder encoder,
-            KeyProvider provider,
+            UserDetailsProvider provider,
             PayloadMapper mapper
     ) {
         this.messages = messages;
@@ -51,18 +54,29 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
     }
 
     @Override
-    public IdentifiedUserDetails authorization(String accessToken) throws AuthenticationException {
-        return provider.authorization(verify(accessToken));
+    public IdentifiedUserDetails access(String accessToken) throws AuthenticationException {
+        return provider.authorization(verify(accessToken, ExpirationType.ACCESS).getUserId());
     }
 
     @Override
-    public Pair<String, String> access(String username, String password) throws UsernameNotFoundException, BadCredentialsException {
-        return getTokenPair(provider.access(username, password));
+    public IdentifiedUserDetails refresh(String refreshToken) throws AuthenticationException {
+        return provider.authorization(verify(refreshToken, ExpirationType.REFRESH).getUserId());
     }
 
     @Override
-    public Pair<String, String> refresh(String refreshToken) throws AuthenticationException {
-        return getTokenPair(provider.refresh(verify(refreshToken)));
+    public Pair<String, String> generate(Integer userId) {
+        Payload newAccessPayload = new Payload();
+        newAccessPayload.setUserId(userId);
+        newAccessPayload.setKeyUuid(UUID.randomUUID());
+        newAccessPayload.setType(ExpirationType.ACCESS);
+        Payload newRefreshPayload = new Payload();
+        newRefreshPayload.setUserId(userId);
+        newRefreshPayload.setKeyUuid(UUID.randomUUID());
+        newRefreshPayload.setType(ExpirationType.REFRESH);
+        return Pair.of(
+                encoder.getAccessToken(mapper.toMap(newAccessPayload)),
+                encoder.getRefreshToken(mapper.toMap(newRefreshPayload))
+        );
     }
 
 
@@ -73,9 +87,10 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
      * @return token payload.
      * @throws AuthenticationException if verifying failed.
      */
-    private Payload verify(String token) throws AuthenticationException {
+    private Payload verify(String token, ExpirationType type) throws AuthenticationException {
+        Payload payload;
         try {
-            return mapper.toPayload(encoder.verify(token));
+            payload = mapper.toPayload(encoder.verify(token));
         } catch (SignatureException e) {
             throw new InsufficientAuthenticationException(messages.get("sportsportal.auth.provider.insufficientToken.message"), e);
         } catch (ExpiredJwtException e) {
@@ -83,18 +98,10 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
         } catch (JwtException e) {
             throw new BadCredentialsException(messages.get("sportsportal.auth.provider.couldNotParseToken.message"), e);
         }
-    }
-
-    /**
-     * Returns generated token pair.
-     *
-     * @param payloadPair the payload pair.
-     * @return generated token pair.
-     */
-    private Pair<String, String> getTokenPair(Pair<Payload, Payload> payloadPair) {
-        return Pair.of(
-                encoder.getAccessToken(mapper.toMap(payloadPair.getFirst())),
-                encoder.getRefreshToken(mapper.toMap(payloadPair.getSecond()))
-        );
+        if (payload.getType() != type) {
+            throw new BadCredentialsException(messages.get("sportsportal.auth.provider.invalidTokenType.message"));
+        } else {
+            return payload;
+        }
     }
 }

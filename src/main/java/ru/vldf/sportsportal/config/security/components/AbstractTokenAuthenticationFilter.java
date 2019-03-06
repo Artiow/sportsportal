@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 public abstract class AbstractTokenAuthenticationFilter<T extends UsernamePasswordAuthenticationToken> extends AbstractAuthenticationProcessingFilter {
 
-    private final String schema;
+    private final String schemaPrefix;
 
     protected MessageContainer messageContainer;
 
@@ -36,7 +36,7 @@ public abstract class AbstractTokenAuthenticationFilter<T extends UsernamePasswo
     public AbstractTokenAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher, String schema) {
         super(requiresAuthenticationRequestMatcher);
         Assert.hasText(schema, "Authorization schema cannot be null");
-        this.schema = (schema.toLowerCase().trim() + " ");
+        this.schemaPrefix = (schema.toLowerCase().trim() + " ");
     }
 
 
@@ -76,10 +76,10 @@ public abstract class AbstractTokenAuthenticationFilter<T extends UsernamePasswo
         final String credentials;
         if ((credentials = request.getHeader(HttpHeaders.AUTHORIZATION)) == null) {
             throw new AuthenticationCredentialsNotFoundException(messageContainer.get("sportsportal.auth.filter.credentialsNotFound.message"));
-        } else if (!credentials.toLowerCase().startsWith(schema)) {
+        } else if (!credentials.toLowerCase().startsWith(schemaPrefix)) {
             throw new BadCredentialsException(messageContainer.get("sportsportal.auth.filter.credentialsNotValid.message"));
         } else {
-            return getAuthenticationManager().authenticate(createFrom(credentials.substring(schema.length()).trim()));
+            return getAuthenticationManager().authenticate(createFrom(credentials.substring(schemaPrefix.length()).trim()));
         }
     }
 

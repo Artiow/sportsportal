@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-import ru.vldf.sportsportal.service.security.keykeeper.Payload;
+import ru.vldf.sportsportal.service.security.model.Payload;
 
 import java.util.Map;
 

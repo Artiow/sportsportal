@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import ru.vldf.sportsportal.service.security.model.ExpirationType;
 import ru.vldf.sportsportal.util.CharSequenceGenerator;
 
 import java.util.Date;

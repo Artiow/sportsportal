@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.service.security;
 
 import org.springframework.data.util.Pair;
-import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 /**
  * @author Namednev Artem
@@ -9,10 +8,10 @@ import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 public interface SecurityProvider {
 
     /**
-     * Returns token pair (access and refresh) for user.
+     * Returns generated token pair (access and refresh) by user identifier.
      *
-     * @param user the user entity.
+     * @param userId the user identifier.
      * @return token pair (access and refresh).
      */
-    Pair<String, String> login(UserEntity user);
+    Pair<String, String> generate(Integer userId);
 }

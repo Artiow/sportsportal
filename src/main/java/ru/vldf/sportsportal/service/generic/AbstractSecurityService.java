@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 
 import java.util.Collection;
 

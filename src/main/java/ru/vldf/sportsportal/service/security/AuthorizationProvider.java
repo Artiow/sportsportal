@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.service.security;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ru.vldf.sportsportal.service.security.userdetails.IdentifiedUserDetails;
+import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 
 /**
  * @author Namednev Artem

@@ -5,6 +5,8 @@ ru.vldf.sportsportal.config.security
 ru.vldf.sportsportal.config.security.components
 ru.vldf.sportsportal.config.security.components.basic
 ru.vldf.sportsportal.config.security.components.jwt
+ru.vldf.sportsportal.config.security.components.jwt.access
+ru.vldf.sportsportal.config.security.components.jwt.refresh
 ru.vldf.sportsportal.config.security.routing
 ru.vldf.sportsportal.controller
 ru.vldf.sportsportal.controller.advice
@@ -48,6 +50,7 @@ ru.vldf.sportsportal.service.dictionary.lease
 ru.vldf.sportsportal.service.generic
 ru.vldf.sportsportal.service.security
 ru.vldf.sportsportal.service.security.encoder
-ru.vldf.sportsportal.service.security.keykeeper
+ru.vldf.sportsportal.service.security.model
 ru.vldf.sportsportal.service.security.userdetails
+ru.vldf.sportsportal.service.security.userdetails.model
 ru.vldf.sportsportal.util

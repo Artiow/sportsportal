@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.config.security.components.basic;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -14,10 +14,10 @@ public class BasicAuthenticationToken extends UsernamePasswordAuthenticationToke
     }
 
     public String username() {
-        return Optional.ofNullable(getPrincipal()).map(Object::toString).orElse(null);
+        return Objects.toString(getPrincipal(), null);
     }
 
     public String password() {
-        return Optional.ofNullable(getCredentials()).map(Object::toString).orElse(null);
+        return Objects.toString(getCredentials(), null);
     }
 }

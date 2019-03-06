@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service.security.encoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import ru.vldf.sportsportal.service.security.model.ExpirationType;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
