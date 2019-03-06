@@ -227,12 +227,15 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime expiration = now.plus(orderExpirationAmount, ChronoUnit.valueOf(orderExpirationUnit));
-
             UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
             boolean isOwner = (playground.getOwners().contains(currentUser));
+            if (!isOwner && playground.getTest()) {
+                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.isTest.message"));
+            }
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime expiration = now.plus(orderExpirationAmount, ChronoUnit.valueOf(orderExpirationUnit));
 
             OrderEntity order = new OrderEntity();
             order.setCustomer(currentUser);

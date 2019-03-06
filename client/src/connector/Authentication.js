@@ -43,7 +43,9 @@ export default class Authentication {
     static doConfirmation(token) {
         return new Promise((resolve, reject) => {
             axios
-                .put(apiUrl('/auth/confirm'), token)
+                .put(apiUrl('/auth/confirm'), token, {
+                    headers: {'Content-Type': 'text/plain'}
+                })
                 .then(response => {
                     console.debug('Authentication', 'doConfirmation', response);
                     resolve();
@@ -60,7 +62,7 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             axios
                 .get(apiUrl('/auth/login'), {
-                    headers: {Authorization: `Basic ${window.btoa(email + ':' + password)}`}
+                    headers: {'Authorization': `Basic ${window.btoa(email + ':' + password)}`}
                 })
                 .then(response => {
                     set(response.data);
@@ -103,7 +105,7 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             axios
                 .get(apiUrl('/auth/refresh'), {
-                    headers: {Authorization: `Bearer ${refreshToken}`}
+                    headers: {'Authorization': `Bearer ${refreshToken}`}
                 })
                 .then(response => {
                     set(response.data);

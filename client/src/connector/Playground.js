@@ -57,7 +57,7 @@ export default class Playground {
                 .then(token => {
                     axios
                         .delete(apiUrl(`/playground/${id}`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Playground', 'delete', response);
@@ -142,7 +142,7 @@ export default class Playground {
                         .post(apiUrl(`/playground/${id}/reserve`), {
                             reservations: reservations
                         }, {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Playground', 'reserve', response);

@@ -10,7 +10,7 @@ export default class User {
                 .then(token => {
                     axios
                         .get(apiUrl(`/user/${id}`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('User', 'get', response);
@@ -35,7 +35,7 @@ export default class User {
                 .then(token => {
                     axios
                         .delete(apiUrl(`/user/${id}`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('User', 'delete', response);

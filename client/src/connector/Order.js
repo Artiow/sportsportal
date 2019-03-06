@@ -10,7 +10,7 @@ export default class Order {
                 .then(token => {
                     axios
                         .get(apiUrl(`/order/list`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Order', 'list', response);
@@ -35,7 +35,7 @@ export default class Order {
                 .then(token => {
                     axios
                         .get(apiUrl(`/order/${id}`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Order', 'get', response);
@@ -60,7 +60,7 @@ export default class Order {
                 .then(token => {
                     axios
                         .delete(apiUrl(`/order/${id}`), {
-                            headers: {Authorization: `Bearer ${token}`}
+                            headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
                             console.debug('Order', 'delete', response);
