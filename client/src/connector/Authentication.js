@@ -43,10 +43,7 @@ export default class Authentication {
     static doConfirmation(token) {
         return new Promise((resolve, reject) => {
             axios
-                .put(apiUrl('/auth/confirm'), '', {
-                    paramsSerializer: (params => qs.stringify(params)),
-                    params: {token: token}
-                })
+                .put(apiUrl('/auth/confirm'), token)
                 .then(response => {
                     console.debug('Authentication', 'doConfirmation', response);
                     resolve();
@@ -63,10 +60,7 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             axios
                 .get(apiUrl('/auth/login'), {
-                    params: {
-                        email: email,
-                        password: password
-                    }
+                    headers: {Authorization: `Basic ${window.btoa(email + ':' + password)}`}
                 })
                 .then(response => {
                     set(response.data);
@@ -88,7 +82,7 @@ export default class Authentication {
                 if (isNotExpired(token.access)) {
                     resolve(token.access);
                 } else if (isNotExpired(token.refresh)) {
-                    refresh(token.refresh)
+                    this.refresh(token.refresh)
                         .then(data => resolve(data.accessToken))
                         .catch(error => {
                             console.error('Authentication', 'access', 'refresh error');
@@ -105,55 +99,30 @@ export default class Authentication {
         });
     }
 
-    static logout() {
+    static refresh(refreshToken) {
         return new Promise((resolve, reject) => {
-            Authentication.access()
-                .then(token => {
-                    axios
-                        .put(apiUrl('/auth/logout'), '', {
-                            params: {accessToken: token}
-                        })
-                        .then(response => {
-                            console.debug('Authentication', 'logout', response);
-                            clear();
-                            resolve();
-                        })
-                        .catch(error => {
-                            const response = error.response;
-                            console.error('Authentication', 'logout', response ? response : error);
-                            reject((response && response.data) ? response.data : null);
-                        })
+            axios
+                .get(apiUrl('/auth/refresh'), {
+                    headers: {Authorization: `Bearer ${refreshToken}`}
+                })
+                .then(response => {
+                    set(response.data);
+                    console.debug('Authentication', 'refresh', response);
+                    resolve(response.data);
                 })
                 .catch(error => {
-                    console.error('Authentication', 'logout', 'access error');
-                    reject(null);
+                    clear();
+                    const response = error.response;
+                    console.error('Authentication', 'refresh', response ? response : error);
+                    reject((response && response.data) ? response.data : null)
                 })
         });
     }
 
-    static logoutAll() {
+    static logout() {
         return new Promise((resolve, reject) => {
-            Authentication.access()
-                .then(token => {
-                    axios
-                        .put(apiUrl('/auth/logoutAll'), '', {
-                            params: {accessToken: token}
-                        })
-                        .then(response => {
-                            console.debug('Authentication', 'logoutAll', response);
-                            clear();
-                            resolve();
-                        })
-                        .catch(error => {
-                            const response = error.response;
-                            console.error('Authentication', 'logoutAll', response ? response : error);
-                            reject((response && response.data) ? response.data : null);
-                        })
-                })
-                .catch(error => {
-                    console.error('Authentication', 'logoutAll', 'access error');
-                    reject(null);
-                })
+            clear();
+            resolve();
         });
     }
 }
@@ -165,26 +134,6 @@ function isNotExpired(token) {
 
 function parse(token) {
     return JSON.parse(window.atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-}
-
-function refresh(refreshToken) {
-    return new Promise((resolve, reject) => {
-        axios
-            .get(apiUrl('/auth/refresh'), {
-                params: {refreshToken: refreshToken}
-            })
-            .then(response => {
-                set(response.data);
-                console.debug('Authentication', 'refresh', response);
-                resolve(response.data);
-            })
-            .catch(error => {
-                clear();
-                const response = error.response;
-                console.error('Authentication', 'refresh', response ? response : error);
-                reject((response && response.data) ? response.data : null)
-            })
-    });
 }
 
 function get() {

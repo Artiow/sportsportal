@@ -5,7 +5,7 @@
 
     <groupId>ru.vldf</groupId>
     <artifactId>sportsportal</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>war</packaging>
 
     <name>SportsPortal</name>
@@ -224,7 +224,6 @@
                     <password>${database.password}</password>
                     <schemas>
                         <schema>flyway</schema>
-                        <schema>security</schema>
                         <schema>common</schema>
                         <schema>lease</schema>
                     </schemas>

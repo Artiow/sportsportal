@@ -38,6 +38,8 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
             };
             this.state = {
                 price: null,
+                isTest: null,
+                contact: null,
                 schedule: null,
                 dateList: null,
                 timeList: null,
@@ -178,7 +180,9 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         timeList: timeList,
                         schedule: schedule,
                         halfHourAvailable: data.halfHourAvailable,
-                        fullHourRequired: data.fullHourRequired
+                        fullHourRequired: data.fullHourRequired,
+                        contact: data.phone,
+                        isTest: data.test,
                     });
                 })
                 .catch(error => {
@@ -326,11 +330,14 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                 });
                 return (table);
             };
+            const price = this.state.price;
             const owner = this.state.owner;
             const access = this.state.access;
+            const contact = this.state.contact;
             const schedule = this.state.schedule;
             const reservation = this.state.reservation;
-            const price = this.state.price;
+            const isTest = access && !owner && this.state.isTest;
+            const disabled = isTest || !(reservation.length > 0);
             const totalPrice = ((reservation != null) && (price != null)) ? reservation.length * price : 0;
             if (schedule != null) {
                 return (
@@ -366,12 +373,14 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         <div className="order-group">
                             {(!access) ? (
                                 <AuthAlert link="/login" onClick={this.props.mainframe.showLogin}/>
+                            ) : (isTest) ? (
+                                <TestAlert contact={contact}/>
                             ) : (null)}
                             <div className="btn-group">
                                 <CancelButton disabled={!(reservation.length > 0)} onClick={cancel}
                                               title={PlaygroundLeaseCalendar.CANCEL_TITLE}/>
                                 <SubmitButton access={access}
-                                              disabled={!(reservation.length > 0)}
+                                              disabled={disabled}
                                               onForbidden={this.props.mainframe.showLogin}
                                               ownerTitle={PlaygroundLeaseCalendar.OWNER_SUBMIT_TITLE}
                                               userTitle={PlaygroundLeaseCalendar.USER_SUBMIT_TITLE}
@@ -424,6 +433,15 @@ function CancelButton(props) {
             {props.title}
         </button>
     );
+}
+
+function TestAlert(props) {
+    return (
+        <div className="alert alert-warning">
+            <b>Внимание!</b> Онлайн бронирование для этой площадки временно недоступно! Для того, чтобы забронировать
+            площадку, позвоните <b>по номеру {props.contact}</b> и совершите заказ.
+        </div>
+    )
 }
 
 function AuthAlert(props) {

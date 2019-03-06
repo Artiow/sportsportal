@@ -1,6 +1,3 @@
-### Production Data ###
-**/application-prod.properties
-
 ### IntelliJ IDEA ###
 /.idea/
 *.iws

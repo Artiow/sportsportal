@@ -57,6 +57,10 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price = BigDecimal.valueOf(0, 2);
 
+    @Basic
+    @Column(name = "test", nullable = false)
+    private Boolean test = true;
+
 
     @OrderBy("pk.datetime")
     @OneToMany(mappedBy = "pk.playground")

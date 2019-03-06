@@ -144,6 +144,40 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
         return grid;
     }
 
+    public PlaygroundBoardDTO makeSchedule(
+            PlaygroundBoardDTO playgroundBoardDTO,
+            LocalDateTime now,
+            LocalDate startDate,
+            LocalDate endDate,
+            Collection<ReservationEntity> reservations
+    ) throws DataCorruptedException {
+
+        if ((playgroundBoardDTO == null) || (reservations == null)) {
+            return null;
+        }
+
+        // schedule making
+        Map<LocalDate, Map<LocalTime, Boolean>> schedule = makeSchedule(playgroundBoardDTO, now, startDate, endDate).getGrid().getSchedule();
+
+        // schedule updating
+        for (ReservationEntity item : reservations) {
+            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
+            LocalDate date = datetime.toLocalDate();
+            LocalTime time = datetime.toLocalTime();
+
+            Map<LocalTime, Boolean> line = Optional
+                    .ofNullable(schedule.get(date))
+                    .orElseThrow(() -> new DataCorruptedException("Reservation date not supported!"));
+
+            if (Optional.ofNullable(line.get(time))
+                    .orElseThrow(() -> new DataCorruptedException("Reservation time not supported!"))) {
+                line.put(time, false);
+            }
+        }
+
+        return playgroundBoardDTO;
+    }
+
     public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate)
             throws DataCorruptedException {
         if (playgroundBoardDTO == null) {
@@ -254,34 +288,6 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
         grid.setTotalDays(totalDays);
         grid.setStartDate(startDate);
         grid.setEndDate(endDate);
-        return playgroundBoardDTO;
-    }
-
-    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations)
-            throws DataCorruptedException {
-        if ((playgroundBoardDTO == null) || (reservations == null)) {
-            return null;
-        }
-
-        // schedule making
-        Map<LocalDate, Map<LocalTime, Boolean>> schedule = makeSchedule(playgroundBoardDTO, now, startDate, endDate).getGrid().getSchedule();
-
-        // schedule updating
-        for (ReservationEntity item : reservations) {
-            LocalDateTime datetime = item.getDatetime().toLocalDateTime();
-            LocalDate date = datetime.toLocalDate();
-            LocalTime time = datetime.toLocalTime();
-
-            Map<LocalTime, Boolean> line = Optional
-                    .ofNullable(schedule.get(date))
-                    .orElseThrow(() -> new DataCorruptedException("Reservation date not supported!"));
-
-            if (Optional.ofNullable(line.get(time))
-                    .orElseThrow(() -> new DataCorruptedException("Reservation time not supported!"))) {
-                line.put(time, false);
-            }
-        }
-
         return playgroundBoardDTO;
     }
 }

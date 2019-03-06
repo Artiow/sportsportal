@@ -1,3 +1,4 @@
+// noinspection JSUnresolvedVariable
 export const env = Object.freeze({
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
     MAIN_HOST_URL: process.env.REACT_APP_MAIN_HOST,
@@ -48,11 +49,4 @@ export const env = Object.freeze({
  */
 export default function apiUrl(path) {
     return env.API_HOST_URL + path;
-}
-
-/**
- * @return {string}
- */
-export function ID() {
-    return '_' + Math.random().toString(36).substr(2, 9);
 }
