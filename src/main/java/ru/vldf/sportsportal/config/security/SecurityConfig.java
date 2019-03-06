@@ -124,7 +124,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public RefreshAuthenticationFilter refreshAuthenticationFilter() throws Exception {
-        return configureFilter(new RefreshAuthenticationFilter(router.getLoginPathRequestMatcher()));
+        return configureFilter(new RefreshAuthenticationFilter(router.getRefreshPathRequestMatcher()));
     }
 
     private <T extends AbstractTokenAuthenticationFilter> T configureFilter(T filter) throws Exception {

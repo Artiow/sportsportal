@@ -4,6 +4,10 @@ loginRoute:
   pattern: /auth/login
   httpMethod: GET
 
+refreshRoute:
+  pattern: /auth/refresh
+  httpMethod: GET
+
 publicRoutes:
   - pattern: /dict/*/byId/*
     httpMethod: GET

@@ -17,5 +17,9 @@ public interface RightsDifferentiationRouter {
 
     RequestMatcher getLoginPathRequestMatcher();
 
+    RequestMatcher getRefreshPathRequestMatcher();
+
     String getLoginPath();
+
+    String getRefreshPath();
 }

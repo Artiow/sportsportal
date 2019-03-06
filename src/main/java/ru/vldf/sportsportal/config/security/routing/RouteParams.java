@@ -14,6 +14,7 @@ import java.util.Map;
 public class RouteParams {
 
     private RoutePath loginRoute;
+    private RoutePath refreshRoute;
     private List<RoutePath> publicRoutes;
     private Map<String, List<RoutePath>> protectedRoutes;
 }

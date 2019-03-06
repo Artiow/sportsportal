@@ -72,9 +72,10 @@ public class SwaggerConfig {
     @Autowired
     public SwaggerConfig(RightsDifferentiationRouter router) {
         String loginPath = router.getLoginPath();
+        String refreshPath = router.getRefreshPath();
         this.basicAuthRegex = String.format("^%s", loginPath);
-        this.accessAuthRegex = String.format("^(?!%s).*", loginPath);
-        this.refreshAuthRegex = String.format("^%s", loginPath);
+        this.refreshAuthRegex = String.format("^%s", refreshPath);
+        this.accessAuthRegex = String.format("^(?!%s|%s).*", loginPath, refreshPath);
     }
 
 

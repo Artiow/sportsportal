@@ -19,7 +19,8 @@ import ru.vldf.sportsportal.service.security.model.Payload;
 import ru.vldf.sportsportal.service.security.userdetails.UserDetailsProvider;
 import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 
-import java.util.UUID;
+import static ru.vldf.sportsportal.service.security.model.ExpirationType.ACCESS;
+import static ru.vldf.sportsportal.service.security.model.ExpirationType.REFRESH;
 
 /**
  * @author Namednev Artem
@@ -55,24 +56,22 @@ public class SecurityService implements SecurityProvider, AuthorizationProvider 
 
     @Override
     public IdentifiedUserDetails access(String accessToken) throws AuthenticationException {
-        return provider.authorization(verify(accessToken, ExpirationType.ACCESS).getUserId());
+        return provider.authorization(verify(accessToken, ACCESS).getUserId());
     }
 
     @Override
     public IdentifiedUserDetails refresh(String refreshToken) throws AuthenticationException {
-        return provider.authorization(verify(refreshToken, ExpirationType.REFRESH).getUserId());
+        return provider.authorization(verify(refreshToken, REFRESH).getUserId());
     }
 
     @Override
     public Pair<String, String> generate(Integer userId) {
         Payload newAccessPayload = new Payload();
         newAccessPayload.setUserId(userId);
-        newAccessPayload.setKeyUuid(UUID.randomUUID());
-        newAccessPayload.setType(ExpirationType.ACCESS);
+        newAccessPayload.setType(ACCESS);
         Payload newRefreshPayload = new Payload();
         newRefreshPayload.setUserId(userId);
-        newRefreshPayload.setKeyUuid(UUID.randomUUID());
-        newRefreshPayload.setType(ExpirationType.REFRESH);
+        newRefreshPayload.setType(REFRESH);
         return Pair.of(
                 encoder.getAccessToken(mapper.toMap(newAccessPayload)),
                 encoder.getRefreshToken(mapper.toMap(newRefreshPayload))

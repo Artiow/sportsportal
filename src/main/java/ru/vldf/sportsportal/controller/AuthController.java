@@ -47,7 +47,7 @@ public class AuthController {
      * @return token pair.
      * @throws UnauthorizedAccessException if user authorization is missing.
      */
-    @GetMapping("/login")
+    @GetMapping({"/login", "/refresh"})
     @ApiOperation("получить пару токенов")
     public JwtPairDTO login() throws UnauthorizedAccessException {
         return authService.login();

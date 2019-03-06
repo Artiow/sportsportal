@@ -3,8 +3,6 @@ package ru.vldf.sportsportal.service.security.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 /**
  * @author Namednev Artem
  */
@@ -12,7 +10,6 @@ import java.util.UUID;
 @Setter
 public class Payload {
 
-    private ExpirationType type;
     private Integer userId;
-    private UUID keyUuid;
+    private ExpirationType type;
 }

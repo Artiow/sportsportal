@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
 public class RightsDifferentiationConfigurator implements RightsDifferentiationRouter {
 
     private final String loginRequestPath;
+    private final String refreshRequestPath;
     private final RequestMatcher loginRequestMatcher;
+    private final RequestMatcher refreshRequestMatcher;
     private final RequestMatcher publicRequestMatcher;
     private final RequestMatcher protectedRequestMatcher;
     private final Map<String, RequestMatcher> routeMap;
@@ -33,6 +35,11 @@ public class RightsDifferentiationConfigurator implements RightsDifferentiationR
         RoutePath loginRoute = params.getLoginRoute();
         loginRequestPath = loginRoute.getPattern();
         loginRequestMatcher = new AntPathRequestMatcher(loginRoute.getPattern(), loginRoute.getHttpMethod());
+
+        // refresh routing config
+        RoutePath refreshRoute = params.getRefreshRoute();
+        refreshRequestPath = refreshRoute.getPattern();
+        refreshRequestMatcher = new AntPathRequestMatcher(refreshRoute.getPattern(), refreshRoute.getHttpMethod());
 
         // public routing config
         publicRequestMatcher = new OrRequestMatcher(loginRequestMatcher, toRequestMatcher(params.getPublicRoutes()));
@@ -75,7 +82,17 @@ public class RightsDifferentiationConfigurator implements RightsDifferentiationR
     }
 
     @Override
+    public RequestMatcher getRefreshPathRequestMatcher() {
+        return refreshRequestMatcher;
+    }
+
+    @Override
     public String getLoginPath() {
         return loginRequestPath;
+    }
+
+    @Override
+    public String getRefreshPath() {
+        return refreshRequestPath;
     }
 }
