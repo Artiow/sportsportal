@@ -92,10 +92,10 @@ public class PictureService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceFileNotFoundException.class},
             noRollbackFor = {EntityNotFoundException.class, MalformedURLException.class}
     )
-    public Resource get(@NotNull Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public Resource get(Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
-        } else if ((sizeCode != null) && !pictureSizeRepository.existsByCode(sizeCode)) {
+        } else if (!pictureSizeRepository.existsByCode(sizeCode)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
@@ -135,15 +135,13 @@ public class PictureService extends AbstractSecurityService {
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
-                StandardCopyOption option = StandardCopyOption.REPLACE_EXISTING;
-                Files.copy(picture.getInputStream(), resolveFilename(newId, null), option);
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
                     PictureSize size
                             = pictureSizeMapper.toSize(sizeEntity);
                     Files.copy(
                             resizePicture(picture.getInputStream(), size),
                             resolveFilename(newId, size),
-                            option
+                            StandardCopyOption.REPLACE_EXISTING
                     );
                 }
                 return newId;

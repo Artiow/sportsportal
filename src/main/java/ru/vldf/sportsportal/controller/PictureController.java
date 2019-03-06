@@ -50,7 +50,7 @@ public class PictureController {
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
     public ResponseEntity<Resource> download(
-            @PathVariable int id, @RequestParam(name = "size", required = false) String size
+            @PathVariable int id, @RequestParam(name = "size") String size
     ) throws ResourceNotFoundException, ResourceFileNotFoundException {
         Resource resource = pictureService.get(id, size);
         MediaType contentType;

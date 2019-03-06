@@ -4,13 +4,12 @@ import org.springframework.util.Assert;
 
 import java.net.URI;
 
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 public class ResourceLocationBuilder {
 
     public static URI buildURL() {
-        return fromCurrentContextPath().build().toUri();
+        return fromCurrentRequest().replacePath(null).build().toUri();
     }
 
     public static URI buildURL(Integer identifier) {
@@ -21,6 +20,6 @@ public class ResourceLocationBuilder {
     public static URI buildURL(String path, Integer identifier) {
         Assert.hasLength(path, "path must not be blank");
         Assert.notNull(identifier, "id must not be null");
-        return fromCurrentContextPath().path(path).path("/" + identifier).build().toUri();
+        return fromCurrentRequest().replacePath(path).path("/" + identifier).build().toUri();
     }
 }
