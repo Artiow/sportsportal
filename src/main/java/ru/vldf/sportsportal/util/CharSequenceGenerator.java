@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.util;
 
 import java.util.Random;
 
-public class CharSequenceGenerator {
+public final class CharSequenceGenerator {
 
     /**
      * Returns a random generated sequence of characters of a given length.
