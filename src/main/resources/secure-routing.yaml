@@ -44,6 +44,10 @@ publicRoutes:
 
 protectedRoutes:
   ADMIN:
+    - pattern: /picture
+      httpMethod: POST
+    - pattern: /picture/*
+      httpMethod: DELETE
     - pattern: /user/*
       httpMethod: DELETE
 
@@ -51,10 +55,6 @@ protectedRoutes:
     - pattern: /order/*
       httpMethod: GET
     - pattern: /order/*
-      httpMethod: DELETE
-    - pattern: /picture
-      httpMethod: POST
-    - pattern: /picture/*
       httpMethod: DELETE
     - pattern: /playground
       httpMethod: POST

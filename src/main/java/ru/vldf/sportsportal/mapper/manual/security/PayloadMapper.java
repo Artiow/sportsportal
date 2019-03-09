@@ -14,17 +14,17 @@ import java.util.Map;
 @Component
 public class PayloadMapper {
 
-    private final static ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final static ObjectMapper MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    private final static TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
+    private final static TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {
     };
 
 
     public Map<String, Object> toMap(Payload payload) {
-        return mapper.convertValue(payload, mapTypeReference);
+        return MAPPER.convertValue(payload, MAP_TYPE_REFERENCE);
     }
 
     public Payload toPayload(Map<String, Object> map) {
-        return mapper.convertValue(map, Payload.class);
+        return MAPPER.convertValue(map, Payload.class);
     }
 }

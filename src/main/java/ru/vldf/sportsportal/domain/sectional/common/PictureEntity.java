@@ -19,10 +19,6 @@ import java.util.Collection;
 public class PictureEntity extends AbstractIdentifiedEntity {
 
     @Basic
-    @Column(name = "size", nullable = false)
-    private Long size;
-
-    @Basic
     @Column(name = "uploaded", nullable = false)
     private Timestamp uploaded;
 

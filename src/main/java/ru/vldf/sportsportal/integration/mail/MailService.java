@@ -13,7 +13,6 @@ import javax.mail.internet.MimeMessage;
  * @author Namednev Artem
  */
 @Service
-@SuppressWarnings("ALL")
 public class MailService {
 
     private final JavaMailSender javaMailSender;
@@ -21,10 +20,8 @@ public class MailService {
 
 
     @Autowired
-    public MailService(
-            JavaMailSender javaMailSender,
-            @Value("${spring.mail.username}") String sender
-    ) {
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public MailService(@Value("${spring.mail.username}") String sender, JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
         this.sender = sender;
     }

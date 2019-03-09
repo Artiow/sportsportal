@@ -19,9 +19,11 @@ import javax.persistence.EntityNotFoundException;
 public abstract class AbstractDictionaryService<E extends AbstractDictionaryEntity, D extends DictionaryDTO> extends AbstractMessageService implements DictionaryService<E, D> {
 
     @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private AbstractWordbookRepository<E> repository;
 
     @Autowired
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private AbstractDictionaryMapper<E, D> mapper;
 
 

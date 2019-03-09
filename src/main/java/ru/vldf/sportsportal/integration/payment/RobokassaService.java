@@ -29,7 +29,7 @@ import java.util.*;
 @Service
 public class RobokassaService extends AbstractMessageService {
 
-    private static final TypeReference mapTypeReference = new TypeReference<Map<String, Object>>() {
+    private static final TypeReference MAP_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {
     };
 
     private static final Integer ANONYMOUS_PAYMENT_ID = 0;
@@ -150,7 +150,7 @@ public class RobokassaService extends AbstractMessageService {
 
 
     private URI computeLink(PaymentParams params) {
-        Map<String, Object> variables = mapper.convertValue(params, mapTypeReference);
+        Map<String, Object> variables = mapper.convertValue(params, MAP_TYPE_REFERENCE);
         if (testing) variables.put(TEST_KEY, TEST_VALUE);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(url);

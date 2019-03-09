@@ -34,10 +34,10 @@ public class OrderController {
     /**
      * Returns requested page with orders for current user.
      *
-     * @param pageSize {@link Integer} page size
-     * @param pageNum  {@link Integer} page number
-     * @return {@link PageDTO} of {@link OrderShortDTO} page with orders
-     * @throws UnauthorizedAccessException if authorization is missing
+     * @param pageSize the page size.
+     * @param pageNum  the page number.
+     * @return page with list of orders.
+     * @throws UnauthorizedAccessException if authorization is missing.
      */
     @GetMapping("/list")
     @ApiOperation("получить список своих заказов")
@@ -54,11 +54,11 @@ public class OrderController {
     /**
      * Returns order by identifier with full information.
      *
-     * @param id order identifier
-     * @return {@link OrderDTO} requested order
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to get this order
-     * @throws ResourceNotFoundException   if order not found
+     * @param id the order identifier.
+     * @return requested order.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to get this order.
+     * @throws ResourceNotFoundException   if order not found.
      */
     @GetMapping("/{id}")
     @ApiOperation("получить информацию о заказе")
@@ -69,11 +69,11 @@ public class OrderController {
     /**
      * Delete order by id.
      *
-     * @param id order identifier
-     * @return no content
-     * @throws ResourceNotFoundException   if order not found
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this order
+     * @param id the order identifier.
+     * @return no content.
+     * @throws ResourceNotFoundException   if order not found.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this order.
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить заказ")

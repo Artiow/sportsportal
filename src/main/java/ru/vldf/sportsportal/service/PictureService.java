@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
@@ -17,10 +18,12 @@ import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -43,11 +46,14 @@ import java.util.Optional;
 @Service
 public class PictureService extends AbstractSecurityService {
 
+    private final ServletContext context;
+
     private final PictureRepository pictureRepository;
     private final PictureSizeRepository pictureSizeRepository;
     private final PictureSizeMapper pictureSizeMapper;
 
     private Path pictureDirectory;
+
 
     @Value("${code.role.admin}")
     private String adminRoleCode;
@@ -60,7 +66,13 @@ public class PictureService extends AbstractSecurityService {
 
 
     @Autowired
-    public PictureService(PictureRepository pictureRepository, PictureSizeRepository pictureSizeRepository, PictureSizeMapper pictureSizeMapper) {
+    public PictureService(
+            ServletContext context,
+            PictureRepository pictureRepository,
+            PictureSizeRepository pictureSizeRepository,
+            PictureSizeMapper pictureSizeMapper
+    ) {
+        this.context = context;
         this.pictureRepository = pictureRepository;
         this.pictureSizeRepository = pictureSizeRepository;
         this.pictureSizeMapper = pictureSizeMapper;
@@ -92,19 +104,18 @@ public class PictureService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceFileNotFoundException.class},
             noRollbackFor = {EntityNotFoundException.class, MalformedURLException.class}
     )
-    public Resource get(Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public ResourceBundle get(Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
+        boolean sizeIsPresent = StringUtils.hasText(sizeCode);
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
-        } else if (!pictureSizeRepository.existsByCode(sizeCode)) {
+        } else if (sizeIsPresent && !pictureSizeRepository.existsByCode(sizeCode)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
             try {
-                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), pictureSizeMapper.toSize(pictureSizeRepository.findByCode(sizeCode))).toUri());
-                if (resource.exists()) {
-                    return resource;
-                } else {
-                    throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id));
-                }
+                PictureSizeEntity sizeEntity = sizeIsPresent ? pictureSizeRepository.findByCode(sizeCode) : pictureSizeRepository.findFirstByIsDefaultIsTrue();
+                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), pictureSizeMapper.toSize(sizeEntity)).toUri());
+                if (resource.exists()) return ResourceBundle.of(resource, context);
+                throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id));
             } catch (EntityNotFoundException e) {
                 throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
             } catch (MalformedURLException e) {
@@ -130,7 +141,6 @@ public class PictureService extends AbstractSecurityService {
             throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
-            pictureEntity.setSize(picture.getSize());
             pictureEntity.setOwner(getCurrentUserEntity());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();

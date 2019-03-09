@@ -8,4 +8,5 @@ import ru.vldf.sportsportal.repository.AbstractWordbookRepository;
  */
 public interface PictureSizeRepository extends AbstractWordbookRepository<PictureSizeEntity> {
 
+    PictureSizeEntity findFirstByIsDefaultIsTrue();
 }

@@ -19,11 +19,9 @@ import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.generic.*;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
@@ -51,17 +49,17 @@ public class PlaygroundController {
     /**
      * Returns requested page with playgrounds for current playground filter.
      *
-     * @param opening      {@link LocalTime} opening time
-     * @param closing      {@link LocalTime} closing time
-     * @param featureCodes {@link Collection} of {@link String} feature codes
-     * @param sportCodes   {@link Collection} of {@link String} sport codes
-     * @param startPrice   {@link BigDecimal} minimal playground price
-     * @param endPrice     {@link BigDecimal} maximal playground price
-     * @param searchString {@link String} search string
-     * @param pageSize     {@link Integer} page size
-     * @param pageNum      {@link Integer} page number
-     * @param minRate      {@link Integer} minimal playground rate
-     * @return {@link PageDTO} of {@link PlaygroundShortDTO} page with playgrounds
+     * @param opening      the opening time.
+     * @param closing      the closing time.
+     * @param featureCodes the list of feature codes.
+     * @param sportCodes   the list of sport codes.
+     * @param startPrice   the minimal playground price.
+     * @param endPrice     the maximal playground price.
+     * @param searchString the search string.
+     * @param pageSize     the page size.
+     * @param pageNum      the page number.
+     * @param minRate      the minimal playground rate.
+     * @return page with short playgrounds details.
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с площадками")
@@ -94,9 +92,9 @@ public class PlaygroundController {
     /**
      * Returns playground by identifier with full information.
      *
-     * @param id playground identifier
-     * @return {@link PlaygroundDTO} requested playground
-     * @throws ResourceNotFoundException if requested playground not found
+     * @param id the playground identifier.
+     * @return requested playground.
+     * @throws ResourceNotFoundException if requested playground not found.
      */
     @GetMapping("/{id}")
     @ApiOperation("получить площадку")
@@ -107,9 +105,9 @@ public class PlaygroundController {
     /**
      * Returns playground by identifier with short information.
      *
-     * @param id playground identifier
-     * @return {@link PlaygroundShortDTO} requested playground
-     * @throws ResourceNotFoundException if requested playground not found
+     * @param id the playground identifier.
+     * @return requested playground.
+     * @throws ResourceNotFoundException if requested playground not found.
      */
     @GetMapping("/{id}/short")
     @ApiOperation("получить площадку c краткой информацией")
@@ -120,12 +118,12 @@ public class PlaygroundController {
     /**
      * Returns requested playground with time grid by start date and end date.
      *
-     * @param id   playground identifier
-     * @param from {@link Date} first date of grid
-     * @param to   {@link Date} last date of grid
-     * @return {@link PlaygroundBoardDTO} requested time grid
-     * @throws ResourceNotFoundException  if requested playground not found
-     * @throws ResourceCorruptedException if playground data corrupted
+     * @param id   the playground identifier
+     * @param from the first date of a board.
+     * @param to   the last date of a board.
+     * @return requested time board.
+     * @throws ResourceNotFoundException  if requested playground not found.
+     * @throws ResourceCorruptedException if playground data corrupted.
      */
     @GetMapping("/{id}/board")
     @ApiOperation("получить сетку времени для площадки")
@@ -141,11 +139,11 @@ public class PlaygroundController {
      * Returns available for reservation times for playground by identifier and collections of checked
      * reservation times.
      *
-     * @param id           playground identifier
-     * @param version      playground version
-     * @param reservations {@link Set} of {@link String} checked reservation times
-     * @return {@link ReservationListDTO} with available for reservation times
-     * @throws ResourceNotFoundException if requested playground not found
+     * @param id           the playground identifier.
+     * @param version      the playground version.
+     * @param reservations the set of checked reservation times.
+     * @return list with available for reservation times.
+     * @throws ResourceNotFoundException if requested playground not found.
      */
     @GetMapping("/{id}/check")
     @ApiOperation("проверить доступность бронирования")
@@ -160,12 +158,12 @@ public class PlaygroundController {
     /**
      * Reserve playground for authorize user by sent datetime and returns order location.
      *
-     * @param id                 playground identifier
-     * @param reservationListDTO {@link ReservationListDTO} reservation data
-     * @return new order {@link URI}
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceNotFoundException     if requested playground not found
-     * @throws ResourceCannotCreateException if reservation cannot create
+     * @param id                 the playground identifier.
+     * @param reservationListDTO the reservation details.
+     * @return new order location.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceNotFoundException     if requested playground not found.
+     * @throws ResourceCannotCreateException if reservation cannot create.
      */
     @PostMapping("/{id}/reserve")
     @ApiOperation("забронировать площадку")
@@ -178,10 +176,10 @@ public class PlaygroundController {
     /**
      * Create playground and returns its location.
      *
-     * @param playgroundDTO {@link PlaygroundDTO} new playground data
-     * @return new playgrounds {@link URI}
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceCannotCreateException if playground create update
+     * @param playgroundDTO the new playground details.
+     * @return new playground location.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceCannotCreateException if playground create update.
      */
     @PostMapping
     @ApiOperation("создать площадку")
@@ -194,14 +192,14 @@ public class PlaygroundController {
     /**
      * Update playground by id.
      *
-     * @param id            playground identifier
-     * @param playgroundDTO {@link PlaygroundDTO} playground data
-     * @return no content
-     * @throws UnauthorizedAccessException     if authorization is missing
-     * @throws ForbiddenAccessException        if user don't have permission to update this playground
-     * @throws ResourceNotFoundException       if playground not found
-     * @throws ResourceCannotUpdateException   if playground cannot update
-     * @throws ResourceOptimisticLockException if playground was already updated
+     * @param id            the playground identifier.
+     * @param playgroundDTO the new playground details.
+     * @return no content.
+     * @throws UnauthorizedAccessException     if authorization is missing.
+     * @throws ForbiddenAccessException        if user don't have permission to update this playground.
+     * @throws ResourceNotFoundException       if playground not found.
+     * @throws ResourceCannotUpdateException   if playground cannot be updated.
+     * @throws ResourceOptimisticLockException if playground was already updated.
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
@@ -215,11 +213,11 @@ public class PlaygroundController {
     /**
      * Delete playground by id.
      *
-     * @param id playground identifier
-     * @return no content
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this playground
-     * @throws ResourceNotFoundException   if playground not found
+     * @param id the playground identifier.
+     * @return no content.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground.
+     * @throws ResourceNotFoundException   if playground not found.
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить площадку")

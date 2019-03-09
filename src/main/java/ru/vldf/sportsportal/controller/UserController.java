@@ -30,11 +30,11 @@ public class UserController {
     /**
      * Returns short user data by sent his id.
      *
-     * @param id user identifier
-     * @return {@link UserShortDTO} user dto
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to get this user data
-     * @throws ResourceNotFoundException   if user not found
+     * @param id the user identifier.
+     * @return user short details.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to get this user data.
+     * @throws ResourceNotFoundException   if user not found.
      */
     @GetMapping("/{id}")
     @ApiOperation("получить пользователя")
@@ -45,11 +45,11 @@ public class UserController {
     /**
      * Delete user by sent user id.
      *
-     * @param id user identifier
-     * @return {@link ResponseEntity} of {@link Void}
-     * @throws ResourceNotFoundException   if user not found
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this user
+     * @param id the user identifier.
+     * @return no content.
+     * @throws ResourceNotFoundException   if user not found.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this user.
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить пользователя")

@@ -26,6 +26,10 @@ public class PictureSizeEntity extends AbstractDictionaryEntity {
     @Column(name = "height", nullable = false)
     private Short height;
 
+    @Basic
+    @Column(name = "default", nullable = false)
+    private Boolean isDefault;
+
 
     @Override
     public boolean equals(Object o) {

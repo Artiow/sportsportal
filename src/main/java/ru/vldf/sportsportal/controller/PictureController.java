@@ -6,15 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.service.PictureService;
 import ru.vldf.sportsportal.service.generic.*;
-
-import javax.servlet.ServletContext;
-import java.io.IOException;
+import ru.vldf.sportsportal.util.ResourceBundle;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -27,13 +24,11 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 @RequestMapping("${api.path.common.picture}")
 public class PictureController {
 
-    private final ServletContext context;
     private final PictureService pictureService;
 
 
     @Autowired
-    public PictureController(ServletContext context, PictureService pictureService) {
-        this.context = context;
+    public PictureController(PictureService pictureService) {
         this.pictureService = pictureService;
     }
 
@@ -41,74 +36,48 @@ public class PictureController {
     /**
      * Download picture by id.
      *
-     * @param id   picture identifier
-     * @param size picture size code
-     * @return picture {@link Resource}
-     * @throws ResourceNotFoundException     if record not found in database
-     * @throws ResourceFileNotFoundException if file not found on disk
+     * @param id   the picture identifier.
+     * @param size the picture size code.
+     * @return picture resource.
+     * @throws ResourceNotFoundException     if record not found in database.
+     * @throws ResourceFileNotFoundException if file not found on disk.
      */
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
     public ResponseEntity<Resource> download(
-            @PathVariable int id, @RequestParam(name = "size") String size
+            @PathVariable int id, @RequestParam(name = "size", required = false) String size
     ) throws ResourceNotFoundException, ResourceFileNotFoundException {
-        Resource resource = pictureService.get(id, size);
-        MediaType contentType;
-
-        try {
-            contentType = MediaType.parseMediaType(context.getMimeType(resource.getFile().getAbsolutePath()));
-        } catch (IOException e) {
-            contentType = MediaType.APPLICATION_OCTET_STREAM;
-        }
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, disposition(resource.getFilename()))
-                .contentType(contentType)
-                .body(resource);
+        ResourceBundle resource = pictureService.get(id, size);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, resource.getContentDisposition()).contentType(resource.getContentType()).body(resource.getBody());
     }
 
     /**
      * Upload picture and returns its URL.
      *
-     * @param picture picture {@link MultipartFile} file
-     * @return uploaded picture location
-     * @throws UnauthorizedAccessException   if authorization is missing
-     * @throws ResourceCannotCreateException if resource cannot create
+     * @param picture the picture file.
+     * @return uploaded picture location.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ResourceCannotCreateException if resource cannot be create.
      */
     @PostMapping
     @ApiOperation("загрузить ресурс")
     public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
-        return ResponseEntity
-                .created(buildURL(pictureService.create(picture)))
-                .build();
+        return ResponseEntity.created(buildURL(pictureService.create(picture))).build();
     }
 
     /**
      * Delete picture by id.
      *
-     * @param id picture identifier
-     * @return no content
-     * @throws UnauthorizedAccessException if authorization is missing
-     * @throws ForbiddenAccessException    if user don't have permission to delete this picture
-     * @throws ResourceNotFoundException   if picture not found in database
+     * @param id the picture identifier.
+     * @return no content.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
+     * @throws ResourceNotFoundException   if picture not found in database.
      */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить ресурс")
     public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         pictureService.delete(id);
-        return ResponseEntity
-                .noContent()
-                .build();
-    }
-
-
-    /**
-     * Build content disposition.
-     *
-     * @param filename {@link String} filename
-     * @return {@link String} content disposition line
-     */
-    private String disposition(String filename) {
-        return "inline; filename=\"" + filename + "\"";
+        return ResponseEntity.noContent().build();
     }
 }
