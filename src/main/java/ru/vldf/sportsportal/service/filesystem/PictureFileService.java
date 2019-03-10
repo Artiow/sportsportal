@@ -8,7 +8,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
-import ru.vldf.sportsportal.service.generic.AbstractMessageService;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
@@ -29,7 +28,7 @@ import java.util.Objects;
  * @author Namednev Artem
  */
 @Service
-public class PictureFileService extends AbstractMessageService {
+public class PictureFileService {
 
     private final PictureSize presize;
 
@@ -77,13 +76,29 @@ public class PictureFileService extends AbstractMessageService {
         }
     }
 
-    // todo: refactor
-    public void create(Integer id, InputStream stream, PictureSize size) throws IOException {
-        Files.copy(
-                resizePicture(stream, size),
-                resolveFilename(id, size),
-                StandardCopyOption.REPLACE_EXISTING
-        );
+    /**
+     * Create new picture and returns its identifier.
+     *
+     * @param id     the picture identifier.
+     * @param source source picture input stream.
+     * @param sizes  the picture stored sizes.
+     * @return new created picture resource identifier.
+     * @throws PictureCannotCreateException if {@link IOException} occur.
+     */
+    public Integer create(Integer id, InputStream source, PictureSize[] sizes) throws PictureCannotCreateException {
+        try {
+            InputStream presized = presizePicture(source);
+            for (PictureSize size : sizes) {
+                Files.copy(
+                        resizePicture(presized, size),
+                        resolveFilename(id, size),
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+            return id;
+        } catch (IOException e) {
+            throw new PictureCannotCreateException("Cannot store picture resource", e);
+        }
     }
 
     // todo: refactor

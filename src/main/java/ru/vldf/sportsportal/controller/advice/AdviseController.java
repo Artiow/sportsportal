@@ -23,7 +23,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
-import ru.vldf.sportsportal.service.filesystem.PictureNotFoundException;
+import ru.vldf.sportsportal.service.filesystem.PictureFileException;
 import ru.vldf.sportsportal.service.generic.*;
 
 import javax.validation.ConstraintViolationException;
@@ -57,10 +57,10 @@ public class AdviseController {
         return errorDTO(ex, "JWT read/write error");
     }
 
-    @ExceptionHandler(PictureNotFoundException.class)
+    @ExceptionHandler(PictureFileException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDTO handleResourceFileNotFoundException(PictureNotFoundException ex) {
-        return errorDTO(ex, "Requested file not found");
+    public ErrorDTO handlePictureFileException(PictureFileException ex) {
+        return errorDTO(ex, "Requested picture file not found");
     }
 
     @ExceptionHandler(ResourceCorruptedException.class)

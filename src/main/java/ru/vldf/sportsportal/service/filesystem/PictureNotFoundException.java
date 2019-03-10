@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service.filesystem;
 
-public class PictureNotFoundException extends RuntimeException {
+public class PictureNotFoundException extends PictureFileException {
 
     public PictureNotFoundException(String message) {
         super(message);

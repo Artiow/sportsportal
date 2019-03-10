@@ -14,6 +14,7 @@ import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.filesystem.PictureFileService;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.util.CollectionConverter;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
 import javax.persistence.EntityNotFoundException;
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -88,18 +90,15 @@ public class PictureService extends AbstractSecurityService {
     )
     public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
-            throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"));
+            throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.wrongExtension.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setOwner(getCurrentUserEntity());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
-                for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
-                    PictureSize size = pictureSizeMapper.toSize(sizeEntity);
-                    fileService.create(newId, picture.getInputStream(), size);
-                }
-                return newId;
+                List<PictureSize> sizes = CollectionConverter.convertToList(pictureSizeRepository.findAll(), pictureSizeMapper::toSize);
+                return fileService.create(newId, picture.getInputStream(), sizes.toArray(new PictureSize[0]));
             } catch (IOException e) {
                 throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
             }

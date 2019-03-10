@@ -34,15 +34,15 @@ public class RightsDifferentiationConfigurator implements RightsDifferentiationR
         // login routing config
         RoutePath loginRoute = params.getLoginRoute();
         loginRequestPath = loginRoute.getPattern();
-        loginRequestMatcher = new AntPathRequestMatcher(loginRoute.getPattern(), loginRoute.getHttpMethod());
+        loginRequestMatcher = toRequestMatcher(loginRoute);
 
         // refresh routing config
         RoutePath refreshRoute = params.getRefreshRoute();
         refreshRequestPath = refreshRoute.getPattern();
-        refreshRequestMatcher = new AntPathRequestMatcher(refreshRoute.getPattern(), refreshRoute.getHttpMethod());
+        refreshRequestMatcher = toRequestMatcher(refreshRoute);
 
         // public routing config
-        publicRequestMatcher = new OrRequestMatcher(loginRequestMatcher, toRequestMatcher(params.getPublicRoutes()));
+        publicRequestMatcher = new OrRequestMatcher(loginRequestMatcher, refreshRequestMatcher, toRequestMatcher(params.getPublicRoutes()));
 
         // security routing config
         routeMap = params.getProtectedRoutes().entrySet().stream().collect(Collectors.toMap(
@@ -53,11 +53,12 @@ public class RightsDifferentiationConfigurator implements RightsDifferentiationR
         this.protectedRequestMatcher = new OrRequestMatcher(Lists.newArrayList(this.routeMap.values()));
     }
 
+    private RequestMatcher toRequestMatcher(RoutePath routePath) {
+        return new AntPathRequestMatcher(routePath.getPattern(), routePath.getHttpMethod());
+    }
 
     private RequestMatcher toRequestMatcher(List<RoutePath> routePaths) {
-        return new OrRequestMatcher(
-                routePaths.stream().map(route -> new AntPathRequestMatcher(route.getPattern(), route.getHttpMethod())).collect(Collectors.toList())
-        );
+        return new OrRequestMatcher(routePaths.stream().map(this::toRequestMatcher).collect(Collectors.toList()));
     }
 
 
