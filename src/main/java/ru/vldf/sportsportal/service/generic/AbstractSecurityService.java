@@ -1,24 +1,50 @@
 package ru.vldf.sportsportal.service.generic;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
 import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
+import ru.vldf.sportsportal.util.SimpleGrantedAuthorityBuilder;
 
-import java.util.Collection;
+import javax.annotation.PostConstruct;
+import java.util.*;
 
 /**
  * @author Namednev Artem
  */
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "unused"})
 public abstract class AbstractSecurityService extends AbstractMessageService {
+
+    private Map<String, GrantedAuthority> authorities = Collections.emptyMap();
+
+
+    @Value("${code.role.admin}")
+    private String adminRoleCode;
+
+    @Value("${code.role.user}")
+    private String userRoleCode;
+
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private RoleRepository roleRepository;
+
+
+    @PostConstruct
+    private void init() {
+        this.authorities = ImmutableMap.of(
+                adminRoleCode, SimpleGrantedAuthorityBuilder.of(adminRoleCode),
+                userRoleCode, SimpleGrantedAuthorityBuilder.of(userRoleCode)
+        );
+    }
 
 
     protected UserRepository userRepository() {
@@ -30,50 +56,38 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
     }
 
 
+    protected RoleEntity adminRole() {
+        return Optional.of(roleRepository.findByCode(adminRoleCode)).get();
+    }
+
+    protected RoleEntity userRole() {
+        return Optional.of(roleRepository.findByCode(userRoleCode)).get();
+    }
+
+
     /**
-     * Returns authenticated user identifier.
+     * Returns user details by authenticated user.
      *
-     * @return user identifier.
-     * @throws UnauthorizedAccessException if user is anonymous.
+     * @return user details.
+     * @throws UnauthorizedAccessException if user is anonymous (unauthorized).
      */
-    protected Integer getCurrentUserId() throws UnauthorizedAccessException {
+    protected IdentifiedUserDetails getCurrentUserDetails() throws UnauthorizedAccessException {
         try {
-            return userDetails().getId();
+            return (IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         } catch (ClassCastException | NullPointerException e) {
             throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
         }
     }
 
     /**
-     * Returns authenticated user email.
-     *
-     * @return user email.
-     * @throws UnauthorizedAccessException if user is anonymous.
-     */
-    protected String getCurrentUserEmail() throws UnauthorizedAccessException {
-        try {
-            return userDetails().getUsername();
-        } catch (ClassCastException | NullPointerException e) {
-            throw new UnauthorizedAccessException(msg("sportsportal.auth.filter.credentialsNotFound.message"), e);
-        }
-    }
-
-    /**
-     * Extract authenticated user user details from security context.
-     */
-    private IdentifiedUserDetails userDetails() throws ClassCastException, NullPointerException {
-        return (IdentifiedUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
-
-    /**
-     * Returns authenticated user entity.
+     * Returns user entity by authenticated user.
      *
      * @return user entity.
-     * @throws UnauthorizedAccessException if user is anonymous.
+     * @throws UnauthorizedAccessException if user is anonymous (unauthorized).
      */
     protected UserEntity getCurrentUserEntity() throws UnauthorizedAccessException {
-        return userRepository.getOne(getCurrentUserId());
+        // noinspection OptionalGetWithoutIsPresent
+        return userRepository.findById(getCurrentUserDetails().getId()).get();
     }
 
 
@@ -82,10 +96,10 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      *
      * @param userEntity the checked user.
      * @return {@literal true} if successful, {@literal false} otherwise.
-     * @throws UnauthorizedAccessException if current user is anonymous.
+     * @throws UnauthorizedAccessException if current user is anonymous (unauthorized).
      */
     protected boolean isCurrentUser(UserEntity userEntity) throws UnauthorizedAccessException {
-        return getCurrentUserId().equals(userEntity.getId());
+        return Objects.equals(getCurrentUserEntity(), userEntity);
     }
 
     /**
@@ -95,25 +109,32 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
      * @return {@literal true} if successful, {@literal false} otherwise.
      * @throws UnauthorizedAccessException if current user is anonymous.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    protected boolean isContainCurrentUser(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
+    protected boolean currentUserIn(Collection<UserEntity> userEntityCollection) throws UnauthorizedAccessException {
         return userEntityCollection.contains(getCurrentUserEntity());
     }
 
 
     /**
-     * Check whether the user has the necessary rights.
+     * Checks if the current user has admin rights.
      *
-     * @param code the role code.
-     * @return {@literal true} if current user has role by code, {@literal false} otherwise.
-     * @throws UnauthorizedAccessException if user is anonymous.
-     * @throws ResourceNotFoundException   if role code not exist.
+     * @return {@literal true} if successful, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException if current user is anonymous.
      */
-    protected boolean currentUserHasRoleByCode(String code) throws UnauthorizedAccessException, ResourceNotFoundException {
-        if (roleRepository.existsByCode(code)) {
-            return userRepository.hasRoleByCode(getCurrentUserEmail(), code);
-        } else {
-            throw new ResourceNotFoundException(msg("sportsportal.common.Role.notExistByCode.message", code));
-        }
+    protected boolean currentUserIsAdmin() throws UnauthorizedAccessException {
+        return currentUserIs(adminRoleCode);
+    }
+
+    /**
+     * Checks if the current user has user rights.
+     *
+     * @return {@literal true} if successful, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException if current user is anonymous.
+     */
+    protected boolean currentUserIsUser() throws UnauthorizedAccessException {
+        return currentUserIs(userRoleCode);
+    }
+
+    private boolean currentUserIs(String roleKey) throws UnauthorizedAccessException {
+        return getCurrentUserDetails().getAuthorities().contains(authorities.get(roleKey));
     }
 }

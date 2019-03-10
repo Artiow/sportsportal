@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
@@ -68,8 +69,8 @@ public class AdviseController {
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String, String> errorMap = new HashMap<>(allErrors.size());
@@ -96,114 +97,120 @@ public class AdviseController {
         );
     }
 
-    @ExceptionHandler(InvalidParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidParameterException.class)
     public ErrorDTO handleInvalidParameterException(InvalidParameterException ex) {
         return warnDTO(ex, "Sent argument not valid");
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ErrorDTO handleConstraintViolationException(ConstraintViolationException ex) {
         return warnDTO(ex, "Sent argument not valid");
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return warnDTO(ex, "Sent HTTP message not readable");
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ErrorDTO handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         return warnDTO(ex, "Requested HTTP method not supported");
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ErrorDTO handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        return warnDTO(ex, "Load file size is too large");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
     public ErrorDTO handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         return warnDTO(ex, "Sent request does not contain required parameter");
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ErrorDTO handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         return warnDTO(ex, "Sent request argument mismatch");
     }
 
 
-    @ExceptionHandler(UnauthorizedAccessException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedAccessException.class)
     public ErrorDTO handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         return warnDTO(ex, "Unexpected unauthorized access attempt");
     }
 
-    @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
     public ErrorDTO handleAuthenticationException(AuthenticationException ex) {
         return warnDTO(ex, "Unauthorized access attempt");
     }
 
-    @ExceptionHandler(SignatureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(SignatureException.class)
     public ErrorDTO handleSignatureException(SignatureException ex) {
         return warnDTO(ex, "Unauthorized access attempt");
     }
 
 
-    @ExceptionHandler(AccountStatusException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccountStatusException.class)
     public ErrorDTO handleAccountStatusException(AccountStatusException ex) {
         return warnDTO(ex, "Forbidden account status access attempt");
     }
 
-    @ExceptionHandler(ForbiddenAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenAccessException.class)
     public ErrorDTO handleForbiddenAccessException(ForbiddenAccessException ex) {
         return warnDTO(ex, "Forbidden access attempt");
     }
 
 
-    @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoHandlerFoundException.class)
     public ErrorDTO handleNoHandlerFoundException(NoHandlerFoundException ex) {
         return warnDTO(ex, ex.getMessage());
     }
 
-    @ExceptionHandler(HandlerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(HandlerNotFoundException.class)
     public ErrorDTO handleHandlerNotFoundException(HandlerNotFoundException ex) {
         return warnDTO(ex, ex.getMessage());
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ErrorDTO handleResourceNotFoundException(ResourceNotFoundException ex) {
         return warnDTO(ex, "Requested resource not found");
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UsernameNotFoundException.class)
     public ErrorDTO handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return warnDTO(ex, "Requested user not found");
     }
 
 
-    @ExceptionHandler(ResourceCannotCreateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ResourceCannotCreateException.class)
     public ErrorDTO handleResourceCannotCreateException(ResourceCannotCreateException ex) {
         return warnDTO(ex, "Sent resource cannot create");
     }
 
-    @ExceptionHandler(ResourceCannotUpdateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ResourceCannotUpdateException.class)
     public ErrorDTO handleResourceCannotUpdateException(ResourceCannotUpdateException ex) {
         return warnDTO(ex, "Sent resource cannot update");
     }
 
-    @ExceptionHandler(ResourceOptimisticLockException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ResourceOptimisticLockException.class)
     public ErrorDTO handleResourceOptimisticLockException(ResourceOptimisticLockException ex) {
         return warnDTO(ex, "Sent resource data already has been changed");
     }
@@ -226,7 +233,7 @@ public class AdviseController {
 
     private UUID warnUUID(Throwable ex, String logMessage) {
         UUID uuid = UUID.randomUUID();
-        log.warn("{} cause by {}. UUID: {}", logMessage, ex.toString(), uuid);
+        log.warn("{}. Cause by {}. UUID: {}", logMessage, ex.toString(), uuid);
         return uuid;
     }
 

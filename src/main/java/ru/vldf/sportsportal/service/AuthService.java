@@ -47,9 +47,6 @@ public class AuthService extends AbstractSecurityService {
     private String apiPath;
 
 
-    @Value("${code.role.user}")
-    private String userRoleCode;
-
     @Value("${api.path.auth.confirm}")
     private String confirmPath;
 
@@ -75,7 +72,7 @@ public class AuthService extends AbstractSecurityService {
      * @throws UnauthorizedAccessException if user authorization is missing.
      */
     public JwtPairDTO login() throws UnauthorizedAccessException {
-        return buildJwtPair(securityProvider.generate(getCurrentUserId()));
+        return buildJwtPair(securityProvider.generate(getCurrentUserDetails().getId()));
     }
 
 
@@ -168,7 +165,7 @@ public class AuthService extends AbstractSecurityService {
         } else {
             userEntity.setIsDisabled(false);
             userEntity.setConfirmCode(null);
-            userEntity.getRoles().add(roleRepository().findByCode(userRoleCode));
+            userEntity.getRoles().add(userRole());
             userRepository.save(userEntity);
         }
     }

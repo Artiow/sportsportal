@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +29,6 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
-    @Value("${code.role.admin}")
-    private String adminRoleCode;
 
     @Autowired
     public OrderService(RobokassaService robokassaService, OrderRepository orderRepository, OrderMapper orderMapper) {
@@ -77,7 +74,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     public OrderDTO get(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
+            if ((!currentUserIsAdmin()) && (!isCurrentUser(orderEntity.getCustomer()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else {
                 return orderMapper.toDTO(orderEntity, robokassaService.computeLink(orderMapper.toPayment(orderEntity)));
@@ -157,7 +154,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(orderEntity.getCustomer()))) {
+            if ((!currentUserIsAdmin()) && (!isCurrentUser(orderEntity.getCustomer()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
             } else {
                 orderRepository.delete(orderEntity);

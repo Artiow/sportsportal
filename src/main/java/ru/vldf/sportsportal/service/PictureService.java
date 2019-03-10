@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
@@ -54,9 +53,6 @@ public class PictureService extends AbstractSecurityService {
 
     private Path pictureDirectory;
 
-
-    @Value("${code.role.admin}")
-    private String adminRoleCode;
 
     @Value("${file.pattern}")
     private String pattern;
@@ -134,7 +130,7 @@ public class PictureService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
-            noRollbackFor = {MaxUploadSizeExceededException.class, IOException.class}
+            noRollbackFor = {IOException.class}
     )
     public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
@@ -155,8 +151,6 @@ public class PictureService extends AbstractSecurityService {
                     );
                 }
                 return newId;
-            } catch (MaxUploadSizeExceededException e) {
-                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.uploadSizeExceeded.message"), e);
             } catch (IOException e) {
                 throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
             }
@@ -178,7 +172,7 @@ public class PictureService extends AbstractSecurityService {
     public void delete(@NotNull Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             PictureEntity pictureEntity = pictureRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(pictureEntity.getOwner()))) {
+            if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getOwner()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
             } else {
                 pictureRepository.delete(pictureEntity);

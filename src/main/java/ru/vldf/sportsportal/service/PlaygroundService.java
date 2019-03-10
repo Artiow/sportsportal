@@ -54,8 +54,6 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     private final PlaygroundMapper playgroundMapper;
     private final JavaTimeMapper javaTimeMapper;
 
-    @Value("${code.role.admin}")
-    private String adminRoleCode;
 
     @Value("${order.expiration.amount}")
     private Integer orderExpirationAmount;
@@ -343,7 +341,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
+            if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
             } else {
                 playgroundRepository.save(playgroundMapper.merge(playgroundEntity, playgroundMapper.toEntity(playgroundDTO)));
@@ -373,7 +371,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             PlaygroundEntity playgroundEntity = playgroundRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isContainCurrentUser(playgroundEntity.getOwners()))) {
+            if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
             } else {
                 playgroundRepository.delete(playgroundEntity);

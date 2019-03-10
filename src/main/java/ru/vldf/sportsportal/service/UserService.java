@@ -1,7 +1,6 @@
 package ru.vldf.sportsportal.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
@@ -24,8 +23,6 @@ public class UserService extends AbstractSecurityService {
 
     private final UserMapper userMapper;
 
-    @Value("${code.role.admin}")
-    private String adminRoleCode;
 
     @Autowired
     public UserService(UserMapper userMapper) {
@@ -50,7 +47,7 @@ public class UserService extends AbstractSecurityService {
     public UserShortDTO get(@NotNull Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
             UserEntity userEntity = userRepository().getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(userEntity))) {
+            if ((!currentUserIsAdmin()) && (!isCurrentUser(userEntity))) {
                 throw new ForbiddenAccessException(msg("sportsportal.common.User.forbidden.message"));
             } else {
                 return userMapper.toShortDTO(userEntity);
@@ -76,7 +73,7 @@ public class UserService extends AbstractSecurityService {
         try {
             UserRepository userRepository = userRepository();
             UserEntity userEntity = userRepository.getOne(id);
-            if (!currentUserHasRoleByCode(adminRoleCode) && (!isCurrentUser(userEntity))) {
+            if ((!currentUserIsAdmin()) && (!isCurrentUser(userEntity))) {
                 throw new ForbiddenAccessException(msg("sportsportal.common.User.forbidden.message"));
             } else {
                 userRepository.delete(userEntity);

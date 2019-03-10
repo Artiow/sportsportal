@@ -20,7 +20,7 @@ public class UserDetailsMapper {
         Collection<RoleEntity> roleEntities = entity.getRoles();
         Collection<String> rawRoles = new ArrayList<>(roleEntities.size());
         for (RoleEntity roleEntity : roleEntities) {
-            rawRoles.add(roleEntity.getCode().toUpperCase());
+            rawRoles.add(roleEntity.getCode().trim().toUpperCase());
         }
 
         String[] roles = rawRoles.toArray(new String[0]);
