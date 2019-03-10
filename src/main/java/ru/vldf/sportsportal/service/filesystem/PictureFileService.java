@@ -31,8 +31,9 @@ import java.util.Objects;
 @Service
 public class PictureFileService extends AbstractMessageService {
 
-    private final ServletContext context;
+    private final PictureSize presize;
 
+    private final ServletContext context;
     private final Path location;
 
 
@@ -44,8 +45,15 @@ public class PictureFileService extends AbstractMessageService {
 
 
     @Autowired
-    public PictureFileService(@Value("${pic.location}") String location, ServletContext context) throws IOException {
+    public PictureFileService(
+            @Value("${pic.presize.name}") String preName,
+            @Value("${pic.presize.width}") Short preWidth,
+            @Value("${pic.presize.height}") Short preHeight,
+            @Value("${pic.location}") String location,
+            ServletContext context
+    ) throws IOException {
         Files.createDirectories(this.location = Paths.get(location).toAbsolutePath().normalize());
+        this.presize = PictureSize.of(preName, preWidth, preHeight);
         this.context = context;
     }
 
@@ -85,7 +93,18 @@ public class PictureFileService extends AbstractMessageService {
 
 
     /**
-     * Returns resized picture.
+     * Returns no-crop presized picture.
+     *
+     * @param inputStream the picture input stream.
+     * @return resized picture input stream.
+     * @throws IOException if something goes wrong.
+     */
+    protected InputStream presizePicture(InputStream inputStream) throws IOException {
+        return resizePicture(inputStream, presize, false);
+    }
+
+    /**
+     * Returns crop (if necessary) resized picture.
      *
      * @param inputStream the picture input stream.
      * @param size        the picture size.
@@ -93,6 +112,10 @@ public class PictureFileService extends AbstractMessageService {
      * @throws IOException if something goes wrong.
      */
     protected InputStream resizePicture(InputStream inputStream, PictureSize size) throws IOException {
+        return resizePicture(inputStream, size, true);
+    }
+
+    private InputStream resizePicture(InputStream inputStream, PictureSize size, boolean crop) throws IOException {
         BufferedImage img = ImageIO.read(inputStream);
         int newWidth = size.getWidth();
         int newHeight = size.getHeight();
@@ -114,7 +137,9 @@ public class PictureFileService extends AbstractMessageService {
         img = Scalr.resize(img, quality, mode, newWidth, newHeight);
 
         // crop
-        img = Scalr.crop(img, (img.getWidth() - newWidth) / 2, (img.getHeight() - newHeight) / 2, newWidth, newHeight);
+        if (crop) {
+            img = Scalr.crop(img, (img.getWidth() - newWidth) / 2, (img.getHeight() - newHeight) / 2, newWidth, newHeight);
+        }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(img, "jpeg", outputStream);
