@@ -16,8 +16,6 @@ import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.util.CollectionConverter;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -111,21 +109,16 @@ public class PictureService extends AbstractSecurityService {
      * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
      * @throws ResourceNotFoundException   if picture not found in database.
      */
-    @Transactional(
-            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
-    public void delete(@NotNull Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
-        try {
-            PictureEntity pictureEntity = pictureRepository.getOne(id);
-            if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getOwner()))) {
-                throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
-            } else {
-                pictureRepository.delete(pictureEntity);
-                fileService.delete(id, sizes());
-            }
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
+    public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        PictureEntity pictureEntity = pictureRepository.findById(id).orElseThrow(
+                ResourceNotFoundException.of(msg("sportsportal.common.Picture.notExistById.message", id))
+        );
+        if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getOwner()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
+        } else {
+            pictureRepository.delete(pictureEntity);
+            fileService.delete(id, sizes());
         }
     }
 

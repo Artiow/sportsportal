@@ -132,7 +132,7 @@ public class AuthService extends AbstractSecurityService {
         try {
             String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
             UserEntity userEntity = userRepository().findById(userId).orElseThrow(
-                    () -> new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", userId))
+                    ResourceNotFoundException.of(msg("sportsportal.common.User.notExistById.message", userId))
             );
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);

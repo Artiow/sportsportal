@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.service.generic;
 
+import java.util.function.Supplier;
+
 public class ResourceNotFoundException extends AbstractResourceException {
 
     public ResourceNotFoundException(String message) {
@@ -8,5 +10,13 @@ public class ResourceNotFoundException extends AbstractResourceException {
 
     public ResourceNotFoundException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public static Supplier<ResourceNotFoundException> of(String message) {
+        return () -> new ResourceNotFoundException(message);
+    }
+
+    public static Supplier<ResourceNotFoundException> of(String message, Throwable cause) {
+        return () -> new ResourceNotFoundException(message, cause);
     }
 }

@@ -29,7 +29,7 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
     @Transactional(readOnly = true)
     public D get(Integer id) throws ResourceNotFoundException {
         return repository.findById(id).map(mapper::toDTO).orElseThrow(
-                () -> new ResourceNotFoundException(msg("sportsportal.dictionary.notExistById.message", id))
+                ResourceNotFoundException.of(msg("sportsportal.dictionary.notExistById.message", id))
         );
     }
 
@@ -37,7 +37,7 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
     @Transactional(readOnly = true)
     public D get(String code) throws ResourceNotFoundException {
         return repository.findByCode(code).map(mapper::toDTO).orElseThrow(
-                () -> new ResourceNotFoundException(msg("sportsportal.dictionary.notExistByCode.message", code))
+                ResourceNotFoundException.of(msg("sportsportal.dictionary.notExistByCode.message", code))
         );
     }
 
