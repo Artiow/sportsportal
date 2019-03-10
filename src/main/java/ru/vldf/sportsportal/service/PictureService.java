@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
-import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
@@ -22,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -97,8 +95,7 @@ public class PictureService extends AbstractSecurityService {
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
-                List<PictureSize> sizes = CollectionConverter.convertToList(pictureSizeRepository.findAll(), pictureSizeMapper::toSize);
-                return fileService.create(newId, picture.getInputStream(), sizes.toArray(new PictureSize[0]));
+                return fileService.create(newId, picture.getInputStream(), sizes());
             } catch (IOException e) {
                 throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
             }
@@ -115,7 +112,7 @@ public class PictureService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class, IOException.class}
+            noRollbackFor = {EntityNotFoundException.class}
     )
     public void delete(@NotNull Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         try {
@@ -124,15 +121,15 @@ public class PictureService extends AbstractSecurityService {
                 throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
             } else {
                 pictureRepository.delete(pictureEntity);
-                for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
-                    try {
-                        fileService.delete(id, pictureSizeMapper.toSize(sizeEntity));
-                    } catch (IOException ignored) {
-                    }
-                }
+                fileService.delete(id, sizes());
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
         }
+    }
+
+
+    private PictureSize[] sizes() {
+        return CollectionConverter.convertToList(pictureSizeRepository.findAll(), pictureSizeMapper::toSize).toArray(new PictureSize[0]);
     }
 }

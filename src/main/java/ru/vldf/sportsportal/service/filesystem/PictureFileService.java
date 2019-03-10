@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.service.filesystem;
 
+import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ import java.util.Objects;
 /**
  * @author Namednev Artem
  */
+@Slf4j
 @Service
 public class PictureFileService {
 
@@ -68,7 +70,7 @@ public class PictureFileService {
     public ResourceBundle get(Integer id, PictureSize size) throws PictureNotFoundException {
         try {
             Assert.notNull(size, "Picture size must be not null");
-            Resource resource = new UrlResource(resolveFilename(id, size).toUri());
+            Resource resource = new UrlResource(resolvePath(id, size).toUri());
             if (resource.exists()) return ResourceBundle.of(resource, context);
             throw new PictureNotFoundException("Picture resource does not exist");
         } catch (MalformedURLException e) {
@@ -91,7 +93,7 @@ public class PictureFileService {
             for (PictureSize size : sizes) {
                 Files.copy(
                         resizePicture(presized, size),
-                        resolveFilename(id, size),
+                        resolvePath(id, size),
                         StandardCopyOption.REPLACE_EXISTING
                 );
             }
@@ -101,9 +103,20 @@ public class PictureFileService {
         }
     }
 
-    // todo: refactor
-    public void delete(Integer id, PictureSize size) throws IOException {
-        Files.delete(resolveFilename(id, size));
+    /**
+     * Delete picture by identifier.
+     *
+     * @param id the picture identifier.
+     */
+    public void delete(Integer id, PictureSize[] sizes) {
+        for (PictureSize size : sizes) {
+            Path path = resolvePath(id, size);
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                log.error("I/O exception occurred while deleting {}", path.getFileName(), e);
+            }
+        }
     }
 
 
@@ -169,7 +182,7 @@ public class PictureFileService {
      * @param size       the picture size.
      * @return picture path.
      */
-    protected Path resolveFilename(Integer identifier, PictureSize size) {
+    protected Path resolvePath(Integer identifier, PictureSize size) {
         return this.location.resolve(getDirname(identifier)).resolve(getFilename(identifier, size));
     }
 
