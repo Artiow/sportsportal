@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.service.PictureService;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
@@ -39,14 +42,11 @@ public class PictureController {
      * @param id   the picture identifier.
      * @param size the picture size code.
      * @return picture resource.
-     * @throws ResourceNotFoundException     if record not found in database.
-     * @throws ResourceFileNotFoundException if file not found on disk.
+     * @throws ResourceNotFoundException if picture not found.
      */
     @GetMapping("/{id}")
     @ApiOperation("получить ресурс")
-    public ResponseEntity<Resource> download(
-            @PathVariable int id, @RequestParam(name = "size", required = false) String size
-    ) throws ResourceNotFoundException, ResourceFileNotFoundException {
+    public ResponseEntity<Resource> download(@PathVariable int id, @RequestParam(name = "size", required = false) String size) throws ResourceNotFoundException {
         ResourceBundle resource = pictureService.get(id, size);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, resource.getContentDisposition()).contentType(resource.getContentType()).body(resource.getBody());
     }

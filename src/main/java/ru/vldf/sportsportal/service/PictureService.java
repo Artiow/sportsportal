@@ -1,11 +1,6 @@
 package ru.vldf.sportsportal.service;
 
-import lombok.Getter;
-import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,28 +11,17 @@ import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureSizeMapper;
 import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
+import ru.vldf.sportsportal.service.filesystem.PictureFileService;
+import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
-import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author Namednev Artem
@@ -45,44 +29,24 @@ import java.util.Optional;
 @Service
 public class PictureService extends AbstractSecurityService {
 
-    private final ServletContext context;
+    private final PictureFileService fileService;
 
     private final PictureRepository pictureRepository;
     private final PictureSizeRepository pictureSizeRepository;
     private final PictureSizeMapper pictureSizeMapper;
 
-    private Path pictureDirectory;
-
-
-    @Value("${file.pattern}")
-    private String pattern;
-
-    @Value("${file.location}")
-    private String dir;
-
 
     @Autowired
     public PictureService(
-            ServletContext context,
+            PictureFileService fileService,
             PictureRepository pictureRepository,
             PictureSizeRepository pictureSizeRepository,
             PictureSizeMapper pictureSizeMapper
     ) {
-        this.context = context;
+        this.fileService = fileService;
         this.pictureRepository = pictureRepository;
         this.pictureSizeRepository = pictureSizeRepository;
         this.pictureSizeMapper = pictureSizeMapper;
-    }
-
-
-    @PostConstruct
-    public void setFileStorageLocation() {
-        this.pictureDirectory = Paths.get(dir).toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(this.pictureDirectory);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -92,31 +56,21 @@ public class PictureService extends AbstractSecurityService {
      * @param id       the picture identifier.
      * @param sizeCode the picture size code.
      * @return picture resource.
-     * @throws ResourceNotFoundException     if record not found in database.
-     * @throws ResourceFileNotFoundException if file not found on disk.
+     * @throws ResourceNotFoundException if picture not found.
      */
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class, ResourceFileNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class, MalformedURLException.class}
-    )
-    public ResourceBundle get(Integer id, String sizeCode) throws ResourceNotFoundException, ResourceFileNotFoundException {
+    @Transactional(readOnly = true, rollbackFor = ResourceNotFoundException.class)
+    public ResourceBundle get(Integer id, String sizeCode) throws ResourceNotFoundException {
         boolean sizeIsPresent = StringUtils.hasText(sizeCode);
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else if (sizeIsPresent && !pictureSizeRepository.existsByCode(sizeCode)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
-            try {
-                PictureSizeEntity sizeEntity = sizeIsPresent ? pictureSizeRepository.findByCode(sizeCode) : pictureSizeRepository.findFirstByIsDefaultIsTrue();
-                Resource resource = new UrlResource(resolveFilename(pictureRepository.getOne(id).getId(), pictureSizeMapper.toSize(sizeEntity)).toUri());
-                if (resource.exists()) return ResourceBundle.of(resource, context);
-                throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id));
-            } catch (EntityNotFoundException e) {
-                throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
-            } catch (MalformedURLException e) {
-                throw new ResourceFileNotFoundException(msg("sportsportal.common.Picture.notExistByFile.message", id), e);
-            }
+            return fileService.get(id, pictureSizeMapper.toSize(
+                    sizeIsPresent
+                            ? pictureSizeRepository.findByCode(sizeCode)
+                            : pictureSizeRepository.findFirstByIsDefaultIsTrue()
+            ));
         }
     }
 
@@ -142,13 +96,8 @@ public class PictureService extends AbstractSecurityService {
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
-                    PictureSize size
-                            = pictureSizeMapper.toSize(sizeEntity);
-                    Files.copy(
-                            resizePicture(picture.getInputStream(), size),
-                            resolveFilename(newId, size),
-                            StandardCopyOption.REPLACE_EXISTING
-                    );
+                    PictureSize size = pictureSizeMapper.toSize(sizeEntity);
+                    fileService.create(newId, picture.getInputStream(), size);
                 }
                 return newId;
             } catch (IOException e) {
@@ -178,106 +127,13 @@ public class PictureService extends AbstractSecurityService {
                 pictureRepository.delete(pictureEntity);
                 for (PictureSizeEntity sizeEntity : pictureSizeRepository.findAll()) {
                     try {
-                        Files.delete(resolveFilename(id, pictureSizeMapper.toSize(sizeEntity)));
+                        fileService.delete(id, pictureSizeMapper.toSize(sizeEntity));
                     } catch (IOException ignored) {
                     }
                 }
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id), e);
-        }
-    }
-
-
-    /**
-     * Returns resized picture.
-     *
-     * @param inputStream the picture input stream.
-     * @param size        the picture size.
-     * @return resized picture input stream.
-     * @throws IOException if something goes wrong.
-     */
-    private InputStream resizePicture(InputStream inputStream, PictureSize size) throws IOException {
-        BufferedImage img = ImageIO.read(inputStream);
-        int newWidth = size.getWidth();
-        int newHeight = size.getHeight();
-        double requestedFactor = size.getFactor();
-
-        // calculate resize mode
-        Scalr.Mode mode;
-        Scalr.Method quality = Scalr.Method.ULTRA_QUALITY;
-        double factor = ((double) img.getWidth()) / ((double) img.getHeight());
-        if (factor < requestedFactor) {
-            mode = Scalr.Mode.FIT_TO_WIDTH;
-        } else if (factor > requestedFactor) {
-            mode = Scalr.Mode.FIT_TO_HEIGHT;
-        } else {
-            mode = Scalr.Mode.AUTOMATIC;
-        }
-
-        // resize
-        img = Scalr.resize(img, quality, mode, newWidth, newHeight);
-
-        // calculate crop params
-        int xStart, yStart;
-        xStart = (img.getWidth() - newWidth) / 2;
-        xStart = (xStart < 0) ? 0 : xStart;
-        yStart = (img.getHeight() - newHeight) / 2;
-        yStart = (yStart < 0) ? 0 : yStart;
-
-        // crop
-        img = Scalr.crop(img, xStart, yStart, newWidth, newHeight);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(img, "jpeg", outputStream);
-        return new ByteArrayInputStream(outputStream.toByteArray());
-    }
-
-    /**
-     * Resolve picture path.
-     *
-     * @param identifier the picture identifier.
-     * @param size       the picture size.
-     * @return picture path.
-     */
-    private Path resolveFilename(@NotNull Integer identifier, PictureSize size) {
-        return this.pictureDirectory.resolve(getFilename(identifier, size));
-    }
-
-    /**
-     * Build picture filename on filesystem.
-     *
-     * @param identifier the picture identifier.
-     * @param size       the picture size.
-     * @return picture filename.
-     */
-    private String getFilename(@NotNull Integer identifier, PictureSize size) {
-        return String.format(
-                pattern, Optional.ofNullable(size).map((s) -> (identifier + s.toString())).orElse(identifier.toString())
-        );
-    }
-
-
-    @Getter
-    public static class PictureSize {
-
-        private final String value;
-        private final short width;
-        private final short height;
-        private final double factor;
-
-
-        public PictureSize(@NotNull String value, short width, short height) {
-            this.value = value;
-            this.width = width;
-            this.height = height;
-            this.factor = ((double) this.width) / ((double) this.height);
-        }
-
-
-        @Override
-        public String toString() {
-            return getValue();
         }
     }
 }
