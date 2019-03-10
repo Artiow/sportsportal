@@ -3,6 +3,8 @@ package ru.vldf.sportsportal.repository;
 import org.springframework.data.repository.NoRepositoryBean;
 import ru.vldf.sportsportal.domain.generic.AbstractWordbookEntity;
 
+import java.util.Optional;
+
 /**
  * @author Namednev Artem
  */
@@ -11,5 +13,5 @@ public interface AbstractWordbookRepository<T extends AbstractWordbookEntity> ex
 
     boolean existsByCode(String code);
 
-    T findByCode(String code);
+    Optional<T> findByCode(String code);
 }

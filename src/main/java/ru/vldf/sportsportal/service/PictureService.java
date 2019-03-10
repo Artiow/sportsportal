@@ -66,9 +66,10 @@ public class PictureService extends AbstractSecurityService {
         } else if (sizeIsPresent && !pictureSizeRepository.existsByCode(sizeCode)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
         } else {
+            // noinspection OptionalGetWithoutIsPresent
             return fileService.get(id, pictureSizeMapper.toSize(
                     sizeIsPresent
-                            ? pictureSizeRepository.findByCode(sizeCode)
+                            ? pictureSizeRepository.findByCode(sizeCode).get()
                             : pictureSizeRepository.findFirstByIsDefaultIsTrue()
             ));
         }

@@ -129,20 +129,18 @@ public class AuthService extends AbstractSecurityService {
         if (!StringUtils.hasText(confirmOrigin)) {
             confirmOrigin = String.format("%s://%s%s", apiProtocol, apiHost, apiPath);
         }
-
-        String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
-        UserRepository userRepository = userRepository();
         try {
-            UserEntity userEntity = userRepository.getOne(userId);
+            String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
+            UserEntity userEntity = userRepository().findById(userId).orElseThrow(
+                    () -> new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", userId))
+            );
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
                 sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
-                userRepository.save(userEntity);
+                userRepository().save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
             }
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistById.message", userId), e);
         } catch (MessagingException e) {
             throw new ResourceCannotUpdateException(msg("sportsportal.common.User.cannotSendEmail.message"), e);
         }

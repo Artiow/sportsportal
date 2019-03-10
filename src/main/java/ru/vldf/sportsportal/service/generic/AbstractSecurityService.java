@@ -13,7 +13,10 @@ import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDet
 import ru.vldf.sportsportal.util.SimpleGrantedAuthorityBuilder;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -57,11 +60,13 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
 
 
     protected RoleEntity adminRole() {
-        return Optional.of(roleRepository.findByCode(adminRoleCode)).get();
+        // noinspection OptionalGetWithoutIsPresent
+        return roleRepository.findByCode(adminRoleCode).get();
     }
 
     protected RoleEntity userRole() {
-        return Optional.of(roleRepository.findByCode(userRoleCode)).get();
+        // noinspection OptionalGetWithoutIsPresent
+        return roleRepository.findByCode(userRoleCode).get();
     }
 
 

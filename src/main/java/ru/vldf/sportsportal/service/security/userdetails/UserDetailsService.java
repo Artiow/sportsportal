@@ -40,7 +40,7 @@ public class UserDetailsService implements UserDetailsProvider {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public IdentifiedUserDetails authorization(String email, String password) throws UsernameNotFoundException, BadCredentialsException {
         UserEntity userEntity;
         if ((userEntity = userRepository.findByEmail(email)) == null) {
@@ -53,7 +53,7 @@ public class UserDetailsService implements UserDetailsProvider {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public IdentifiedUserDetails authorization(Integer userId) throws UsernameNotFoundException {
         return userRepository.findById(userId).map(userDetailsMapper::toDetails).orElseThrow(
                 () -> new UsernameNotFoundException(messages.get("sportsportal.auth.service.usernameNotFound.message"))

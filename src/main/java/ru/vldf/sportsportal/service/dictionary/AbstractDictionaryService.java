@@ -11,8 +11,6 @@ import ru.vldf.sportsportal.repository.AbstractWordbookRepository;
 import ru.vldf.sportsportal.service.generic.AbstractMessageService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 
-import javax.persistence.EntityNotFoundException;
-
 /**
  * @author Namednev Artem
  */
@@ -30,21 +28,17 @@ public abstract class AbstractDictionaryService<E extends AbstractDictionaryEnti
     @Override
     @Transactional(readOnly = true)
     public D get(Integer id) throws ResourceNotFoundException {
-        try {
-            return mapper.toDTO(repository.getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.dictionary.notExistById.message", id), e);
-        }
+        return repository.findById(id).map(mapper::toDTO).orElseThrow(
+                () -> new ResourceNotFoundException(msg("sportsportal.dictionary.notExistById.message", id))
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
     public D get(String code) throws ResourceNotFoundException {
-        try {
-            return mapper.toDTO(repository.findByCode(code));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.dictionary.notExistByCode.message", code), e);
-        }
+        return repository.findByCode(code).map(mapper::toDTO).orElseThrow(
+                () -> new ResourceNotFoundException(msg("sportsportal.dictionary.notExistByCode.message", code))
+        );
     }
 
     @Override

@@ -20,11 +20,7 @@ public final class CollectionConverter {
         return convert(source, mapper, Collectors.toSet());
     }
 
-    public static <S, R, C> C convert(
-            Collection<S> source,
-            Function<? super S, ? extends R> mapper,
-            Collector<? super R, ?, C> collector
-    ) {
+    public static <S, R, C> C convert(Collection<S> source, Function<? super S, ? extends R> mapper, Collector<? super R, ?, C> collector) {
         return source.stream().map(mapper).collect(collector);
     }
 }
