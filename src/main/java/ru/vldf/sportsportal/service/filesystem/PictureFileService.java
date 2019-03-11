@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.service.filesystem;
 
-import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,16 +7,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.unit.DataSize;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,15 +26,14 @@ import java.util.Objects;
 /**
  * @author Namednev Artem
  */
-@Slf4j
 @Service
 public class PictureFileService {
 
     private final PictureSize presize;
+    private final int buffer;
 
     private final ServletContext context;
     private final Path location;
-
 
     @Value("${pic.dir.pattern}")
     private String dirPattern;
@@ -50,11 +47,13 @@ public class PictureFileService {
             @Value("${pic.presize.name}") String preName,
             @Value("${pic.presize.width}") Short preWidth,
             @Value("${pic.presize.height}") Short preHeight,
+            @Value("${spring.servlet.multipart.max-file-size}") DataSize maxDataSize,
             @Value("${pic.location}") String location,
             ServletContext context
     ) throws IOException {
         Files.createDirectories(this.location = Paths.get(location).toAbsolutePath().normalize());
         this.presize = PictureSize.of(preName, preWidth, preHeight);
+        this.buffer = Math.toIntExact(maxDataSize.toBytes());
         this.context = context;
     }
 
@@ -89,13 +88,16 @@ public class PictureFileService {
      */
     public Integer create(Integer id, InputStream source, PictureSize[] sizes) throws PictureCannotCreateException {
         try {
-            InputStream presized = presizePicture(source);
+            Files.createDirectories(resolvePath(id));
+            BufferedInputStream stream = presizePicture(source);
             for (PictureSize size : sizes) {
+                stream.mark(Integer.MAX_VALUE);
                 Files.copy(
-                        resizePicture(presized, size),
+                        resizePicture(stream, size),
                         resolvePath(id, size),
                         StandardCopyOption.REPLACE_EXISTING
                 );
+                stream.reset();
             }
             return id;
         } catch (IOException e) {
@@ -104,18 +106,13 @@ public class PictureFileService {
     }
 
     /**
-     * Delete picture by identifier.
-     *
-     * @param id the picture identifier.
+     * Delete pictures by identifier.
      */
-    public void delete(Integer id, PictureSize[] sizes) {
-        for (PictureSize size : sizes) {
-            Path path = resolvePath(id, size);
-            try {
-                Files.delete(path);
-            } catch (IOException e) {
-                log.error("I/O exception occurred while deleting {}", path.getFileName(), e);
-            }
+    public void delete(Integer id) {
+        try {
+            FileSystemUtils.deleteRecursively(resolvePath(id));
+        } catch (IOException e) {
+            throw new PictureCannotDeleteException("Cannot delete picture resources", e);
         }
     }
 
@@ -124,11 +121,11 @@ public class PictureFileService {
      * Returns no-crop presized picture.
      *
      * @param inputStream the picture input stream.
-     * @return resized picture input stream.
+     * @return resized picture buffered input stream.
      * @throws IOException if something goes wrong.
      */
-    protected InputStream presizePicture(InputStream inputStream) throws IOException {
-        return resizePicture(inputStream, presize, false);
+    protected BufferedInputStream presizePicture(InputStream inputStream) throws IOException {
+        return new BufferedInputStream(resizePicture(inputStream, presize, false), buffer);
     }
 
     /**
@@ -176,15 +173,26 @@ public class PictureFileService {
 
 
     /**
-     * Resolve picture path.
+     * Resolve picture directory path.
+     *
+     * @param identifier the picture identifier.
+     * @return picture directory path.
+     */
+    protected Path resolvePath(Integer identifier) {
+        return this.location.resolve(getDirname(identifier));
+    }
+
+    /**
+     * Resolve picture file path.
      *
      * @param identifier the picture identifier.
      * @param size       the picture size.
-     * @return picture path.
+     * @return picture file path.
      */
     protected Path resolvePath(Integer identifier, PictureSize size) {
         return this.location.resolve(getDirname(identifier)).resolve(getFilename(identifier, size));
     }
+
 
     private String getDirname(Integer identifier) {
         return String.format(dirPattern, Objects.toString(identifier, ""));

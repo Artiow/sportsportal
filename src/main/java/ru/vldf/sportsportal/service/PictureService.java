@@ -118,7 +118,7 @@ public class PictureService extends AbstractSecurityService {
             throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
         } else {
             pictureRepository.delete(pictureEntity);
-            fileService.delete(id, sizes());
+            fileService.delete(id);
         }
     }
 

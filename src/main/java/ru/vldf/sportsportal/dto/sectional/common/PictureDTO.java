@@ -25,9 +25,6 @@ public class PictureDTO implements IdentifiedDTO {
     private URI url;
 
     @Null(groups = FieldCheck.class)
-    private Long size;
-
-    @Null(groups = FieldCheck.class)
     private LocalDateTime uploaded;
 
 

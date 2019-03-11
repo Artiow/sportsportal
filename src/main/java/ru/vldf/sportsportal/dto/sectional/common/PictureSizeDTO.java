@@ -34,6 +34,9 @@ public class PictureSizeDTO implements DictionaryDTO {
     @Null(groups = CodeCheck.class)
     private Short height;
 
+    @Null(groups = CodeCheck.class)
+    private Boolean isDefault;
+
 
     public interface IdCheck {
 
