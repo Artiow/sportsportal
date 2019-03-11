@@ -90,8 +90,8 @@ public class PictureFileService {
         try {
             Files.createDirectories(resolvePath(id));
             BufferedInputStream stream = presizePicture(source);
+            stream.mark(Integer.MAX_VALUE);
             for (PictureSize size : sizes) {
-                stream.mark(Integer.MAX_VALUE);
                 Files.copy(
                         resizePicture(stream, size),
                         resolvePath(id, size),
@@ -107,6 +107,8 @@ public class PictureFileService {
 
     /**
      * Delete pictures by identifier.
+     *
+     * @param id the picture identifier.
      */
     public void delete(Integer id) {
         try {

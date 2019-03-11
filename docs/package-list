@@ -47,6 +47,8 @@ ru.vldf.sportsportal.service
 ru.vldf.sportsportal.service.dictionary
 ru.vldf.sportsportal.service.dictionary.common
 ru.vldf.sportsportal.service.dictionary.lease
+ru.vldf.sportsportal.service.filesystem
+ru.vldf.sportsportal.service.filesystem.model
 ru.vldf.sportsportal.service.generic
 ru.vldf.sportsportal.service.security
 ru.vldf.sportsportal.service.security.encoder
