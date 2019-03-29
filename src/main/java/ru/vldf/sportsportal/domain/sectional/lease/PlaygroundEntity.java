@@ -109,9 +109,4 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
         if (!(o instanceof PlaygroundEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

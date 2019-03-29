@@ -15,4 +15,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "game", schema = "tournament")
 public class GameEntity extends AbstractIdentifiedEntity {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GameEntity)) return false;
+        return super.equals(o);
+    }
 }

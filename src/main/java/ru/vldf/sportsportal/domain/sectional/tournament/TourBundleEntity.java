@@ -15,4 +15,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tour_bundle", schema = "tournament")
 public class TourBundleEntity extends AbstractIdentifiedEntity {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TourBundleEntity)) return false;
+        return super.equals(o);
+    }
 }

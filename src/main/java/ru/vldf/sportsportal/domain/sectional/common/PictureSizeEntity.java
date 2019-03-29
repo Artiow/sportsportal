@@ -37,9 +37,4 @@ public class PictureSizeEntity extends AbstractDictionaryEntity {
         if (!(o instanceof PictureSizeEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

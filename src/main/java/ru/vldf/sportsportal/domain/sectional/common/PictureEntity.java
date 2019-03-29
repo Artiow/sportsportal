@@ -40,9 +40,4 @@ public class PictureEntity extends AbstractIdentifiedEntity {
         if (!(o instanceof PictureEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

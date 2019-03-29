@@ -15,4 +15,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tour_bundle_type", schema = "tournament")
 public class TourBundleTypeEntity extends AbstractDictionaryEntity {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TourBundleTypeEntity)) return false;
+        return super.equals(o);
+    }
 }

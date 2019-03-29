@@ -28,9 +28,4 @@ public class SportEntity extends AbstractDictionaryEntity {
         if (!(o instanceof SportEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

@@ -28,9 +28,4 @@ public class RoleEntity extends AbstractDictionaryEntity {
         if (!(o instanceof RoleEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

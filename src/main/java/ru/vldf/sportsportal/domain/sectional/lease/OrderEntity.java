@@ -55,9 +55,4 @@ public class OrderEntity extends AbstractVersionedEntity {
         if (!(o instanceof OrderEntity)) return false;
         return super.equals(o);
     }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }
