@@ -69,7 +69,7 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @ManyToMany
     @JoinTable(
             schema = "lease",
-            name = "specialization",
+            name = "playground_specialization",
             joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "sport_id", referencedColumnName = "id", nullable = false)
     )
@@ -78,7 +78,7 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @ManyToMany
     @JoinTable(
             schema = "lease",
-            name = "capability",
+            name = "playground_capability",
             joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "feature_id", referencedColumnName = "id", nullable = false)
     )
@@ -87,7 +87,7 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @ManyToMany
     @JoinTable(
             schema = "lease",
-            name = "ownership",
+            name = "playground_ownership",
             joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     )
@@ -96,7 +96,7 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @ManyToMany
     @JoinTable(
             schema = "lease",
-            name = "photo",
+            name = "playground_photo",
             joinColumns = @JoinColumn(name = "playground_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = false)
     )

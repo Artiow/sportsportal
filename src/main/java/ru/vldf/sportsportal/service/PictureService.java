@@ -90,7 +90,7 @@ public class PictureService extends AbstractSecurityService {
             throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.wrongExtension.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
-            pictureEntity.setOwner(getCurrentUserEntity());
+            pictureEntity.setUploader(getCurrentUserEntity());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
             Integer newId = pictureRepository.save(pictureEntity).getId();
             try {
@@ -114,7 +114,7 @@ public class PictureService extends AbstractSecurityService {
         PictureEntity pictureEntity = pictureRepository.findById(id).orElseThrow(
                 ResourceNotFoundException.of(msg("sportsportal.common.Picture.notExistById.message", id))
         );
-        if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getOwner()))) {
+        if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getUploader()))) {
             throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
         } else {
             pictureRepository.delete(pictureEntity);

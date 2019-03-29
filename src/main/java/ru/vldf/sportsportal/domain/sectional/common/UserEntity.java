@@ -66,7 +66,7 @@ public class UserEntity extends AbstractVersionedEntity {
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "uploader")
     private Collection<PictureEntity> pictures;
 
     @ManyToMany(mappedBy = "owners")

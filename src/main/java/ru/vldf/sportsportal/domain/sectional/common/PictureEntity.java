@@ -19,19 +19,19 @@ import java.util.Collection;
 public class PictureEntity extends AbstractIdentifiedEntity {
 
     @Basic
-    @Column(name = "uploaded", nullable = false)
+    @Column(name = "upload_date", nullable = false)
     private Timestamp uploaded;
 
 
     @OneToOne(mappedBy = "avatar", fetch = FetchType.LAZY)
     private UserEntity users;
 
-    @ManyToMany(mappedBy = "photos")
+    @ManyToMany(mappedBy = "photos", fetch = FetchType.LAZY)
     private Collection<PlaygroundEntity> playgrounds;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    private UserEntity owner;
+    @JoinColumn(name = "uploader_id", referencedColumnName = "id")
+    private UserEntity uploader;
 
 
     @Override
