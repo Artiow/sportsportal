@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class LocalDateTimeNormalizer {
+public final class LocalDateTimeGridChecker {
 
     public static boolean check(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired) {
         return check(dateTimeCollection, halfHourAvailable, fullHourRequired, true);
@@ -13,6 +13,8 @@ public class LocalDateTimeNormalizer {
     public static boolean check(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired, boolean timeCheck) {
         int divider = halfHourAvailable ? 30 : 60;
         LocalDateTime now = LocalDateTime.now();
+
+        // time validation pre-check
         for (LocalDateTime item : dateTimeCollection) {
             if ((item.getMinute() % divider) != 0) return false;
             if (!item.isAfter(now) && timeCheck) return false;
@@ -37,24 +39,25 @@ public class LocalDateTimeNormalizer {
         } else return true;
     }
 
-    public static List<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired) {
-        return advancedCheck(dateTimeCollection, halfHourAvailable, fullHourRequired, true);
+    public static List<LocalDateTime> filter(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired) {
+        return filter(dateTimeCollection, halfHourAvailable, fullHourRequired, true);
     }
 
-    public static List<LocalDateTime> advancedCheck(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired, boolean timeCheck) {
-        List<LocalDateTime> dateTimeList = new ArrayList<>(dateTimeCollection);
-        ListIterator<LocalDateTime> listIterator;
+    public static List<LocalDateTime> filter(Collection<LocalDateTime> dateTimeCollection, boolean halfHourAvailable, boolean fullHourRequired, boolean timeCheck) {
+        List<LocalDateTime> result = new ArrayList<>(dateTimeCollection);
 
         int divider = halfHourAvailable ? 30 : 60;
         LocalDateTime now = LocalDateTime.now();
-        listIterator = dateTimeList.listIterator();
+
+        // time validation pre-check
+        ListIterator<LocalDateTime> listIterator = result.listIterator();
         while (listIterator.hasNext()) {
             LocalDateTime item = listIterator.next();
             if ((item.getMinute() % divider) != 0) listIterator.remove();
-            else if (!item.isAfter(now) && timeCheck) listIterator.remove();
+            if (!item.isAfter(now) && timeCheck) listIterator.remove();
         }
 
-        listIterator = dateTimeList.listIterator();
+        listIterator = result.listIterator();
         if (halfHourAvailable && fullHourRequired && listIterator.hasNext()) {
             LocalDateTime prevItem = listIterator.next();
             LocalDateTime item;
@@ -78,6 +81,6 @@ public class LocalDateTimeNormalizer {
             }
         }
 
-        return dateTimeList;
+        return result;
     }
 }

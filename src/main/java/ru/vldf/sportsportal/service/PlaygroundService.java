@@ -23,7 +23,8 @@ import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
 import ru.vldf.sportsportal.service.generic.*;
-import ru.vldf.sportsportal.util.LocalDateTimeNormalizer;
+import ru.vldf.sportsportal.util.CollectionSorter;
+import ru.vldf.sportsportal.util.LocalDateTimeGridChecker;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
@@ -199,7 +200,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
                     }
                 }
 
-                reservations = LocalDateTimeNormalizer.advancedCheck(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
+                reservations = LocalDateTimeGridChecker.filter(reservations, playgroundEntity.getHalfHourAvailable(), playgroundEntity.getFullHourRequired());
                 ReservationListDTO reservationListDTO = new ReservationListDTO();
                 reservationListDTO.setReservations(reservations);
                 return reservationListDTO;
@@ -240,9 +241,8 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(!isOwner ? Timestamp.valueOf(expiration) : null);
 
-            List<LocalDateTime> datetimes = new ArrayList<>(reservationListDTO.getReservations());
-            Collections.sort(datetimes);
-            if (!LocalDateTimeNormalizer.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
+            List<LocalDateTime> datetimes = CollectionSorter.getSorted(reservationListDTO.getReservations());
+            if (!LocalDateTimeGridChecker.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
                 throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.notSupportedTime.message"));
             }
 

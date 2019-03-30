@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-public class LocalDateTimeNormalizerTests {
+public class LocalDateTimeGridCheckerTests {
 
     @Test
     public void test_ValidHHATrueFHRFalse() {
@@ -24,11 +24,11 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, false, false));
+        Assert.assertTrue(LocalDateTimeGridChecker.check(testedList, true, false, false));
 
         // additional assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true, false));
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false, false));
+        Assert.assertFalse(LocalDateTimeGridChecker.check(testedList, true, true, false));
+        Assert.assertFalse(LocalDateTimeGridChecker.check(testedList, false, false, false));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, false, false));
+        Assert.assertFalse(LocalDateTimeGridChecker.check(testedList, true, false, false));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, false, false, false));
+        Assert.assertTrue(LocalDateTimeGridChecker.check(testedList, false, false, false));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, false, false, false));
+        Assert.assertFalse(LocalDateTimeGridChecker.check(testedList, false, false, false));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertTrue(LocalDateTimeNormalizer.check(testedList, true, true, false));
+        Assert.assertTrue(LocalDateTimeGridChecker.check(testedList, true, true, false));
     }
 
     @Test
@@ -103,6 +103,6 @@ public class LocalDateTimeNormalizerTests {
         );
 
         // act and assert
-        Assert.assertFalse(LocalDateTimeNormalizer.check(testedList, true, true, false));
+        Assert.assertFalse(LocalDateTimeGridChecker.check(testedList, true, true, false));
     }
 }
