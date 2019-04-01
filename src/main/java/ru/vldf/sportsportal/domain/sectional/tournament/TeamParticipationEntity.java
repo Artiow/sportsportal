@@ -22,10 +22,6 @@ import java.util.Collection;
 })
 public class TeamParticipationEntity implements DomainObject {
 
-    // necessary for tour-generating
-    public static TeamParticipationEntity EMPTY = new TeamParticipationEntity();
-
-
     @EmbeddedId
     @EqualsAndHashCode.Include
     private TeamParticipationEntityPK pk;

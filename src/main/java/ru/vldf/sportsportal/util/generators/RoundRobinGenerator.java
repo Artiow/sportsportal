@@ -23,7 +23,7 @@ public final class RoundRobinGenerator {
         int toursNum = teams.size() + teams.size() % 2 - 1;
         if (toursNum == teams.size()) {
             // adding a phantom team at the start
-            teams.add(0, TeamParticipationEntity.EMPTY);
+            teams.add(0, null);
         }
 
         // bundle creating
@@ -52,7 +52,7 @@ public final class RoundRobinGenerator {
         tour.setGames(new HashSet<>(gamesNum));
 
         // tour filling (zero stage)
-        if (!Objects.equals(teams.get(0), TeamParticipationEntity.EMPTY)) {
+        if (Objects.nonNull(teams.get(0))) {
             GameEntity game = generateGame(tournament, teams, offset);
             tour.getGames().add(game);
             game.setTour(tour);
@@ -90,8 +90,10 @@ public final class RoundRobinGenerator {
             return list.get(0);
         } else {
             int size = list.size();
-            int i = index + offset;
-            return list.get(i < size ? i : i - size);
+            Assert.isTrue((0 <= index) && (index < size), "invalid index");
+            Assert.isTrue((0 <= offset) && (offset < size - 1), "invalid offset");
+            int i = index - offset;
+            return list.get(i > 0 ? i : i + (list.size() - 1));
         }
     }
 }
