@@ -20,11 +20,11 @@ public class TourBundleStructureEntity extends AbstractDictionaryEntity {
 
     @Basic
     @Column(name = "tourless", nullable = false)
-    private boolean tourless = false;
+    private Boolean isTourless = false;
 
     @Basic
     @Column(name = "immutable", nullable = false)
-    private boolean immutable = false;
+    private Boolean isImmutable = false;
 
 
     @OneToMany(mappedBy = "bundleStructure")

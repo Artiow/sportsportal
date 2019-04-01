@@ -27,7 +27,7 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
 
     @Basic
     @Column(name = "completed", nullable = false)
-    private boolean completed = false;
+    private Boolean isCompleted = false;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

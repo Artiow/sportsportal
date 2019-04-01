@@ -6,6 +6,7 @@ import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -64,6 +65,9 @@ public class UserEntity extends AbstractVersionedEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private PictureEntity avatar;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private PlayerEntity player;
 
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
