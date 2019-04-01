@@ -36,6 +36,12 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false)
     private TourBundleEntity bundle;
 
+    @OneToMany(mappedBy = "tournament")
+    private Collection<GameEntity> games;
+
+    @OneToMany(mappedBy = "pk.team")
+    private Collection<TeamParticipationEntity> teamParticipations;
+
     @OneToMany(mappedBy = "pk.tournament")
     private Collection<PlayerParticipationEntity> playerParticipations;
 }
