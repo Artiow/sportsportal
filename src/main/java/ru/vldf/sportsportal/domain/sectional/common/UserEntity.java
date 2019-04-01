@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
+import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -74,6 +75,12 @@ public class UserEntity extends AbstractVersionedEntity {
 
     @OneToMany(mappedBy = "uploader")
     private Collection<PictureEntity> pictures;
+
+    @OneToMany(mappedBy = "mainCaptain")
+    private Collection<TeamEntity> managedMainTeams;
+
+    @OneToMany(mappedBy = "viceCaptain")
+    private Collection<TeamEntity> managedViceTeams;
 
     @ManyToMany(mappedBy = "owners")
     private Collection<PlaygroundEntity> playgrounds;
