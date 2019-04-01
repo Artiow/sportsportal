@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
@@ -19,6 +20,7 @@ import java.util.Collection;
 @Setter
 @Entity
 @Table(name = "playground", schema = "lease")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class PlaygroundEntity extends AbstractVersionedEntity {
 
     @Basic
@@ -101,12 +103,4 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<PictureEntity> photos;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PlaygroundEntity)) return false;
-        return super.equals(o);
-    }
 }

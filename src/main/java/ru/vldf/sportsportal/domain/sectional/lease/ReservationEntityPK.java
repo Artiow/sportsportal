@@ -1,12 +1,12 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -14,6 +14,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
+@EqualsAndHashCode
 public class ReservationEntityPK implements Serializable {
 
     @Basic
@@ -22,19 +23,4 @@ public class ReservationEntityPK implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private PlaygroundEntity playground;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ReservationEntityPK)) return false;
-        ReservationEntityPK that = (ReservationEntityPK) o;
-        return Objects.equals(getPlayground(), that.getPlayground()) &&
-                Objects.equals(getDatetime(), that.getDatetime());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getPlayground(), getDatetime());
-    }
 }

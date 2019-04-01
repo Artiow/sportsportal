@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.tournament;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
@@ -14,12 +15,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "player", schema = "tournament")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class PlayerEntity extends AbstractVersionedEntity {
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PlayerEntity)) return false;
-        return super.equals(o);
-    }
 }

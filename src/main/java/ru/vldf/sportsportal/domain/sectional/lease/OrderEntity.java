@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
@@ -17,6 +18,7 @@ import java.util.Collection;
 @Setter
 @Entity
 @Table(name = "order", schema = "lease")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class OrderEntity extends AbstractVersionedEntity {
 
     @Basic
@@ -47,12 +49,4 @@ public class OrderEntity extends AbstractVersionedEntity {
     @OrderBy("pk.datetime")
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ReservationEntity> reservations;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderEntity)) return false;
-        return super.equals(o);
-    }
 }

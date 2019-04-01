@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
@@ -16,6 +17,7 @@ import java.util.Collection;
 @Setter
 @Entity
 @Table(name = "picture", schema = "common")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class PictureEntity extends AbstractIdentifiedEntity {
 
     @Basic
@@ -32,12 +34,4 @@ public class PictureEntity extends AbstractIdentifiedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id", referencedColumnName = "id")
     private UserEntity uploader;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PictureEntity)) return false;
-        return super.equals(o);
-    }
 }

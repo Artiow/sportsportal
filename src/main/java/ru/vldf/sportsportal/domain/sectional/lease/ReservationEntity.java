@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
@@ -7,7 +8,6 @@ import ru.vldf.sportsportal.domain.generic.DomainObject;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -16,11 +16,13 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "reservation", schema = "lease")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AttributeOverrides({@AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))})
 @AssociationOverrides({@AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))})
 public class ReservationEntity implements DomainObject {
 
     @EmbeddedId
+    @EqualsAndHashCode.Include
     private ReservationEntityPK pk;
 
     @Basic
@@ -53,19 +55,5 @@ public class ReservationEntity implements DomainObject {
 
     public void setDatetime(Timestamp datetime) {
         pk.setDatetime(datetime);
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ReservationEntity)) return false;
-        ReservationEntity entity = (ReservationEntity) o;
-        return Objects.equals(getPk(), entity.getPk());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getPk());
     }
 }

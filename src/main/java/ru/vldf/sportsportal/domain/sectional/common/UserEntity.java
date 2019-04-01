@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
@@ -16,6 +17,7 @@ import java.util.Collection;
 @Setter
 @Entity
 @Table(name = "user", schema = "common")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class UserEntity extends AbstractVersionedEntity {
 
     @Basic
@@ -80,12 +82,4 @@ public class UserEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     )
     private Collection<RoleEntity> roles;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        return super.equals(o);
-    }
 }

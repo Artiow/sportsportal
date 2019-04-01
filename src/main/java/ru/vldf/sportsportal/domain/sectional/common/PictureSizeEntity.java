@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.common;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "picture_size", schema = "common")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class PictureSizeEntity extends AbstractDictionaryEntity {
 
     @Basic
@@ -29,12 +31,4 @@ public class PictureSizeEntity extends AbstractDictionaryEntity {
     @Basic
     @Column(name = "default", nullable = false)
     private Boolean isDefault;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PictureSizeEntity)) return false;
-        return super.equals(o);
-    }
 }

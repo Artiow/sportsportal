@@ -1,13 +1,12 @@
 package ru.vldf.sportsportal.domain.sectional.tournament;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -16,6 +15,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "tour_bundle_structure", schema = "tournament")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TourBundleStructureEntity extends AbstractDictionaryEntity {
 
     @Basic
@@ -27,10 +27,6 @@ public class TourBundleStructureEntity extends AbstractDictionaryEntity {
     private boolean immutable = false;
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TourBundleStructureEntity)) return false;
-        return super.equals(o);
-    }
+    @OneToMany(mappedBy = "bundleStructure")
+    private Collection<TourBundleEntity> tourBundles;
 }

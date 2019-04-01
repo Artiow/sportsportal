@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.domain.sectional.lease;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
@@ -16,16 +17,9 @@ import java.util.Collection;
 @Setter
 @Entity
 @Table(name = "sport", schema = "lease")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class SportEntity extends AbstractDictionaryEntity {
 
     @ManyToMany(mappedBy = "specializations")
     private Collection<PlaygroundEntity> playgrounds;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SportEntity)) return false;
-        return super.equals(o);
-    }
 }

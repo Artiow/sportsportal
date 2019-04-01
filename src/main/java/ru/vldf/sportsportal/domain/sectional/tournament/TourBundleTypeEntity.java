@@ -1,11 +1,14 @@
 package ru.vldf.sportsportal.domain.sectional.tournament;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -14,12 +17,9 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "tour_bundle_type", schema = "tournament")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TourBundleTypeEntity extends AbstractDictionaryEntity {
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TourBundleTypeEntity)) return false;
-        return super.equals(o);
-    }
+    @OneToMany(mappedBy = "bundleType")
+    private Collection<TourBundleEntity> tourBundles;
 }
