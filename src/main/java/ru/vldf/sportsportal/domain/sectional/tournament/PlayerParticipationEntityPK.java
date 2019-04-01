@@ -1,15 +1,13 @@
-package ru.vldf.sportsportal.domain.sectional.lease;
+package ru.vldf.sportsportal.domain.sectional.tournament;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 /**
  * @author Namednev Artem
@@ -18,14 +16,17 @@ import java.sql.Timestamp;
 @Setter
 @Embeddable
 @EqualsAndHashCode
-public class ReservationEntityPK implements Serializable {
+public class PlayerParticipationEntityPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
-    @Basic
-    private Timestamp datetime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TournamentEntity tournament;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private PlaygroundEntity playground;
+    private PlayerEntity player;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TeamEntity team;
 }
