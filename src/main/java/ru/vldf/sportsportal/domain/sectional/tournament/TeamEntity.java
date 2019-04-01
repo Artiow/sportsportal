@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -30,6 +31,7 @@ public class TeamEntity extends AbstractVersionedEntity {
     @Column(name = "disabled", nullable = false)
     private Boolean isDisabled = true;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "captain_id", referencedColumnName = "id", nullable = false)
     private UserEntity mainCaptain;
@@ -37,4 +39,7 @@ public class TeamEntity extends AbstractVersionedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vice_captain_id", referencedColumnName = "id", nullable = false)
     private UserEntity viceCaptain;
+
+    @OneToMany(mappedBy = "pk.team")
+    private Collection<PlayerParticipationEntity> playerParticipations;
 }

@@ -8,6 +8,8 @@ import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -31,6 +33,10 @@ public class PlayerEntity extends AbstractVersionedEntity {
     @Column(name = "patronymic")
     private String patronymic;
 
+    @Basic
+    @Column(name = "birthdate", nullable = false)
+    private Timestamp birthdate;
+
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
@@ -44,4 +50,7 @@ public class PlayerEntity extends AbstractVersionedEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     )
     private UserEntity user;
+
+    @OneToMany(mappedBy = "pk.player")
+    private Collection<PlayerParticipationEntity> playerParticipations;
 }

@@ -6,7 +6,9 @@ import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -18,4 +20,6 @@ import javax.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TournamentEntity extends AbstractIdentifiedEntity {
 
+    @OneToMany(mappedBy = "pk.tournament")
+    private Collection<PlayerParticipationEntity> playerParticipations;
 }
