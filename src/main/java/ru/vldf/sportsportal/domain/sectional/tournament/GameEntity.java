@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author Namednev Artem
@@ -18,4 +17,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class GameEntity extends AbstractIdentifiedEntity {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tour_id", referencedColumnName = "id", nullable = false)
+    private TourEntity tour;
 }

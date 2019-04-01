@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -18,4 +18,23 @@ import javax.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TourEntity extends AbstractIdentifiedEntity {
 
+    @Basic
+    @Column(name = "text_label", nullable = false)
+    private String textLabel;
+
+    @Basic
+    @Column(name = "numeric_label", nullable = false)
+    private Integer numericLabel;
+
+    @Basic
+    @Column(name = "completed", nullable = false)
+    private Boolean isCompleted = false;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false)
+    private TourBundleEntity bundle;
+
+    @OneToMany(mappedBy = "tour")
+    private Collection<GameEntity> games;
 }

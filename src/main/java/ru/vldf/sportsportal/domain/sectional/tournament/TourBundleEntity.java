@@ -6,6 +6,7 @@ import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -41,4 +42,10 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_structure_id", referencedColumnName = "id", nullable = false)
     private TourBundleStructureEntity bundleStructure;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bundle")
+    private TournamentEntity tournament;
+
+    @OneToMany(mappedBy = "bundle")
+    private Collection<TourEntity> tours;
 }
