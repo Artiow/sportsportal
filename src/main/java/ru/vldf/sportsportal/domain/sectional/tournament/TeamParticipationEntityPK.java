@@ -3,11 +3,11 @@ package ru.vldf.sportsportal.domain.sectional.tournament;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.domain.generic.CompositePrimaryKey;
 
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
 
 /**
  * @author Namednev Artem
@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Setter
 @Embeddable
 @EqualsAndHashCode
-public class TeamParticipationEntityPK implements Serializable {
+public class TeamParticipationEntityPK implements CompositePrimaryKey {
 
     private static final long serialVersionUID = 1L;
 

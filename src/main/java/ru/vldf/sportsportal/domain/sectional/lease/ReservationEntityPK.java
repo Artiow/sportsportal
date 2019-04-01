@@ -3,12 +3,12 @@ package ru.vldf.sportsportal.domain.sectional.lease;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.domain.generic.CompositePrimaryKey;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @Setter
 @Embeddable
 @EqualsAndHashCode
-public class ReservationEntityPK implements Serializable {
+public class ReservationEntityPK implements CompositePrimaryKey {
 
     private static final long serialVersionUID = 1L;
 
