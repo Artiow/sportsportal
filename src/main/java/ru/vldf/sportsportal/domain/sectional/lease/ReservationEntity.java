@@ -17,8 +17,8 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "reservation", schema = "lease")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AttributeOverrides({@AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime"))})
-@AssociationOverrides({@AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id"))})
+@AttributeOverrides({@AttributeOverride(name = "pk.datetime", column = @Column(name = "datetime", nullable = false))})
+@AssociationOverrides({@AssociationOverride(name = "pk.playground", joinColumns = @JoinColumn(name = "playground_id", nullable = false))})
 public class ReservationEntity implements DomainObject {
 
     @EmbeddedId
@@ -26,11 +26,11 @@ public class ReservationEntity implements DomainObject {
     private ReservationEntityPK pk;
 
     @Basic
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price = BigDecimal.valueOf(0, 2);
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
     private OrderEntity order;
 
 

@@ -26,10 +26,6 @@ public class OrderEntity extends AbstractVersionedEntity {
     private BigDecimal sum = BigDecimal.valueOf(0, 2);
 
     @Basic
-    @Column(name = "paid", nullable = false)
-    private Boolean paid = false;
-
-    @Basic
     @Column(name = "datetime", nullable = false)
     private Timestamp datetime;
 
@@ -38,12 +34,16 @@ public class OrderEntity extends AbstractVersionedEntity {
     private Timestamp expiration;
 
     @Basic
-    @Column(name = "by_owner", nullable = false)
-    private Boolean byOwner = false;
+    @Column(name = "paid", nullable = false)
+    private Boolean isPaid = false;
+
+    @Basic
+    @Column(name = "occupied", nullable = false)
+    private Boolean isOwnerOccupied = false;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     private UserEntity customer;
 
     @OrderBy("pk.datetime")

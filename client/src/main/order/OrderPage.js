@@ -139,7 +139,7 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                 <ContentRow className="header">
                     <div className="col-12">
                         <h1 className="mb-1">{title}</h1>
-                        <h4>статус: {orderStatusComponent(order.paid, order.byOwner)}</h4>
+                        <h4>статус: {orderStatusComponent(order.isPaid, order.isOwnerOccupied)}</h4>
                         {expiration ? (
                             <div className="alert alert-danger my-0">
                                 <h4 className="alert-heading">Внимание!</h4>
@@ -154,9 +154,9 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                     <div className="col-12">
                         <div className="btn-group">
                             <button className="btn btn-danger disabled" disabled={true}>
-                                Отменить {order.byOwner ? 'резервирование' : 'бронирование'}
+                                Отменить {order.isOwnerOccupied ? 'резервирование' : 'бронирование'}
                             </button>
-                            {!order.paid && link ? (
+                            {!order.isPaid && link ? (
                                 <a href={link} className="btn btn-success">
                                     Оплатить все
                                     <span className="badge badge-dark ml-1">

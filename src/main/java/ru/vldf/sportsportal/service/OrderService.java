@@ -41,7 +41,7 @@ public class OrderService extends AbstractSecurityService implements CRUDService
     @PostConstruct
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void clearUnpaid() {
-        orderRepository.deleteAll(orderRepository.findAllByPaidIsFalse());
+        orderRepository.deleteAll(orderRepository.findAllByIsPaidIsFalse());
     }
 
 
@@ -124,10 +124,10 @@ public class OrderService extends AbstractSecurityService implements CRUDService
         try {
             id = robokassaService.payment(check);
             OrderEntity orderEntity = orderRepository.getOne(id);
-            if (orderEntity.getPaid()) {
+            if (orderEntity.getIsPaid()) {
                 throw new ResourceCannotUpdateException(msg("sportsportal.lease.Order.alreadyPaid.message", id));
             } else {
-                orderEntity.setPaid(true);
+                orderEntity.setIsPaid(true);
                 orderEntity.setExpiration(null);
                 orderRepository.save(orderEntity);
             }

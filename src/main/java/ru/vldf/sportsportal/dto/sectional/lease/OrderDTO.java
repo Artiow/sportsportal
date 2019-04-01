@@ -33,9 +33,6 @@ public class OrderDTO implements VersionedDTO {
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
     private BigDecimal sum;
 
-    @NotNull(groups = FieldCheck.class)
-    private Boolean paid;
-
     @Null(groups = FieldCheck.class)
     private URI paymentLink;
 
@@ -46,7 +43,10 @@ public class OrderDTO implements VersionedDTO {
     private LocalDateTime expiration;
 
     @NotNull(groups = FieldCheck.class)
-    private Boolean byOwner;
+    private Boolean isPaid;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean isOwnerOccupied;
 
     @Valid
     @NotNull(groups = FieldCheck.class)

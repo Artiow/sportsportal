@@ -15,7 +15,7 @@ public interface OrderRepository extends AbstractIdentifiedRepository<OrderEntit
 
     Page<OrderEntity> findAllByCustomer(UserEntity customer, Pageable pageable);
 
-    List<OrderEntity> findAllByPaidIsFalse();
+    List<OrderEntity> findAllByIsPaidIsFalse();
 
-    void deleteByIdAndPaidIsFalse(Integer id);
+    void deleteByIdAndIsPaidIsFalse(Integer id);
 }

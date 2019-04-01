@@ -19,11 +19,11 @@ public class OrderShortDTO implements VersionedDTO {
 
     private Integer id;
     private Long version;
-    private Boolean paid;
     private BigDecimal price;
     private LocalDateTime datetime;
     private LocalDateTime expiration;
-    private Boolean byOwner;
+    private Boolean isPaid;
+    private Boolean isOwnerOccupied;
     private URI orderURL;
     private URI customerURL;
     private List<ReservationResumeDTO> reservations;

@@ -51,16 +51,16 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "byOwner", ignore = true),
             @Mapping(target = "customer", ignore = true),
-            @Mapping(target = "reservations", ignore = true)
+            @Mapping(target = "reservations", ignore = true),
+            @Mapping(target = "isOwnerOccupied", ignore = true)
     })
     public abstract OrderEntity toEntity(OrderDTO dto);
 
 
     public OrderDTO toDTO(OrderEntity entity, URI paymentLink) {
         OrderDTO dto = toDTO(entity);
-        dto.setPaymentLink(!entity.getByOwner() ? paymentLink : null);
+        dto.setPaymentLink(!entity.getIsOwnerOccupied() ? paymentLink : null);
         return dto;
     }
 
@@ -70,7 +70,7 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
         super.merge(acceptor, donor);
 
         acceptor.setSum(donor.getSum());
-        acceptor.setPaid(donor.getPaid());
+        acceptor.setIsPaid(donor.getIsPaid());
         acceptor.setDatetime(donor.getDatetime());
         acceptor.setExpiration(donor.getExpiration());
         acceptor.setCustomer(donor.getCustomer());

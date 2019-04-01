@@ -4,7 +4,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -18,7 +21,6 @@ import java.sql.Timestamp;
 public class ReservationEntityPK implements Serializable {
 
     @Basic
-    @Column(name = "datetime")
     private Timestamp datetime;
 
     @ManyToOne(fetch = FetchType.LAZY)

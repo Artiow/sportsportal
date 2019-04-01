@@ -275,9 +275,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
                 reservations.add(reservation);
             }
 
-            order.setPaid(isOwner);
             order.setSum(sumPrice);
-            order.setByOwner(isOwner);
+            order.setIsPaid(isOwner);
+            order.setIsOwnerOccupied(isOwner);
             order.setReservations(reservations);
 
             OrderEntity newOrderEntity = orderRepository.save(order);
@@ -287,7 +287,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             if (Optional.ofNullable(newOrderEntity.getExpiration()).isPresent()) {
                 ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
                 executorService.schedule(() ->
-                        orderRepository.deleteByIdAndPaidIsFalse(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS
+                        orderRepository.deleteByIdAndIsPaidIsFalse(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS
                 );
             }
 
