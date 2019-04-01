@@ -18,6 +18,20 @@ public final class RoundRobinGenerator {
      * @return new auto-generated tour bundle entity.
      */
     public static TourBundleEntity generateBundle(TournamentEntity tournament, Set<TeamParticipationEntity> source) {
+        return generateBundle(tournament, null, source);
+    }
+
+    /**
+     * Returns auto-generated tour bundle by <a href="https://en.wikipedia.org/wiki/Round-robin_tournament">round-robin system</a>.
+     *
+     * @param tournament the tournament entity.
+     * @param parent     the parent tour bundle entity.
+     * @param source     the collection of team participations entities.
+     * @return new auto-generated tour bundle entity.
+     */
+    public static TourBundleEntity generateBundle(TournamentEntity tournament, TourBundleEntity parent, Collection<TeamParticipationEntity> source) {
+        Assert.notEmpty(source, "empty collection");
+
         // pre-calculating
         List<TeamParticipationEntity> teams = new ArrayList<>(source);
         int toursNum = teams.size() + teams.size() % 2 - 1;
@@ -29,7 +43,12 @@ public final class RoundRobinGenerator {
         // bundle creating
         TourBundleEntity bundle = new TourBundleEntity();
         bundle.setTours(new HashSet<>(toursNum));
-        bundle.setTournament(tournament);
+        if (parent == null) {
+            bundle.setTournament(tournament);
+            tournament.setBundle(bundle);
+        } else {
+            bundle.setParent(parent);
+        }
 
         // bundle filling
         for (int offset = 0; offset < toursNum; offset++) {
@@ -54,6 +73,7 @@ public final class RoundRobinGenerator {
         // tour filling (zero stage)
         if (Objects.nonNull(teams.get(0))) {
             GameEntity game = generateGame(tournament, teams, offset);
+            game.setTournament(tournament);
             tour.getGames().add(game);
             game.setTour(tour);
         }
@@ -61,6 +81,7 @@ public final class RoundRobinGenerator {
         // tour filling (other stages)
         for (int stage = 1; stage < gamesNum; stage++) {
             GameEntity game = generateGame(tournament, teams, offset, stage);
+            game.setTournament(tournament);
             tour.getGames().add(game);
             game.setTour(tour);
         }
@@ -78,10 +99,12 @@ public final class RoundRobinGenerator {
         game.setTournament(tournament);
         TeamParticipationEntity red = getFrom(teams, offset, (stage));
         Assert.isTrue(Objects.equals(tournament, red.getTournament()), "tournament does not matches");
-        game.setRedTeamParticipation(getFrom(teams, offset, (stage)));
+        game.setRedTeamParticipation(red);
+        red.getLikeRedGames().add(game);
         TeamParticipationEntity blue = getFrom(teams, offset, (teams.size() - stage - 1));
         Assert.isTrue(Objects.equals(tournament, blue.getTournament()), "tournament does not matches");
-        game.setBlueTeamParticipation(getFrom(teams, offset, (teams.size() - stage - 1)));
+        game.setBlueTeamParticipation(blue);
+        blue.getLikeRedGames().add(game);
         return game;
     }
 
