@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.util;
+package ru.vldf.sportsportal.util.models;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.util;
+package ru.vldf.sportsportal.util.models;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;

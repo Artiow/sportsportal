@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.config.security.components.basic;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import ru.vldf.sportsportal.config.security.components.AbstractTokenAuthenticationFilter;
-import ru.vldf.sportsportal.util.Base64Credentials;
+import ru.vldf.sportsportal.util.models.Base64Credentials;
 
 /**
  * @author Namednev Artem

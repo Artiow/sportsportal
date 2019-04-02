@@ -32,6 +32,9 @@ public class RoundRobinGeneratorService {
     @Value("${code.tour-bundle.structure.round-robin}")
     private String structureCode;
 
+    @Value("${template.tour-bundle.label.round-robin}")
+    private String template;
+
 
     @Autowired
     public RoundRobinGeneratorService(

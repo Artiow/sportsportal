@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
-import ru.vldf.sportsportal.util.ResourceBundle;
+import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 

@@ -13,6 +13,8 @@ import java.util.*;
  */
 public final class RoundRobinGenerator {
 
+    private static final String DEFAULT_TEMPLATE = "%d";
+
     /**
      * Returns auto-generated tour bundle by <a href="https://en.wikipedia.org/wiki/Round-robin_tournament">round-robin system</a>.
      *
@@ -20,6 +22,17 @@ public final class RoundRobinGenerator {
      * @return new auto-generated tour bundle entity.
      */
     public static TourBundleEntity generateBundle(Collection<TeamParticipationEntity> source) {
+        return generateBundle(source, DEFAULT_TEMPLATE);
+    }
+
+    /**
+     * Returns auto-generated tour bundle by <a href="https://en.wikipedia.org/wiki/Round-robin_tournament">round-robin system</a>.
+     *
+     * @param source        the collection of team participations entities.
+     * @param labelTemplate the tour text label template.
+     * @return new auto-generated tour bundle entity.
+     */
+    public static TourBundleEntity generateBundle(Collection<TeamParticipationEntity> source, String labelTemplate) {
         Assert.notEmpty(source, "empty collection");
 
         // pre-calculating
@@ -37,6 +50,7 @@ public final class RoundRobinGenerator {
         // bundle filling
         for (int offset = 0; offset < toursNum; offset++) {
             TourEntity tour = generateTour(teams, offset);
+            stick(tour, labelTemplate, offset + 1);
             bundle.getTours().add(tour);
             tour.setBundle(bundle);
         }
@@ -83,6 +97,7 @@ public final class RoundRobinGenerator {
         return game;
     }
 
+
     private static <T> T getFrom(List<T> list, int offset, int index) {
         if (index == 0) {
             return list.get(0);
@@ -93,5 +108,11 @@ public final class RoundRobinGenerator {
             int i = index - offset;
             return list.get(i > 0 ? i : i + (list.size() - 1));
         }
+    }
+
+
+    private static void stick(TourEntity tour, String template, int num) {
+        tour.setTextLabel(String.format(template, num));
+        tour.setNumericLabel(num);
     }
 }

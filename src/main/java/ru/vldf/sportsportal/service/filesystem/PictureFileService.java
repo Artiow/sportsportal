@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.unit.DataSize;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
-import ru.vldf.sportsportal.util.ResourceBundle;
+import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;

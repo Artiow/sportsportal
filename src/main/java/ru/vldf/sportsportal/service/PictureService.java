@@ -14,7 +14,7 @@ import ru.vldf.sportsportal.service.filesystem.PictureFileService;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.util.CollectionConverter;
-import ru.vldf.sportsportal.util.ResourceBundle;
+import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import java.io.IOException;
 import java.sql.Timestamp;
