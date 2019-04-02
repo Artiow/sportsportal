@@ -63,4 +63,6 @@ ru.vldf.sportsportal.service.security.encoder
 ru.vldf.sportsportal.service.security.model
 ru.vldf.sportsportal.service.security.userdetails
 ru.vldf.sportsportal.service.security.userdetails.model
+ru.vldf.sportsportal.service.tournament
 ru.vldf.sportsportal.util
+ru.vldf.sportsportal.util.generators

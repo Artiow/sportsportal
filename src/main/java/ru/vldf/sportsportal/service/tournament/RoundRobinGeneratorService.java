@@ -1,6 +1,7 @@
 package ru.vldf.sportsportal.service.tournament;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,13 @@ public class RoundRobinGeneratorService {
     private final TourBundleStructureRepository tourBundleStructureRepository;
 
     private final TournamentRepository tournamentRepository;
+
+
+    @Value("${code.tour-bundle.type.tournament}")
+    private String typeCode;
+
+    @Value("${code.tour-bundle.structure.round-robin}")
+    private String structureCode;
 
 
     @Autowired
@@ -65,14 +73,12 @@ public class RoundRobinGeneratorService {
 
 
     private TourBundleTypeEntity type() {
-        // todo: вынести в конфиги
         // noinspection OptionalGetWithoutIsPresent
-        return tourBundleTypeRepository.findByCode("tournament").get();
+        return tourBundleTypeRepository.findByCode(typeCode).get();
     }
 
     private TourBundleStructureEntity structure() {
-        // todo: вынести в конфиги
         // noinspection OptionalGetWithoutIsPresent
-        return tourBundleStructureRepository.findByCode("round-robin").get();
+        return tourBundleStructureRepository.findByCode(structureCode).get();
     }
 }
