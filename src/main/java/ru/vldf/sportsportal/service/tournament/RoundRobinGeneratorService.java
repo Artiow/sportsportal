@@ -38,13 +38,13 @@ public class RoundRobinGeneratorService {
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Integer create(String name, Collection<TeamEntity> teams) {
+    public TournamentEntity create(String name, Collection<TeamEntity> teams) {
         TournamentEntity tournament = generate(teams);
         tournament.getBundle().setBundleStructure(structure());
         tournament.getBundle().setBundleType(type());
         tournament.getBundle().setTextLabel(name);
         tournament.getBundle().setNumericLabel(0);
-        return tournamentRepository.save(tournament).getId();
+        return tournamentRepository.save(tournament);
     }
 
 

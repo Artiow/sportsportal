@@ -44,4 +44,7 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
 
     @OneToMany(mappedBy = "pk.tournament")
     private Collection<PlayerParticipationEntity> playerParticipations;
+
+    @OneToMany(mappedBy = "pk.team")
+    private Collection<PlayerResultEntity> playerResults;
 }

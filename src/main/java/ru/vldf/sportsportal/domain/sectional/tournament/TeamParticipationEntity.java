@@ -19,7 +19,7 @@ import java.util.Collection;
 })
 @AssociationOverrides({
         @AssociationOverride(name = "pk.team", joinColumns = @JoinColumn(name = "team_id", nullable = false)),
-        @AssociationOverride(name = "pk.tournament", joinColumns = @JoinColumn(name = "tournament_id", nullable = false)),
+        @AssociationOverride(name = "pk.tournament", joinColumns = @JoinColumn(name = "tournament_id", nullable = false))
 })
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TeamParticipationEntity implements DomainObject {

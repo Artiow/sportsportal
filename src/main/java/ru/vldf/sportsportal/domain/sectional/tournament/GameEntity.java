@@ -66,6 +66,9 @@ public class GameEntity extends AbstractIdentifiedEntity {
     @OneToMany(mappedBy = "childGame")
     private Collection<GameEntity> parentGames;
 
+    @OneToMany(mappedBy = "pk.team")
+    private Collection<PlayerResultEntity> playerResults;
+
 
     @PrePersist
     void prePersist() {

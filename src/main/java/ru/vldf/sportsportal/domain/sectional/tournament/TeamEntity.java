@@ -51,4 +51,7 @@ public class TeamEntity extends AbstractVersionedEntity {
 
     @OneToMany(mappedBy = "pk.team")
     private Collection<PlayerParticipationEntity> playerParticipations;
+
+    @OneToMany(mappedBy = "pk.team")
+    private Collection<PlayerResultEntity> playerResults;
 }

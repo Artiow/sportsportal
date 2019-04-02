@@ -6,7 +6,6 @@ import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 /**
  * @author Namednev Artem
@@ -14,24 +13,25 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "player_participation", schema = "tournament", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"player_id", "tournament_id"})
+@Table(name = "player_result", schema = "tournament", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"game_id", "player_id"})
 })
 @AssociationOverrides({
+        @AssociationOverride(name = "pk.game", joinColumns = @JoinColumn(name = "game_id", nullable = false)),
         @AssociationOverride(name = "pk.tournament", joinColumns = @JoinColumn(name = "tournament_id", nullable = false)),
         @AssociationOverride(name = "pk.player", joinColumns = @JoinColumn(name = "player_id", nullable = false)),
         @AssociationOverride(name = "pk.team", joinColumns = @JoinColumn(name = "team_id", nullable = false))
 })
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PlayerParticipationEntity implements DomainObject {
+public class PlayerResultEntity implements DomainObject {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private PlayerParticipationEntityPK pk;
+    private PlayerResultEntityPK pk;
 
     @Basic
-    @Column(name = "games_num", nullable = false)
-    private Integer gamesNum = 0;
+    @Column(name = "attended", nullable = false)
+    private Boolean isAttended = true;
 
     @Basic
     @Column(name = "goals_num", nullable = false)
@@ -52,19 +52,26 @@ public class PlayerParticipationEntity implements DomainObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false, insertable = false, updatable = false),
-            @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false)
+            @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false),
+            @JoinColumn(name = "player_id", referencedColumnName = "player_id", nullable = false, insertable = false, updatable = false),
+            @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false, insertable = false, updatable = false)
     })
-    private TeamParticipationEntity teamParticipation;
-
-    @OneToMany(mappedBy = "playerParticipation")
-    private Collection<PlayerResultEntity> playerResults;
+    private PlayerParticipationEntity playerParticipation;
 
 
-    public PlayerParticipationEntity() {
-        pk = new PlayerParticipationEntityPK();
+    public PlayerResultEntity() {
+        pk = new PlayerResultEntityPK();
     }
 
+
+    @Transient
+    public GameEntity getGame() {
+        return pk.getGame();
+    }
+
+    public void setGame(GameEntity game) {
+        pk.setGame(game);
+    }
 
     @Transient
     public TournamentEntity getTournament() {
@@ -105,7 +112,8 @@ public class PlayerParticipationEntity implements DomainObject {
     }
 
     void synchronize() {
-        setTournament(teamParticipation.getTournament());
-        setTeam(teamParticipation.getTeam());
+        setTournament(playerParticipation.getTournament());
+        setPlayer(playerParticipation.getPlayer());
+        setTeam(playerParticipation.getTeam());
     }
 }
