@@ -13,13 +13,15 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "player_participation", schema = "tournament")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "player_participation", schema = "tournament", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"player_id", "tournament_id"})
+})
 @AssociationOverrides({
         @AssociationOverride(name = "pk.tournament", joinColumns = @JoinColumn(name = "tournament_id", nullable = false)),
         @AssociationOverride(name = "pk.player", joinColumns = @JoinColumn(name = "player_id", nullable = false)),
         @AssociationOverride(name = "pk.team", joinColumns = @JoinColumn(name = "team_id", nullable = false)),
 })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerParticipationEntity implements DomainObject {
 
     @EmbeddedId
@@ -45,6 +47,14 @@ public class PlayerParticipationEntity implements DomainObject {
     @Basic
     @Column(name = "red_cards_num", nullable = false)
     private Integer redCardsNum = 0;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false, insertable = false, updatable = false),
+            @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false)
+    })
+    private TeamParticipationEntity teamParticipation;
 
 
     public PlayerParticipationEntity() {
@@ -77,5 +87,21 @@ public class PlayerParticipationEntity implements DomainObject {
 
     public void setTeam(TeamEntity team) {
         pk.setTeam(team);
+    }
+
+
+    @PrePersist
+    void prePersist() {
+        synchronize();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        synchronize();
+    }
+
+    void synchronize() {
+        setTournament(teamParticipation.getTournament());
+        setTeam(teamParticipation.getTeam());
     }
 }

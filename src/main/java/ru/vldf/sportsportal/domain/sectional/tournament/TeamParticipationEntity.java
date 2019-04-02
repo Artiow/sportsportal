@@ -14,12 +14,14 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "team_participation", schema = "tournament")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "team_participation", schema = "tournament", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"tournament_id", "participation_name"})
+})
 @AssociationOverrides({
         @AssociationOverride(name = "pk.team", joinColumns = @JoinColumn(name = "team_id", nullable = false)),
         @AssociationOverride(name = "pk.tournament", joinColumns = @JoinColumn(name = "tournament_id", nullable = false)),
 })
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TeamParticipationEntity implements DomainObject {
 
     @EmbeddedId
@@ -29,6 +31,10 @@ public class TeamParticipationEntity implements DomainObject {
     @Basic
     @Column(name = "participation_name", nullable = false)
     private String participationName;
+
+
+    @OneToMany(mappedBy = "teamParticipation")
+    private Collection<PlayerParticipationEntity> playerParticipations;
 
     @OneToMany(mappedBy = "redTeamParticipation")
     private Collection<GameEntity> likeRedGames;

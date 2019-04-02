@@ -14,7 +14,10 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "tour", schema = "tournament")
+@Table(name = "tour", schema = "tournament", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"bundle_id", "numeric_label"}),
+        @UniqueConstraint(columnNames = {"bundle_id", "text_label"})
+})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TourEntity extends AbstractIdentifiedEntity {
 

@@ -20,7 +20,7 @@ import java.util.Collection;
 public class TeamEntity extends AbstractVersionedEntity {
 
     @Basic
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Basic
@@ -39,6 +39,12 @@ public class TeamEntity extends AbstractVersionedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vice_captain_id", referencedColumnName = "id", nullable = false)
     private UserEntity viceCaptain;
+
+    @OneToMany(mappedBy = "redTeam")
+    private Collection<GameEntity> likeRedGames;
+
+    @OneToMany(mappedBy = "blueTeam")
+    private Collection<GameEntity> likeBlueGames;
 
     @OneToMany(mappedBy = "pk.team")
     private Collection<TeamParticipationEntity> teamParticipations;

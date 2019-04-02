@@ -14,7 +14,10 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "tour_bundle", schema = "tournament")
+@Table(name = "tour_bundle", schema = "tournament", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"parent_id", "numeric_label"}),
+        @UniqueConstraint(columnNames = {"parent_id", "text_label"})
+})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class TourBundleEntity extends AbstractIdentifiedEntity {
 
@@ -31,9 +34,8 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     private Boolean isCompleted = false;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    private TourBundleEntity parent;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bundle")
+    private TournamentEntity tournament;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_type_id", referencedColumnName = "id", nullable = false)
@@ -43,8 +45,12 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "bundle_structure_id", referencedColumnName = "id", nullable = false)
     private TourBundleStructureEntity bundleStructure;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bundle")
-    private TournamentEntity tournament;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    private TourBundleEntity parent;
+
+    @OneToMany(mappedBy = "parent")
+    private Collection<TourBundleEntity> child;
 
     @OneToMany(mappedBy = "bundle")
     private Collection<TourEntity> tours;

@@ -33,7 +33,7 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false, unique = true)
     private TourBundleEntity bundle;
 
     @OneToMany(mappedBy = "tournament")

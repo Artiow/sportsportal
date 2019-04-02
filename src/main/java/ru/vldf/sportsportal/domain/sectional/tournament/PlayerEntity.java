@@ -17,7 +17,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "player", schema = "tournament")
+@Table(name = "player", schema = "tournament", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "surname", "birthdate"})})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class PlayerEntity extends AbstractVersionedEntity {
 
