@@ -35,15 +35,15 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
     private TourBundleEntity bundle;
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     private Collection<GameEntity> games;
 
-    @OneToMany(mappedBy = "pk.team")
+    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.ALL)
     private Collection<TeamParticipationEntity> teamParticipations;
 
-    @OneToMany(mappedBy = "pk.tournament")
+    @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.ALL)
     private Collection<PlayerParticipationEntity> playerParticipations;
 
-    @OneToMany(mappedBy = "pk.team")
+    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.ALL)
     private Collection<PlayerResultEntity> playerResults;
 }

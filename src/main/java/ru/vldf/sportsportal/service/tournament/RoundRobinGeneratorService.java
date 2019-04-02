@@ -12,6 +12,7 @@ import ru.vldf.sportsportal.repository.tournament.TournamentRepository;
 import ru.vldf.sportsportal.util.generators.RoundRobinGenerator;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,20 +51,27 @@ public class RoundRobinGeneratorService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public TournamentEntity create(String name, Collection<TeamEntity> teams) {
-        TournamentEntity tournament = generate(teams);
-        tournament.getBundle().setBundleStructure(structure());
-        tournament.getBundle().setBundleType(type());
-        tournament.getBundle().setTextLabel(name);
-        tournament.getBundle().setNumericLabel(0);
+        TourBundleEntity bundle = generate(teams);
+        bundle.setBundleStructure(structure());
+        bundle.setBundleType(type());
+        bundle.setTextLabel(name);
+        bundle.setNumericLabel(0);
+        TournamentEntity tournament = bundle.getTournament();
         return tournamentRepository.save(tournament);
     }
 
 
-    private TournamentEntity generate(Collection<TeamEntity> teams) {
+    private TourBundleEntity generate(Collection<TeamEntity> teams) {
         TournamentEntity tournament = new TournamentEntity();
-        tournament.setBundle(RoundRobinGenerator.generateBundle(teams.stream().map(team -> participationFrom(tournament, team)).collect(Collectors.toSet())));
-        tournament.getBundle().setTournament(tournament);
-        return tournament;
+        TourBundleEntity bundle = RoundRobinGenerator.generateBundle(participationFrom(tournament, teams), template);
+        bundle.setTournament(tournament);
+        tournament.setBundle(bundle);
+        return bundle;
+    }
+
+
+    private Set<TeamParticipationEntity> participationFrom(TournamentEntity tournament, Collection<TeamEntity> teams) {
+        return teams.stream().map(team -> participationFrom(tournament, team)).collect(Collectors.toSet());
     }
 
     private TeamParticipationEntity participationFrom(TournamentEntity tournament, TeamEntity team) {

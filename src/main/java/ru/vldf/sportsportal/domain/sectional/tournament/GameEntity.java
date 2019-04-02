@@ -45,14 +45,14 @@ public class GameEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "blue_team_id", referencedColumnName = "id", nullable = false)
     private TeamEntity blueTeam;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumns({
             @JoinColumn(name = "red_team_id", referencedColumnName = "team_id", nullable = false, insertable = false, updatable = false),
             @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false)
     })
     private TeamParticipationEntity redTeamParticipation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumns({
             @JoinColumn(name = "blue_team_id", referencedColumnName = "team_id", nullable = false, insertable = false, updatable = false),
             @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false)

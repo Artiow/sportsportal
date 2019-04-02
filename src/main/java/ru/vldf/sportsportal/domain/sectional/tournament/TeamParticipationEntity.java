@@ -36,10 +36,10 @@ public class TeamParticipationEntity implements DomainObject {
     @OneToMany(mappedBy = "teamParticipation")
     private Collection<PlayerParticipationEntity> playerParticipations;
 
-    @OneToMany(mappedBy = "redTeamParticipation")
+    @OneToMany(mappedBy = "redTeamParticipation", cascade = CascadeType.ALL)
     private Collection<GameEntity> likeRedGames;
 
-    @OneToMany(mappedBy = "blueTeamParticipation")
+    @OneToMany(mappedBy = "blueTeamParticipation", cascade = CascadeType.ALL)
     private Collection<GameEntity> likeBlueGames;
 
 

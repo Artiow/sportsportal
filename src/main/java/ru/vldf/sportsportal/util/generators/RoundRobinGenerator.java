@@ -6,7 +6,10 @@ import ru.vldf.sportsportal.domain.sectional.tournament.TeamParticipationEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TourBundleEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TourEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -45,7 +48,7 @@ public final class RoundRobinGenerator {
 
         // bundle creating
         TourBundleEntity bundle = new TourBundleEntity();
-        bundle.setTours(new HashSet<>(toursNum));
+        bundle.setTours(new ArrayList<>(toursNum));
 
         // bundle filling
         for (int offset = 0; offset < toursNum; offset++) {
@@ -66,7 +69,7 @@ public final class RoundRobinGenerator {
 
         // tour creating
         TourEntity tour = new TourEntity();
-        tour.setGames(new HashSet<>(gamesNum));
+        tour.setGames(new ArrayList<>(gamesNum));
 
         // tour filling (zero stage)
         if (Objects.nonNull(teams.get(0))) {
