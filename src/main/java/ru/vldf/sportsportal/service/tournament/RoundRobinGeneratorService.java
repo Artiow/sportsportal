@@ -11,7 +11,6 @@ import ru.vldf.sportsportal.repository.tournament.TournamentRepository;
 import ru.vldf.sportsportal.util.generators.RoundRobinGenerator;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -40,24 +39,24 @@ public class RoundRobinGeneratorService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Integer create(String name, Collection<TeamEntity> teams) {
-        TournamentEntity tournament = new TournamentEntity();
-        TourBundleEntity bundle = generateBundle(tournament, teams);
-        bundle.setBundleStructure(structure());
-        bundle.setBundleType(type());
-        bundle.setTextLabel(name);
-        bundle.setNumericLabel(0);
-        return tournamentRepository.saveAndFlush(tournament).getId();
+        TournamentEntity tournament = generate(teams);
+        tournament.getBundle().setBundleStructure(structure());
+        tournament.getBundle().setBundleType(type());
+        tournament.getBundle().setTextLabel(name);
+        tournament.getBundle().setNumericLabel(0);
+        return tournamentRepository.save(tournament).getId();
     }
 
 
-    private TourBundleEntity generateBundle(TournamentEntity tournament, Collection<TeamEntity> teams) {
-        return RoundRobinGenerator.generateBundle(tournament, teams.stream().map(team -> participationFrom(tournament, team)).collect(Collectors.toSet()));
+    private TournamentEntity generate(Collection<TeamEntity> teams) {
+        TournamentEntity tournament = new TournamentEntity();
+        tournament.setBundle(RoundRobinGenerator.generateBundle(teams.stream().map(team -> participationFrom(tournament, team)).collect(Collectors.toSet())));
+        tournament.getBundle().setTournament(tournament);
+        return tournament;
     }
 
     private TeamParticipationEntity participationFrom(TournamentEntity tournament, TeamEntity team) {
         TeamParticipationEntity participation = new TeamParticipationEntity();
-        participation.setLikeRedGames(new HashSet<>());
-        participation.setLikeBlueGames(new HashSet<>());
         participation.setParticipationName(team.getName());
         participation.setTournament(tournament);
         participation.setTeam(team);

@@ -32,7 +32,7 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     private Boolean isCompleted = false;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false, unique = true)
     private TourBundleEntity bundle;
 

@@ -52,6 +52,6 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     @OneToMany(mappedBy = "parent")
     private Collection<TourBundleEntity> child;
 
-    @OneToMany(mappedBy = "bundle")
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     private Collection<TourEntity> tours;
 }
