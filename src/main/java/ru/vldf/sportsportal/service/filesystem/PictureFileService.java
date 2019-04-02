@@ -44,7 +44,6 @@ public class PictureFileService {
 
     @Autowired
     public PictureFileService(
-            @Value("${pic.presize.name}") String preName,
             @Value("${pic.presize.width}") Short preWidth,
             @Value("${pic.presize.height}") Short preHeight,
             @Value("${spring.servlet.multipart.max-file-size}") DataSize maxDataSize,
@@ -52,7 +51,7 @@ public class PictureFileService {
             ServletContext context
     ) throws IOException {
         Files.createDirectories(this.location = Paths.get(location).toAbsolutePath().normalize());
-        this.presize = PictureSize.of(preName, preWidth, preHeight);
+        this.presize = PictureSize.of(preWidth, preHeight);
         this.buffer = Math.toIntExact(maxDataSize.toBytes());
         this.context = context;
     }
