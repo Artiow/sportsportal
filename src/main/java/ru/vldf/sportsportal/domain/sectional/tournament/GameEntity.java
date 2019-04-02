@@ -7,6 +7,8 @@ import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -32,12 +34,16 @@ public class GameEntity extends AbstractIdentifiedEntity {
     private TourEntity tour;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tournament_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id", nullable = false)
     private TournamentEntity tournament;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_game_id", referencedColumnName = "id")
-    private GameEntity childGame;
+    @JoinColumn(name = "red_team_id", referencedColumnName = "id", nullable = false)
+    private TeamEntity redTeam;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blue_team_id", referencedColumnName = "id", nullable = false)
+    private TeamEntity blueTeam;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
@@ -52,4 +58,34 @@ public class GameEntity extends AbstractIdentifiedEntity {
             @JoinColumn(name = "tournament_id", referencedColumnName = "tournament_id", nullable = false, insertable = false, updatable = false)
     })
     private TeamParticipationEntity blueTeamParticipation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "child_game_id", referencedColumnName = "id")
+    private GameEntity childGame;
+
+    @OneToMany(mappedBy = "childGame")
+    private Collection<GameEntity> parentGames;
+
+
+    @PrePersist
+    void prePersist() {
+        synchronize();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        synchronize();
+    }
+
+    void synchronize() {
+        TournamentEntity redVarTournament = redTeamParticipation.getTournament();
+        TournamentEntity blueVarTournament = blueTeamParticipation.getTournament();
+        if (!Objects.equals(redVarTournament, blueVarTournament)) {
+            throw new IllegalStateException("Tournament entity is ambiguous!");
+        } else {
+            setRedTeam(redTeamParticipation.getTeam());
+            setBlueTeam(blueTeamParticipation.getTeam());
+            setTournament(redVarTournament);
+        }
+    }
 }
