@@ -34,9 +34,6 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     private Boolean isCompleted = false;
 
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bundle")
-    private TournamentEntity tournament;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_type_id", referencedColumnName = "id", nullable = false)
     private TourBundleTypeEntity bundleType;
@@ -44,6 +41,10 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_structure_id", referencedColumnName = "id", nullable = false)
     private TourBundleStructureEntity bundleStructure;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tournament_id", referencedColumnName = "id")
+    private TournamentEntity tournament;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
