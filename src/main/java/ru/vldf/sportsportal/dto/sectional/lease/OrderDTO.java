@@ -28,13 +28,13 @@ public class OrderDTO implements VersionedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Null(groups = FieldCheck.class)
+    private URI paymentLink;
+
     @NotNull(groups = FieldCheck.class)
     @Min(value = 0, groups = FieldCheck.class)
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
     private BigDecimal sum;
-
-    @Null(groups = FieldCheck.class)
-    private URI paymentLink;
 
     @NotNull(groups = FieldCheck.class)
     private LocalDateTime datetime;
