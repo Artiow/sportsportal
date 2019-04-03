@@ -1,4 +1,6 @@
 import ParamsSerializer from '../util/connector/ParamsSerializer';
+import Location from '../util/connector/Location';
+import Headers from '../util/connector/Headers';
 import Authentication from './Authentication';
 import API from '../boot/constants';
 import axios from 'axios';
@@ -19,7 +21,7 @@ export default class Playground {
                 .catch(error => {
                     const response = error.response;
                     console.error('Playground', 'list', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -34,7 +36,7 @@ export default class Playground {
                 .catch(error => {
                     const response = error.response;
                     console.error('Playground', 'get', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }
@@ -55,23 +57,16 @@ export default class Playground {
         return new Promise((resolve, reject) => {
             Authentication.access()
                 .then(token => {
-                    axios
-                        .delete(API.url(`/playground/${id}`), {
-                            headers: {'Authorization': `Bearer ${token}`}
-                        })
-                        .then(response => {
-                            console.debug('Playground', 'delete', response);
-                            resolve();
-                        })
-                        .catch(error => {
-                            const response = error.response;
-                            console.error('Playground', 'delete', response ? response : error);
-                            reject((response && response.data) ? response.data : null)
-                        })
+                    return axios.delete(API.url(`/playground/${id}`), Headers.bearer(token));
+                })
+                .then(response => {
+                    console.debug('Playground', 'delete', response);
+                    resolve();
                 })
                 .catch(error => {
-                    console.error('Playground', 'delete', 'access error');
-                    reject(null);
+                    const response = error.response;
+                    console.error('Playground', 'delete', response ? response : error);
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }
@@ -86,7 +81,7 @@ export default class Playground {
                 .catch(error => {
                     const response = error.response;
                     console.error('Playground', 'short', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }
@@ -104,7 +99,7 @@ export default class Playground {
                 .catch(error => {
                     const response = error.response;
                     console.error('Playground', 'board', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }
@@ -128,7 +123,7 @@ export default class Playground {
                 .catch(error => {
                     const response = error.response;
                     console.error('Playground', 'check', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }
@@ -137,26 +132,16 @@ export default class Playground {
         return new Promise((resolve, reject) => {
             Authentication.access()
                 .then(token => {
-                    axios
-                        .post(API.url(`/playground/${id}/reserve`), {
-                            reservations: reservations
-                        }, {
-                            headers: {'Authorization': `Bearer ${token}`}
-                        })
-                        .then(response => {
-                            console.debug('Playground', 'reserve', response);
-                            const locationArray = response.headers.location.split('/');
-                            resolve(locationArray[locationArray.length - 1]);
-                        })
-                        .catch(error => {
-                            const response = error.response;
-                            console.error('Playground', 'reserve', response ? response : error);
-                            reject((response && response.data) ? response.data : null)
-                        });
+                    return axios.post(API.url(`/playground/${id}/reserve`), {reservations: reservations}, Headers.bearer(token))
+                })
+                .then(response => {
+                    console.debug('Playground', 'reserve', response);
+                    resolve(Location.extractId(response.headers));
                 })
                 .catch(error => {
-                    console.error('Playground', 'reserve', 'access error');
-                    reject(null);
+                    const response = error.response;
+                    console.error('Playground', 'reserve', response ? response : error);
+                    reject((response && response.data) ? response.data : error);
                 });
         });
     }

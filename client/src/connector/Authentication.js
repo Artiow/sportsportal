@@ -1,4 +1,5 @@
 import ParamsSerializer from '../util/connector/ParamsSerializer';
+import Location from '../util/connector/Location';
 import Headers from '../util/connector/Headers';
 import API from '../boot/constants';
 import axios from 'axios';
@@ -11,8 +12,7 @@ export default class Authentication {
                 .post(API.url('/auth/register'), body)
                 .then(response => {
                     console.debug('Authentication', 'register', response);
-                    const locationArray = response.headers.location.split('/');
-                    resolve(locationArray[locationArray.length - 1]);
+                    resolve(Location.extractId(response.headers));
                 })
                 .catch(error => {
                     const response = error.response;
