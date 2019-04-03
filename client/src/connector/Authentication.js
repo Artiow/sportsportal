@@ -1,7 +1,7 @@
+import ParamsSerializer from '../util/connector/ParamsSerializer';
 import Headers from '../util/connector/Headers';
 import API from '../boot/constants';
 import axios from 'axios';
-import qs from 'qs';
 
 export default class Authentication {
 
@@ -26,8 +26,10 @@ export default class Authentication {
         return new Promise((resolve, reject) => {
             axios
                 .put(API.url(`/auth/confirm/${id}`), '', {
-                    params: {origin: origin},
-                    paramsSerializer: (params => qs.stringify(params))
+                    paramsSerializer: ParamsSerializer.stringify(),
+                    params: {
+                        origin: origin
+                    }
                 })
                 .then(response => {
                     console.debug('Authentication', 'initConfirmation', response);

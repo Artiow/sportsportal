@@ -1,7 +1,7 @@
+import ParamsSerializer from '../util/connector/ParamsSerializer';
 import Authentication from './Authentication';
 import API from '../boot/constants';
 import axios from 'axios';
-import qs from "qs";
 
 export default class Playground {
 
@@ -9,7 +9,7 @@ export default class Playground {
         return new Promise((resolve, reject) => {
             axios
                 .get(API.url('/playground/list'), {
-                    paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
+                    paramsSerializer: ParamsSerializer.stringify(),
                     params: filter
                 })
                 .then(response => {
@@ -113,11 +113,10 @@ export default class Playground {
         return new Promise((resolve, reject) => {
             axios
                 .get(API.url(`/playground/${id}/check`), {
-                    paramsSerializer: params =>
-                        qs.stringify(params, {arrayFormat: 'repeat'}),
+                    paramsSerializer: ParamsSerializer.stringify(),
                     params: {
-                        version: version,
-                        reservations: reservations
+                        reservations: reservations,
+                        version: version
                     }
                 })
                 .then(response => {
