@@ -1,5 +1,5 @@
 import Authentication from './Authentication';
-import apiUrl from '../boot/constants';
+import API from '../boot/constants';
 import axios from 'axios';
 
 export default class Order {
@@ -9,7 +9,7 @@ export default class Order {
             Authentication.access()
                 .then(token => {
                     axios
-                        .get(apiUrl(`/order/list`), {
+                        .get(API.url(`/order/list`), {
                             headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
@@ -34,7 +34,7 @@ export default class Order {
             Authentication.access()
                 .then(token => {
                     axios
-                        .get(apiUrl(`/order/${id}`), {
+                        .get(API.url(`/order/${id}`), {
                             headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
@@ -59,7 +59,7 @@ export default class Order {
             Authentication.access()
                 .then(token => {
                     axios
-                        .delete(apiUrl(`/order/${id}`), {
+                        .delete(API.url(`/order/${id}`), {
                             headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {

@@ -1,4 +1,5 @@
-import apiUrl from '../boot/constants';
+import Headers from '../util/connector/Headers';
+import API from '../boot/constants';
 import axios from 'axios';
 import qs from 'qs';
 
@@ -7,7 +8,7 @@ export default class Authentication {
     static register(body) {
         return new Promise((resolve, reject) => {
             axios
-                .post(apiUrl('/auth/register'), body)
+                .post(API.url('/auth/register'), body)
                 .then(response => {
                     console.debug('Authentication', 'register', response);
                     const locationArray = response.headers.location.split('/');
@@ -16,7 +17,7 @@ export default class Authentication {
                 .catch(error => {
                     const response = error.response;
                     console.warn('Authentication', 'register', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -24,7 +25,7 @@ export default class Authentication {
     static initConfirmation(id, origin) {
         return new Promise((resolve, reject) => {
             axios
-                .put(apiUrl(`/auth/confirm/${id}`), '', {
+                .put(API.url(`/auth/confirm/${id}`), '', {
                     params: {origin: origin},
                     paramsSerializer: (params => qs.stringify(params))
                 })
@@ -35,7 +36,7 @@ export default class Authentication {
                 .catch(error => {
                     const response = error.response;
                     console.warn('Authentication', 'initConfirmation', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -43,7 +44,7 @@ export default class Authentication {
     static doConfirmation(token) {
         return new Promise((resolve, reject) => {
             axios
-                .put(apiUrl('/auth/confirm'), token, {
+                .put(API.url('/auth/confirm'), token, {
                     headers: {'Content-Type': 'text/plain'}
                 })
                 .then(response => {
@@ -53,7 +54,7 @@ export default class Authentication {
                 .catch(error => {
                     const response = error.response;
                     console.warn('Authentication', 'doConfirmation', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -61,18 +62,16 @@ export default class Authentication {
     static login(email, password) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl('/auth/login'), {
-                    headers: {'Authorization': `Basic ${window.btoa(email + ':' + password)}`}
-                })
+                .get(API.url('/auth/login'), Headers.basic(email, password))
                 .then(response => {
                     set(response.data);
                     console.debug('Authentication', 'login', response);
-                    resolve(response.data.accessToken);
+                    resolve();
                 })
                 .catch(error => {
                     const response = error.response;
                     console.warn('Authentication', 'login', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -84,12 +83,7 @@ export default class Authentication {
                 if (isNotExpired(token.access)) {
                     resolve(token.access);
                 } else if (isNotExpired(token.refresh)) {
-                    this.refresh(token.refresh)
-                        .then(data => resolve(data.accessToken))
-                        .catch(error => {
-                            console.error('Authentication', 'access', 'refresh error');
-                            reject(error)
-                        });
+                    this.refresh(token.refresh).then(data => resolve(data.accessToken)).catch(error => reject(error));
                 } else {
                     console.warn('Authentication', 'access', 'stored tokens was expired');
                     reject(null);
@@ -104,9 +98,7 @@ export default class Authentication {
     static refresh(refreshToken) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl('/auth/refresh'), {
-                    headers: {'Authorization': `Bearer ${refreshToken}`}
-                })
+                .get(API.url('/auth/refresh'), Headers.bearer(refreshToken))
                 .then(response => {
                     set(response.data);
                     console.debug('Authentication', 'refresh', response);
@@ -116,7 +108,7 @@ export default class Authentication {
                     clear();
                     const response = error.response;
                     console.error('Authentication', 'refresh', response ? response : error);
-                    reject((response && response.data) ? response.data : null)
+                    reject((response && response.data) ? response.data : error);
                 })
         });
     }
@@ -130,7 +122,7 @@ export default class Authentication {
 }
 
 function isNotExpired(token) {
-    const ALLOWABLE_DELAY_SEC = 90; // assumption by slow communication channel
+    const ALLOWABLE_DELAY_SEC = 60; // assumption by slow communication channel
     return Math.floor(Date.now() / 1000) < (parse(token).exp - ALLOWABLE_DELAY_SEC);
 }
 

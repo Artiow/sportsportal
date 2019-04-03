@@ -1,5 +1,5 @@
 import Authentication from './Authentication';
-import apiUrl from '../boot/constants';
+import API from '../boot/constants';
 import axios from 'axios';
 import qs from "qs";
 
@@ -8,7 +8,7 @@ export default class Playground {
     static list(filter) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl('/playground/list'), {
+                .get(API.url('/playground/list'), {
                     paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'}),
                     params: filter
                 })
@@ -26,7 +26,7 @@ export default class Playground {
 
     static get(id) {
         return new Promise((resolve, reject) => {
-            axios.get(apiUrl(`/playground/${id}`))
+            axios.get(API.url(`/playground/${id}`))
                 .then(response => {
                     console.debug('Playground', 'get', response);
                     resolve(response.data);
@@ -56,7 +56,7 @@ export default class Playground {
             Authentication.access()
                 .then(token => {
                     axios
-                        .delete(apiUrl(`/playground/${id}`), {
+                        .delete(API.url(`/playground/${id}`), {
                             headers: {'Authorization': `Bearer ${token}`}
                         })
                         .then(response => {
@@ -78,7 +78,7 @@ export default class Playground {
 
     static getShort(id) {
         return new Promise((resolve, reject) => {
-            axios.get(apiUrl(`/playground/${id}/short`))
+            axios.get(API.url(`/playground/${id}/short`))
                 .then(response => {
                     console.debug('Playground', 'short', response);
                     resolve(response.data);
@@ -94,7 +94,7 @@ export default class Playground {
     static getBoard(id, from, to) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl(`/playground/${id}/board`), {
+                .get(API.url(`/playground/${id}/board`), {
                     params: {from: from, to: to}
                 })
                 .then(response => {
@@ -112,7 +112,7 @@ export default class Playground {
     static doCheck(id, version, reservations) {
         return new Promise((resolve, reject) => {
             axios
-                .get(apiUrl(`/playground/${id}/check`), {
+                .get(API.url(`/playground/${id}/check`), {
                     paramsSerializer: params =>
                         qs.stringify(params, {arrayFormat: 'repeat'}),
                     params: {
@@ -139,7 +139,7 @@ export default class Playground {
             Authentication.access()
                 .then(token => {
                     axios
-                        .post(apiUrl(`/playground/${id}/reserve`), {
+                        .post(API.url(`/playground/${id}/reserve`), {
                             reservations: reservations
                         }, {
                             headers: {'Authorization': `Bearer ${token}`}

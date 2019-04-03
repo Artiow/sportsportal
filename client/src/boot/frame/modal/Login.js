@@ -36,7 +36,7 @@ export default class Login extends React.Component {
         ).then(response => {
             console.debug('Login', 'query', 'success');
             const onSuccess = this.props.onSuccess;
-            if (typeof onSuccess === 'function') onSuccess(response);
+            if (typeof onSuccess === 'function') onSuccess();
         }).catch(error => {
             (error ? console.warn : console.error)('Login', 'query', 'failed');
             this.setState({

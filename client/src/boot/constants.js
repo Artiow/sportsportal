@@ -42,11 +42,14 @@ export const env = Object.freeze({
     }]
 });
 
-/**
- * Returns depending on {@link API_HOST_URL} URL API.
- * @param path {string}
- * @return {string}
- */
-export default function apiUrl(path) {
-    return env.API_HOST_URL + path;
+export default class API {
+
+    /**
+     * Returns depending on {@link API_HOST_URL} URL API.
+     * @param path {string}
+     * @return {string}
+     */
+    static url(path) {
+        return env.API_HOST_URL + path;
+    }
 }
