@@ -27,10 +27,10 @@ public class TeamDTO implements VersionedDTO {
     private String name;
 
     @Null
-    private Boolean isLocked = false;
+    private Boolean isLocked;
 
     @Null
-    private Boolean isDisabled = true;
+    private Boolean isDisabled;
 
     @Null
     private UserLinkDTO mainCaptain;

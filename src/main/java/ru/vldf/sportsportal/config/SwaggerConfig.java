@@ -94,7 +94,8 @@ public class SwaggerConfig {
                 .build()
                 .apiInfo(apiInfo())
                 .securitySchemes(securitySchemes())
-                .securityContexts(securityContexts());
+                .securityContexts(securityContexts())
+                .useDefaultResponseMessages(false);
     }
 
     public ApiInfo apiInfo() {

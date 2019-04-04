@@ -74,7 +74,7 @@
     </properties>
 
     <dependencies>
-        <!-- SPRING BOOT -->
+        <!-- spring boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -96,14 +96,14 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-        <!-- POSTGRESQL -->
+        <!-- postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${org.postgresql.version}</version>
         </dependency>
 
-        <!-- HIBERNATE -->
+        <!-- hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -121,7 +121,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- HIBERNATE VALIDATOR -->
+        <!-- hibernate validator -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -133,7 +133,7 @@
             <version>${org.hibernate.validator.version}</version>
         </dependency>
 
-        <!-- LOMBOK -->
+        <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -141,7 +141,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- MAPSTRUCT -->
+        <!-- mapstruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -154,21 +154,21 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- JWT -->
+        <!-- jsonwebtoken -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>${io.jsonwebtoken.version}</version>
         </dependency>
 
-        <!-- YAML FACTORY -->
+        <!-- yaml factory -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${com.fasterxml.jackson.dataformat.version}</version>
         </dependency>
 
-        <!-- SWAGGER -->
+        <!-- swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -182,14 +182,14 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- IMG SCALR -->
+        <!-- img scalr -->
         <dependency>
             <groupId>org.imgscalr</groupId>
             <artifactId>imgscalr-lib</artifactId>
             <version>${org.imgscalr.version}</version>
         </dependency>
 
-        <!-- TESTING -->
+        <!-- testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -203,20 +203,13 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- FLYWAY MAVEN PLUGIN -->
+            <!-- flyway maven plugin -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
@@ -234,7 +227,7 @@
                 </configuration>
 
                 <executions>
-                    <!-- DEV EXECUTION -->
+                    <!-- dev execution -->
                     <execution>
                         <id>dev</id>
                         <configuration>
@@ -244,7 +237,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- PROD EXECUTION -->
+                    <!-- prod execution -->
                     <execution>
                         <id>prod</id>
                         <configuration>
@@ -256,21 +249,7 @@
                 </executions>
             </plugin>
 
-            <!-- MAVEN RESOURCES PLUGIN -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven.plugin.resources.version}</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>woff</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
-                </configuration>
-            </plugin>
-
-            <!-- MAVEN COMPILER PLUGIN -->
+            <!-- maven compiler plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.plugin.compiler.version}</version>
@@ -279,21 +258,21 @@
                     <target>${java.version}</target>
                     <annotationProcessorPaths>
 
-                        <!-- HIBERNATE METAMODEL GENERATION -->
+                        <!-- hibernate metamodel generation -->
                         <path>
                             <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
                             <version>${org.hibernate.version}</version>
                         </path>
 
-                        <!-- LOMBOK COMPILER FIX -->
+                        <!-- lombok compiler fix -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${org.projectlombok.version}</version>
                         </path>
 
-                        <!-- MAPSTRUCT MAPPER GENERATION -->
+                        <!-- mapstruct mapper generation -->
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
@@ -305,15 +284,6 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-
-            <!-- MAVEN WAR PLUGIN -->
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${maven.plugin.war.version}</version>
-                <configuration>
-                    <packagingExcludes>WEB-INF/classes/application-prod.properties</packagingExcludes>
                 </configuration>
             </plugin>
         </plugins>

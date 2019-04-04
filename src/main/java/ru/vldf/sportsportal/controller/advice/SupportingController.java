@@ -1,6 +1,8 @@
 package ru.vldf.sportsportal.controller.advice;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -22,8 +24,45 @@ import java.util.Optional;
 @Controller
 public class SupportingController implements ErrorController {
 
+    private static final String WELCOME_PATH = "/";
+    private static final String CSRF_PATH = "/csrf";
     private static final String ERROR_PATH = "/error";
 
+
+    private final String welcomeMessage;
+    private final String csrfMessage;
+
+
+    @Autowired
+    public SupportingController(@Value("${api.title}") String title) {
+        this.welcomeMessage = String.format("Welcome to %s", title);
+        this.csrfMessage = "CSRF protection is disabled as unnecessary";
+    }
+
+
+    private static HttpStatus extractErrorStatusCode(HttpServletRequest request) {
+        return Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).map(Object::toString).map(Integer::valueOf).map(HttpStatus::resolve).orElse(HttpStatus.NOT_FOUND);
+    }
+
+    private static String extractErrorRequestPath(HttpServletRequest request) {
+        return Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).map(Object::toString).orElse(ERROR_PATH);
+    }
+
+
+    /**
+     * Returns welcome message.
+     *
+     * @return object with message.
+     */
+    @ResponseBody
+    @GetMapping(WELCOME_PATH)
+    public Object toWelcome() {
+        // noinspection unused
+        return new Object() {
+            @JsonProperty
+            private String message = welcomeMessage;
+        };
+    }
 
     /**
      * Returns CSRF state message.
@@ -31,23 +70,13 @@ public class SupportingController implements ErrorController {
      * @return object with message.
      */
     @ResponseBody
-    @GetMapping("/csrf")
+    @GetMapping(CSRF_PATH)
     public Object toCsrf() {
         // noinspection unused
         return new Object() {
             @JsonProperty
-            private String message = "CSRF protection is disabled as unnecessary";
+            private String message = csrfMessage;
         };
-    }
-
-    /**
-     * Returns redirect to swagger page from associated paths.
-     *
-     * @return redirect string to swagger page.
-     */
-    @GetMapping({"/", "/swagger", "/swagger/", "/swagger-ui", "/swagger-ui/", "/swagger-ui.html/"})
-    public String toSwagger() {
-        return "redirect:/swagger-ui.html";
     }
 
     /**
@@ -58,18 +87,8 @@ public class SupportingController implements ErrorController {
      */
     @GetMapping(ERROR_PATH)
     public void handleError(HttpServletRequest request) throws Exception {
-        HttpStatus status = Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
-                .map(Object::toString)
-                .map(Integer::valueOf)
-                .map(HttpStatus::resolve)
-                .orElse(HttpStatus.NOT_FOUND);
-
-        String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(),
-                Optional.ofNullable(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI))
-                        .map(Object::toString)
-                        .orElse(ERROR_PATH)
-        );
-
+        HttpStatus status = extractErrorStatusCode(request);
+        String message = String.format("%s. Error request uri: %s", status.getReasonPhrase(), extractErrorRequestPath(request));
         switch (status) {
             case NOT_FOUND:
                 throw new HandlerNotFoundException(message);
