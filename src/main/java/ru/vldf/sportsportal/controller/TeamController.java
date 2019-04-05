@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.service.TeamService;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 
@@ -44,15 +45,18 @@ public class TeamController {
     }
 
     /**
-     * Create team and returns its location.
+     * Create and save new team and returns its location.
      *
      * @param teamDTO the new team details.
-     * @return new team location.
+     * @return created team location.
      * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if current user does not have required permissions.
      */
     @PostMapping
     @ApiOperation("создать команду")
-    public ResponseEntity<Void> create(@RequestBody @Validated(TeamDTO.CreateCheck.class) TeamDTO teamDTO) throws UnauthorizedAccessException {
+    public ResponseEntity<Void> create(
+            @RequestBody @Validated(TeamDTO.CreateCheck.class) TeamDTO teamDTO
+    ) throws UnauthorizedAccessException, ForbiddenAccessException {
         return ResponseEntity.created(buildURL(teamService.create(teamDTO))).build();
     }
 }

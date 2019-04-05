@@ -3,14 +3,12 @@ package ru.vldf.sportsportal.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.mapper.sectional.tournament.TeamMapper;
 import ru.vldf.sportsportal.repository.tournament.TeamRepository;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
-import ru.vldf.sportsportal.service.generic.CRUDService;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.generic.*;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -52,18 +50,40 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         }
     }
 
+    /**
+     * Create and save new team and returns its identifier.
+     *
+     * @param teamDTO the new team details.
+     * @return created team identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if current user does not have required permissions.
+     */
     @Override
-    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException {
-        throw new UnsupportedOperationException();
+    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException {
+        permissionCheck(teamDTO);
+        TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
+        if (teamEntity.getMainCaptain() == null) {
+            UserEntity userEntity = getCurrentUserEntity();
+            teamEntity.setMainCaptain(userEntity);
+            teamEntity.setViceCaptain(userEntity);
+        }
+        return teamRepository.save(teamEntity).getId();
     }
 
     @Override
-    public void update(Integer id, TeamDTO t) {
+    public void update(Integer id, TeamDTO teamDTO) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void delete(Integer id) {
         throw new UnsupportedOperationException();
+    }
+
+
+    private void permissionCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException {
+        if ((!currentUserIsAdmin()) && ((teamDTO.getIsLocked() != null) || (teamDTO.getIsDisabled() != null))) {
+            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbiddenByRole.message"));
+        }
     }
 }
