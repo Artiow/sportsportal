@@ -64,14 +64,12 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      *
      * @param teamDTO the new team details.
      * @return created team identifier.
-     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws UnauthorizedAccessException     if authorization is missing.
+     * @throws MethodArgumentNotValidException if method argument not valid.
      */
     @Override
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {UnauthorizedAccessException.class}
-    )
-    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException {
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, MethodArgumentNotValidException.class})
+    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
         createCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
         if (teamEntity.getMainCaptain() == null) {
@@ -93,7 +91,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     }
 
 
-    private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException {
+    private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
         if (!currentUserIsAdmin()) {
             Map<String, String> errors = new HashMap<>();
             if (teamDTO.getIsLocked() != null) {
@@ -106,14 +104,14 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
                 errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
             }
             if (!errors.isEmpty()) {
-                exceptionFor("create", 0, null);
+                exceptionFor("create", 0, errors);
             }
         }
     }
 
 
-    @SneakyThrows({NoSuchMethodException.class, MethodArgumentNotValidException.class})
-    private void exceptionFor(String methodName, int parameterIndex, Map<String, String> errorMap) {
+    @SneakyThrows({NoSuchMethodException.class})
+    private void exceptionFor(String methodName, int parameterIndex, Map<String, String> errorMap) throws MethodArgumentNotValidException {
         throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), "teamDTO", errorMap);
     }
 

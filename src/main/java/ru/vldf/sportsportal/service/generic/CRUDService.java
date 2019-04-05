@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service.generic;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
 import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
@@ -24,9 +25,9 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
 
     D get(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 
-    Integer create(D t) throws AbstractAuthorizationException, AbstractResourceException;
+    Integer create(D t) throws AbstractAuthorizationException, AbstractResourceException, MethodArgumentNotValidException;
 
-    void update(Integer id, D t) throws AbstractAuthorizationException, AbstractResourceException;
+    void update(Integer id, D t) throws AbstractAuthorizationException, AbstractResourceException, MethodArgumentNotValidException;
 
     void delete(Integer id) throws AbstractAuthorizationException, AbstractResourceException;
 

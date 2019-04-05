@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.service.TeamService;
@@ -50,13 +51,14 @@ public class TeamController {
      *
      * @param teamDTO the new team details.
      * @return created team location.
-     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws UnauthorizedAccessException     if authorization is missing.
+     * @throws MethodArgumentNotValidException if method argument not valid.
      */
     @PostMapping
     @ApiOperation("создать команду")
     public ResponseEntity<Void> create(
             @RequestBody @Validated(TeamDTO.CreateCheck.class) TeamDTO teamDTO
-    ) throws UnauthorizedAccessException {
+    ) throws UnauthorizedAccessException, MethodArgumentNotValidException {
         return ResponseEntity.created(buildURL(teamService.create(teamDTO))).build();
     }
 
