@@ -59,4 +59,21 @@ public class TeamController {
     ) throws UnauthorizedAccessException, ForbiddenAccessException {
         return ResponseEntity.created(buildURL(teamService.create(teamDTO))).build();
     }
+
+    @PutMapping("/{id}")
+    @ApiOperation("редактировать команду")
+    public ResponseEntity<Void> update(
+            @PathVariable int id,
+            @RequestBody @Validated(TeamDTO.CreateCheck.class) TeamDTO teamDTO
+    ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation("удалить команду")
+    public ResponseEntity<Void> delete(
+            @PathVariable int id
+    ) {
+        throw new UnsupportedOperationException();
+    }
 }

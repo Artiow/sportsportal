@@ -9,60 +9,68 @@ refreshRoute:
   httpMethod: GET
 
 publicRoutes:
-  - pattern: /dict/*/byId/*
-    httpMethod: GET
-  - pattern: /dict/*/byCode/*
-    httpMethod: GET
-  - pattern: /dict/*/list
-    httpMethod: GET
-  - pattern: /auth/register
-    httpMethod: POST
-  - pattern: /auth/confirm/*
-    httpMethod: PUT
-  - pattern: /auth/confirm
-    httpMethod: PUT
-  - pattern: /auth/confirm
-    httpMethod: GET
-  - pattern: /auth/login
-    httpMethod: POST
-  - pattern: /auth/refresh
-    httpMethod: PUT
-  - pattern: /payment/anonymous
-    httpMethod: POST
-  - pattern: /payment/result
-    httpMethod: POST
-  - pattern: /picture/*
-    httpMethod: GET
-  - pattern: /playground/*
-    httpMethod: GET
-  - pattern: /playground/*/grid
-    httpMethod: GET
-  - pattern: /playground/*/check
-    httpMethod: GET
-  - pattern: /playground/*/short
-    httpMethod: GET
+- pattern: /dict/*/byId/*
+  httpMethod: GET
+- pattern: /dict/*/byCode/*
+  httpMethod: GET
+- pattern: /dict/*/list
+  httpMethod: GET
+- pattern: /auth/register
+  httpMethod: POST
+- pattern: /auth/confirm/*
+  httpMethod: PUT
+- pattern: /auth/confirm
+  httpMethod: PUT
+- pattern: /auth/confirm
+  httpMethod: GET
+- pattern: /auth/login
+  httpMethod: POST
+- pattern: /auth/refresh
+  httpMethod: PUT
+- pattern: /payment/anonymous
+  httpMethod: POST
+- pattern: /payment/result
+  httpMethod: POST
+- pattern: /picture/*
+  httpMethod: GET
+- pattern: /playground/*
+  httpMethod: GET
+- pattern: /playground/*/grid
+  httpMethod: GET
+- pattern: /playground/*/check
+  httpMethod: GET
+- pattern: /playground/*/short
+  httpMethod: GET
+- pattern: /team/*
+  httpMethod: GET
 
 protectedRoutes:
   ADMIN:
-    - pattern: /picture
-      httpMethod: POST
-    - pattern: /picture/*
-      httpMethod: DELETE
-    - pattern: /user/*
-      httpMethod: DELETE
+  - pattern: /picture
+    httpMethod: POST
+  - pattern: /picture/*
+    httpMethod: DELETE
+  - pattern: /user/*
+    httpMethod: DELETE
+  - pattern: /team/*
+    httpMethod: DELETE
 
   USER:
-    - pattern: /order/*
-      httpMethod: GET
-    - pattern: /order/*
-      httpMethod: DELETE
-    - pattern: /playground
-      httpMethod: POST
-    - pattern: /playground/*
-      httpMethod: PUT
-    - pattern: /playground/*
-      httpMethod: DELETE
-    - pattern: /playground/*/reserve
-      httpMethod: POST
-    - pattern: /user/*
-      httpMethod: GET
+  - pattern: /order/*
+    httpMethod: GET
+  - pattern: /order/*
+    httpMethod: DELETE
+  - pattern: /playground
+    httpMethod: POST
+  - pattern: /playground/*
+    httpMethod: PUT
+  - pattern: /playground/*
+    httpMethod: DELETE
+  - pattern: /playground/*/reserve
+    httpMethod: POST
+  - pattern: /user/*
+    httpMethod: GET
+  - pattern: /team
+    httpMethod: POST
+  - pattern: /team/*
+    httpMethod: PUT
