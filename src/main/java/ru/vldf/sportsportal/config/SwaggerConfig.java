@@ -1,20 +1,29 @@
 package ru.vldf.sportsportal.config;
 
+import com.fasterxml.classmate.TypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import ru.vldf.sportsportal.config.security.routing.RightsDifferentiationRouter;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRule;
 import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URL;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +44,8 @@ public class SwaggerConfig {
     private final static String BASIC_AUTH_DESCRIPTION = "Basic login authorization";
     private final static String ACCESS_AUTH_DESCRIPTION = "JWT access REST API authorization";
     private final static String REFRESH_AUTH_DESCRIPTION = "JWT refresh REST API authorization";
+
+    private final TypeResolver typeResolver;
 
     private final String basicAuthRegex;
     private final String accessAuthRegex;
@@ -70,7 +81,8 @@ public class SwaggerConfig {
 
 
     @Autowired
-    public SwaggerConfig(RightsDifferentiationRouter router) {
+    public SwaggerConfig(TypeResolver typeResolver, RightsDifferentiationRouter router) {
+        this.typeResolver = typeResolver;
         String loginPath = router.getLoginPath();
         String refreshPath = router.getRefreshPath();
         this.basicAuthRegex = String.format("^%s", loginPath);
@@ -95,7 +107,9 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .securitySchemes(securitySchemes())
                 .securityContexts(securityContexts())
-                .useDefaultResponseMessages(false);
+                .useDefaultResponseMessages(false)
+                .alternateTypeRules(alternateTypeRules())
+                .ignoredParameterTypes(ignoredParameterTypes());
     }
 
     public ApiInfo apiInfo() {
@@ -112,6 +126,30 @@ public class SwaggerConfig {
                 )).build();
     }
 
+
+    private Class[] ignoredParameterTypes() {
+        return new Class[]{
+                File.class,
+                InputStream.class,
+                InputStreamResource.class
+        };
+    }
+
+    private AlternateTypeRule[] alternateTypeRules() {
+        return new AlternateTypeRule[]{
+                rule(URI.class, String.class),
+                rule(URL.class, String.class),
+                rule(LocalTime.class, String.class)
+        };
+    }
+
+
+    @SuppressWarnings("SameParameterValue")
+    private AlternateTypeRule rule(Type from, Type to) {
+        return new AlternateTypeRule(typeResolver.resolve(from), typeResolver.resolve(to));
+    }
+
+
     private List<SecurityScheme> securitySchemes() {
         return Arrays.asList(
                 new ApiKey(ACCESS_AUTH_NAME, HttpHeaders.AUTHORIZATION, "header"),
@@ -127,6 +165,7 @@ public class SwaggerConfig {
                 securityContext(REFRESH_AUTH_NAME, REFRESH_AUTH_DESCRIPTION, refreshAuthRegex)
         );
     }
+
 
     private SecurityContext securityContext(String name, String description, String pathRegex) {
         return SecurityContext.builder().securityReferences(securityReference(name, description)).forPaths(PathSelectors.regex(pathRegex)).build();
