@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.util;
 
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.MethodParameter;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -20,9 +19,9 @@ public final class ValidationExceptionBuilder {
     private static AbstractBindingResult resultFor(String objectName, Map<String, String> errorMap) {
         AbstractBindingResult result = new BeanPropertyBindingResult(null, objectName);
         for (Map.Entry<String, String> entry : errorMap.entrySet()) {
-            String code = entry.getKey();
+            String field = entry.getKey();
             String message = entry.getValue();
-            result.reject(code, new DefaultMessageSourceResolvable[]{new DefaultMessageSourceResolvable(new String[]{code}, message)}, message);
+            result.rejectValue(field, Void.class.getName(), message);
         }
         return result;
     }
