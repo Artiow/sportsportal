@@ -13,11 +13,16 @@ import javax.validation.constraints.NotNull;
 @Setter
 public abstract class AbstractLinkDTO implements VersionedDTO {
 
-    @NotNull
-    @Min(value = 1)
+    @NotNull(groups = LinkCheck.class)
+    @Min(value = 1, groups = LinkCheck.class)
     private Integer id;
 
     @NotNull
-    @Min(value = 0)
+    @Min(value = 0, groups = LinkCheck.class)
     private Long version;
+
+
+    public interface LinkCheck {
+
+    }
 }

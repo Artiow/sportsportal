@@ -29,16 +29,16 @@ public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, Use
     public abstract UserShortDTO toShortDTO(UserEntity entity);
 
     @Mappings({
-            @Mapping(target = "username", source = "name"),
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
     public abstract UserLinkDTO toLinkDTO(UserEntity entity);
 
     @Mappings({
+            @Mapping(target = "email", ignore = true),
             @Mapping(target = "name", ignore = true),
             @Mapping(target = "surname", ignore = true),
-            @Mapping(target = "patronymic", ignore = true)
+            @Mapping(target = "phone", ignore = true)
     })
     public abstract UserEntity toEntity(UserLinkDTO dto);
 

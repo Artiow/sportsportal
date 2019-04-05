@@ -2,10 +2,15 @@ package ru.vldf.sportsportal.dto.sectional.tournament;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.dto.generic.AbstractLinkDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 
-import javax.validation.constraints.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Namednev Artem
@@ -26,16 +31,14 @@ public class TeamDTO implements VersionedDTO {
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String name;
 
-    @Null
     private Boolean isLocked;
 
-    @Null
     private Boolean isDisabled;
 
-    @Null
+    @Valid
     private UserLinkDTO mainCaptain;
 
-    @Null
+    @Valid
     private UserLinkDTO viceCaptain;
 
 
@@ -43,11 +46,11 @@ public class TeamDTO implements VersionedDTO {
 
     }
 
-    public interface CreateCheck extends TeamDTO.FieldCheck {
+    public interface CreateCheck extends TeamDTO.FieldCheck, AbstractLinkDTO.LinkCheck {
 
     }
 
-    public interface UpdateCheck extends TeamDTO.VersionCheck, TeamDTO.FieldCheck {
+    public interface UpdateCheck extends TeamDTO.VersionCheck, TeamDTO.FieldCheck, AbstractLinkDTO.LinkCheck {
 
     }
 

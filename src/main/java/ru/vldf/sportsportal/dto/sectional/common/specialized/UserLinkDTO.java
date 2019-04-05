@@ -14,7 +14,8 @@ import java.net.URI;
 public class UserLinkDTO extends AbstractLinkDTO {
 
     private String email;
-    private String username;
+    private String name;
+    private String surname;
     private String phone;
     private URI userURL;
     private URI avatarURL;

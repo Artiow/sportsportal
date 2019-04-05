@@ -10,6 +10,7 @@ import ru.vldf.sportsportal.repository.tournament.TeamRepository;
 import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 import ru.vldf.sportsportal.service.generic.CRUDService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -52,7 +53,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     }
 
     @Override
-    public Integer create(TeamDTO t) {
+    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException {
         throw new UnsupportedOperationException();
     }
 
