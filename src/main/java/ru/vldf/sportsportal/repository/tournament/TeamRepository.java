@@ -8,4 +8,7 @@ import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
  */
 public interface TeamRepository extends AbstractIdentifiedRepository<TeamEntity> {
 
+    boolean existsByNameAndIdNot(String name, Integer id);
+
+    boolean existsByName(String name);
 }
