@@ -30,6 +30,10 @@ values (1, 'игрок1имя', 'игрок1фамилия', '2001-01-01 00:00:0
        (29, 'игрок29имя', 'игрок29фамилия', '2001-01-01 00:00:00'),
        (30, 'игрок30имя', 'игрок30фамилия', '2001-01-01 00:00:00');
 
+alter sequence tournament.player_id_seq
+  restart with 31;
+
+
 insert into common."user" (id, password, name, surname, email, disabled)
 values (3,
         '$2y$10$vPdUPxG1tl6PZyo7rLjmdOUlF42efYoepL.C/hej.8twN6mjO6iJS',
@@ -49,6 +53,10 @@ values (3,
         'игрок30фамилия',
         'player30@mail.com',
         false);
+
+alter sequence common.user_id_seq
+  restart with 6;
+
 
 insert into tournament.player_binding (user_id, player_id)
 values (3, 10),

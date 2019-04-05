@@ -59,6 +59,10 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      * @throws ForbiddenAccessException    if current user does not have required permissions.
      */
     @Override
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class}
+    )
     public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException {
         permissionCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
@@ -83,7 +87,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
     private void permissionCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException {
         if ((!currentUserIsAdmin()) && ((teamDTO.getIsLocked() != null) || (teamDTO.getIsDisabled() != null))) {
-            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbiddenByRole.message"));
+            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbidden.message"));
         }
     }
 }

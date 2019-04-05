@@ -24,10 +24,10 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
     protected void normalize(@MappingTarget TeamEntity entity) {
         if ((entity.getMainCaptain() != null) || (entity.getViceCaptain() != null)) {
             if (entity.getMainCaptain() == null) {
-                entity.setMainCaptain(entity.getMainCaptain());
+                entity.setMainCaptain(entity.getViceCaptain());
             }
             if (entity.getViceCaptain() == null) {
-                entity.setViceCaptain(entity.getViceCaptain());
+                entity.setViceCaptain(entity.getMainCaptain());
             }
         }
     }
