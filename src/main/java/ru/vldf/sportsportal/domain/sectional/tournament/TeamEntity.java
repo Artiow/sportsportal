@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
 import javax.persistence.*;
@@ -31,6 +32,10 @@ public class TeamEntity extends AbstractVersionedEntity {
     @Column(name = "disabled", nullable = false)
     private Boolean isDisabled = true;
 
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
+    private PictureEntity avatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "captain_id", referencedColumnName = "id", nullable = false)

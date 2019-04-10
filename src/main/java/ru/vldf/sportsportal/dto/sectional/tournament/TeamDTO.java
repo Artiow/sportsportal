@@ -4,14 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.generic.AbstractLinkDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 /**
  * @author Namednev Artem
@@ -38,6 +35,9 @@ public class TeamDTO implements VersionedDTO {
     private Boolean isDisabled;
 
     @Valid
+    private PictureDTO avatar;
+
+    @Valid
     private UserLinkDTO mainCaptain;
 
     @Valid
@@ -48,19 +48,19 @@ public class TeamDTO implements VersionedDTO {
 
     }
 
-    public interface CreateCheck extends TeamDTO.FieldCheck, AbstractLinkDTO.LinkCheck {
+    public interface CreateCheck extends TeamDTO.FieldCheck {
 
     }
 
-    public interface UpdateCheck extends TeamDTO.VersionCheck, TeamDTO.FieldCheck, AbstractLinkDTO.LinkCheck {
+    public interface UpdateCheck extends TeamDTO.VersionCheck, TeamDTO.FieldCheck {
+
+    }
+
+    private interface FieldCheck extends PictureDTO.IdCheck, AbstractLinkDTO.LinkCheck {
 
     }
 
     private interface VersionCheck {
-
-    }
-
-    private interface FieldCheck {
 
     }
 }

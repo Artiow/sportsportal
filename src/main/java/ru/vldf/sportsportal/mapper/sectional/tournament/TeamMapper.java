@@ -4,13 +4,18 @@ import org.mapstruct.*;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 /**
  * @author Namednev Artem
  */
+@Mapper(
+        componentModel = "spring",
+        uses = {UserMapper.class, PictureURLMapper.class, PictureMapper.class}
+)
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO> {
 
     @Override
@@ -21,7 +26,7 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
     public abstract TeamEntity toEntity(TeamDTO dto);
 
     @AfterMapping
-    protected void normalize(@MappingTarget TeamEntity entity) {
+    public void normalize(@MappingTarget TeamEntity entity) {
         if ((entity.getMainCaptain() != null) || (entity.getViceCaptain() != null)) {
             if (entity.getMainCaptain() == null) {
                 entity.setMainCaptain(entity.getViceCaptain());

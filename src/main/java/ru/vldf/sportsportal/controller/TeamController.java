@@ -1,26 +1,19 @@
 package ru.vldf.sportsportal.controller;
 
-import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.service.TeamService;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 /**
  * @author Namednev Artem
