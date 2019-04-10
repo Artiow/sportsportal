@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
-import ru.vldf.sportsportal.mapper.generic.ModelMapper;
+import ru.vldf.sportsportal.mapper.generic.ModelBidirectionalMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ import java.util.*;
  * @author Namednev Artem
  */
 @Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
-public abstract class ReservationMapper implements ModelMapper<ReservationEntity, ReservationResumeDTO.Item> {
+public abstract class ReservationMapper implements ModelBidirectionalMapper<ReservationEntity, ReservationResumeDTO.Item> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
     public abstract ReservationResumeDTO.Item toDTO(ReservationEntity entity);
