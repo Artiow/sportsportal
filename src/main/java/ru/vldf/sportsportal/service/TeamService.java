@@ -109,16 +109,16 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (teamRepository.existsByName(teamDTO.getName())) {
-            errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
+            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
-            errors.put("isLocked", msg("sportsportal.tournament.Team.forbiddenIsLocked.message"));
+            errors.put("isLocked", msg("sportsportal.tournament.Team.validation.forbiddenIsLocked.message"));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
-            errors.put("isDisabled", msg("sportsportal.tournament.Team.forbiddenIsDisabled.message"));
+            errors.put("isDisabled", msg("sportsportal.tournament.Team.validation.forbiddenIsDisabled.message"));
         }
         if (!errors.isEmpty()) {
-            exceptionFor(teamDTO, "create", 0, errors);
+            validationExceptionFor("create", 0, teamDTO, errors);
         }
     }
 
@@ -126,23 +126,25 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
-            errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
+            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
-            errors.put("isLocked", msg("sportsportal.tournament.Team.forbiddenIsLocked.message"));
+            errors.put("isLocked", msg("sportsportal.tournament.Team.validation.forbiddenIsLocked.message"));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
-            errors.put("isDisabled", msg("sportsportal.tournament.Team.forbiddenIsDisabled.message"));
+            errors.put("isDisabled", msg("sportsportal.tournament.Team.validation.forbiddenIsDisabled.message"));
         }
         if (!errors.isEmpty()) {
-            exceptionFor(teamDTO, "update", 1, errors);
+            validationExceptionFor("update", 1, teamDTO, errors);
         }
     }
 
 
     @SneakyThrows({NoSuchMethodException.class})
-    private void exceptionFor(TeamDTO target, String methodName, int parameterIndex, Map<String, String> errorMap) throws MethodArgumentNotValidException {
-        throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), target, "teamDTO", errorMap);
+    private void validationExceptionFor(
+            String methodName, int parameterIndex, TeamDTO target, Map<String, String> errors
+    ) throws MethodArgumentNotValidException {
+        throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), target, errors);
     }
 
     private MethodParameter methodParameter(String methodName, int parameterIndex) throws NoSuchMethodException {

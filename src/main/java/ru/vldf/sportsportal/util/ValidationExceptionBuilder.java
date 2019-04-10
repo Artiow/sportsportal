@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public final class ValidationExceptionBuilder {
 
-    public static MethodArgumentNotValidException buildFor(MethodParameter parameter, Object objectTarget, String objectName, Map<String, String> errorMap) {
-        return new MethodArgumentNotValidException(parameter, resultFor(objectTarget, objectName, errorMap));
+    public static MethodArgumentNotValidException buildFor(MethodParameter parameter, Object target, Map<String, String> errors) {
+        return new MethodArgumentNotValidException(parameter, resultFor(target, parameter.getParameter().getName(), errors));
     }
 
     private static AbstractBindingResult resultFor(Object objectTarget, String objectName, Map<String, String> errorMap) {
