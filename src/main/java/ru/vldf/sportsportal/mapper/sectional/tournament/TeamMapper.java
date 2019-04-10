@@ -9,15 +9,13 @@ import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
  */
-@Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, PictureURLMapper.class, PictureMapper.class}
-)
 @SuppressWarnings("UnmappedTargetProperties")
+@Mapper(componentModel = "spring", uses = {UserMapper.class, PictureURLMapper.class, PictureMapper.class})
 public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO> {
 
     @Override
@@ -27,20 +25,27 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
     })
     public abstract TeamEntity toEntity(TeamDTO dto);
 
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "version", ignore = true),
-            @Mapping(target = "avatar", ignore = true) // todo: remove!
-    })
-    public abstract void toEntity(@MappingTarget TeamEntity acceptor, TeamEntity donor);
-
 
     @Override
     public TeamEntity merge(TeamEntity acceptor, TeamEntity donor) throws OptimisticLockException {
         super.merge(acceptor, donor);
-        toEntity(acceptor, donor);
+
+        acceptor.setName(donor.getName());
+        acceptor.setIsLocked(donor.getIsLocked());
+        acceptor.setIsDisabled(donor.getIsDisabled());
+
+        if (!Objects.equals(acceptor.getMainCaptain(), donor.getMainCaptain())) {
+            acceptor.setMainCaptain(donor.getMainCaptain());
+        }
+
+        if (!Objects.equals(acceptor.getViceCaptain(), donor.getViceCaptain())) {
+            acceptor.setViceCaptain(donor.getViceCaptain());
+        }
+
+        normalize(acceptor);
         return acceptor;
     }
+
 
     @AfterMapping
     public void normalize(@MappingTarget TeamEntity entity) {
