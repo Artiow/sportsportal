@@ -11,13 +11,9 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public abstract class AbstractIdentifiedLinkDTO implements IdentifiedDTO {
+public abstract class AbstractIdentifiedLinkDTO implements LinkedDTO, IdentifiedDTO {
 
     @NotNull(groups = LinkCheck.class)
     @Min(value = 1, groups = LinkCheck.class)
     private Integer id;
-
-    public interface LinkCheck {
-
-    }
 }

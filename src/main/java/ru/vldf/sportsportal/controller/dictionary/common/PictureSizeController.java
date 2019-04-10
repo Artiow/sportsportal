@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
-import ru.vldf.sportsportal.dto.sectional.common.PictureSizeDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.PictureSizeDTO;
 import ru.vldf.sportsportal.service.dictionary.common.PictureSizeService;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 

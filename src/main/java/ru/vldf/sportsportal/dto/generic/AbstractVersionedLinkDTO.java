@@ -16,8 +16,4 @@ public abstract class AbstractVersionedLinkDTO extends AbstractIdentifiedLinkDTO
     @NotNull(groups = LinkCheck.class)
     @Min(value = 0, groups = LinkCheck.class)
     private Long version;
-
-    public interface LinkCheck extends AbstractIdentifiedLinkDTO.LinkCheck {
-
-    }
 }
