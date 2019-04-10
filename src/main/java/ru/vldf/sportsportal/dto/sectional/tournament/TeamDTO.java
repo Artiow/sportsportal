@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.tournament;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.AbstractLinkDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedLinkDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
@@ -34,7 +34,7 @@ public class TeamDTO implements VersionedDTO {
 
     private Boolean isDisabled;
 
-    @Valid
+    @Null(groups = FieldCheck.class)
     private PictureDTO avatar;
 
     @Valid
@@ -56,7 +56,7 @@ public class TeamDTO implements VersionedDTO {
 
     }
 
-    private interface FieldCheck extends PictureDTO.IdCheck, AbstractLinkDTO.LinkCheck {
+    private interface FieldCheck extends PictureDTO.IdCheck, AbstractVersionedLinkDTO.LinkCheck {
 
     }
 

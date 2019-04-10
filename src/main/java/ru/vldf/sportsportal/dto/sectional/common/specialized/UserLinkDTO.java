@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common.specialized;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.AbstractLinkDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedLinkDTO;
 
 import java.net.URI;
 
@@ -11,7 +11,7 @@ import java.net.URI;
  */
 @Getter
 @Setter
-public class UserLinkDTO extends AbstractLinkDTO {
+public class UserLinkDTO extends AbstractVersionedLinkDTO {
 
     private String email;
     private String name;
