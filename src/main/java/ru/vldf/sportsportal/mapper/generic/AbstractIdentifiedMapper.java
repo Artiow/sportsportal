@@ -16,7 +16,7 @@ public abstract class AbstractIdentifiedMapper<E extends AbstractIdentifiedEntit
         return dto.getId();
     }
 
-    public E mergeToEntity(E acceptor, D donor) {
+    public E inject(E acceptor, D donor) {
         return merge(acceptor, toEntity(donor));
     }
 

@@ -58,11 +58,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         createCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
-        if (teamEntity.getMainCaptain() == null) {
-            UserEntity currentUser = getCurrentUserEntity();
-            teamEntity.setMainCaptain(currentUser);
-            teamEntity.setViceCaptain(currentUser);
-        }
+        normalizeCaptains(teamEntity);
         return teamRepository.save(teamEntity).getId();
     }
 
@@ -81,15 +77,9 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotAcceptableException, ResourceNotFoundException {
         updateCheck(teamDTO);
         TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
-        if (!currentUserIsAdmin() && !(isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbidden.message"));
-        }
-        teamEntity = teamMapper.mergeToEntity(teamEntity, teamDTO);
-        if (teamEntity.getMainCaptain() == null) {
-            UserEntity currentUser = getCurrentUserEntity();
-            teamEntity.setMainCaptain(currentUser);
-            teamEntity.setViceCaptain(currentUser);
-        }
+        rightsCheck(teamEntity);
+        teamEntity = teamMapper.inject(teamEntity, teamDTO);
+        normalizeCaptains(teamEntity);
         teamRepository.save(teamEntity);
     }
 
@@ -130,6 +120,20 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         }
         if (!errors.isEmpty()) {
             validationExceptionFor("update", 1, teamDTO, errors);
+        }
+    }
+
+    private void rightsCheck(TeamEntity teamEntity) throws UnauthorizedAccessException, ForbiddenAccessException {
+        if (!currentUserIsAdmin() && !(isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbidden.message"));
+        }
+    }
+
+    private void normalizeCaptains(TeamEntity teamEntity) throws UnauthorizedAccessException {
+        if (teamEntity.getMainCaptain() == null) {
+            UserEntity currentUser = getCurrentUserEntity();
+            teamEntity.setMainCaptain(currentUser);
+            teamEntity.setViceCaptain(currentUser);
         }
     }
 

@@ -8,6 +8,8 @@ import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
+import javax.persistence.OptimisticLockException;
+
 /**
  * @author Namednev Artem
  */
@@ -21,9 +23,24 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
     @Override
     @Mappings({
             @Mapping(target = "isLocked", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
-            @Mapping(target = "isDisabled", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
+            @Mapping(target = "isDisabled", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     })
     public abstract TeamEntity toEntity(TeamDTO dto);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "version", ignore = true),
+            @Mapping(target = "avatar", ignore = true) // todo: remove!
+    })
+    public abstract void toEntity(@MappingTarget TeamEntity acceptor, TeamEntity donor);
+
+
+    @Override
+    public TeamEntity merge(TeamEntity acceptor, TeamEntity donor) throws OptimisticLockException {
+        super.merge(acceptor, donor);
+        toEntity(acceptor, donor);
+        return acceptor;
+    }
 
     @AfterMapping
     public void normalize(@MappingTarget TeamEntity entity) {
