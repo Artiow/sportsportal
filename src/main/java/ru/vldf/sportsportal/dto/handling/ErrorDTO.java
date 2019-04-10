@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.handling;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import ru.vldf.sportsportal.dto.generic.DataTransferObject;
 
 import java.util.Optional;
@@ -12,8 +13,13 @@ import java.util.UUID;
  */
 public class ErrorDTO implements DataTransferObject {
 
+    @Getter
     private final UUID uuid;
+
+    @Getter
     private final String exception;
+
+    @Getter
     private final String message;
 
     @JsonProperty
@@ -47,18 +53,6 @@ public class ErrorDTO implements DataTransferObject {
     }
 
 
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getException() {
-        return exception;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
     @JsonIgnore
     public String getCauseException() {
         return cause.getException();
@@ -72,7 +66,10 @@ public class ErrorDTO implements DataTransferObject {
 
     private static class Cause {
 
+        @Getter
         private final String exception;
+
+        @Getter
         private final String message;
 
 
@@ -84,15 +81,6 @@ public class ErrorDTO implements DataTransferObject {
         public Cause(String causeClassName, String causeMessage) {
             this.exception = causeClassName;
             this.message = causeMessage;
-        }
-
-
-        public String getException() {
-            return exception;
-        }
-
-        public String getMessage() {
-            return message;
         }
     }
 }

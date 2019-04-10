@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.handling;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,11 @@ import java.util.UUID;
  */
 public class ErrorMapDTO extends ErrorDTO {
 
-    private final List<String> objectErrorList;
-    private final Map<String, String> fieldErrorMap;
+    @Getter
+    private final ImmutableList<String> objectErrorList;
+
+    @Getter
+    private final ImmutableMap<String, String> fieldErrorMap;
 
 
     public ErrorMapDTO(UUID uuid, Throwable ex, List<String> objectErrorList, Map<String, String> fieldErrorMap) {

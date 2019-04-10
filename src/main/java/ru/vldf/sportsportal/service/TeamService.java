@@ -18,7 +18,6 @@ import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.ValidationExceptionBuilder;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,17 +46,9 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      * @throws ResourceNotFoundException if team not found.
      */
     @Override
-    @Transactional(
-            readOnly = true,
-            rollbackFor = {ResourceNotFoundException.class},
-            noRollbackFor = {EntityNotFoundException.class}
-    )
+    @Transactional(readOnly = true, rollbackFor = {ResourceNotFoundException.class})
     public TeamDTO get(Integer id) throws ResourceNotFoundException {
-        try {
-            return teamMapper.toDTO(teamRepository.getOne(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.tournament.Team.notExistById.message", id), e);
-        }
+        return teamRepository.findById(id).map(teamMapper::toDTO).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
     }
 
     /**
@@ -95,9 +86,10 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotValidException.class, ResourceNotFoundException.class})
     public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotValidException, ResourceNotFoundException {
         updateCheck(teamDTO);
-        TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.of(msg("not found")));
-        boolean isOwner = (isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()));
-        if (!currentUserIsAdmin() && !isOwner) throw new ForbiddenAccessException(msg("forbidden"));
+        TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
+        if (!currentUserIsAdmin() && !(isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.tournament.Team.forbidden.message"));
+        }
         teamEntity = teamMapper.mergeToEntity(teamEntity, teamDTO);
         if (teamEntity.getMainCaptain() == null) {
             UserEntity currentUser = getCurrentUserEntity();

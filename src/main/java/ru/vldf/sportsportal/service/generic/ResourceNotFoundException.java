@@ -12,11 +12,11 @@ public class ResourceNotFoundException extends AbstractResourceException {
         super(message, cause);
     }
 
-    public static Supplier<ResourceNotFoundException> of(String message) {
+    public static Supplier<ResourceNotFoundException> supplier(String message) {
         return () -> new ResourceNotFoundException(message);
     }
 
-    public static Supplier<ResourceNotFoundException> of(String message, Throwable cause) {
+    public static Supplier<ResourceNotFoundException> supplier(String message, Throwable cause) {
         return () -> new ResourceNotFoundException(message, cause);
     }
 }

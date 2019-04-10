@@ -15,7 +15,11 @@ import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
 
 import javax.mail.MessagingException;
@@ -132,7 +136,7 @@ public class AuthService extends AbstractSecurityService {
         try {
             String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
             UserEntity userEntity = userRepository().findById(userId).orElseThrow(
-                    ResourceNotFoundException.of(msg("sportsportal.common.User.notExistById.message", userId))
+                    ResourceNotFoundException.supplier(msg("sportsportal.common.User.notExistById.message", userId))
             );
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);

@@ -12,7 +12,11 @@ import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.filesystem.PictureFileService;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.CollectionConverter;
 import ru.vldf.sportsportal.util.models.ResourceBundle;
 
@@ -112,7 +116,7 @@ public class PictureService extends AbstractSecurityService {
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
     public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         PictureEntity pictureEntity = pictureRepository.findById(id).orElseThrow(
-                ResourceNotFoundException.of(msg("sportsportal.common.Picture.notExistById.message", id))
+                ResourceNotFoundException.supplier(msg("sportsportal.common.Picture.notExistById.message", id))
         );
         if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getUploader()))) {
             throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
