@@ -6,7 +6,7 @@ import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
 /**
  * @author Namednev Artem
  */
-public abstract class AbstractIdentifiedMapper<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> implements ModelMapper<E, D> {
+public abstract class AbstractIdentifiedMapper<E extends AbstractIdentifiedEntity, D extends IdentifiedDTO> implements ModelBidirectionalMapper<E, D> {
 
     public Integer toInteger(E entity) {
         return entity.getId();

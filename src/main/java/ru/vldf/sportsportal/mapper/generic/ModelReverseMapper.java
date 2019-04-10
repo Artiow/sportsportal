@@ -9,11 +9,7 @@ import java.util.List;
 /**
  * @author Namednev Artem
  */
-public interface ModelMapper<E extends DomainObject, D extends DataTransferObject> {
-
-    D toDTO(E entity);
-
-    List<D> toDTO(Collection<E> entityCollection);
+public interface ModelReverseMapper<E extends DomainObject, D extends DataTransferObject> {
 
     E toEntity(D dto);
 
