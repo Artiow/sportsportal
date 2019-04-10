@@ -4,12 +4,12 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,10 +24,22 @@ import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.filesystem.PictureFileException;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.generic.HandlerNotFoundException;
+import ru.vldf.sportsportal.service.generic.InvalidParameterException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.generic.ResourceCorruptedException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 
 import javax.validation.ConstraintViolationException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Namednev Artem
@@ -73,27 +85,23 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
-        Map<String, String> errorMap = new HashMap<>(allErrors.size());
-        for (ObjectError error : allErrors) {
-            String code = Optional.ofNullable(error.getArguments())
-                    .map(args -> ((DefaultMessageSourceResolvable) args[0]))
-                    .map(DefaultMessageSourceResolvable::getCode)
-                    .orElse("null");
-            if (code.equals("")) code = "class";
-            errorMap.put(code, error.getDefaultMessage());
+        List<String> errorList = new ArrayList<>();
+        Map<String, String> errorMap = new HashMap<>();
+        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+            if (error instanceof FieldError) {
+                errorMap.put(((FieldError) error).getField(), error.getDefaultMessage());
+            } else {
+                errorList.add(error.getDefaultMessage());
+            }
         }
-
         Throwable cause = ex.getCause();
-        String exceptionMessage = messages.get("sportsportal.handle.MethodArgumentNotValidException.message");
-        String causeClassName = (cause != null) ? cause.getClass().getName() : null;
-        String causeMessage = (cause != null) ? cause.getMessage() : null;
         return new ErrorMapDTO(
                 warnUUID("Sent body not valid"),
                 ex.getClass().getName(),
-                exceptionMessage,
-                causeClassName,
-                causeMessage,
+                messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
+                (cause != null) ? cause.getClass().getName() : null,
+                (cause != null) ? cause.getMessage() : null,
+                errorList,
                 errorMap
         );
     }

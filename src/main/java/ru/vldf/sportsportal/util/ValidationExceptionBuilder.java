@@ -12,17 +12,13 @@ import java.util.Map;
  */
 public final class ValidationExceptionBuilder {
 
-    public static MethodArgumentNotValidException buildFor(MethodParameter parameter, String objectName, Map<String, String> errorMap) {
-        return new MethodArgumentNotValidException(parameter, resultFor(objectName, errorMap));
+    public static MethodArgumentNotValidException buildFor(MethodParameter parameter, Object objectTarget, String objectName, Map<String, String> errorMap) {
+        return new MethodArgumentNotValidException(parameter, resultFor(objectTarget, objectName, errorMap));
     }
 
-    private static AbstractBindingResult resultFor(String objectName, Map<String, String> errorMap) {
-        AbstractBindingResult result = new BeanPropertyBindingResult(null, objectName);
-        for (Map.Entry<String, String> entry : errorMap.entrySet()) {
-            String field = entry.getKey();
-            String message = entry.getValue();
-            result.rejectValue(field, Void.class.getName(), message);
-        }
+    private static AbstractBindingResult resultFor(Object objectTarget, String objectName, Map<String, String> errorMap) {
+        AbstractBindingResult result = new BeanPropertyBindingResult(objectTarget, objectName);
+        errorMap.forEach((field, message) -> result.rejectValue(field, "", message));
         return result;
     }
 }

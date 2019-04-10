@@ -13,6 +13,7 @@ import ru.vldf.sportsportal.mapper.sectional.tournament.TeamMapper;
 import ru.vldf.sportsportal.repository.tournament.TeamRepository;
 import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
 import ru.vldf.sportsportal.service.generic.CRUDService;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.ValidationExceptionBuilder;
@@ -73,16 +74,37 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         createCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
         if (teamEntity.getMainCaptain() == null) {
-            UserEntity userEntity = getCurrentUserEntity();
-            teamEntity.setMainCaptain(userEntity);
-            teamEntity.setViceCaptain(userEntity);
+            UserEntity currentUser = getCurrentUserEntity();
+            teamEntity.setMainCaptain(currentUser);
+            teamEntity.setViceCaptain(currentUser);
         }
         return teamRepository.save(teamEntity).getId();
     }
 
+    /**
+     * Update and save team details by team identifier.
+     *
+     * @param id      the team identifier.
+     * @param teamDTO the new team details.
+     * @throws UnauthorizedAccessException     if authorization is missing.
+     * @throws ForbiddenAccessException        if user don't have permission to update this team details.
+     * @throws MethodArgumentNotValidException if method argument not valid.
+     * @throws ResourceNotFoundException       if playground not found.
+     */
     @Override
-    public void update(Integer id, TeamDTO teamDTO) {
-        throw new UnsupportedOperationException();
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotValidException.class, ResourceNotFoundException.class})
+    public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotValidException, ResourceNotFoundException {
+        updateCheck(teamDTO);
+        TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.of(msg("not found")));
+        boolean isOwner = (isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()));
+        if (!currentUserIsAdmin() && !isOwner) throw new ForbiddenAccessException(msg("forbidden"));
+        teamEntity = teamMapper.mergeToEntity(teamEntity, teamDTO);
+        if (teamEntity.getMainCaptain() == null) {
+            UserEntity currentUser = getCurrentUserEntity();
+            teamEntity.setMainCaptain(currentUser);
+            teamEntity.setViceCaptain(currentUser);
+        }
+        teamRepository.save(teamEntity);
     }
 
     @Override
@@ -92,27 +114,43 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
 
     private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
-        if (!currentUserIsAdmin()) {
-            Map<String, String> errors = new HashMap<>();
-            if (teamDTO.getIsLocked() != null) {
-                errors.put("isLocked", msg("sportsportal.tournament.Team.forbiddenIsLocked.message"));
-            }
-            if (teamDTO.getIsDisabled() != null) {
-                errors.put("isDisabled", msg("sportsportal.tournament.Team.forbiddenIsDisabled.message"));
-            }
-            if (teamRepository.existsByName(teamDTO.getName())) {
-                errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
-            }
-            if (!errors.isEmpty()) {
-                exceptionFor("create", 0, errors);
-            }
+        boolean currentUserIsAdmin = currentUserIsAdmin();
+        Map<String, String> errors = new HashMap<>();
+        if (teamRepository.existsByName(teamDTO.getName())) {
+            errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
+        }
+        if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
+            errors.put("isLocked", msg("sportsportal.tournament.Team.forbiddenIsLocked.message"));
+        }
+        if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
+            errors.put("isDisabled", msg("sportsportal.tournament.Team.forbiddenIsDisabled.message"));
+        }
+        if (!errors.isEmpty()) {
+            exceptionFor(teamDTO, "create", 0, errors);
+        }
+    }
+
+    private void updateCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
+        boolean currentUserIsAdmin = currentUserIsAdmin();
+        Map<String, String> errors = new HashMap<>();
+        if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
+            errors.put("name", msg("sportsportal.tournament.Team.alreadyExistByName.message", teamDTO.getName()));
+        }
+        if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
+            errors.put("isLocked", msg("sportsportal.tournament.Team.forbiddenIsLocked.message"));
+        }
+        if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
+            errors.put("isDisabled", msg("sportsportal.tournament.Team.forbiddenIsDisabled.message"));
+        }
+        if (!errors.isEmpty()) {
+            exceptionFor(teamDTO, "update", 1, errors);
         }
     }
 
 
     @SneakyThrows({NoSuchMethodException.class})
-    private void exceptionFor(String methodName, int parameterIndex, Map<String, String> errorMap) throws MethodArgumentNotValidException {
-        throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), "teamDTO", errorMap);
+    private void exceptionFor(TeamDTO target, String methodName, int parameterIndex, Map<String, String> errorMap) throws MethodArgumentNotValidException {
+        throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), target, "teamDTO", errorMap);
     }
 
     private MethodParameter methodParameter(String methodName, int parameterIndex) throws NoSuchMethodException {

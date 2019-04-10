@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 /**
@@ -19,6 +20,7 @@ import javax.validation.constraints.Size;
 @Setter
 public class TeamDTO implements VersionedDTO {
 
+    @Null(groups = FieldCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;

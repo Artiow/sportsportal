@@ -9,7 +9,14 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.*;
+import ru.vldf.sportsportal.domain.sectional.lease.FeatureEntity_;
+import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity_;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntityPK_;
+import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity_;
+import ru.vldf.sportsportal.domain.sectional.lease.SportEntity_;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
@@ -22,13 +29,25 @@ import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;
 import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
 import ru.vldf.sportsportal.repository.lease.ReservationRepository;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
+import ru.vldf.sportsportal.service.generic.CRUDService;
+import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.generic.ResourceCorruptedException;
+import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
+import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.CollectionSorter;
 import ru.vldf.sportsportal.util.LocalDateTimeGridChecker;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -37,7 +56,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -344,7 +368,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
                 throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
             } else {
-                playgroundRepository.save(playgroundMapper.merge(playgroundEntity, playgroundMapper.toEntity(playgroundDTO)));
+                playgroundRepository.save(playgroundMapper.mergeToEntity(playgroundEntity, playgroundDTO));
             }
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(msg("sportsportal.lease.Playground.notExistById.message", id), e);
