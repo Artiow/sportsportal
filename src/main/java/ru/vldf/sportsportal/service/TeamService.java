@@ -76,11 +76,11 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      * Update and save team details by team identifier.
      *
      * @param id      the team identifier.
-     * @param teamDTO the new team details.
+     * @param teamDTO the team new details.
      * @throws UnauthorizedAccessException     if authorization is missing.
      * @throws ForbiddenAccessException        if user don't have permission to update this team details.
      * @throws MethodArgumentNotValidException if method argument not valid.
-     * @throws ResourceNotFoundException       if playground not found.
+     * @throws ResourceNotFoundException       if team not found.
      */
     @Override
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotValidException.class, ResourceNotFoundException.class})
