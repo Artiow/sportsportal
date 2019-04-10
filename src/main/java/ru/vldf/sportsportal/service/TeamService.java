@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.mapper.sectional.tournament.TeamMapper;
 import ru.vldf.sportsportal.repository.tournament.TeamRepository;
 import ru.vldf.sportsportal.service.generic.*;
-import ru.vldf.sportsportal.util.ValidationExceptionBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,12 +50,12 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      *
      * @param teamDTO the new team details.
      * @return created team identifier.
-     * @throws UnauthorizedAccessException     if authorization is missing.
-     * @throws MethodArgumentNotValidException if method argument not valid.
+     * @throws UnauthorizedAccessException          if authorization is missing.
+     * @throws MethodArgumentNotAcceptableException if method argument not acceptable.
      */
     @Override
-    @Transactional(rollbackFor = {UnauthorizedAccessException.class, MethodArgumentNotValidException.class})
-    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, MethodArgumentNotAcceptableException.class})
+    public Integer create(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         createCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
         if (teamEntity.getMainCaptain() == null) {
@@ -73,14 +71,14 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      *
      * @param id      the team identifier.
      * @param teamDTO the team new details.
-     * @throws UnauthorizedAccessException     if authorization is missing.
-     * @throws ForbiddenAccessException        if user don't have permission to update this team details.
-     * @throws MethodArgumentNotValidException if method argument not valid.
-     * @throws ResourceNotFoundException       if team not found.
+     * @throws UnauthorizedAccessException          if authorization is missing.
+     * @throws ForbiddenAccessException             if user don't have permission to update this team details.
+     * @throws MethodArgumentNotAcceptableException if method argument not acceptable.
+     * @throws ResourceNotFoundException            if team not found.
      */
     @Override
-    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotValidException.class, ResourceNotFoundException.class})
-    public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotValidException, ResourceNotFoundException {
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotAcceptableException.class, ResourceNotFoundException.class})
+    public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotAcceptableException, ResourceNotFoundException {
         updateCheck(teamDTO);
         TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
         if (!currentUserIsAdmin() && !(isCurrentUser(teamEntity.getMainCaptain()) || isCurrentUser(teamEntity.getViceCaptain()))) {
@@ -101,7 +99,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     }
 
 
-    private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
+    private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (teamRepository.existsByName(teamDTO.getName())) {
@@ -118,7 +116,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         }
     }
 
-    private void updateCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotValidException {
+    private void updateCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
@@ -139,8 +137,8 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @SneakyThrows({NoSuchMethodException.class})
     private void validationExceptionFor(
             String methodName, int parameterIndex, TeamDTO target, Map<String, String> errors
-    ) throws MethodArgumentNotValidException {
-        throw ValidationExceptionBuilder.buildFor(methodParameter(methodName, parameterIndex), target, errors);
+    ) throws MethodArgumentNotAcceptableException {
+        throw MethodArgumentNotAcceptableException.by(methodParameter(methodName, parameterIndex), target, errors);
     }
 
     private MethodParameter methodParameter(String methodName, int parameterIndex) throws NoSuchMethodException {
