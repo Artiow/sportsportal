@@ -3,10 +3,10 @@ package ru.vldf.sportsportal.dto.sectional.common;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 
-import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
 
@@ -51,8 +51,8 @@ public class UserDTO implements VersionedDTO {
     @Phone(groups = FieldCheck.class)
     private String phone;
 
-    @Valid
-    private PictureDTO avatar;
+    @Null(groups = FieldCheck.class)
+    private PictureLinkDTO avatar;
 
     @Null(groups = FieldCheck.class)
     private List<RoleDTO> roles;
@@ -74,7 +74,7 @@ public class UserDTO implements VersionedDTO {
 
     }
 
-    private interface FieldCheck extends PictureDTO.IdCheck {
+    private interface FieldCheck {
 
     }
 }

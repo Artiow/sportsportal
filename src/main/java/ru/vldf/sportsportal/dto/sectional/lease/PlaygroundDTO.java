@@ -2,9 +2,10 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.dto.generic.LinkedDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
-import ru.vldf.sportsportal.dto.sectional.common.PictureDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
@@ -75,11 +76,10 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
 
     @Valid
     @NotNull(groups = FieldCheck.class)
-    private List<PictureDTO> photos;
-
-    @Valid
-    @NotNull(groups = FieldCheck.class)
     private List<UserLinkDTO> owners;
+
+    @Null(groups = FieldCheck.class)
+    private List<PictureLinkDTO> photos;
 
 
     public interface IdCheck extends VersionCheck {
@@ -98,7 +98,7 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
 
     }
 
-    private interface FieldCheck extends SportDTO.IdCheck, FeatureDTO.IdCheck, PictureDTO.IdCheck {
+    private interface FieldCheck extends SportDTO.IdCheck, FeatureDTO.IdCheck, LinkedDTO.LinkCheck {
 
     }
 }
