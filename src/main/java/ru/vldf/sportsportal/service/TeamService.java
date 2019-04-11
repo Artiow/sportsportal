@@ -10,8 +10,10 @@ import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity_;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity_;
+import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.TeamFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
+import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
 import ru.vldf.sportsportal.mapper.sectional.tournament.TeamMapper;
 import ru.vldf.sportsportal.repository.tournament.TeamRepository;
 import ru.vldf.sportsportal.service.generic.*;
@@ -43,6 +45,18 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
 
     /**
+     * Returns requested filtered page with list of teams.
+     *
+     * @param filterDTO the filter parameters.
+     * @return filtered requested page with teams.
+     */
+    @Transactional(readOnly = true)
+    public PageDTO<TeamShortDTO> getList(TeamFilterDTO filterDTO) {
+        TeamFilter filter = new TeamFilter(filterDTO);
+        return PageDTO.from(teamRepository.findAll(filter, filter.getPageRequest()).map(teamMapper::toShortDTO));
+    }
+
+    /**
      * Returns requested team by team identifier.
      *
      * @param id the team identifier.
@@ -53,6 +67,18 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @Transactional(readOnly = true, rollbackFor = {ResourceNotFoundException.class})
     public TeamDTO get(Integer id) throws ResourceNotFoundException {
         return teamMapper.toDTO(findById(id));
+    }
+
+    /**
+     * Returns requested team by team identifier.
+     *
+     * @param id the team identifier.
+     * @return requested team short data.
+     * @throws ResourceNotFoundException if team not found.
+     */
+    @Transactional(readOnly = true, rollbackFor = {ResourceNotFoundException.class})
+    public TeamShortDTO getShort(Integer id) throws ResourceNotFoundException {
+        return teamMapper.toShortDTO(findById(id));
     }
 
     /**

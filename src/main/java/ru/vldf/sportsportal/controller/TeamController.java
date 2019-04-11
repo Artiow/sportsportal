@@ -7,11 +7,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import ru.vldf.sportsportal.dto.pagination.PageDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.TeamFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
+import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
 import ru.vldf.sportsportal.service.TeamService;
 import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+
+import java.util.Collection;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -33,6 +38,43 @@ public class TeamController {
 
 
     /**
+     * Returns requested page with teams for current team filter.
+     *
+     * @param isLocked        the locking flag.
+     * @param isDisabled      the disabling flag.
+     * @param captainsIds     the list of captains identifiers.
+     * @param mainCaptainsIds the list of main captains identifiers.
+     * @param viceCaptainsIds the list of vice captains identifiers.
+     * @param searchString    the search string.
+     * @param pageSize        the page size.
+     * @param pageNum         the page number.
+     * @return page with short playgrounds details.
+     */
+    @GetMapping("/list")
+    @ApiOperation("получить страницу с командами")
+    public PageDTO<TeamShortDTO> getList(
+            @RequestParam(required = false) Boolean isLocked,
+            @RequestParam(required = false) Boolean isDisabled,
+            @RequestParam(required = false) Collection<Integer> captainsIds,
+            @RequestParam(required = false) Collection<Integer> mainCaptainsIds,
+            @RequestParam(required = false) Collection<Integer> viceCaptainsIds,
+            @RequestParam(required = false) String searchString,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Integer pageNum
+    ) {
+        TeamFilterDTO teamFilterDTO = new TeamFilterDTO();
+        teamFilterDTO.setIsLocked(isLocked);
+        teamFilterDTO.setIsDisabled(isDisabled);
+        teamFilterDTO.setCaptainsIds(captainsIds);
+        teamFilterDTO.setMainCaptainsIds(mainCaptainsIds);
+        teamFilterDTO.setViceCaptainsIds(viceCaptainsIds);
+        teamFilterDTO.setSearchString(searchString);
+        teamFilterDTO.setPageSize(pageSize);
+        teamFilterDTO.setPageNum(pageNum);
+        return teamService.getList(teamFilterDTO);
+    }
+
+    /**
      * Returns team by identifier with full information.
      *
      * @param id the team identifier.
@@ -45,6 +87,21 @@ public class TeamController {
             @PathVariable int id
     ) throws ResourceNotFoundException {
         return teamService.get(id);
+    }
+
+    /**
+     * Returns team by identifier with short information.
+     *
+     * @param id the team identifier.
+     * @return requested team.
+     * @throws ResourceNotFoundException if requested team not found.
+     */
+    @GetMapping("/{id}/short")
+    @ApiOperation("получить команду c краткой информацией")
+    public TeamShortDTO getShort(
+            @PathVariable int id
+    ) throws ResourceNotFoundException {
+        return teamService.getShort(id);
     }
 
     /**
