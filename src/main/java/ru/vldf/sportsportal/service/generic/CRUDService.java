@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.service.generic;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.domain.generic.DomainObject;
@@ -40,32 +41,20 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
 
         public StringSearcher(StringSearcherDTO dto, SingularAttribute<? super E, String> attribute) {
             super(dto);
-
             this.attribute = attribute;
             configureSearchByString(dto);
         }
 
         private void configureSearchByString(StringSearcherDTO dto) {
-            String searchString = dto.getSearchString();
-            if (searchString != null) {
-                searchString = searchString.trim();
-                if (!searchString.equals("")) {
-                    this.searchWords = searchString.toLowerCase().split(" ");
-                }
-            }
+            this.searchWords = StringUtils.hasText(dto.getSearchString()) ? dto.getSearchString().trim().toLowerCase().split(" ") : null;
         }
-
 
         @Override
         public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            if (searchWords != null) {
-                return searchByStringPredicate(root, query, cb);
-            } else {
-                return null;
-            }
+            return searchWords != null ? searchByStringPredicate(root, cb) : null;
         }
 
-        private Predicate searchByStringPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        private Predicate searchByStringPredicate(Root<E> root, CriteriaBuilder cb) {
             Collection<Predicate> occurrences = new ArrayList<>();
             for (String searchWord : searchWords) {
                 occurrences.add(cb.like(cb.lower(root.get(attribute)), ("%" + searchWord + "%")));
