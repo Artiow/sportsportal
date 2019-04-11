@@ -90,16 +90,16 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
 
     private void createCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
-        boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
-        if (teamRepository.existsByName(teamDTO.getName())) {
-            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
-        }
+        boolean currentUserIsAdmin = currentUserIsAdmin();
         if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
             errors.put("isLocked", msg("sportsportal.tournament.Team.validation.forbiddenIsLocked.message"));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
             errors.put("isDisabled", msg("sportsportal.tournament.Team.validation.forbiddenIsDisabled.message"));
+        }
+        if (teamRepository.existsByName(teamDTO.getName())) {
+            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!errors.isEmpty()) {
             validationExceptionFor("create", 0, teamDTO, errors);
@@ -109,14 +109,14 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     private void updateCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
-        if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
-            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
-        }
         if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
             errors.put("isLocked", msg("sportsportal.tournament.Team.validation.forbiddenIsLocked.message"));
         }
         if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
             errors.put("isDisabled", msg("sportsportal.tournament.Team.validation.forbiddenIsDisabled.message"));
+        }
+        if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
+            errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!errors.isEmpty()) {
             validationExceptionFor("update", 1, teamDTO, errors);

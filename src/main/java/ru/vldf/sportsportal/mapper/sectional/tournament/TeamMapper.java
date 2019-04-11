@@ -27,6 +27,26 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
 
 
     @Override
+    public TeamEntity inject(TeamEntity acceptor, TeamDTO donor) {
+        // params by default saving
+        boolean lockedByDefault = acceptor.getIsLocked();
+        boolean disabledByDefault = acceptor.getIsDisabled();
+
+        // inject
+        acceptor = super.inject(acceptor, donor);
+
+        // params by default restoring
+        if (Objects.isNull(donor.getIsLocked())) {
+            acceptor.setIsLocked(lockedByDefault);
+        }
+        if (Objects.isNull(donor.getIsDisabled())) {
+            acceptor.setIsDisabled(disabledByDefault);
+        }
+
+        return acceptor;
+    }
+
+    @Override
     public TeamEntity merge(TeamEntity acceptor, TeamEntity donor) throws OptimisticLockException {
         super.merge(acceptor, donor);
 
