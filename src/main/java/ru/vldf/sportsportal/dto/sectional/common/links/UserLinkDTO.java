@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.sectional.tournament.shortcut;
+package ru.vldf.sportsportal.dto.sectional.common.links;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +11,12 @@ import java.net.URI;
  */
 @Getter
 @Setter
-public class TeamLinkDTO extends AbstractVersionedLinkDTO {
+public class UserLinkDTO extends AbstractVersionedLinkDTO {
 
+    private String email;
     private String name;
-    private URI teamURL;
+    private String surname;
+    private String phone;
+    private URI userURL;
     private URI avatarURL;
 }

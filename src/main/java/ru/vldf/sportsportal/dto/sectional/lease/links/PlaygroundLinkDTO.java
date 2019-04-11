@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.sectional.lease.specialized;
+package ru.vldf.sportsportal.dto.sectional.lease.links;
 
 import lombok.Getter;
 import lombok.Setter;

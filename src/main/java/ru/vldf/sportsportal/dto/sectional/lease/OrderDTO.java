@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.dto.sectional.lease;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
-import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import javax.validation.Valid;

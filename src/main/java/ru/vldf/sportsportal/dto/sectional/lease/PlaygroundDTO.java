@@ -5,8 +5,8 @@ import lombok.Setter;
 import ru.vldf.sportsportal.dto.generic.LinkedDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
-import ru.vldf.sportsportal.dto.sectional.common.specialized.PictureLinkDTO;
-import ru.vldf.sportsportal.dto.sectional.common.specialized.UserLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
