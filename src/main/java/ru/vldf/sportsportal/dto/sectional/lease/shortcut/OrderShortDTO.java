@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
 
 import java.math.BigDecimal;
@@ -15,10 +15,8 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class OrderShortDTO implements VersionedDTO {
+public class OrderShortDTO extends AbstractVersionedShortDTO {
 
-    private Integer id;
-    private Long version;
     private BigDecimal price;
     private LocalDateTime datetime;
     private LocalDateTime expiration;

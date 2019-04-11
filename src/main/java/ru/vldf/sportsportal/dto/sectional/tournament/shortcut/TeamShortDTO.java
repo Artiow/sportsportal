@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.tournament.shortcut;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedShortDTO;
 
 import java.net.URI;
 
@@ -11,10 +11,8 @@ import java.net.URI;
  */
 @Getter
 @Setter
-public class TeamShortDTO implements VersionedDTO {
+public class TeamShortDTO extends AbstractVersionedShortDTO {
 
-    private Integer id;
-    private Long version;
     private String name;
     private Boolean isLocked;
     private Boolean isDisabled;

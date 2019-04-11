@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.generic.AbstractVersionedShortDTO;
 import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
 
 import java.math.BigDecimal;
@@ -15,10 +15,8 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class PlaygroundShortDTO implements VersionedDTO, WorkTimeDTO {
+public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements WorkTimeDTO {
 
-    private Integer id;
-    private Long version;
     private String name;
     private String address;
     private String phone;
