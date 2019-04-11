@@ -27,7 +27,9 @@ import ru.vldf.sportsportal.service.filesystem.PictureFileException;
 import ru.vldf.sportsportal.service.generic.*;
 
 import javax.validation.ConstraintViolationException;
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Namednev Artem
@@ -36,6 +38,10 @@ import java.util.*;
 @RestControllerAdvice
 @SuppressWarnings("SameParameterValue")
 public class AdviseController {
+
+    private static final String ROOT = "ROOT";
+    private static final String EMPTY = "";
+
 
     private final MessageContainer messages;
 
@@ -73,30 +79,28 @@ public class AdviseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<String> errorList = new ArrayList<>();
-        Map<String, String> errorMap = new HashMap<>();
-        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
 
-            // todo: get field names from annotation
-            // error.unwrap(ConstraintViolation.class).getConstraintDescriptor().getAnnotation()
+        // NOTE: Getting field names from annotation:
+        // error.unwrap(ConstraintViolation.class).getConstraintDescriptor().getAnnotation()
 
-            if (error instanceof FieldError) {
-                errorMap.put(((FieldError) error).getField(), error.getDefaultMessage());
-            } else {
-                errorList.add(error.getDefaultMessage());
-            }
-        }
-        Throwable cause = ex.getCause();
         return new ErrorMapDTO(
                 warnUUID("Sent body not valid"),
                 ex.getClass().getName(),
                 messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
-                (cause != null) ? cause.getClass().getName() : null,
-                (cause != null) ? cause.getMessage() : null,
-                errorList,
-                errorMap
+                (ex.getCause() != null) ? ex.getCause().getClass().getName() : null,
+                (ex.getCause() != null) ? ex.getCause().getMessage() : null,
+                ex.getBindingResult().getAllErrors().stream().collect(Collectors.toMap(this::fieldOf, this::messageOf))
         );
     }
+
+    private String fieldOf(ObjectError error) {
+        return error instanceof FieldError ? ((FieldError) error).getField() : ROOT;
+    }
+
+    private String messageOf(ObjectError error) {
+        return Optional.ofNullable(error.getDefaultMessage()).orElse(EMPTY);
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidParameterException.class)

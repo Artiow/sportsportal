@@ -15,6 +15,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidWorkTime {
 
+    String[] fields() default {"opening", "closing", "halfHourAvailable", "fullHourRequired"};
+
     String message() default "{sportsportal.validation.constraints.ValidWorkTime.message}";
 
     Class<?>[] groups() default {};
