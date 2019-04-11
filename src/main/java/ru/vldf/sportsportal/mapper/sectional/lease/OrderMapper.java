@@ -25,7 +25,7 @@ import java.util.Collection;
         componentModel = "spring",
         uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class}
 )
-public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
+public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO, OrderLinkDTO> {
 
     @Mappings({
             @Mapping(target = "description", ignore = true),
@@ -46,7 +46,7 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
     public abstract OrderLinkDTO toLinkDTO(OrderEntity entity);
 
     @Mapping(target = "sum", ignore = true)
-    public abstract OrderEntity toEntity(OrderLinkDTO dto);
+    public abstract OrderEntity toLinkEntity(OrderLinkDTO dto);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

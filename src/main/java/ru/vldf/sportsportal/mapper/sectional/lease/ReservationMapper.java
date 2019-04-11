@@ -26,8 +26,10 @@ public abstract class ReservationMapper implements BasicMapper<ReservationEntity
     @Mapping(target = "pk.datetime", source = "datetime")
     public abstract ReservationEntity toEntity(ReservationResumeDTO.Item dto);
 
+
     @Mapping(target = "playground", source = "pk.playground")
     public abstract ReservationResumeDTO toResume(ReservationEntity entity);
+
 
     public ReservationResumeDTO toResume(Collection<ReservationEntity> entityCollection) {
         if ((entityCollection == null) || entityCollection.isEmpty()) {

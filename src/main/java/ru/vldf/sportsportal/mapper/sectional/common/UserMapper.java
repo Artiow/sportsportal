@@ -20,7 +20,7 @@ import javax.persistence.OptimisticLockException;
         componentModel = "spring",
         uses = {RoleMapper.class, PictureLinkMapper.class, PictureURLMapper.class, UserURLMapper.class}
 )
-public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO> {
+public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO, UserLinkDTO> {
 
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
@@ -40,7 +40,7 @@ public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, Use
             @Mapping(target = "surname", ignore = true),
             @Mapping(target = "phone", ignore = true)
     })
-    public abstract UserEntity toEntity(UserLinkDTO dto);
+    public abstract UserEntity toLinkEntity(UserLinkDTO dto);
 
     @Mapping(target = "id", ignore = true)
     public abstract UserEntity toEntity(UserDTO dto);

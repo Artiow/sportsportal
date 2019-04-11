@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Namednev Artem
  */
-public interface BasicMapper<E extends DomainObject, D extends DataTransferObject> extends ModelBidirectionalMapper<E, D> {
+public interface BasicMapper<E extends DomainObject, D extends DataTransferObject> extends ModelBidirectionalMapper {
 
     D toDTO(E entity);
 

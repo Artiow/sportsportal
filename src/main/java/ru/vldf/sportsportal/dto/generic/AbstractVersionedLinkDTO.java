@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public abstract class AbstractVersionedLinkDTO extends AbstractIdentifiedLinkDTO implements VersionedDTO {
+public abstract class AbstractVersionedLinkDTO extends AbstractIdentifiedLinkDTO implements VersionedLinkDTO {
 
     @NotNull(groups = LinkCheck.class)
     @Min(value = 0, groups = LinkCheck.class)
