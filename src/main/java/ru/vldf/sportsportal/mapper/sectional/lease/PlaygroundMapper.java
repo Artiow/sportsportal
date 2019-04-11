@@ -16,7 +16,7 @@ import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.PlaygroundURLMapper;
-import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
@@ -35,7 +35,7 @@ import java.util.function.Function;
  */
 @Mapper(
         componentModel = "spring",
-        uses = {JavaTimeMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, UserMapper.class, PictureMapper.class, SportMapper.class, FeatureMapper.class}
+        uses = {UserMapper.class, SportMapper.class, FeatureMapper.class, PictureLinkMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class}
 )
 public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO> {
 

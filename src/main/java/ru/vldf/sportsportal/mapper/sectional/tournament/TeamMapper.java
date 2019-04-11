@@ -5,7 +5,7 @@ import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
-import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
+import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Namednev Artem
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(componentModel = "spring", uses = {UserMapper.class, PictureURLMapper.class, PictureMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, PictureLinkMapper.class, PictureURLMapper.class})
 public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO> {
 
     @Override

@@ -18,7 +18,7 @@ import javax.persistence.OptimisticLockException;
  */
 @Mapper(
         componentModel = "spring",
-        uses = {UserURLMapper.class, PictureURLMapper.class, PictureMapper.class, RoleMapper.class}
+        uses = {RoleMapper.class, PictureLinkMapper.class, PictureURLMapper.class, UserURLMapper.class}
 )
 public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO> {
 

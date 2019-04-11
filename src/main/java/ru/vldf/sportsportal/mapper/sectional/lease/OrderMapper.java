@@ -12,7 +12,6 @@ import ru.vldf.sportsportal.dto.sectional.lease.specialized.OrderLinkDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
-import ru.vldf.sportsportal.mapper.sectional.common.PictureMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
@@ -24,7 +23,7 @@ import java.util.Collection;
  */
 @Mapper(
         componentModel = "spring",
-        uses = {JavaTimeMapper.class, OrderURLMapper.class, PlaygroundMapper.class, UserMapper.class, PictureMapper.class, ReservationMapper.class}
+        uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class}
 )
 public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO> {
 

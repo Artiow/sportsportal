@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * @author Namednev Artem
  */
-public abstract class AbstractLinkMapper<E extends DomainObject, D extends LinkedDTO> implements ModelForwardMapper<E, D> {
+public interface LinkMapper<E extends DomainObject, D extends LinkedDTO> extends ModelForwardMapper<E, D> {
 
-    public abstract D toLinkDTO(E entity);
+    D toLinkDTO(E entity);
 
-    public abstract List<D> toLinkDTO(Collection<E> entityCollection);
+    List<D> toLinkDTO(Collection<E> entityCollection);
 }

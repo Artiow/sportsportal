@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractModelMapper;
+import ru.vldf.sportsportal.mapper.generic.BasicMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import java.math.BigDecimal;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("UnmappedTargetProperties")
 @Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
-public abstract class ReservationMapper extends AbstractModelMapper<ReservationEntity, ReservationResumeDTO.Item> {
+public abstract class ReservationMapper implements BasicMapper<ReservationEntity, ReservationResumeDTO.Item> {
 
     @Mapping(target = "datetime", source = "pk.datetime")
     public abstract ReservationResumeDTO.Item toDTO(ReservationEntity entity);
