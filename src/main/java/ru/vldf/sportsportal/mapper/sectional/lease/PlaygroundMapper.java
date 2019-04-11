@@ -37,7 +37,7 @@ import java.util.function.Function;
         componentModel = "spring",
         uses = {UserMapper.class, SportMapper.class, FeatureMapper.class, PictureLinkMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class}
 )
-public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundLinkDTO> {
+public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundShortDTO, PlaygroundLinkDTO> {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

@@ -4,13 +4,15 @@ import org.hibernate.proxy.HibernateProxy;
 import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedLinkDTO;
+import ru.vldf.sportsportal.dto.generic.VersionedShortDTO;
 
 import javax.persistence.OptimisticLockException;
 
 /**
  * @author Namednev Artem
  */
-public abstract class AbstractVersionedMapper<E extends AbstractVersionedEntity, D extends VersionedDTO, L extends VersionedLinkDTO> extends AbstractIdentifiedMapper<E, D> implements LinkMapper<E, L> {
+public abstract class AbstractVersionedMapper<E extends AbstractVersionedEntity, D extends VersionedDTO, S extends VersionedShortDTO, L extends VersionedLinkDTO>
+        extends AbstractIdentifiedMapper<E, D> implements ShortMapper<E, S>, LinkMapper<E, L> {
 
     @Override
     public E merge(E acceptor, E donor) throws OptimisticLockException {

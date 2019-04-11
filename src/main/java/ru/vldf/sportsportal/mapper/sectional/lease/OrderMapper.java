@@ -25,7 +25,7 @@ import java.util.Collection;
         componentModel = "spring",
         uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class}
 )
-public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO, OrderLinkDTO> {
+public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO, OrderShortDTO, OrderLinkDTO> {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
