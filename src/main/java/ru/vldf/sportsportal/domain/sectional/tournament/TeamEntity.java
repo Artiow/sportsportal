@@ -38,7 +38,7 @@ public class TeamEntity extends AbstractVersionedEntity {
     private PictureEntity avatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "captain_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "main_captain_id", referencedColumnName = "id", nullable = false)
     private UserEntity mainCaptain;
 
     @ManyToOne(fetch = FetchType.LAZY)
