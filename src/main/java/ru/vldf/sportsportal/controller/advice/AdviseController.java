@@ -24,22 +24,10 @@ import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.filesystem.PictureFileException;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.HandlerNotFoundException;
-import ru.vldf.sportsportal.service.generic.InvalidParameterException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
-import ru.vldf.sportsportal.service.generic.ResourceCorruptedException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.ResourceOptimisticLockException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.generic.*;
 
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Namednev Artem
@@ -88,6 +76,10 @@ public class AdviseController {
         List<String> errorList = new ArrayList<>();
         Map<String, String> errorMap = new HashMap<>();
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
+
+            // todo: get field names from annotation
+            // error.unwrap(ConstraintViolation.class).getConstraintDescriptor().getAnnotation()
+
             if (error instanceof FieldError) {
                 errorMap.put(((FieldError) error).getField(), error.getDefaultMessage());
             } else {

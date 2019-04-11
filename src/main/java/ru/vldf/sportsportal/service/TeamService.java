@@ -92,7 +92,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
      * @throws ResourceNotFoundException   if team not found.
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
     public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         TeamEntity teamEntity = findById(id);
         rightsCheck(teamEntity);
