@@ -83,11 +83,21 @@ public class TeamController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Delete team by team identifier.
+     *
+     * @param id the team identifier.
+     * @return no content.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this team.
+     * @throws ResourceNotFoundException   if team not found.
+     */
     @DeleteMapping("/{id}")
     @ApiOperation("удалить команду")
     public ResponseEntity<Void> delete(
             @PathVariable int id
-    ) {
-        throw new UnsupportedOperationException();
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        teamService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

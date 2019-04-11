@@ -42,7 +42,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @Override
     @Transactional(readOnly = true, rollbackFor = {ResourceNotFoundException.class})
     public TeamDTO get(Integer id) throws ResourceNotFoundException {
-        return teamRepository.findById(id).map(teamMapper::toDTO).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
+        return teamMapper.toDTO(findById(id));
     }
 
     /**
@@ -76,16 +76,32 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotAcceptableException.class, ResourceNotFoundException.class})
     public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotAcceptableException, ResourceNotFoundException {
         updateCheck(teamDTO);
-        TeamEntity teamEntity = teamRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
+        TeamEntity teamEntity = findById(id);
         rightsCheck(teamEntity);
         teamEntity = teamMapper.inject(teamEntity, teamDTO);
         normalizeCaptains(teamEntity);
         teamRepository.save(teamEntity);
     }
 
+    /**
+     * Delete team by team identifier.
+     *
+     * @param id the team identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this team.
+     * @throws ResourceNotFoundException   if team not found.
+     */
     @Override
-    public void delete(Integer id) {
-        throw new UnsupportedOperationException();
+    @Transactional
+    public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        TeamEntity teamEntity = findById(id);
+        rightsCheck(teamEntity);
+        teamRepository.delete(teamEntity);
+    }
+
+
+    private TeamEntity findById(int id) throws ResourceNotFoundException {
+        return teamRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.tournament.Team.notExistById.message", id)));
     }
 
 
