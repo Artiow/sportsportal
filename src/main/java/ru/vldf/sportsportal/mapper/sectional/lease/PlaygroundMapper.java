@@ -40,17 +40,13 @@ import java.util.function.Function;
 public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundLinkDTO> {
 
     @Mappings({
-            @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
-            @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
-            @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "reservations", ignore = true),
+            @Mapping(target = "owners", ignore = true),
+            @Mapping(target = "photos", ignore = true)
     })
-    public abstract PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
+    public abstract PlaygroundEntity toEntity(PlaygroundDTO dto);
 
-    @Mappings({
-            @Mapping(target = "playground", expression = "java(toLinkDTO(entity))"),
-            @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
-    })
-    public abstract PlaygroundBoardDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
 
     @Mappings({
             @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
@@ -67,34 +63,21 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
     })
     public abstract PlaygroundEntity toLinkEntity(PlaygroundLinkDTO dto);
 
+
     @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "reservations", ignore = true),
-            @Mapping(target = "owners", ignore = true),
-            @Mapping(target = "photos", ignore = true)
+            @Mapping(target = "playgroundURL", source = "id", qualifiedByName = {"toPlaygroundURL", "fromId"}),
+            @Mapping(target = "ownersURLs", source = "owners", qualifiedByName = {"toUserURL", "fromCollection"}),
+            @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
-    public abstract PlaygroundEntity toEntity(PlaygroundDTO dto);
+    public abstract PlaygroundShortDTO toShortDTO(PlaygroundEntity entity);
 
-    @Override
-    public PlaygroundEntity merge(PlaygroundEntity acceptor, PlaygroundEntity donor) throws OptimisticLockException {
-        super.merge(acceptor, donor);
 
-        acceptor.setName(donor.getName());
-        acceptor.setAddress(donor.getAddress());
-        acceptor.setPhone(donor.getPhone());
-        acceptor.setRate(donor.getRate());
-        acceptor.setOpening(donor.getOpening());
-        acceptor.setClosing(donor.getClosing());
-        acceptor.setHalfHourAvailable(donor.getHalfHourAvailable());
-        acceptor.setFullHourRequired(donor.getFullHourRequired());
-        acceptor.setPrice(donor.getPrice());
-        acceptor.setSpecializations(donor.getSpecializations());
-        acceptor.setCapabilities(donor.getCapabilities());
-        acceptor.setOwners(donor.getOwners());
-        acceptor.setPhotos(donor.getPhotos());
+    @Mappings({
+            @Mapping(target = "playground", expression = "java(toLinkDTO(entity))"),
+            @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
+    })
+    public abstract PlaygroundBoardDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
 
-        return acceptor;
-    }
 
     public ReservationGridDTO getRawReservationGridDTO(PlaygroundEntity entity) throws DataCorruptedException {
         if (entity == null) {
@@ -144,14 +127,7 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
         return grid;
     }
 
-    public PlaygroundBoardDTO makeSchedule(
-            PlaygroundBoardDTO playgroundBoardDTO,
-            LocalDateTime now,
-            LocalDate startDate,
-            LocalDate endDate,
-            Collection<ReservationEntity> reservations
-    ) throws DataCorruptedException {
-
+    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate, Collection<ReservationEntity> reservations) throws DataCorruptedException {
         if ((playgroundBoardDTO == null) || (reservations == null)) {
             return null;
         }
@@ -178,8 +154,7 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
         return playgroundBoardDTO;
     }
 
-    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate)
-            throws DataCorruptedException {
+    public PlaygroundBoardDTO makeSchedule(PlaygroundBoardDTO playgroundBoardDTO, LocalDateTime now, LocalDate startDate, LocalDate endDate) throws DataCorruptedException {
         if (playgroundBoardDTO == null) {
             return null;
         }
@@ -289,5 +264,27 @@ public abstract class PlaygroundMapper extends AbstractVersionedMapper<Playgroun
         grid.setStartDate(startDate);
         grid.setEndDate(endDate);
         return playgroundBoardDTO;
+    }
+
+
+    @Override
+    public PlaygroundEntity merge(PlaygroundEntity acceptor, PlaygroundEntity donor) throws OptimisticLockException {
+        super.merge(acceptor, donor);
+
+        acceptor.setName(donor.getName());
+        acceptor.setAddress(donor.getAddress());
+        acceptor.setPhone(donor.getPhone());
+        acceptor.setRate(donor.getRate());
+        acceptor.setOpening(donor.getOpening());
+        acceptor.setClosing(donor.getClosing());
+        acceptor.setHalfHourAvailable(donor.getHalfHourAvailable());
+        acceptor.setFullHourRequired(donor.getFullHourRequired());
+        acceptor.setPrice(donor.getPrice());
+        acceptor.setSpecializations(donor.getSpecializations());
+        acceptor.setCapabilities(donor.getCapabilities());
+        acceptor.setOwners(donor.getOwners());
+        acceptor.setPhotos(donor.getPhotos());
+
+        return acceptor;
     }
 }

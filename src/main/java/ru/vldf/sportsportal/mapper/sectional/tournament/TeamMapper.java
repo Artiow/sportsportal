@@ -31,8 +31,8 @@ public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, Tea
 
 
     @Mappings({
-            @Mapping(target = "teamURL", qualifiedByName = {"toTeamURL", "fromId"}),
-            @Mapping(target = "avatarURL", qualifiedByName = {"toPictureURL", "fromEntity"})
+            @Mapping(target = "teamURL", source = "id", qualifiedByName = {"toTeamURL", "fromId"}),
+            @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
     public abstract TeamLinkDTO toLinkDTO(TeamEntity entity);
 

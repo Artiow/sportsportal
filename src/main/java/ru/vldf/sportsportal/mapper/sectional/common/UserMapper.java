@@ -23,10 +23,10 @@ import javax.persistence.OptimisticLockException;
 public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO, UserLinkDTO> {
 
     @Mappings({
-            @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
-            @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
+            @Mapping(target = "id", ignore = true)
     })
-    public abstract UserShortDTO toShortDTO(UserEntity entity);
+    public abstract UserEntity toEntity(UserDTO dto);
+
 
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
@@ -42,8 +42,13 @@ public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, Use
     })
     public abstract UserEntity toLinkEntity(UserLinkDTO dto);
 
-    @Mapping(target = "id", ignore = true)
-    public abstract UserEntity toEntity(UserDTO dto);
+
+    @Mappings({
+            @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
+            @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
+    })
+    public abstract UserShortDTO toShortDTO(UserEntity entity);
+
 
     @Override
     public UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {

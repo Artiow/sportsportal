@@ -28,16 +28,13 @@ import java.util.Collection;
 public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, OrderDTO, OrderLinkDTO> {
 
     @Mappings({
-            @Mapping(target = "description", ignore = true),
-            @Mapping(target = "email", source = "customer.email")
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "customer", ignore = true),
+            @Mapping(target = "reservations", ignore = true),
+            @Mapping(target = "isOwnerOccupied", ignore = true)
     })
-    public abstract PaymentRequestDTO toPayment(OrderEntity entity);
+    public abstract OrderEntity toEntity(OrderDTO dto);
 
-    @Mappings({
-            @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
-            @Mapping(target = "customerURL", source = "customer", qualifiedByName = {"toUserURL", "fromEntity"})
-    })
-    public abstract OrderShortDTO toShortDTO(OrderEntity entity);
 
     @Mappings({
             @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
@@ -45,16 +42,24 @@ public abstract class OrderMapper extends AbstractVersionedMapper<OrderEntity, O
     })
     public abstract OrderLinkDTO toLinkDTO(OrderEntity entity);
 
-    @Mapping(target = "sum", ignore = true)
+    @Mappings({
+            @Mapping(target = "sum", ignore = true)
+    })
     public abstract OrderEntity toLinkEntity(OrderLinkDTO dto);
 
+
     @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "customer", ignore = true),
-            @Mapping(target = "reservations", ignore = true),
-            @Mapping(target = "isOwnerOccupied", ignore = true)
+            @Mapping(target = "orderURL", source = "id", qualifiedByName = {"toOrderURL", "fromId"}),
+            @Mapping(target = "customerURL", source = "customer", qualifiedByName = {"toUserURL", "fromEntity"})
     })
-    public abstract OrderEntity toEntity(OrderDTO dto);
+    public abstract OrderShortDTO toShortDTO(OrderEntity entity);
+
+
+    @Mappings({
+            @Mapping(target = "description", ignore = true),
+            @Mapping(target = "email", source = "customer.email")
+    })
+    public abstract PaymentRequestDTO toPayment(OrderEntity entity);
 
 
     public OrderDTO toDTO(OrderEntity entity, URI paymentLink) {
