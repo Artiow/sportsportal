@@ -3,8 +3,10 @@ package ru.vldf.sportsportal.mapper.sectional.tournament;
 import org.mapstruct.*;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
+import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
+import ru.vldf.sportsportal.mapper.manual.url.tournament.TeamURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
@@ -15,15 +17,29 @@ import java.util.Objects;
  * @author Namednev Artem
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(componentModel = "spring", uses = {UserMapper.class, PictureLinkMapper.class, PictureURLMapper.class})
-public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO> {
+@Mapper(
+        componentModel = "spring",
+        uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, PictureURLMapper.class}
+)
+public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO, TeamLinkDTO> {
 
-    @Override
     @Mappings({
             @Mapping(target = "isLocked", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
             @Mapping(target = "isDisabled", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     })
     public abstract TeamEntity toEntity(TeamDTO dto);
+
+
+    @Mappings({
+            @Mapping(target = "teamURL", qualifiedByName = {"toTeamURL", "fromId"}),
+            @Mapping(target = "avatarURL", qualifiedByName = {"toPictureURL", "fromEntity"})
+    })
+    public abstract TeamLinkDTO toLinkDTO(TeamEntity entity);
+
+    @Mappings({
+            @Mapping(target = "name", ignore = true)
+    })
+    public abstract TeamEntity toLinkEntity(TeamLinkDTO dto);
 
 
     @Override
