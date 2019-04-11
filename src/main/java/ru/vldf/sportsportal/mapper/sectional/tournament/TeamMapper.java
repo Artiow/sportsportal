@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
 import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
+import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.tournament.TeamURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
@@ -20,7 +21,7 @@ import java.util.Objects;
 @SuppressWarnings("UnmappedTargetProperties")
 @Mapper(
         componentModel = "spring",
-        uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, PictureURLMapper.class}
+        uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, UserURLMapper.class, PictureURLMapper.class}
 )
 public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
 
@@ -44,7 +45,10 @@ public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamD
 
 
     @Mappings({
-            // todo: insert mappings!
+            @Mapping(target = "teamURL", source = "id", qualifiedByName = {"toTeamURL", "fromId"}),
+            @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"}),
+            @Mapping(target = "mainCaptainURL", source = "mainCaptain", qualifiedByName = {"toUserURL", "fromEntity"}),
+            @Mapping(target = "viceCaptainURL", source = "viceCaptain", qualifiedByName = {"toUserURL", "fromEntity"})
     })
     public abstract TeamShortDTO toShortDTO(TeamEntity entity);
 
