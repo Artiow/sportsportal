@@ -9,9 +9,13 @@ import java.util.List;
 /**
  * @author Namednev Artem
  */
-public interface LinkMapper<E extends DomainObject, D extends LinkedDTO> extends ModelForwardMapper<E, D> {
+public interface LinkMapper<E extends DomainObject, D extends LinkedDTO> extends ModelBidirectionalMapper<E, D> {
 
     D toLinkDTO(E entity);
 
     List<D> toLinkDTO(Collection<E> entityCollection);
+
+    E toEntity(D dto);
+
+    Collection<E> toEntity(List<D> dtoCollection);
 }

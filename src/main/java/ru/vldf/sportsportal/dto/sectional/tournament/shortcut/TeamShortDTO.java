@@ -18,6 +18,7 @@ public class TeamShortDTO implements VersionedDTO {
     private String name;
     private Boolean isLocked;
     private Boolean isDisabled;
+    private URI teamURL;
     private URI avatarURL;
     private URI mainCaptainURL;
     private URI viceCaptainURL;

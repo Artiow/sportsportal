@@ -13,5 +13,5 @@ import java.net.URI;
 @Setter
 public class PictureLinkDTO extends AbstractIdentifiedLinkDTO {
 
-    private URI url;
+    private URI pictureURL;
 }
