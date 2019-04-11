@@ -1,10 +1,8 @@
 package ru.vldf.sportsportal.dto.handling;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
+import org.springframework.util.MultiValueMap;
 
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -13,26 +11,21 @@ import java.util.UUID;
 public class ErrorMapDTO extends ErrorDTO {
 
     @Getter
-    private final ImmutableMap<String, String> errors;
+    private final MultiValueMap<String, String> errors;
 
 
-    public ErrorMapDTO(UUID uuid, Throwable ex, Map<String, String> errors) {
+    public ErrorMapDTO(UUID uuid, Throwable ex, MultiValueMap<String, String> errors) {
         super(uuid, ex);
-        this.errors = ofNullable(errors);
+        this.errors = errors;
     }
 
-    public ErrorMapDTO(UUID uuid, String exceptionClassName, String exceptionMessage, Map<String, String> errors) {
+    public ErrorMapDTO(UUID uuid, String exceptionClassName, String exceptionMessage, MultiValueMap<String, String> errors) {
         super(uuid, exceptionClassName, exceptionMessage);
-        this.errors = ofNullable(errors);
+        this.errors = errors;
     }
 
-    public ErrorMapDTO(UUID uuid, String exceptionClassName, String exceptionMessage, String causeClassName, String causeMessage, Map<String, String> errors) {
+    public ErrorMapDTO(UUID uuid, String exceptionClassName, String exceptionMessage, String causeClassName, String causeMessage, MultiValueMap<String, String> errors) {
         super(uuid, exceptionClassName, exceptionMessage, causeClassName, causeMessage);
-        this.errors = ofNullable(errors);
-    }
-
-
-    private static <K, V> ImmutableMap<K, V> ofNullable(Map<K, V> map) {
-        return Optional.ofNullable(map).map(ImmutableMap::copyOf).orElse(ImmutableMap.of());
+        this.errors = errors;
     }
 }

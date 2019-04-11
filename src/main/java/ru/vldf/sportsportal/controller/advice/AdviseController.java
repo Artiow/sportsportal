@@ -25,11 +25,11 @@ import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.filesystem.PictureFileException;
 import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.util.CollectionConverter;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author Namednev Artem
@@ -80,8 +80,8 @@ public class AdviseController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorMapDTO handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 
-        // NOTE: Getting field names from annotation:
-        // error.unwrap(ConstraintViolation.class).getConstraintDescriptor().getAnnotation()
+        // NOTE: Getting validation annotation attributes:
+        // error.unwrap(ConstraintViolation.class).getConstraintDescriptor().getAttributes()
 
         return new ErrorMapDTO(
                 warnUUID("Sent body not valid"),
@@ -89,7 +89,7 @@ public class AdviseController {
                 messages.get("sportsportal.handle.MethodArgumentNotValidException.message"),
                 (ex.getCause() != null) ? ex.getCause().getClass().getName() : null,
                 (ex.getCause() != null) ? ex.getCause().getMessage() : null,
-                ex.getBindingResult().getAllErrors().stream().collect(Collectors.toMap(this::fieldOf, this::messageOf))
+                CollectionConverter.toMultiValueMap(ex.getBindingResult().getAllErrors(), this::fieldOf, this::messageOf)
         );
     }
 

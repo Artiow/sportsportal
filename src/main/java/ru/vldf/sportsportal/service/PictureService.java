@@ -12,11 +12,7 @@ import ru.vldf.sportsportal.repository.common.PictureRepository;
 import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.filesystem.PictureFileService;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.generic.*;
 import ru.vldf.sportsportal.util.CollectionConverter;
 import ru.vldf.sportsportal.util.models.ResourceBundle;
 
@@ -128,6 +124,6 @@ public class PictureService extends AbstractSecurityService {
 
 
     private PictureSize[] sizes() {
-        return CollectionConverter.convertToList(pictureSizeRepository.findAll(), pictureSizeMapper::toSize).toArray(new PictureSize[0]);
+        return CollectionConverter.toList(pictureSizeRepository.findAll(), pictureSizeMapper::toSize).toArray(new PictureSize[0]);
     }
 }
