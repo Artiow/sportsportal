@@ -5,7 +5,7 @@ import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.tournament.TeamURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
@@ -22,7 +22,7 @@ import java.util.Objects;
         componentModel = "spring",
         uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, PictureURLMapper.class}
 )
-public abstract class TeamMapper extends AbstractVersionedMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
+public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
 
     @Mappings({
             @Mapping(target = "isLocked", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),

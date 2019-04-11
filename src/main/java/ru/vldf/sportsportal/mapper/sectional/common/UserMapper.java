@@ -7,7 +7,7 @@ import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 
@@ -20,7 +20,7 @@ import javax.persistence.OptimisticLockException;
         componentModel = "spring",
         uses = {RoleMapper.class, PictureLinkMapper.class, PictureURLMapper.class, UserURLMapper.class}
 )
-public abstract class UserMapper extends AbstractVersionedMapper<UserEntity, UserDTO, UserShortDTO, UserLinkDTO> {
+public abstract class UserMapper extends AbstractOverallMapper<UserEntity, UserDTO, UserShortDTO, UserLinkDTO> {
 
     @Mappings({
             @Mapping(target = "id", ignore = true)

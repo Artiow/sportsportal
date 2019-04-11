@@ -10,7 +10,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.links.PlaygroundLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationGridDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractVersionedMapper;
+import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
@@ -37,7 +37,7 @@ import java.util.function.Function;
         componentModel = "spring",
         uses = {UserMapper.class, SportMapper.class, FeatureMapper.class, PictureLinkMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class}
 )
-public abstract class PlaygroundMapper extends AbstractVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundShortDTO, PlaygroundLinkDTO> {
+public abstract class PlaygroundMapper extends AbstractOverallMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundShortDTO, PlaygroundLinkDTO> {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
