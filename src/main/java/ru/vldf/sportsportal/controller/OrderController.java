@@ -10,9 +10,9 @@ import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.service.OrderService;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
 /**
  * @author Namednev Artem

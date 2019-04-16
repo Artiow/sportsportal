@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.generic;
+package ru.vldf.sportsportal.service.general;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.vldf.sportsportal.config.messages.MessageContainer;

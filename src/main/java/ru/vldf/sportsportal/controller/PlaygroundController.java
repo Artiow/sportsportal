@@ -16,7 +16,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.general.throwable.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
 import ru.vldf.sportsportal.integration.payment.RobokassaService;
 import ru.vldf.sportsportal.service.OrderService;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;

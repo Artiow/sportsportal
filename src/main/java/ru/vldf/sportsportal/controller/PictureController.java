@@ -10,10 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.service.PictureService;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;

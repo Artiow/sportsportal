@@ -12,9 +12,9 @@ import ru.vldf.sportsportal.dto.pagination.filters.TeamFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
 import ru.vldf.sportsportal.service.TeamService;
-import ru.vldf.sportsportal.service.generic.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
 import java.util.Collection;
 

@@ -24,7 +24,7 @@ import ru.vldf.sportsportal.config.messages.MessageContainer;
 import ru.vldf.sportsportal.dto.handling.ErrorDTO;
 import ru.vldf.sportsportal.dto.handling.ErrorMapDTO;
 import ru.vldf.sportsportal.service.filesystem.PictureFileException;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.general.throwable.*;
 import ru.vldf.sportsportal.util.CollectionConverter;
 
 import javax.validation.ConstraintViolationException;

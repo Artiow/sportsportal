@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.service.AuthService;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
 import javax.validation.constraints.NotBlank;
 

@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
 import ru.vldf.sportsportal.dto.payment.PaymentRequestDTO;
-import ru.vldf.sportsportal.service.generic.AbstractMessageService;
+import ru.vldf.sportsportal.service.general.AbstractMessageService;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;

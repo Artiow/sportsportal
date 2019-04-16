@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.generic;
+package ru.vldf.sportsportal.service.general.throwable;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.validation.AbstractBindingResult;

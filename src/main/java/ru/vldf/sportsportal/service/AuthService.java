@@ -15,11 +15,11 @@ import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
-import ru.vldf.sportsportal.service.generic.ResourceCannotCreateException;
-import ru.vldf.sportsportal.service.generic.ResourceCannotUpdateException;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.generic.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.AbstractSecurityService;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
 
 import javax.mail.MessagingException;

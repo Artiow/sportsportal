@@ -10,7 +10,7 @@ import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.FeatureDTO;
 import ru.vldf.sportsportal.service.dictionary.lease.FeatureService;
-import ru.vldf.sportsportal.service.generic.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 
 /**
  * @author Namednev Artem

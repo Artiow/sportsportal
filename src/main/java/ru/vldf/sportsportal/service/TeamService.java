@@ -16,7 +16,12 @@ import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
 import ru.vldf.sportsportal.mapper.sectional.tournament.TeamMapper;
 import ru.vldf.sportsportal.repository.tournament.TeamRepository;
-import ru.vldf.sportsportal.service.generic.*;
+import ru.vldf.sportsportal.service.general.AbstractSecurityService;
+import ru.vldf.sportsportal.service.general.CRUDService;
+import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.MethodArgumentNotAcceptableException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

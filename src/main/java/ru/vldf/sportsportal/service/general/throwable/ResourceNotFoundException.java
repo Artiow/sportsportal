@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.generic;
+package ru.vldf.sportsportal.service.general.throwable;
 
 import java.util.function.Supplier;
 

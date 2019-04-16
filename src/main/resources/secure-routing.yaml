@@ -43,6 +43,8 @@ publicRoutes:
   httpMethod: GET
 - pattern: /team/*
   httpMethod: GET
+- pattern: /team/*/short
+  httpMethod: GET
 
 protectedRoutes:
   ADMIN:

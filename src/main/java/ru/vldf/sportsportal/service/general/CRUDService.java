@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.generic;
+package ru.vldf.sportsportal.service.general;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +10,8 @@ import ru.vldf.sportsportal.domain.generic.DomainObject;
 import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.StringSearcherDTO;
+import ru.vldf.sportsportal.service.general.throwable.AbstractAuthorizationException;
+import ru.vldf.sportsportal.service.general.throwable.AbstractResourceException;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

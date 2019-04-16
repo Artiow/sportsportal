@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.service;
 
 import org.springframework.stereotype.Service;
-import ru.vldf.sportsportal.service.generic.AbstractSecurityService;
+import ru.vldf.sportsportal.service.general.AbstractSecurityService;
 
 /**
  * @author Namednev Artem

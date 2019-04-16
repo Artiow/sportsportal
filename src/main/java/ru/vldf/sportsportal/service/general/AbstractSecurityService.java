@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.service.generic;
+package ru.vldf.sportsportal.service.general;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
+import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 import ru.vldf.sportsportal.util.SimpleGrantedAuthorityBuilder;
 
