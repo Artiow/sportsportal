@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.mapper.manual.url;
 
 import io.jsonwebtoken.lang.Assert;
-import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.util.ResourceLocationBuilder;
 
 import java.net.URI;

@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.tournament;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.generic.AbstractIdentifiedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractIdentifiedEntity;
 
 import javax.persistence.*;
 import java.util.Collection;

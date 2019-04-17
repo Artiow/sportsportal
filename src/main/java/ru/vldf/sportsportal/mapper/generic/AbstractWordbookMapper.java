@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.mapper.generic;
 
-import ru.vldf.sportsportal.domain.generic.AbstractWordbookEntity;
+import ru.vldf.sportsportal.domain.general.AbstractWordbookEntity;
 import ru.vldf.sportsportal.dto.generic.WordbookDTO;
 
 /**

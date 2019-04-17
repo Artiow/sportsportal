@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.lease;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.generic.CompositePrimaryKey;
+import ru.vldf.sportsportal.domain.general.EmbeddedObject;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @Setter
 @Embeddable
 @EqualsAndHashCode
-public class ReservationEntityPK implements CompositePrimaryKey {
+public class ReservationEntityPK implements EmbeddedObject {
 
     private static final long serialVersionUID = 1L;
 

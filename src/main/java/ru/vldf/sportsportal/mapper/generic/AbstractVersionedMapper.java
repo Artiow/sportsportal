@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.mapper.generic;
 
 import org.hibernate.proxy.HibernateProxy;
-import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 
 import javax.persistence.OptimisticLockException;

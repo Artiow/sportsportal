@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
-import ru.vldf.sportsportal.domain.generic.AbstractWordbookEntity;
+import ru.vldf.sportsportal.domain.general.AbstractWordbookEntity;
 
 import java.util.Optional;
 

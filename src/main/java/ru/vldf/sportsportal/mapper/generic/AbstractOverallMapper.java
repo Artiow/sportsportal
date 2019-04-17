@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.mapper.generic;
 
-import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
 import ru.vldf.sportsportal.dto.generic.VersionedDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedLinkDTO;
 import ru.vldf.sportsportal.dto.generic.VersionedShortDTO;

@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.common;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.generic.AbstractDictionaryEntity;
+import ru.vldf.sportsportal.domain.general.AbstractDictionaryEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;

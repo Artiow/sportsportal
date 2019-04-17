@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.tournament;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.generic.CompositePrimaryKey;
+import ru.vldf.sportsportal.domain.general.EmbeddedObject;
 
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @Embeddable
 @EqualsAndHashCode
-public class PlayerResultEntityPK implements CompositePrimaryKey {
+public class PlayerResultEntityPK implements EmbeddedObject {
 
     private static final long serialVersionUID = 1L;
 

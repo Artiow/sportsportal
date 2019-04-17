@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.mapper.generic;
 
-import ru.vldf.sportsportal.domain.generic.DomainObject;
+import ru.vldf.sportsportal.domain.general.DomainObject;
 import ru.vldf.sportsportal.dto.generic.ShortedDTO;
 
 import java.util.Collection;

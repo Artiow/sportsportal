@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.common;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.generic.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
