@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.generic;
+package ru.vldf.sportsportal.dto.general;
 
 import lombok.Getter;
 import lombok.Setter;

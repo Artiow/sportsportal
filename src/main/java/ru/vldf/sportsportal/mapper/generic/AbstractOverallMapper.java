@@ -1,9 +1,9 @@
 package ru.vldf.sportsportal.mapper.generic;
 
 import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
-import ru.vldf.sportsportal.dto.generic.VersionedDTO;
-import ru.vldf.sportsportal.dto.generic.VersionedLinkDTO;
-import ru.vldf.sportsportal.dto.generic.VersionedShortDTO;
+import ru.vldf.sportsportal.dto.general.VersionedDTO;
+import ru.vldf.sportsportal.dto.general.VersionedLinkDTO;
+import ru.vldf.sportsportal.dto.general.VersionedShortDTO;
 
 /**
  * @author Namednev Artem

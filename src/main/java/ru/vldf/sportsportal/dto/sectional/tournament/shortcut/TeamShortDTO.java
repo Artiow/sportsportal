@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.tournament.shortcut;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.AbstractVersionedShortDTO;
+import ru.vldf.sportsportal.dto.general.AbstractVersionedShortDTO;
 
 import java.net.URI;
 

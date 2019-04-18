@@ -2,8 +2,8 @@ package ru.vldf.sportsportal.dto.sectional.lease.shortcut;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.AbstractVersionedShortDTO;
-import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
+import ru.vldf.sportsportal.dto.general.AbstractVersionedShortDTO;
+import ru.vldf.sportsportal.dto.general.WorkTimeDTO;
 
 import java.math.BigDecimal;
 import java.net.URI;

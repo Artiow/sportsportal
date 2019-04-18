@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.lease.links;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.AbstractVersionedLinkDTO;
+import ru.vldf.sportsportal.dto.general.AbstractVersionedLinkDTO;
 
 import java.math.BigDecimal;
 import java.net.URI;

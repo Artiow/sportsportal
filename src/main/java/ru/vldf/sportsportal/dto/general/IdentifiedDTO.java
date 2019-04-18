@@ -1,4 +1,6 @@
-package ru.vldf.sportsportal.dto.generic;
+package ru.vldf.sportsportal.dto.general;
+
+import ru.vldf.sportsportal.dto.general.root.DataTransferObject;
 
 /**
  * @author Namednev Artem

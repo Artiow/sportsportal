@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.dto.pagination;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.general.root.DataTransferObject;
 
 import java.util.ArrayList;
 import java.util.List;

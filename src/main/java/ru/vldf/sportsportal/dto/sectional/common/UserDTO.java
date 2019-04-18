@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.VersionedDTO;
+import ru.vldf.sportsportal.dto.general.VersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;

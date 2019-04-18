@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.generic.DictionaryDTO;
+import ru.vldf.sportsportal.dto.general.DictionaryDTO;
 
 import javax.validation.constraints.*;
 

@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.lease;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.general.EmbeddedObject;
+import ru.vldf.sportsportal.domain.general.root.EmbeddedObject;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;

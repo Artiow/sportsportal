@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.mapper.generic;
 
 import ru.vldf.sportsportal.domain.general.AbstractIdentifiedEntity;
-import ru.vldf.sportsportal.dto.generic.IdentifiedDTO;
+import ru.vldf.sportsportal.dto.general.IdentifiedDTO;
 
 /**
  * @author Namednev Artem

@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.dto.validation.validators;
 
-import ru.vldf.sportsportal.dto.generic.WorkTimeDTO;
+import ru.vldf.sportsportal.dto.general.WorkTimeDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.ConstraintValidator;

@@ -1,7 +1,7 @@
 package ru.vldf.sportsportal.mapper.generic;
 
 import ru.vldf.sportsportal.domain.general.AbstractWordbookEntity;
-import ru.vldf.sportsportal.dto.generic.WordbookDTO;
+import ru.vldf.sportsportal.dto.general.WordbookDTO;
 
 /**
  * @author Namednev Artem

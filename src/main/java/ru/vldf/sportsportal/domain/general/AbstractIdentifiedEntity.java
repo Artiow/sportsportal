@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.domain.general;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.domain.general.root.DomainObject;
 
 import javax.persistence.*;
 import java.util.Objects;

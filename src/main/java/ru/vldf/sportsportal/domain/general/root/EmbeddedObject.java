@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.domain.general;
+package ru.vldf.sportsportal.domain.general.root;
 
 import java.io.Serializable;
 

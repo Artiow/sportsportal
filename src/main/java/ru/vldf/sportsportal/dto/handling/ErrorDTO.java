@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.dto.handling;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import ru.vldf.sportsportal.dto.generic.DataTransferObject;
+import ru.vldf.sportsportal.dto.general.root.DataTransferObject;
 
 import java.util.Optional;
 import java.util.UUID;

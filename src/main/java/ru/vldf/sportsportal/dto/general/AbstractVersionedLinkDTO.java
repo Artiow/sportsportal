@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.dto.generic;
+package ru.vldf.sportsportal.dto.general;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public abstract class AbstractIdentifiedLinkDTO implements IdentifiedLinkDTO {
+public abstract class AbstractVersionedLinkDTO extends AbstractIdentifiedLinkDTO implements VersionedLinkDTO {
 
     @NotNull(groups = LinkCheck.class)
-    @Min(value = 1, groups = LinkCheck.class)
-    private Integer id;
+    @Min(value = 0, groups = LinkCheck.class)
+    private Long version;
 }
