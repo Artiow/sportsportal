@@ -9,7 +9,7 @@ import ru.vldf.sportsportal.dto.payment.PaymentRequestDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.links.OrderLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
-import ru.vldf.sportsportal.mapper.general.AbstractOverallMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallVersionedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
@@ -25,7 +25,7 @@ import java.util.Collection;
         componentModel = "spring",
         uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class}
 )
-public abstract class OrderMapper extends AbstractOverallMapper<OrderEntity, OrderDTO, OrderShortDTO, OrderLinkDTO> {
+public abstract class OrderMapper extends AbstractOverallVersionedMapper<OrderEntity, OrderDTO, OrderShortDTO, OrderLinkDTO> {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

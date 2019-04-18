@@ -5,7 +5,7 @@ import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
-import ru.vldf.sportsportal.mapper.general.AbstractOverallMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallRightsBasedMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.tournament.TeamURLMapper;
@@ -23,7 +23,7 @@ import java.util.Objects;
         componentModel = "spring",
         uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, UserURLMapper.class, PictureURLMapper.class}
 )
-public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
+public abstract class TeamMapper extends AbstractOverallRightsBasedMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
 
     @Mappings({
             @Mapping(target = "isLocked", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
@@ -54,32 +54,10 @@ public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamD
 
 
     @Override
-    public TeamEntity inject(TeamEntity acceptor, TeamDTO donor) {
-        // params by default saving
-        boolean lockedByDefault = acceptor.getIsLocked();
-        boolean disabledByDefault = acceptor.getIsDisabled();
-
-        // inject
-        acceptor = super.inject(acceptor, donor);
-
-        // params by default restoring
-        if (Objects.isNull(donor.getIsLocked())) {
-            acceptor.setIsLocked(lockedByDefault);
-        }
-        if (Objects.isNull(donor.getIsDisabled())) {
-            acceptor.setIsDisabled(disabledByDefault);
-        }
-
-        return acceptor;
-    }
-
-    @Override
     public TeamEntity merge(TeamEntity acceptor, TeamEntity donor) throws OptimisticLockException {
         super.merge(acceptor, donor);
 
         acceptor.setName(donor.getName());
-        acceptor.setIsLocked(donor.getIsLocked());
-        acceptor.setIsDisabled(donor.getIsDisabled());
 
         if (!Objects.equals(acceptor.getMainCaptain(), donor.getMainCaptain())) {
             acceptor.setMainCaptain(donor.getMainCaptain());

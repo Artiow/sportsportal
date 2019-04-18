@@ -8,6 +8,7 @@ import ru.vldf.sportsportal.dto.general.VersionedShortDTO;
 /**
  * @author Namednev Artem
  */
-public abstract class AbstractOverallMapper<E extends AbstractVersionedEntity, D extends VersionedDTO, S extends VersionedShortDTO, L extends VersionedLinkDTO> extends AbstractVersionedMapper<E, D> implements ShortMapper<E, S>, LinkMapper<E, L> {
+public abstract class AbstractOverallVersionedMapper<E extends AbstractVersionedEntity, D extends VersionedDTO, S extends VersionedShortDTO, L extends VersionedLinkDTO>
+        extends AbstractVersionedMapper<E, D> implements ShortMapper<E, S>, LinkMapper<E, L> {
 
 }
