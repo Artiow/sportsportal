@@ -284,6 +284,10 @@
                             <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <!-- mapstruct default component model as spring bean -->
+                        <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

@@ -8,7 +8,7 @@ import ru.vldf.sportsportal.mapper.general.AbstractDictionaryMapper;
 /**
  * @author Namednev Artem
  */
-@Mapper(componentModel = "spring")
+@Mapper
 public abstract class RoleMapper extends AbstractDictionaryMapper<RoleEntity, RoleDTO> {
 
 }

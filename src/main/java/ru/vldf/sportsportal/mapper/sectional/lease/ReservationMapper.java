@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Namednev Artem
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(componentModel = "spring", uses = {JavaTimeMapper.class, PlaygroundMapper.class})
+@Mapper(uses = {JavaTimeMapper.class, PlaygroundMapper.class})
 public abstract class ReservationMapper implements BasicMapper<ReservationEntity, ReservationResumeDTO.Item> {
 
     @Mapping(target = "datetime", source = "pk.datetime")

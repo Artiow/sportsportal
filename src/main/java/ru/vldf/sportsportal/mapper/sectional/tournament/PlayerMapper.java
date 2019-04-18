@@ -20,11 +20,8 @@ import javax.persistence.OptimisticLockException;
 /**
  * @author Namednev Artem
  */
-@Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, PictureLinkMapper.class, PlayerURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class}
-)
 @SuppressWarnings("UnmappedTargetProperties")
+@Mapper(uses = {UserMapper.class, PictureLinkMapper.class, PlayerURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class})
 public abstract class PlayerMapper extends AbstractOverallRightsBasedMapper<PlayerEntity, PlayerDTO, PlayerShortDTO, PlayerLinkDTO> {
 
     @Mappings({

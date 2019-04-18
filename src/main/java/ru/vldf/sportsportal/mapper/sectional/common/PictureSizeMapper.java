@@ -9,7 +9,7 @@ import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 /**
  * @author Namednev Artem
  */
-@Mapper(componentModel = "spring")
+@Mapper
 public abstract class PictureSizeMapper extends AbstractDictionaryMapper<PictureSizeEntity, PictureSizeDTO> {
 
     public PictureSize toSize(PictureSizeEntity entity) {

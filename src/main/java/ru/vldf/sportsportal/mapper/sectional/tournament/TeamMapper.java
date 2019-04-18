@@ -18,11 +18,8 @@ import java.util.Objects;
 /**
  * @author Namednev Artem
  */
-@Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, UserURLMapper.class, PictureURLMapper.class}
-)
 @SuppressWarnings("UnmappedTargetProperties")
+@Mapper(uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, UserURLMapper.class, PictureURLMapper.class})
 public abstract class TeamMapper extends AbstractOverallRightsBasedMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
 
     @Mappings({

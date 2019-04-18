@@ -21,10 +21,7 @@ import java.util.Collection;
 /**
  * @author Namednev Artem
  */
-@Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class}
-)
+@Mapper(uses = {UserMapper.class, ReservationMapper.class, OrderURLMapper.class, JavaTimeMapper.class})
 public abstract class OrderMapper extends AbstractOverallVersionedMapper<OrderEntity, OrderDTO, OrderShortDTO, OrderLinkDTO> {
 
     @Mappings({

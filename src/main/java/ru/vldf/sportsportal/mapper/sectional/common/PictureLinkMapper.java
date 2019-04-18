@@ -11,7 +11,7 @@ import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
  * @author Namednev Artem
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(componentModel = "spring", uses = {PictureURLMapper.class})
+@Mapper(uses = {PictureURLMapper.class})
 public abstract class PictureLinkMapper implements LinkMapper<PictureEntity, PictureLinkDTO> {
 
     @Mapping(target = "pictureURL", source = "id", qualifiedByName = {"toPictureURL", "fromId"})
