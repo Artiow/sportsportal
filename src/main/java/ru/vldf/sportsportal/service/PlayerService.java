@@ -6,6 +6,9 @@ import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
+import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity_;
+import ru.vldf.sportsportal.dto.pagination.PageDTO;
+import ru.vldf.sportsportal.dto.pagination.filters.PlayerFilterDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.PlayerDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.PlayerShortDTO;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
@@ -18,6 +21,12 @@ import ru.vldf.sportsportal.service.general.throwable.MethodArgumentNotAcceptabl
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,18 +49,17 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
     }
 
 
-//    /**
-//     * todo: PlayerFilterDTO required!
-//     * Returns requested filtered page with list of players.
-//     *
-//     * @param filterDTO the filter parameters.
-//     * @return filtered requested page with players.
-//     */
-//    @Transactional(readOnly = true)
-//    public PageDTO<PlayerShortDTO> getList(PlayerFilterDTO filterDTO) {
-//        PlayerFilter filter = new PlayerFilter(filterDTO);
-//        return PageDTO.from(playerRepository.findAll(filter, filter.getPageRequest()).map(playerMapper::toShortDTO));
-//    }
+    /**
+     * Returns requested filtered page with list of players.
+     *
+     * @param filterDTO the filter parameters.
+     * @return filtered requested page with players.
+     */
+    @Transactional(readOnly = true)
+    public PageDTO<PlayerShortDTO> getList(PlayerFilterDTO filterDTO) {
+        PlayerFilter filter = new PlayerFilter(filterDTO);
+        return PageDTO.from(playerRepository.findAll(filter, filter.getPageRequest()).map(playerMapper::toShortDTO));
+    }
 
     /**
      * Returns requested player by player identifier.
@@ -176,7 +184,7 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
     }
 
     private void rightsCheck(PlayerEntity playerEntity) throws UnauthorizedAccessException, ForbiddenAccessException {
-        if (!currentUserIsAdmin() && !(isCurrentUser(playerEntity.getUser()))) {
+        if (!currentUserIsAdmin() && !(isCurrentUser(playerEntity.getUser()) || isCurrentUser(playerEntity.getCreator()))) {
             throw new ForbiddenAccessException(msg("sportsportal.tournament.Player.forbidden.message"));
         }
     }
@@ -194,37 +202,34 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
     }
 
 
-//    todo: PlayerFilterDTO required!
-//    public static class PlayerFilter extends StringSearcher<PlayerEntity> {
-//
-//        private Boolean isDisabled;
-//        private Boolean isLocked;
-//
-//
-//        public PlayerFilter(PlayerFilterDTO dto) {
-//            super(dto, PlayerEntity_.name);
-//            this.isDisabled = dto.getIsDisabled();
-//            this.isLocked = dto.getIsLocked();
-//        }
-//
-//
-//        @Override
-//        public Predicate toPredicate(Root<PlayerEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-//            Collection<Predicate> predicates = new ArrayList<>();
-//            Predicate rootPredicate = super.toPredicate(root, query, cb);
-//            if (rootPredicate != null) {
-//                predicates.add(rootPredicate);
-//            }
-//            if (isDisabled != null) {
-//                predicates.add(cb.equal(root.get(PlayerEntity_.isDisabled), isDisabled));
-//            }
-//            if (isLocked != null) {
-//                predicates.add(cb.equal(root.get(PlayerEntity_.isLocked), isLocked));
-//            }
-//            return query
-//                    .where(cb.and(predicates.toArray(new Predicate[0])))
-//                    .orderBy(cb.asc(root.get(PlayerEntity_.name)))
-//                    .distinct(true).getRestriction();
-//        }
-//    }
+    public static class PlayerFilter extends StringSearcher<PlayerEntity> {
+
+        private Boolean isDisabled;
+        private Boolean isLocked;
+
+        public PlayerFilter(PlayerFilterDTO dto) {
+            super(dto, PlayerEntity_.name, PlayerEntity_.surname, PlayerEntity_.patronymic);
+            this.isDisabled = dto.getIsDisabled();
+            this.isLocked = dto.getIsLocked();
+        }
+
+        @Override
+        public Predicate toPredicate(Root<PlayerEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            Collection<Predicate> predicates = new ArrayList<>();
+            Predicate rootPredicate = super.toPredicate(root, query, cb);
+            if (rootPredicate != null) {
+                predicates.add(rootPredicate);
+            }
+            if (isDisabled != null) {
+                predicates.add(cb.equal(root.get(PlayerEntity_.isDisabled), isDisabled));
+            }
+            if (isLocked != null) {
+                predicates.add(cb.equal(root.get(PlayerEntity_.isLocked), isLocked));
+            }
+            return query
+                    .where(cb.and(predicates.toArray(new Predicate[0])))
+                    .orderBy(cb.asc(root.get(PlayerEntity_.surname)))
+                    .distinct(true).getRestriction();
+        }
+    }
 }

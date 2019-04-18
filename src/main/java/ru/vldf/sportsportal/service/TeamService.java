@@ -221,7 +221,6 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         private Boolean isDisabled;
         private Boolean isLocked;
 
-
         public TeamFilter(TeamFilterDTO dto) {
             super(dto, TeamEntity_.name);
             this.mainCaptainsIds = !CollectionUtils.isEmpty(dto.getMainCaptainsIds()) ? new ArrayList<>(dto.getMainCaptainsIds()) : null;
@@ -230,7 +229,6 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
             this.isDisabled = dto.getIsDisabled();
             this.isLocked = dto.getIsLocked();
         }
-
 
         @Override
         public Predicate toPredicate(Root<TeamEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

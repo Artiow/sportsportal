@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.service.general;
 
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,8 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * @author Namednev Artem
@@ -38,12 +38,14 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
     class StringSearcher<E extends DomainObject> extends PageDivider implements Specification<E> {
 
         private String[] searchWords;
-        private SingularAttribute<? super E, String> attribute;
+        private SingularAttribute<? super E, String>[] attributes;
 
 
-        public StringSearcher(StringSearcherDTO dto, SingularAttribute<? super E, String> attribute) {
+        @SafeVarargs
+        public StringSearcher(StringSearcherDTO dto, SingularAttribute<? super E, String>... attributes) {
             super(dto);
-            this.attribute = attribute;
+            Assert.notEmpty(attributes);
+            this.attributes = attributes;
             configureSearchByString(dto);
         }
 
@@ -57,11 +59,11 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
         }
 
         private Predicate searchByStringPredicate(Root<E> root, CriteriaBuilder cb) {
-            Collection<Predicate> occurrences = new ArrayList<>();
-            for (String searchWord : searchWords) {
-                occurrences.add(cb.like(cb.lower(root.get(attribute)), ("%" + searchWord + "%")));
-            }
-            return cb.and(occurrences.toArray(new Predicate[0]));
+            return cb.and(Stream.of(searchWords).map(
+                    word -> cb.or(Stream.of(attributes).map(
+                            attribute -> cb.like(cb.lower(root.get(attribute)), ("%" + word + "%"))
+                    ).toArray(Predicate[]::new))
+            ).toArray(Predicate[]::new));
         }
     }
 
