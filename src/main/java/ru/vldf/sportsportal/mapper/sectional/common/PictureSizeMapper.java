@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.mapper.sectional.common;
 import org.mapstruct.Mapper;
 import ru.vldf.sportsportal.domain.sectional.common.PictureSizeEntity;
 import ru.vldf.sportsportal.dto.sectional.common.PictureSizeDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractDictionaryMapper;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 
 /**

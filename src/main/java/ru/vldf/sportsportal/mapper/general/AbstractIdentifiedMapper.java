@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.mapper.generic;
+package ru.vldf.sportsportal.mapper.general;
 
 import ru.vldf.sportsportal.domain.general.AbstractIdentifiedEntity;
 import ru.vldf.sportsportal.dto.general.IdentifiedDTO;

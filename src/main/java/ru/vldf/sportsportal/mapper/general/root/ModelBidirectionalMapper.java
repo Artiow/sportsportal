@@ -1,4 +1,4 @@
-package ru.vldf.sportsportal.mapper.generic;
+package ru.vldf.sportsportal.mapper.general.root;
 
 /**
  * @author Namednev Artem

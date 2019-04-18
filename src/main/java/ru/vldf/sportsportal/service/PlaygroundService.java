@@ -16,7 +16,7 @@ import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
-import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
+import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 import ru.vldf.sportsportal.repository.lease.OrderRepository;

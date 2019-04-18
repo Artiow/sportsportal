@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
-import ru.vldf.sportsportal.mapper.generic.LinkMapper;
+import ru.vldf.sportsportal.mapper.general.LinkMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 
 /**

@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationResumeDTO;
-import ru.vldf.sportsportal.mapper.generic.BasicMapper;
+import ru.vldf.sportsportal.mapper.general.BasicMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 
 import java.math.BigDecimal;

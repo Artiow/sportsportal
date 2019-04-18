@@ -6,7 +6,7 @@ import ru.vldf.sportsportal.domain.general.AbstractDictionaryEntity;
 import ru.vldf.sportsportal.dto.general.DictionaryDTO;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractDictionaryMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractDictionaryMapper;
 import ru.vldf.sportsportal.repository.AbstractWordbookRepository;
 import ru.vldf.sportsportal.service.general.AbstractMessageService;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;

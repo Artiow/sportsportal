@@ -7,7 +7,7 @@ import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 

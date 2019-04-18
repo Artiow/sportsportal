@@ -1,7 +1,8 @@
-package ru.vldf.sportsportal.mapper.generic;
+package ru.vldf.sportsportal.mapper.general;
 
 import ru.vldf.sportsportal.domain.general.root.DomainObject;
 import ru.vldf.sportsportal.dto.general.LinkedDTO;
+import ru.vldf.sportsportal.mapper.general.root.ModelBidirectionalMapper;
 
 import java.util.Collection;
 import java.util.List;

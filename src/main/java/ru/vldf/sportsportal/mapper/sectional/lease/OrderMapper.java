@@ -9,7 +9,7 @@ import ru.vldf.sportsportal.dto.payment.PaymentRequestDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.links.OrderLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
-import ru.vldf.sportsportal.mapper.generic.AbstractOverallMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
 import ru.vldf.sportsportal.mapper.manual.url.lease.OrderURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;

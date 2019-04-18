@@ -12,7 +12,7 @@ import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationGridDTO;
-import ru.vldf.sportsportal.mapper.generic.DataCorruptedException;
+import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
 
 import java.sql.Timestamp;
