@@ -100,7 +100,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         createCheck(teamDTO);
         TeamEntity teamEntity = teamMapper.toEntity(teamDTO);
         normalizeCaptains(teamEntity);
-        return teamRepository.save(teamEntity).getId();
+        return teamRepository.save(createdByCurrentUser(teamEntity)).getId();
     }
 
     /**
@@ -127,7 +127,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
             teamEntity.setIsDisabled(true);
         }
 
-        teamRepository.save(teamEntity);
+        teamRepository.save(updatedByCurrentUser(teamEntity));
     }
 
     /**
