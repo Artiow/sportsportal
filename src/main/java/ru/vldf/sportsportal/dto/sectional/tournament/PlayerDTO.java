@@ -38,7 +38,7 @@ public class PlayerDTO implements RightsBasedDTO {
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String patronymic;
 
-    @Past
+    @Past(groups = FieldCheck.class)
     @NotNull(groups = FieldCheck.class)
     private LocalDate birthdate;
 
