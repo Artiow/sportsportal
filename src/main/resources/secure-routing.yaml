@@ -45,6 +45,10 @@ publicRoutes:
   httpMethod: GET
 - pattern: /team/*/short
   httpMethod: GET
+- pattern: /player/*
+  httpMethod: GET
+- pattern: /player/*/short
+  httpMethod: GET
 
 protectedRoutes:
   ADMIN:
@@ -55,6 +59,8 @@ protectedRoutes:
   - pattern: /user/*
     httpMethod: DELETE
   - pattern: /team/*
+    httpMethod: DELETE
+  - pattern: /player/*
     httpMethod: DELETE
 
   USER:
@@ -75,4 +81,8 @@ protectedRoutes:
   - pattern: /team
     httpMethod: POST
   - pattern: /team/*
+    httpMethod: PUT
+  - pattern: /player
+    httpMethod: POST
+  - pattern: /player/*
     httpMethod: PUT

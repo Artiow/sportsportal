@@ -48,7 +48,7 @@ public class TeamController {
      * @param searchString    the search string.
      * @param pageSize        the page size.
      * @param pageNum         the page number.
-     * @return page with short playgrounds details.
+     * @return page with short teams details.
      */
     @GetMapping("/list")
     @ApiOperation("получить страницу с командами")
