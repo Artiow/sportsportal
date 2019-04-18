@@ -38,7 +38,15 @@ public class MethodArgumentNotAcceptableException extends MethodArgumentNotValid
 
     private static AbstractBindingResult resultFor(Object objectTarget, String objectName, Map<String, String> errorMap) {
         AbstractBindingResult result = new BeanPropertyBindingResult(objectTarget, objectName);
-        errorMap.forEach((field, message) -> result.rejectValue(field, "", message));
+        errorMap.forEach((field, message) -> {
+            if (field != null) {
+                // field error
+                result.rejectValue(field, "", message);
+            } else {
+                // object error
+                result.reject("", message);
+            }
+        });
         return result;
     }
 }
