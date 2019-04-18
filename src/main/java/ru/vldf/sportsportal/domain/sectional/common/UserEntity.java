@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.common;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractRightsBasedEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
@@ -20,7 +20,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "user", schema = "common")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class UserEntity extends AbstractVersionedEntity {
+public class UserEntity extends AbstractRightsBasedEntity {
 
     @Basic
     @Column(name = "email", nullable = false)

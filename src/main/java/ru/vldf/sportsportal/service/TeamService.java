@@ -121,6 +121,12 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         rightsCheck(teamEntity);
         teamEntity = teamMapper.inject(teamEntity, teamDTO);
         normalizeCaptains(teamEntity);
+
+        if (!currentUserIsAdmin()) {
+            // disabling, admin check required
+            teamEntity.setIsDisabled(true);
+        }
+
         teamRepository.save(teamEntity);
     }
 

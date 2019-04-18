@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.tournament;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractRightsBasedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
@@ -17,9 +17,9 @@ import java.util.Collection;
 @Getter
 @Setter
 @Entity
-@Table(name = "player", schema = "tournament", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "surname", "birthdate"})})
+@Table(name = "player", schema = "tournament", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "surname", "patronymic", "birthdate"})})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class PlayerEntity extends AbstractVersionedEntity {
+public class PlayerEntity extends AbstractRightsBasedEntity {
 
     @Basic
     @Column(name = "name", nullable = false)

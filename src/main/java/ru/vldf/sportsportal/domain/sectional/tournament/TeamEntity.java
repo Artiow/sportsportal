@@ -3,7 +3,7 @@ package ru.vldf.sportsportal.domain.sectional.tournament;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.general.AbstractRightsBasedEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 
@@ -18,19 +18,11 @@ import java.util.Collection;
 @Entity
 @Table(name = "team", schema = "tournament")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class TeamEntity extends AbstractVersionedEntity {
+public class TeamEntity extends AbstractRightsBasedEntity {
 
     @Basic
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-
-    @Basic
-    @Column(name = "locked", nullable = false)
-    private Boolean isLocked = false;
-
-    @Basic
-    @Column(name = "disabled", nullable = false)
-    private Boolean isDisabled = true;
 
 
     @OneToOne(fetch = FetchType.LAZY)
