@@ -84,7 +84,6 @@ public abstract class TeamMapper extends AbstractOverallMapper<TeamEntity, TeamD
         if (!Objects.equals(acceptor.getMainCaptain(), donor.getMainCaptain())) {
             acceptor.setMainCaptain(donor.getMainCaptain());
         }
-
         if (!Objects.equals(acceptor.getViceCaptain(), donor.getViceCaptain())) {
             acceptor.setViceCaptain(donor.getViceCaptain());
         }

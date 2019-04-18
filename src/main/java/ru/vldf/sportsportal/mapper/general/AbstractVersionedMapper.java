@@ -5,6 +5,7 @@ import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
 import ru.vldf.sportsportal.dto.general.VersionedDTO;
 
 import javax.persistence.OptimisticLockException;
+import java.util.Objects;
 
 /**
  * @author Namednev Artem
@@ -14,23 +15,22 @@ public abstract class AbstractVersionedMapper<E extends AbstractVersionedEntity,
     @Override
     public E merge(E acceptor, E donor) throws OptimisticLockException {
         versionCheck(acceptor, donor);
-        acceptor.setVersion(donor.getVersion());
-        return acceptor;
+        return super.merge(acceptor, donor);
     }
 
-    private void versionCheck(AbstractVersionedEntity acceptor, AbstractVersionedEntity donor) throws OptimisticLockException {
-        Long oldVersion = acceptor.getVersion();
-        Long newVersion = donor.getVersion();
-        if (newVersion != null) {
-            if (oldVersion == null) {
-                throw new IllegalArgumentException(exMessage("%s failed merge for %s because the acceptor entity has no version, but donor version present", acceptor));
-            } else if (!oldVersion.equals(newVersion)) {
-                throw new OptimisticLockException(exMessage("%s failed merge for %s because the entity versions does not match", acceptor));
-            }
+    private void versionCheck(E acceptor, E donor) throws OptimisticLockException {
+        if (!Objects.equals(acceptor.getVersion(), donor.getVersion())) {
+            throw new OptimisticLockException(
+                    String.format(
+                            "%s failed merge for %s because the entity versions does not match",
+                            this.getClass().getName(),
+                            getEntityClassName(acceptor)
+                    )
+            );
         }
     }
 
-    private String exMessage(String template, AbstractVersionedEntity acceptor) {
-        return String.format(template, this.getClass().getName(), ((acceptor instanceof HibernateProxy) ? ((HibernateProxy) acceptor).getHibernateLazyInitializer().getPersistentClass() : acceptor.getClass()).getName());
+    private String getEntityClassName(E acceptor) {
+        return ((acceptor instanceof HibernateProxy) ? ((HibernateProxy) acceptor).getHibernateLazyInitializer().getPersistentClass() : acceptor.getClass()).getName();
     }
 }
