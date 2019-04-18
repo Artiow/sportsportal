@@ -18,30 +18,18 @@ import java.util.Objects;
 /**
  * @author Namednev Artem
  */
-@SuppressWarnings("UnmappedTargetProperties")
 @Mapper(
         componentModel = "spring",
         uses = {UserMapper.class, PictureLinkMapper.class, TeamURLMapper.class, UserURLMapper.class, PictureURLMapper.class}
 )
+@SuppressWarnings("UnmappedTargetProperties")
 public abstract class TeamMapper extends AbstractOverallRightsBasedMapper<TeamEntity, TeamDTO, TeamShortDTO, TeamLinkDTO> {
-
-    @Mappings({
-            @Mapping(target = "isLocked", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
-            @Mapping(target = "isDisabled", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    })
-    public abstract TeamEntity toEntity(TeamDTO dto);
-
 
     @Mappings({
             @Mapping(target = "teamURL", source = "id", qualifiedByName = {"toTeamURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
     public abstract TeamLinkDTO toLinkDTO(TeamEntity entity);
-
-    @Mappings({
-            @Mapping(target = "name", ignore = true)
-    })
-    public abstract TeamEntity toLinkEntity(TeamLinkDTO dto);
 
 
     @Mappings({
