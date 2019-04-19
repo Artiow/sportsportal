@@ -86,3 +86,5 @@ protectedRoutes:
     httpMethod: POST
   - pattern: /player/*
     httpMethod: PUT
+  - pattern: /player/*/assignment
+    httpMethod: PUT
