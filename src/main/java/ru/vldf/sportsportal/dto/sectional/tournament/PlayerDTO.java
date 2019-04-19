@@ -7,6 +7,7 @@ import ru.vldf.sportsportal.dto.general.RightsBasedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Past;
+import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -27,14 +28,17 @@ public class PlayerDTO implements RightsBasedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String name;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String surname;
 
+    @Trimmed(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String patronymic;
 

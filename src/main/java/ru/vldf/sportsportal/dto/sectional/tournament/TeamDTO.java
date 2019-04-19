@@ -6,6 +6,7 @@ import ru.vldf.sportsportal.dto.general.LinkedDTO;
 import ru.vldf.sportsportal.dto.general.RightsBasedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
+import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -26,6 +27,7 @@ public class TeamDTO implements RightsBasedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String name;
