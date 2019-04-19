@@ -53,12 +53,13 @@ public class PlaygroundController {
      * @param closing      the closing time.
      * @param featureCodes the list of feature codes.
      * @param sportCodes   the list of sport codes.
-     * @param startPrice   the minimal playground price.
-     * @param endPrice     the maximal playground price.
+     * @param minPrice     the minimal playground price.
+     * @param maxPrice     the maximal playground price.
      * @param searchString the search string.
      * @param pageSize     the page size.
      * @param pageNum      the page number.
      * @param minRate      the minimal playground rate.
+     * @param maxRate      the maximal playground rate.
      * @return page with short playgrounds details.
      */
     @GetMapping("/list")
@@ -68,19 +69,21 @@ public class PlaygroundController {
             @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
             @RequestParam(required = false) Collection<String> featureCodes,
             @RequestParam(required = false) Collection<String> sportCodes,
-            @RequestParam(required = false) BigDecimal startPrice,
-            @RequestParam(required = false) BigDecimal endPrice,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String searchString,
             @RequestParam(required = false) Integer pageSize,
             @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer minRate
+            @RequestParam(required = false) Integer minRate,
+            @RequestParam(required = false) Integer maxRate
     ) {
         PlaygroundFilterDTO playgroundFilterDTO = new PlaygroundFilterDTO();
         playgroundFilterDTO.setFeatureCodes(featureCodes);
         playgroundFilterDTO.setSportCodes(sportCodes);
-        playgroundFilterDTO.setStartPrice(startPrice);
-        playgroundFilterDTO.setEndPrice(endPrice);
+        playgroundFilterDTO.setMinPrice(minPrice);
+        playgroundFilterDTO.setMaxPrice(maxPrice);
         playgroundFilterDTO.setMinRate(minRate);
+        playgroundFilterDTO.setMaxRate(maxRate);
         playgroundFilterDTO.setOpening(opening);
         playgroundFilterDTO.setClosing(closing);
         playgroundFilterDTO.setSearchString(searchString);

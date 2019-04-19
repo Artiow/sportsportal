@@ -388,11 +388,12 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
         private Collection<String> featureCodes;
         private Collection<String> sportCodes;
-        private BigDecimal startPrice;
-        private BigDecimal endPrice;
+        private BigDecimal minPrice;
+        private BigDecimal maxPrice;
         private Timestamp opening;
         private Timestamp closing;
         private Integer minRate;
+        private Integer maxRate;
 
 
         public PlaygroundFilter(PlaygroundFilterDTO dto) {
@@ -436,21 +437,13 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
 
         private void configureSearchByPrice(PlaygroundFilterDTO dto) {
-            BigDecimal startPrice = dto.getStartPrice();
-            BigDecimal endPrice = dto.getEndPrice();
-            if ((startPrice != null) && (endPrice != null)) {
-                if (startPrice.compareTo(endPrice) <= 0) {
-                    this.startPrice = startPrice;
-                    this.endPrice = endPrice;
-                } else {
-                    this.startPrice = endPrice;
-                    this.endPrice = startPrice;
-                }
-            }
+            this.minPrice = dto.getMinPrice();
+            this.maxPrice = dto.getMaxPrice();
         }
 
         private void configureSearchByRate(PlaygroundFilterDTO dto) {
             this.minRate = dto.getMinRate();
+            this.maxRate = dto.getMaxRate();
         }
 
         @Override
@@ -469,11 +462,17 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
             }
-            if (startPrice != null) {
-                predicates.add(searchByCostPredicate(root, cb));
+            if (minPrice != null) {
+                predicates.add(searchByMinPricePredicate(root, cb));
+            }
+            if (maxPrice != null) {
+                predicates.add(searchByMaxPricePredicate(root, cb));
             }
             if (minRate != null) {
-                predicates.add(searchByRatePredicate(root, cb));
+                predicates.add(searchByMinRatePredicate(root, cb));
+            }
+            if (maxRate != null) {
+                predicates.add(searchByMaxRatePredicate(root, cb));
             }
 
             return query
@@ -513,16 +512,20 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
                     : cb.or(closingMatch, closeOnMidnight);
         }
 
-        private Predicate searchByCostPredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            Path<BigDecimal> sought = root.get(PlaygroundEntity_.price);
-            return cb.and(
-                    cb.greaterThanOrEqualTo(sought, startPrice),
-                    cb.lessThanOrEqualTo(sought, endPrice)
-            );
+        private Predicate searchByMinPricePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.price), minPrice);
         }
 
-        private Predicate searchByRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+        private Predicate searchByMaxPricePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.price), maxPrice);
+        }
+
+        private Predicate searchByMinRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
             return cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.rate), minRate);
+        }
+
+        private Predicate searchByMaxRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
+            return cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.rate), maxRate);
         }
     }
 

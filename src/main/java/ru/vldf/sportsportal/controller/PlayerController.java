@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +16,8 @@ import ru.vldf.sportsportal.service.PlayerService;
 import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
+
+import java.time.LocalDate;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -38,6 +41,11 @@ public class PlayerController {
     /**
      * Returns requested page with players for current player filter.
      *
+     * @param name the player name.
+     * @param surname the player surname.
+     * @param patronymic the player patronymic.
+     * @param minBirthdate the player minimum birthdate.
+     * @param maxBirthdate the player maximum birthdate.
      * @param isLocked     the locking flag.
      * @param isDisabled   the disabling flag.
      * @param searchString the search string.
@@ -48,6 +56,11 @@ public class PlayerController {
     @GetMapping("/list")
     @ApiOperation("получить страницу с игроками")
     public PageDTO<PlayerShortDTO> getList(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname,
+            @RequestParam(required = false) String patronymic,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate minBirthdate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate maxBirthdate,
             @RequestParam(required = false) Boolean isLocked,
             @RequestParam(required = false) Boolean isDisabled,
             @RequestParam(required = false) String searchString,
@@ -55,6 +68,11 @@ public class PlayerController {
             @RequestParam(required = false) Integer pageNum
     ) {
         PlayerFilterDTO playerFilterDTO = new PlayerFilterDTO();
+        playerFilterDTO.setName(name);
+        playerFilterDTO.setSurname(surname);
+        playerFilterDTO.setPatronymic(patronymic);
+        playerFilterDTO.setMinBirthdate(minBirthdate);
+        playerFilterDTO.setMaxBirthdate(maxBirthdate);
         playerFilterDTO.setIsLocked(isLocked);
         playerFilterDTO.setIsDisabled(isDisabled);
         playerFilterDTO.setSearchString(searchString);

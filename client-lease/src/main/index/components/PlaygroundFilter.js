@@ -22,8 +22,8 @@ export default class PlaygroundFilter extends React.Component {
             sportCodes: [],
             featureCodes: [],
             searchString: '',
-            startPrice: PlaygroundFilter.MIN_PRICE,
-            endPrice: PlaygroundFilter.MAX_PRICE,
+            minPrice: PlaygroundFilter.MIN_PRICE,
+            maxPrice: PlaygroundFilter.MAX_PRICE,
             opening: '00:00',
             closing: '00:00'
         };
@@ -93,8 +93,8 @@ export default class PlaygroundFilter extends React.Component {
             searchString: this.state.searchString,
             featureCodes: this.state.featureCodes,
             sportCodes: this.state.sportCodes,
-            startPrice: this.state.startPrice,
-            endPrice: this.state.endPrice,
+            minPrice: this.state.minPrice,
+            maxPrice: this.state.maxPrice,
             opening: this.state.opening,
             closing: this.state.closing
         });
@@ -193,7 +193,7 @@ export default class PlaygroundFilter extends React.Component {
                                         <span className="badge-sub">от</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {Math.floor(this.state.startPrice)}
+                                                {Math.floor(this.state.minPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>
@@ -202,7 +202,7 @@ export default class PlaygroundFilter extends React.Component {
                                         <span className="badge-sub">до</span>
                                         <span className="badge badge-dark">
                                             <span className="badge-param">
-                                                {Math.floor(this.state.endPrice)}
+                                                {Math.floor(this.state.maxPrice)}
                                             </span>
                                             <i className="fa fa-rub"/>/час
                                         </span>

@@ -13,9 +13,9 @@ import java.util.Collection;
 @Setter
 public class TeamFilterDTO extends StringSearcherDTO {
 
-    private Boolean isLocked;
-    private Boolean isDisabled;
     private Collection<Integer> captainsIds;
     private Collection<Integer> mainCaptainsIds;
     private Collection<Integer> viceCaptainsIds;
+    private Boolean isLocked;
+    private Boolean isDisabled;
 }
