@@ -8,6 +8,7 @@ import ru.vldf.sportsportal.dto.general.WorkTimeDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
+import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.Valid;
@@ -32,14 +33,17 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 45, groups = FieldCheck.class)
     private String name;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 90, groups = FieldCheck.class)
     private String address;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;

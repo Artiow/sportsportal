@@ -6,6 +6,7 @@ import ru.vldf.sportsportal.dto.general.VersionedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
+import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
 import javax.validation.constraints.*;
 import java.util.List;
@@ -25,6 +26,7 @@ public class UserDTO implements VersionedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 5, max = 254, groups = FieldCheck.class)
     @Email(groups = FieldCheck.class)
@@ -34,20 +36,25 @@ public class UserDTO implements VersionedDTO {
     @Size(min = 4, max = 50, groups = FieldCheck.class)
     private String password;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String name;
 
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String surname;
 
+    @Trimmed(groups = FieldCheck.class)
     @Size(min = 2, max = 45, groups = FieldCheck.class)
     private String patronymic;
 
+    @Trimmed(groups = FieldCheck.class)
     @Size(min = 5, max = 254, groups = FieldCheck.class)
     private String address;
 
+    @Trimmed(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
     private String phone;
 
