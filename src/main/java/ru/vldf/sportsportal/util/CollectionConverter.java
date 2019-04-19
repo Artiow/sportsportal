@@ -16,11 +16,6 @@ import java.util.stream.Collectors;
  */
 public final class CollectionConverter {
 
-    private CollectionConverter() {
-
-    }
-
-
     public static <S, RK, RV> MultiValueMap<RK, RV> toMultiValueMap(Collection<S> source, Function<? super S, ? extends RK> keyMapper, Function<? super S, ? extends RV> valueMapper) {
         return new LinkedMultiValueMap<>(
                 source.stream().collect(Collectors.groupingBy(keyMapper)).entrySet().stream().map(e -> new AbstractMap.SimpleEntry<RK, List<RV>>(e.getKey(), e.getValue().stream().map(valueMapper).collect(Collectors.toList()))).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))
