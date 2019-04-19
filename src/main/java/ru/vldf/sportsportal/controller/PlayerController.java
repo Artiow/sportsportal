@@ -14,6 +14,7 @@ import ru.vldf.sportsportal.dto.sectional.tournament.PlayerDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.PlayerShortDTO;
 import ru.vldf.sportsportal.service.PlayerService;
 import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 
@@ -41,9 +42,9 @@ public class PlayerController {
     /**
      * Returns requested page with players for current player filter.
      *
-     * @param name the player name.
-     * @param surname the player surname.
-     * @param patronymic the player patronymic.
+     * @param name         the player name.
+     * @param surname      the player surname.
+     * @param patronymic   the player patronymic.
      * @param minBirthdate the player minimum birthdate.
      * @param maxBirthdate the player maximum birthdate.
      * @param isLocked     the locking flag.
@@ -142,8 +143,28 @@ public class PlayerController {
     @ApiOperation("редактировать игрока")
     public ResponseEntity<Void> update(
             @PathVariable int id, @RequestBody @Validated(PlayerDTO.UpdateCheck.class) PlayerDTO playerDTO
-    ) throws ForbiddenAccessException, UnauthorizedAccessException, MethodArgumentNotValidException, ResourceNotFoundException {
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotValidException, ResourceNotFoundException {
         playerService.update(id, playerDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Assign player to user.
+     *
+     * @param id     the player identifier.
+     * @param userId the user identifier.
+     * @param force  {@literal true} if assigning must be override, {@literal false} otherwise.
+     * @return no content.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to update this player details.
+     * @throws ResourceNotFoundException     if player or user not found.
+     * @throws ResourceCannotUpdateException if player already assigned or user details mismatch.
+     */
+    @PutMapping("/{id}/assignment")
+    public ResponseEntity<Void> assign(
+            @PathVariable int id, @RequestParam(required = false) Integer userId, @RequestParam(required = false) Boolean force
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
+        playerService.assign(id, userId, force);
         return ResponseEntity.noContent().build();
     }
 
