@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity_;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
@@ -25,6 +26,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -204,11 +206,24 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
 
     public static class PlayerFilter extends StringSearcher<PlayerEntity> {
 
+        // crutch! todo: separate the filter object and specification logic
+        private final JavaTimeMapper mapper = new JavaTimeMapper();
+
+        private String name;
+        private String surname;
+        private String patronymic;
+        private Timestamp minBirthdate;
+        private Timestamp maxBirthdate;
         private Boolean isDisabled;
         private Boolean isLocked;
 
         public PlayerFilter(PlayerFilterDTO dto) {
             super(dto, PlayerEntity_.name, PlayerEntity_.surname, PlayerEntity_.patronymic);
+            this.name = StringUtils.hasText(dto.getName()) ? dto.getName().trim().toLowerCase() : null;
+            this.surname = StringUtils.hasText(dto.getSurname()) ? dto.getSurname().trim().toLowerCase() : null;
+            this.patronymic = StringUtils.hasText(dto.getPatronymic()) ? dto.getPatronymic().trim().toLowerCase() : null;
+            this.minBirthdate = mapper.toTimestamp(dto.getMinBirthdate());
+            this.maxBirthdate = mapper.toTimestamp(dto.getMaxBirthdate());
             this.isDisabled = dto.getIsDisabled();
             this.isLocked = dto.getIsLocked();
         }
@@ -219,6 +234,21 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
             Predicate rootPredicate = super.toPredicate(root, query, cb);
             if (rootPredicate != null) {
                 predicates.add(rootPredicate);
+            }
+            if (name != null) {
+                predicates.add(cb.like(cb.lower(root.get(PlayerEntity_.name)), name));
+            }
+            if (surname != null) {
+                predicates.add(cb.like(cb.lower(root.get(PlayerEntity_.surname)), surname));
+            }
+            if (patronymic != null) {
+                predicates.add(cb.like(cb.lower(root.get(PlayerEntity_.patronymic)), patronymic));
+            }
+            if (minBirthdate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get(PlayerEntity_.birthdate), minBirthdate));
+            }
+            if (maxBirthdate != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get(PlayerEntity_.birthdate), maxBirthdate));
             }
             if (isDisabled != null) {
                 predicates.add(cb.equal(root.get(PlayerEntity_.isDisabled), isDisabled));

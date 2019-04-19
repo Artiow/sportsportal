@@ -13,9 +13,9 @@ import java.time.LocalTime;
 @Component
 public class JavaTimeMapper {
 
-    public final static LocalTime MIN_TIME = LocalTime.MIN;
-    public final static LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
-    public final static LocalDateTime MIN = LocalDateTime.of(MIN_DATE, MIN_TIME);
+    public static final LocalTime MIN_TIME = LocalTime.MIN;
+    public static final LocalDate MIN_DATE = LocalDate.of(1, 1, 1);
+    public static final LocalDateTime MIN = LocalDateTime.of(MIN_DATE, MIN_TIME);
 
 
     public LocalDate toLocalDate(Timestamp timestamp) {

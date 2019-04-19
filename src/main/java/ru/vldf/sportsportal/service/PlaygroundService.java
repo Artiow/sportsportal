@@ -386,6 +386,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
     public static class PlaygroundFilter extends StringSearcher<PlaygroundEntity> {
 
+        // crutch! todo: separate the filter object and specification logic
+        private final JavaTimeMapper mapper = new JavaTimeMapper();
+
         private Collection<String> featureCodes;
         private Collection<String> sportCodes;
         private BigDecimal minPrice;
@@ -421,19 +424,8 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
 
         private void configureSearchByWorkTime(PlaygroundFilterDTO dto) {
-            LocalTime opening = dto.getOpening();
-            LocalTime closing = dto.getClosing();
-            if ((opening != null) && (closing != null)) {
-                boolean toMidnight = closing.equals(LocalTime.MIN);
-                final JavaTimeMapper jtMapper = new JavaTimeMapper();
-                if ((toMidnight) || (!opening.isAfter(closing))) {
-                    this.opening = jtMapper.toTimestamp(opening);
-                    this.closing = (!toMidnight) ? jtMapper.toTimestamp(closing) : null;
-                } else {
-                    this.opening = jtMapper.toTimestamp(closing);
-                    this.closing = (!opening.equals(LocalTime.MIN)) ? jtMapper.toTimestamp(opening) : null;
-                }
-            }
+            this.opening = mapper.toTimestamp(dto.getOpening());
+            this.closing = (!Objects.equals(LocalTime.MIN, dto.getClosing())) ? mapper.toTimestamp(dto.getClosing()) : null;
         }
 
         private void configureSearchByPrice(PlaygroundFilterDTO dto) {
@@ -504,12 +496,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         private Predicate searchByWorkTimePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
             final Path<Timestamp> playgroundOpening = root.get(PlaygroundEntity_.opening);
             final Path<Timestamp> playgroundClosing = root.get(PlaygroundEntity_.closing);
-            final Predicate openingMatch = cb.lessThan(playgroundOpening, closing);
-            final Predicate closingMatch = cb.greaterThan(playgroundClosing, opening);
-            final Predicate closeOnMidnight = cb.equal(playgroundClosing, (new JavaTimeMapper().toTimestamp(LocalTime.MIN)));
-            return (closing != null)
-                    ? cb.or(cb.and(closingMatch, openingMatch), cb.and(closeOnMidnight, openingMatch))
-                    : cb.or(closingMatch, closeOnMidnight);
+            final Predicate openingMatch = closing != null ? cb.lessThan(playgroundOpening, closing) : cb.conjunction();
+            final Predicate closingMatch = opening != null ? cb.greaterThan(playgroundClosing, opening) : cb.conjunction();
+            return cb.and(cb.or(closingMatch, cb.equal(playgroundClosing, mapper.toTimestamp(LocalTime.MIN))), openingMatch);
         }
 
         private Predicate searchByMinPricePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
