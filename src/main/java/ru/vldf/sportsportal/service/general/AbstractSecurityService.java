@@ -10,6 +10,7 @@ import ru.vldf.sportsportal.domain.sectional.common.RoleEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.repository.common.RoleRepository;
 import ru.vldf.sportsportal.repository.common.UserRepository;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.service.security.userdetails.model.IdentifiedUserDetails;
 import ru.vldf.sportsportal.util.SimpleGrantedAuthorityBuilder;
@@ -58,8 +59,10 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
         return userRepository;
     }
 
-    protected RoleRepository roleRepository() {
-        return roleRepository;
+    protected UserEntity findUserById(Integer id) throws ResourceNotFoundException {
+        return userRepository().findById(id).orElseThrow(
+                ResourceNotFoundException.supplier(msg("sportsportal.common.User.notExistById.message", id))
+        );
     }
 
 
@@ -101,7 +104,7 @@ public abstract class AbstractSecurityService extends AbstractMessageService {
 
 
     /**
-     * Checks if the user is current.
+     * Checks if the user is current user.
      *
      * @param userEntity the checked user.
      * @return {@literal true} if successful, {@literal false} otherwise.

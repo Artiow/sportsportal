@@ -6,6 +6,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity_;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
@@ -17,10 +18,8 @@ import ru.vldf.sportsportal.mapper.sectional.tournament.PlayerMapper;
 import ru.vldf.sportsportal.repository.tournament.PlayerRepository;
 import ru.vldf.sportsportal.service.general.AbstractSecurityService;
 import ru.vldf.sportsportal.service.general.CRUDService;
-import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
-import ru.vldf.sportsportal.service.general.throwable.MethodArgumentNotAcceptableException;
-import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
-import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
+import ru.vldf.sportsportal.service.general.throwable.*;
+import ru.vldf.sportsportal.util.domain.PlayerBindingChecker;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -121,12 +120,44 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
         rightsCheck(playerEntity);
         playerEntity = playerMapper.inject(playerEntity, playerDTO);
 
+        if (!PlayerBindingChecker.match(playerEntity, playerEntity.getUser()) && !currentUserIsAdmin()) {
+            // player binding reset
+            playerEntity.setUser(null);
+        }
+
         if (!currentUserIsAdmin()) {
             // disabling, admin check required
             playerEntity.setIsDisabled(true);
         }
 
         playerRepository.save(updatedByCurrentUser(playerEntity));
+    }
+
+    /**
+     * Assign player to user.
+     *
+     * @param playerId the player identifier.
+     * @param userId   the user identifier.
+     * @param force    {@literal true} if assigning must be override, {@literal false} otherwise.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to update this player details.
+     * @throws ResourceNotFoundException     if player or user not found.
+     * @throws ResourceCannotUpdateException if player already assigned or user details mismatch.
+     */
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotUpdateException.class})
+    public void assign(Integer playerId, Integer userId, Boolean force) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
+        PlayerEntity playerEntity = findById(playerId);
+        if ((playerEntity.getUser() == null) || (force == Boolean.TRUE)) {
+            rightsCheck(playerEntity);
+            UserEntity userEntity = userId != null ? findUserById(userId) : null;
+            if (PlayerBindingChecker.match(playerEntity, userEntity) || currentUserIsAdmin()) {
+                playerEntity.setUser(userEntity);
+            } else {
+                throw new ResourceCannotUpdateException(msg("sportsportal.tournament.Player.cannotBeAssigned.message", playerId, userId));
+            }
+        } else {
+            throw new ResourceCannotUpdateException(msg("sportsportal.tournament.Player.alreadyAssigned.message", playerId, playerEntity.getUser().getId()));
+        }
     }
 
     /**
