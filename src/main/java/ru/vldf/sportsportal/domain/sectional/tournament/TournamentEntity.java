@@ -31,6 +31,10 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     @Column(name = "completed", nullable = false)
     private Boolean isCompleted = false;
 
+    @Basic
+    @Column(name = "fixed", nullable = false)
+    private Boolean isFixed = false;
+
 
     @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
     private TourBundleEntity bundle;

@@ -1,9 +1,6 @@
 package ru.vldf.sportsportal.mapper.sectional.tournament;
 
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import ru.vldf.sportsportal.domain.sectional.tournament.TournamentEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TournamentDTO;
 import ru.vldf.sportsportal.mapper.general.AbstractIdentifiedMapper;
@@ -20,18 +17,27 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 @Mapper(uses = {TourBundleMapper.class, JavaTimeMapper.class})
 public abstract class TournamentMapper extends AbstractIdentifiedMapper<TournamentEntity, TournamentDTO> {
 
-    @Mapping(target = "name", source = "bundle.textLabel")
+    @Mappings({
+            @Mapping(target = "name", source = "bundle.textLabel")
+    })
     public abstract TournamentDTO toDTO(TournamentEntity entity);
 
-    @Mapping(target = "isCompleted", nullValuePropertyMappingStrategy = IGNORE)
+    @Mappings({
+            @Mapping(target = "isCompleted", nullValuePropertyMappingStrategy = IGNORE),
+            @Mapping(target = "isFixed", nullValuePropertyMappingStrategy = IGNORE),
+            @Mapping(target = "bundle", source = "bundle", ignore = true)
+    })
     public abstract TournamentEntity toEntity(TournamentDTO dto);
 
     @Override
     public TournamentEntity inject(TournamentEntity acceptor, TournamentDTO donor) {
+
         // default value saving
         Boolean completed = donor.getIsCompleted();
+        Boolean fixed = donor.getIsFixed();
         TournamentEntity mapped = toEntity(donor);
         mapped.setIsCompleted(completed);
+        mapped.setIsFixed(fixed);
 
         merge(acceptor, mapped);
         synchronize(acceptor, donor);
@@ -40,11 +46,17 @@ public abstract class TournamentMapper extends AbstractIdentifiedMapper<Tourname
 
     @Override
     public TournamentEntity merge(TournamentEntity acceptor, TournamentEntity donor) {
+
         // default value mapping
         if (!Objects.isNull(donor.getIsCompleted())) {
             acceptor.setIsCompleted(donor.getIsCompleted());
         } else if (Objects.isNull(acceptor.getIsCompleted())) {
             acceptor.setIsCompleted(Boolean.FALSE);
+        }
+        if (!Objects.isNull(donor.getIsFixed())) {
+            acceptor.setIsFixed(donor.getIsFixed());
+        } else if (Objects.isNull(acceptor.getIsFixed())) {
+            acceptor.setIsFixed(Boolean.FALSE);
         }
 
         acceptor.setStartDate(donor.getStartDate());

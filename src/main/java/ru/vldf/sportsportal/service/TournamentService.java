@@ -77,14 +77,14 @@ public class TournamentService extends AbstractSecurityService {
      */
     @Transactional(rollbackFor = {MethodArgumentNotAcceptableException.class})
     public Integer generate(TournamentDTO tournamentDTO) throws MethodArgumentNotAcceptableException {
-        createCheck(tournamentDTO);
+        generateCheck(tournamentDTO);
         return tournamentRepository.save(tournamentMapper.inject(roundRobinGeneratorService.create(
                 teamRepository.findAllById(tournamentDTO.getTeams().stream().map(AbstractIdentifiedLinkDTO::getId).collect(Collectors.toSet()))
         ), tournamentDTO)).getId();
     }
 
 
-    private void createCheck(TournamentDTO tournamentDTO) throws MethodArgumentNotAcceptableException {
+    private void generateCheck(TournamentDTO tournamentDTO) throws MethodArgumentNotAcceptableException {
         if (tournamentRepository.existsByBundleParentAndBundleTextLabel(null, tournamentDTO.getName())) {
             throw MethodArgumentNotAcceptableException.by(
                     generateMethodParameter(), tournamentDTO, ImmutableMap.of("name", msg("sportsportal.tournament.Tournament.validation.alreadyExistByName.message", tournamentDTO.getName()))

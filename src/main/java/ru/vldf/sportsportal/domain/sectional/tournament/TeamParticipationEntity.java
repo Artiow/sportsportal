@@ -32,6 +32,10 @@ public class TeamParticipationEntity implements DomainObject {
     @Column(name = "participation_name", nullable = false)
     private String participationName;
 
+    @Basic
+    @Column(name = "fixed", nullable = false)
+    private Boolean isFixed = false;
+
 
     @OneToMany(mappedBy = "teamParticipation")
     private Collection<PlayerParticipationEntity> playerParticipations;

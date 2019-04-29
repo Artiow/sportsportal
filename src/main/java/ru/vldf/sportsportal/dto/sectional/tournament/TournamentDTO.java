@@ -19,14 +19,14 @@ import java.util.List;
 @Setter
 public class TournamentDTO implements IdentifiedDTO {
 
-    @Null(groups = SoftFieldCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
+    @Null(groups = {FieldGr1Check.class, FieldGr2Check.class})
     private Integer id;
 
-    @Trimmed(groups = SoftFieldCheck.class)
-    @NotBlank(groups = SoftFieldCheck.class)
-    @Size(min = 4, max = 45, groups = SoftFieldCheck.class)
+    @Trimmed(groups = {FieldGr1Check.class, FieldGr2Check.class})
+    @NotBlank(groups = {FieldGr1Check.class, FieldGr2Check.class})
+    @Size(min = 4, max = 45, groups = {FieldGr1Check.class, FieldGr2Check.class})
     private String name;
 
     private LocalDate startDate;
@@ -35,12 +35,13 @@ public class TournamentDTO implements IdentifiedDTO {
 
     private Boolean isCompleted;
 
-    @Valid
-    @NotNull(groups = HardFieldCheck.class)
+    private Boolean isFixed;
+
     private TourBundleDTO bundle;
 
     @Valid
-    @NotEmpty(groups = SoftFieldCheck.class)
+    @NotEmpty(groups = FieldGr1Check.class)
+    @Null(groups = FieldGr2Check.class)
     private List<TeamLinkDTO> teams;
 
 
@@ -48,23 +49,23 @@ public class TournamentDTO implements IdentifiedDTO {
 
     }
 
-    public interface GenerateCheck extends SoftFieldCheck, LinkedDTO.LinkCheck {
+    public interface GenerateCheck extends FieldGr1Check {
 
     }
 
-    public interface CreateCheck extends HardFieldCheck {
+    public interface CreateCheck extends FieldGr2Check {
 
     }
 
-    public interface UpdateCheck extends HardFieldCheck {
+    public interface UpdateCheck extends FieldGr2Check {
 
     }
 
-    private interface HardFieldCheck extends SoftFieldCheck {
+    private interface FieldGr1Check extends LinkedDTO.LinkCheck {
 
     }
 
-    private interface SoftFieldCheck {
+    private interface FieldGr2Check {
 
     }
 }
