@@ -12,6 +12,11 @@ public final class ResourceLocationBuilder {
         return fromCurrentRequestUri().replacePath(null).build().toUri();
     }
 
+    public static URI buildURL(String path) {
+        Assert.hasLength(path, "path must not be blank");
+        return fromCurrentRequestUri().replacePath(path).build().toUri();
+    }
+
     public static URI buildURL(Integer identifier) {
         Assert.notNull(identifier, "id must not be null");
         return fromCurrentRequestUri().path("/" + identifier).build().toUri();
