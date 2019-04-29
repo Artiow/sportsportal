@@ -19,6 +19,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -56,6 +58,13 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
         @Override
         public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             return searchWords != null ? searchByStringPredicate(root, cb) : null;
+        }
+
+        protected List<Predicate> toPredicateList(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            List<Predicate> list = new ArrayList<>();
+            Predicate element = toPredicate(root, query, cb);
+            if (element != null) list.add(element);
+            return list;
         }
 
         private Predicate searchByStringPredicate(Root<E> root, CriteriaBuilder cb) {

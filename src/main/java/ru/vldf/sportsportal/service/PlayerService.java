@@ -26,9 +26,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -152,6 +151,7 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
             UserEntity userEntity = userId != null ? findUserById(userId) : null;
             if (PlayerBindingChecker.match(playerEntity, userEntity) || currentUserIsAdmin()) {
                 playerEntity.setUser(userEntity);
+                playerRepository.save(playerEntity);
             } else {
                 throw new ResourceCannotUpdateException(msg("sportsportal.tournament.Player.cannotBeAssigned.message", playerId, userId));
             }
@@ -261,11 +261,7 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
 
         @Override
         public Predicate toPredicate(Root<PlayerEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            Collection<Predicate> predicates = new ArrayList<>();
-            Predicate rootPredicate = super.toPredicate(root, query, cb);
-            if (rootPredicate != null) {
-                predicates.add(rootPredicate);
-            }
+            List<Predicate> predicates = super.toPredicateList(root, query, cb);
             if (name != null) {
                 predicates.add(cb.like(cb.lower(root.get(PlayerEntity_.name)), name));
             }

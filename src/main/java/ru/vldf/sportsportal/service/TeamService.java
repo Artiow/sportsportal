@@ -27,10 +27,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Namednev Artem
@@ -232,11 +229,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
         @Override
         public Predicate toPredicate(Root<TeamEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            Collection<Predicate> predicates = new ArrayList<>();
-            Predicate rootPredicate = super.toPredicate(root, query, cb);
-            if (rootPredicate != null) {
-                predicates.add(rootPredicate);
-            }
+            List<Predicate> predicates = super.toPredicateList(root, query, cb);
             if (mainCaptainsIds != null) {
                 predicates.add(
                         root.join(TeamEntity_.mainCaptain).get(UserEntity_.id).in(mainCaptainsIds)
