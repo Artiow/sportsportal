@@ -15,7 +15,10 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.Optional;
+
+import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
 /**
  * @author Namednev Artem
@@ -28,6 +31,7 @@ public class SupportingController implements ErrorController {
     private static final String CSRF_PATH = "/csrf";
     private static final String ERROR_PATH = "/error";
 
+    private static final String SWAGGER_PATH = "/swagger-ui.html";
 
     private final String welcomeMessage;
     private final String csrfMessage;
@@ -61,6 +65,8 @@ public class SupportingController implements ErrorController {
         return new Object() {
             @JsonProperty
             private String message = welcomeMessage;
+            @JsonProperty
+            private URI documentation = buildURL(SWAGGER_PATH);
         };
     }
 
