@@ -38,6 +38,6 @@ public class TourEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "bundle_id", referencedColumnName = "id", nullable = false)
     private TourBundleEntity bundle;
 
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.PERSIST)
     private Collection<GameEntity> games;
 }

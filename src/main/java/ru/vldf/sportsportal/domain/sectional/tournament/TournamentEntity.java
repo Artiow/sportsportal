@@ -36,18 +36,18 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     private Boolean isFixed = false;
 
 
-    @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "tournament", cascade = CascadeType.PERSIST)
     private TourBundleEntity bundle;
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.PERSIST)
     private Collection<GameEntity> games;
 
-    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.PERSIST)
     private Collection<TeamParticipationEntity> teamParticipations;
 
-    @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.PERSIST)
     private Collection<PlayerParticipationEntity> playerParticipations;
 
-    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.PERSIST)
     private Collection<PlayerResultEntity> playerResults;
 }

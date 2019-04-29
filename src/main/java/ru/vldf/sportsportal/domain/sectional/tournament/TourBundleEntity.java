@@ -50,9 +50,9 @@ public class TourBundleEntity extends AbstractIdentifiedEntity {
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private TourBundleEntity parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.PERSIST)
     private Collection<TourBundleEntity> child;
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
     private Collection<TourEntity> tours;
 }

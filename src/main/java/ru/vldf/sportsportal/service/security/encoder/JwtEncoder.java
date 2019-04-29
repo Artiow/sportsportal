@@ -30,8 +30,12 @@ public class JwtEncoder implements Encoder {
 
 
     @Autowired
-    public JwtEncoder(@Value("${jwt.issuer}") String issuer, ExpiringClockProvider clock) {
-        this.sign = TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
+    public JwtEncoder(
+            @Value("${jwt.test:false}") boolean isTest,
+            @Value("${jwt.issuer}") String issuer,
+            ExpiringClockProvider clock
+    ) {
+        this.sign = isTest ? issuer : TextCodec.BASE64.encode(CharSequenceGenerator.generate(16));
         this.issuer = issuer;
         this.clock = clock;
     }
