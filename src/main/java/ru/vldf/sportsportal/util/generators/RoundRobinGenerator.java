@@ -31,7 +31,7 @@ public final class RoundRobinGenerator {
     /**
      * Returns auto-generated tour bundle by <a href="https://en.wikipedia.org/wiki/Round-robin_tournament">round-robin system</a>.
      *
-     * @param source        the collection of team participations entities.
+     * @param source        the collection of team participation entities.
      * @param labelTemplate the tour text label template.
      * @return new auto-generated tour bundle entity.
      */

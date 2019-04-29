@@ -14,6 +14,6 @@ public class TrimmedValidator implements ConstraintValidator<Trimmed, String> {
     public boolean isValid(String s, ConstraintValidatorContext context) {
         if (s == null) return true;
         char[] arr = s.toCharArray();
-        return (arr[0] > ' ') && (arr[arr.length - 1] > ' ');
+        return (arr.length == 0) || ((arr[0] > ' ') && (arr[arr.length - 1] > ' '));
     }
 }

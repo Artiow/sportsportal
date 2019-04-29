@@ -7,6 +7,10 @@ import ru.vldf.sportsportal.dto.general.root.DataTransferObject;
  */
 public interface LinkedDTO extends DataTransferObject {
 
+    interface IdCheck {
+
+    }
+
     interface LinkCheck {
 
     }
