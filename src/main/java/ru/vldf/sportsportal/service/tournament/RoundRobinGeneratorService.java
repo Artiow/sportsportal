@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.tournament.*;
 import ru.vldf.sportsportal.repository.tournament.TourBundleStructureRepository;
 import ru.vldf.sportsportal.repository.tournament.TourBundleTypeRepository;
-import ru.vldf.sportsportal.repository.tournament.TournamentRepository;
 import ru.vldf.sportsportal.util.generators.RoundRobinGenerator;
 
 import java.util.Collection;
@@ -24,8 +23,6 @@ public class RoundRobinGeneratorService {
     private final TourBundleTypeRepository tourBundleTypeRepository;
     private final TourBundleStructureRepository tourBundleStructureRepository;
 
-    private final TournamentRepository tournamentRepository;
-
 
     @Value("${code.tour-bundle.type.tournament}")
     private String typeCode;
@@ -40,24 +37,19 @@ public class RoundRobinGeneratorService {
     @Autowired
     public RoundRobinGeneratorService(
             TourBundleTypeRepository tourBundleTypeRepository,
-            TourBundleStructureRepository tourBundleStructureRepository,
-            TournamentRepository tournamentRepository
+            TourBundleStructureRepository tourBundleStructureRepository
     ) {
         this.tourBundleTypeRepository = tourBundleTypeRepository;
         this.tourBundleStructureRepository = tourBundleStructureRepository;
-        this.tournamentRepository = tournamentRepository;
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public TournamentEntity create(String name, Collection<TeamEntity> teams) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public TournamentEntity create(Collection<TeamEntity> teams) {
         TourBundleEntity bundle = generate(teams);
         bundle.setBundleStructure(structure());
         bundle.setBundleType(type());
-        bundle.setTextLabel(name);
-        bundle.setNumericLabel(0);
-        TournamentEntity tournament = bundle.getTournament();
-        return tournamentRepository.save(tournament);
+        return bundle.getTournament();
     }
 
 

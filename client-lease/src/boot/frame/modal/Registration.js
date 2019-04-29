@@ -142,22 +142,22 @@ class RegistrationForm extends React.Component {
                 <div className="form-row-main-container">
                     <div className="form-row-container">
                         <InputField identifier={'name'} placeholder={'Имя'}
-                                    errorMessage={this.state.errorMessages.name}
+                                    errorMessage={this.state.errorMessages.name[0]}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                         <InputField identifier={'surname'} placeholder={'Фамилия'}
-                                    errorMessage={this.state.errorMessages.surname}
+                                    errorMessage={this.state.errorMessages.surname[0]}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                         <InputField identifier={'email'} placeholder={'Email'}
                                     type={'email'} autoComplete="email"
-                                    errorMessage={this.state.errorMessages.email}
+                                    errorMessage={this.state.errorMessages.email[0]}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                     </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                         secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
-                                        errorMessage={this.state.errorMessages.password}
+                                        errorMessage={this.state.errorMessages.password[0]}
                                         onChange={this.handleInputChange.bind(this)}
                                         required={'required'}/>
                 </div>

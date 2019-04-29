@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.service;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import ru.vldf.sportsportal.repository.tournament.PlayerRepository;
 import ru.vldf.sportsportal.service.general.AbstractSecurityService;
 import ru.vldf.sportsportal.service.general.CRUDService;
 import ru.vldf.sportsportal.service.general.throwable.*;
+import ru.vldf.sportsportal.util.ReflectionUtil;
 import ru.vldf.sportsportal.util.domain.PlayerBindingChecker;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -46,6 +46,15 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
         this.playerRepository = playerRepository;
         this.playerMapper = playerMapper;
         this.javaTimeMapper = javaTimeMapper;
+    }
+
+
+    private static MethodParameter createMethodParameter() {
+        return ReflectionUtil.methodParameter(PlayerService.class, "create", new Class[]{PlayerDTO.class}, 0);
+    }
+
+    private static MethodParameter updateMethodParameter() {
+        return ReflectionUtil.methodParameter(PlayerService.class, "update", new Class[]{Integer.class, PlayerDTO.class}, 1);
     }
 
 
@@ -114,7 +123,7 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
     @Override
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotAcceptableException.class, ResourceNotFoundException.class})
     public void update(Integer id, PlayerDTO playerDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotAcceptableException, ResourceNotFoundException {
-        updateCheck(playerDTO);
+        updateCheck(id, playerDTO);
         PlayerEntity playerEntity = findById(id);
         rightsCheck(playerEntity);
         playerEntity = playerMapper.inject(playerEntity, playerDTO);
@@ -195,11 +204,11 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
             errors.put(null, msg("sportsportal.tournament.Player.validation.alreadyExistByFullName.message"));
         }
         if (!errors.isEmpty()) {
-            validationExceptionFor("create", 0, playerDTO, errors);
+            throw MethodArgumentNotAcceptableException.by(createMethodParameter(), playerDTO, errors);
         }
     }
 
-    private void updateCheck(PlayerDTO playerDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
+    private void updateCheck(Integer playerId, PlayerDTO playerDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (!currentUserIsAdmin && (playerDTO.getIsLocked() != null)) {
@@ -208,11 +217,11 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
         if (!currentUserIsAdmin && (playerDTO.getIsDisabled() != null)) {
             errors.put("isDisabled", msg("sportsportal.tournament.Player.validation.forbiddenIsDisabled.message"));
         }
-        if (playerRepository.existsByNameAndSurnameAndPatronymicAndBirthdateAndIdIsNot(playerDTO.getName(), playerDTO.getSurname(), playerDTO.getPatronymic(), javaTimeMapper.toTimestamp(playerDTO.getBirthdate()), playerDTO.getId())) {
+        if (playerRepository.existsByNameAndSurnameAndPatronymicAndBirthdateAndIdIsNot(playerDTO.getName(), playerDTO.getSurname(), playerDTO.getPatronymic(), javaTimeMapper.toTimestamp(playerDTO.getBirthdate()), playerId)) {
             errors.put(null, msg("sportsportal.tournament.Player.validation.alreadyExistByFullName.message"));
         }
         if (!errors.isEmpty()) {
-            validationExceptionFor("update", 1, playerDTO, errors);
+            throw MethodArgumentNotAcceptableException.by(updateMethodParameter(), playerDTO, errors);
         }
     }
 
@@ -220,18 +229,6 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
         if (!currentUserIsAdmin() && !(isCurrentUser(playerEntity.getUser()) || isCurrentUser(playerEntity.getCreator()))) {
             throw new ForbiddenAccessException(msg("sportsportal.tournament.Player.forbidden.message"));
         }
-    }
-
-
-    @SneakyThrows({NoSuchMethodException.class})
-    private void validationExceptionFor(
-            String methodName, int parameterIndex, PlayerDTO target, Map<String, String> errors
-    ) throws MethodArgumentNotAcceptableException {
-        throw MethodArgumentNotAcceptableException.by(methodParameter(methodName, parameterIndex), target, errors);
-    }
-
-    private MethodParameter methodParameter(String methodName, int parameterIndex) throws NoSuchMethodException {
-        return new MethodParameter(getClass().getMethod(methodName, PlayerDTO.class), parameterIndex);
     }
 
 
@@ -261,7 +258,7 @@ public class PlayerService extends AbstractSecurityService implements CRUDServic
 
         @Override
         public Predicate toPredicate(Root<PlayerEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            List<Predicate> predicates = super.toPredicateList(root, query, cb);
+            List<Predicate> predicates = super.toPredicateList(root, cb);
             if (name != null) {
                 predicates.add(cb.like(cb.lower(root.get(PlayerEntity_.name)), name));
             }

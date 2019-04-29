@@ -440,7 +440,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
         @Override
         public Predicate toPredicate(Root<PlaygroundEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            List<Predicate> predicates = super.toPredicateList(root, query, cb);
+            List<Predicate> predicates = super.toPredicateList(root, cb);
             if (featureCodes != null) {
                 predicates.add(searchByFeaturesPredicate(root, cb));
             }

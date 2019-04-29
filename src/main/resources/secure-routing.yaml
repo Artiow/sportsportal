@@ -49,6 +49,8 @@ publicRoutes:
   httpMethod: GET
 - pattern: /player/*/short
   httpMethod: GET
+- pattern: /tournament/*
+  httpMethod: GET
 
 protectedRoutes:
   ADMIN:
@@ -62,6 +64,8 @@ protectedRoutes:
     httpMethod: DELETE
   - pattern: /player/*
     httpMethod: DELETE
+  - pattern: /tournament/*
+    httpMethod: POST
 
   USER:
   - pattern: /order/*

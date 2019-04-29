@@ -1,6 +1,5 @@
 package ru.vldf.sportsportal.service;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.general.throwable.MethodArgumentNotAcceptableException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
+import ru.vldf.sportsportal.util.ReflectionUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -43,6 +43,15 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     public TeamService(TeamRepository teamRepository, TeamMapper teamMapper) {
         this.teamRepository = teamRepository;
         this.teamMapper = teamMapper;
+    }
+
+
+    private static MethodParameter createMethodParameter() {
+        return ReflectionUtil.methodParameter(TeamService.class, "create", new Class[]{TeamDTO.class}, 0);
+    }
+
+    private static MethodParameter updateMethodParameter() {
+        return ReflectionUtil.methodParameter(TeamService.class, "update", new Class[]{Integer.class, TeamDTO.class}, 1);
     }
 
 
@@ -113,7 +122,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
     @Override
     @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, MethodArgumentNotAcceptableException.class, ResourceNotFoundException.class})
     public void update(Integer id, TeamDTO teamDTO) throws UnauthorizedAccessException, ForbiddenAccessException, MethodArgumentNotAcceptableException, ResourceNotFoundException {
-        updateCheck(teamDTO);
+        updateCheck(id, teamDTO);
         TeamEntity teamEntity = findById(id);
         rightsCheck(teamEntity);
         teamEntity = teamMapper.inject(teamEntity, teamDTO);
@@ -162,11 +171,11 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
             errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!errors.isEmpty()) {
-            validationExceptionFor("create", 0, teamDTO, errors);
+            throw MethodArgumentNotAcceptableException.by(createMethodParameter(), teamDTO, errors);
         }
     }
 
-    private void updateCheck(TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
+    private void updateCheck(Integer teamId, TeamDTO teamDTO) throws UnauthorizedAccessException, MethodArgumentNotAcceptableException {
         boolean currentUserIsAdmin = currentUserIsAdmin();
         Map<String, String> errors = new HashMap<>();
         if (!currentUserIsAdmin && (teamDTO.getIsLocked() != null)) {
@@ -175,11 +184,11 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
         if (!currentUserIsAdmin && (teamDTO.getIsDisabled() != null)) {
             errors.put("isDisabled", msg("sportsportal.tournament.Team.validation.forbiddenIsDisabled.message"));
         }
-        if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamDTO.getId())) {
+        if (teamRepository.existsByNameAndIdNot(teamDTO.getName(), teamId)) {
             errors.put("name", msg("sportsportal.tournament.Team.validation.alreadyExistByName.message", teamDTO.getName()));
         }
         if (!errors.isEmpty()) {
-            validationExceptionFor("update", 1, teamDTO, errors);
+            throw MethodArgumentNotAcceptableException.by(updateMethodParameter(), teamDTO, errors);
         }
     }
 
@@ -195,18 +204,6 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
             teamEntity.setMainCaptain(currentUser);
             teamEntity.setViceCaptain(currentUser);
         }
-    }
-
-
-    @SneakyThrows({NoSuchMethodException.class})
-    private void validationExceptionFor(
-            String methodName, int parameterIndex, TeamDTO target, Map<String, String> errors
-    ) throws MethodArgumentNotAcceptableException {
-        throw MethodArgumentNotAcceptableException.by(methodParameter(methodName, parameterIndex), target, errors);
-    }
-
-    private MethodParameter methodParameter(String methodName, int parameterIndex) throws NoSuchMethodException {
-        return new MethodParameter(getClass().getMethod(methodName, TeamDTO.class), parameterIndex);
     }
 
 
@@ -229,7 +226,7 @@ public class TeamService extends AbstractSecurityService implements CRUDService<
 
         @Override
         public Predicate toPredicate(Root<TeamEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            List<Predicate> predicates = super.toPredicateList(root, query, cb);
+            List<Predicate> predicates = super.toPredicateList(root, cb);
             if (mainCaptainsIds != null) {
                 predicates.add(
                         root.join(TeamEntity_.mainCaptain).get(UserEntity_.id).in(mainCaptainsIds)

@@ -21,6 +21,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -48,31 +49,29 @@ public interface CRUDService<E extends AbstractIdentifiedEntity, D extends Ident
             super(dto);
             Assert.notEmpty(attributes);
             this.attributes = attributes;
-            configureSearchByString(dto);
-        }
-
-        private void configureSearchByString(StringSearcherDTO dto) {
             this.searchWords = StringUtils.hasText(dto.getSearchString()) ? dto.getSearchString().trim().toLowerCase().split(" ") : null;
         }
 
         @Override
         public Predicate toPredicate(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            return searchWords != null ? searchByStringPredicate(root, cb) : null;
+            return toPredicateItem(root, cb);
         }
 
-        protected List<Predicate> toPredicateList(Root<E> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        protected List<Predicate> toPredicateList(Root<E> root, CriteriaBuilder cb) {
             List<Predicate> list = new ArrayList<>();
-            Predicate element = toPredicate(root, query, cb);
+            Predicate element = toPredicateItem(root, cb);
             if (element != null) list.add(element);
             return list;
         }
 
-        private Predicate searchByStringPredicate(Root<E> root, CriteriaBuilder cb) {
-            return cb.and(Stream.of(searchWords).map(
-                    word -> cb.or(Stream.of(attributes).map(
-                            attribute -> cb.like(cb.lower(root.get(attribute)), ("%" + word + "%"))
+        private Predicate toPredicateItem(Root<E> root, CriteriaBuilder cb) {
+            return Optional.ofNullable(searchWords).map(
+                    words -> cb.and(Stream.of(words).map(
+                            word -> cb.or(Stream.of(attributes).map(
+                                    attribute -> cb.like(cb.lower(root.get(attribute)), ("%" + word + "%"))
+                            ).toArray(Predicate[]::new))
                     ).toArray(Predicate[]::new))
-            ).toArray(Predicate[]::new));
+            ).orElse(null);
         }
     }
 

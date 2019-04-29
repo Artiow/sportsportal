@@ -4,11 +4,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.tournament.TournamentDTO;
 import ru.vldf.sportsportal.service.TournamentService;
-
-import java.util.Collection;
+import ru.vldf.sportsportal.service.general.throwable.MethodArgumentNotAcceptableException;
+import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -22,18 +23,40 @@ public class TournamentController {
 
     private final TournamentService tournamentService;
 
+
     @Autowired
     public TournamentController(TournamentService tournamentService) {
         this.tournamentService = tournamentService;
     }
 
-    @PostMapping
-    @ApiOperation("создать турнир (круговой)")
-    // todo: validation with tournament object!
-    public ResponseEntity<Void> create(
-            @RequestParam String name,
-            @RequestBody Collection<TeamLinkDTO> teams
-    ) {
-        return ResponseEntity.created(buildURL(tournamentService.create(name, teams))).build();
+
+    /**
+     * Returns requested tournament by tournament identifier.
+     *
+     * @param id the tournament identifier.
+     * @return requested tournament data.
+     * @throws ResourceNotFoundException if requested tournament not found.
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("получить турнир")
+    public TournamentDTO get(
+            @PathVariable int id
+    ) throws ResourceNotFoundException {
+        return tournamentService.get(id);
+    }
+
+    /**
+     * Generate and save new round-robin tournament returns its identifier.
+     *
+     * @param tournamentDTO the new tournament details.
+     * @return generated tournament identifier.
+     * @throws MethodArgumentNotAcceptableException if method argument not acceptable.
+     */
+    @PostMapping("/generating")
+    @ApiOperation("сгенерировать турнир (круговой)")
+    public ResponseEntity<Void> generate(
+            @RequestBody @Validated(TournamentDTO.GenerateCheck.class) TournamentDTO tournamentDTO
+    ) throws MethodArgumentNotAcceptableException {
+        return ResponseEntity.created(buildURL(tournamentService.generate(tournamentDTO))).build();
     }
 }

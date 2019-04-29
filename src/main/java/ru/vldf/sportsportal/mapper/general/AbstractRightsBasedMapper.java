@@ -25,8 +25,8 @@ public abstract class AbstractRightsBasedMapper<E extends AbstractRightsBasedEnt
     @Override
     @SuppressWarnings("UnmappedTargetProperties")
     public E inject(E acceptor, D donor) {
-        boolean locked = donor.getIsLocked();
-        boolean disabled = donor.getIsDisabled();
+        Boolean locked = donor.getIsLocked();
+        Boolean disabled = donor.getIsDisabled();
         E mapped = toEntity(donor);
         mapped.setIsLocked(locked);
         mapped.setIsDisabled(disabled);
