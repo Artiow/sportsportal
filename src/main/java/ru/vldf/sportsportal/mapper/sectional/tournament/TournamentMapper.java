@@ -17,7 +17,7 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
  * @author Artem Namednev
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(uses = {TeamMapper.class, TournamentURLMapper.class, JavaTimeMapper.class})
+@Mapper(uses = {TeamParticipationMapper.class, TournamentURLMapper.class, JavaTimeMapper.class})
 public abstract class TournamentMapper extends AbstractOverallIdentifiedMapper<TournamentEntity, TournamentDTO, TournamentShortDTO, TournamentLinkDTO> {
 
     @Mappings({
