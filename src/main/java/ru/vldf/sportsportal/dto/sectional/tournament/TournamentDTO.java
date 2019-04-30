@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.dto.sectional.tournament;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.general.IdentifiedDTO;
+import ru.vldf.sportsportal.dto.general.LinkedDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
@@ -46,7 +47,7 @@ public class TournamentDTO implements IdentifiedDTO {
 
     }
 
-    public interface GenerateCheck extends BasicCheck {
+    public interface GenerateCheck extends BasicCheck, LinkedDTO.LinkCheck {
 
     }
 
