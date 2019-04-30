@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.mapper.sectional.tournament;
 
 import org.mapstruct.*;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
+import ru.vldf.sportsportal.domain.sectional.tournament.TeamParticipationEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TeamDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TeamShortDTO;
@@ -13,7 +14,11 @@ import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
 import javax.persistence.OptimisticLockException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Namednev Artem
@@ -36,6 +41,27 @@ public abstract class TeamMapper extends AbstractOverallRightsBasedMapper<TeamEn
             @Mapping(target = "viceCaptainURL", source = "viceCaptain", qualifiedByName = {"toUserURL", "fromEntity"})
     })
     public abstract TeamShortDTO toShortDTO(TeamEntity entity);
+
+
+    // todo: temporary, move to separate participation mapper
+    public TeamDTO toDTOFromParticipation(TeamParticipationEntity entity) {
+        return toDTO(entity.getTeam());
+    }
+
+    // todo: temporary, move to separate participation mapper
+    public List<TeamDTO> toDTOFromParticipation(Collection<TeamParticipationEntity> entityCollection) {
+        return Optional.ofNullable(entityCollection).map(c -> c.stream().map(this::toDTOFromParticipation).collect(Collectors.toList())).orElse(null);
+    }
+
+    // todo: temporary, move to separate participation mapper
+    public TeamLinkDTO toLinkDTOFromParticipation(TeamParticipationEntity entity) {
+        return toLinkDTO(entity.getTeam());
+    }
+
+    // todo: temporary, move to separate participation mapper
+    public List<TeamLinkDTO> toLinkDTOFromParticipation(Collection<TeamParticipationEntity> entityCollection) {
+        return Optional.ofNullable(entityCollection).map(c -> c.stream().map(this::toLinkDTOFromParticipation).collect(Collectors.toList())).orElse(null);
+    }
 
 
     @Override

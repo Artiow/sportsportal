@@ -14,20 +14,21 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
  * @author Artem Namednev
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(uses = {TourBundleMapper.class, JavaTimeMapper.class})
+@Mapper(uses = {TeamMapper.class, JavaTimeMapper.class})
 public abstract class TournamentMapper extends AbstractIdentifiedMapper<TournamentEntity, TournamentDTO> {
 
     @Mappings({
-            @Mapping(target = "name", source = "bundle.textLabel")
+            @Mapping(target = "name", source = "bundle.textLabel"),
+            @Mapping(target = "teams", source = "teamParticipations")
     })
     public abstract TournamentDTO toDTO(TournamentEntity entity);
 
     @Mappings({
             @Mapping(target = "isCompleted", nullValuePropertyMappingStrategy = IGNORE),
-            @Mapping(target = "isFixed", nullValuePropertyMappingStrategy = IGNORE),
-            @Mapping(target = "bundle", source = "bundle", ignore = true)
+            @Mapping(target = "isFixed", nullValuePropertyMappingStrategy = IGNORE)
     })
     public abstract TournamentEntity toEntity(TournamentDTO dto);
+
 
     @Override
     public TournamentEntity inject(TournamentEntity acceptor, TournamentDTO donor) {

@@ -3,7 +3,6 @@ package ru.vldf.sportsportal.dto.sectional.tournament;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.general.IdentifiedDTO;
-import ru.vldf.sportsportal.dto.general.LinkedDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.TeamLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
@@ -19,14 +18,14 @@ import java.util.List;
 @Setter
 public class TournamentDTO implements IdentifiedDTO {
 
+    @Null(groups = BasicCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
-    @Null(groups = {FieldGr1Check.class, FieldGr2Check.class})
     private Integer id;
 
-    @Trimmed(groups = {FieldGr1Check.class, FieldGr2Check.class})
-    @NotBlank(groups = {FieldGr1Check.class, FieldGr2Check.class})
-    @Size(min = 4, max = 45, groups = {FieldGr1Check.class, FieldGr2Check.class})
+    @Trimmed(groups = BasicCheck.class)
+    @NotBlank(groups = BasicCheck.class)
+    @Size(min = 4, max = 45, groups = BasicCheck.class)
     private String name;
 
     private LocalDate startDate;
@@ -37,11 +36,9 @@ public class TournamentDTO implements IdentifiedDTO {
 
     private Boolean isFixed;
 
-    private TourBundleDTO bundle;
-
     @Valid
-    @NotEmpty(groups = FieldGr1Check.class)
-    @Null(groups = FieldGr2Check.class)
+    @Null(groups = FieldCheck.class)
+    @NotEmpty(groups = GenerateCheck.class)
     private List<TeamLinkDTO> teams;
 
 
@@ -49,23 +46,23 @@ public class TournamentDTO implements IdentifiedDTO {
 
     }
 
-    public interface GenerateCheck extends FieldGr1Check {
+    public interface GenerateCheck extends BasicCheck {
 
     }
 
-    public interface CreateCheck extends FieldGr2Check {
+    public interface CreateCheck extends FieldCheck {
 
     }
 
-    public interface UpdateCheck extends FieldGr2Check {
+    public interface UpdateCheck extends FieldCheck {
 
     }
 
-    private interface FieldGr1Check extends LinkedDTO.LinkCheck {
+    private interface FieldCheck extends BasicCheck {
 
     }
 
-    private interface FieldGr2Check {
+    private interface BasicCheck {
 
     }
 }
