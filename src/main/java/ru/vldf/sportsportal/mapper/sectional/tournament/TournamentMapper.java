@@ -3,8 +3,11 @@ package ru.vldf.sportsportal.mapper.sectional.tournament;
 import org.mapstruct.*;
 import ru.vldf.sportsportal.domain.sectional.tournament.TournamentEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.TournamentDTO;
-import ru.vldf.sportsportal.mapper.general.AbstractIdentifiedMapper;
+import ru.vldf.sportsportal.dto.sectional.tournament.links.TournamentLinkDTO;
+import ru.vldf.sportsportal.dto.sectional.tournament.shortcut.TournamentShortDTO;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallIdentifiedMapper;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
+import ru.vldf.sportsportal.mapper.manual.url.tournament.TournamentURLMapper;
 
 import java.util.Objects;
 
@@ -14,8 +17,8 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
  * @author Artem Namednev
  */
 @SuppressWarnings("UnmappedTargetProperties")
-@Mapper(uses = {TeamMapper.class, JavaTimeMapper.class})
-public abstract class TournamentMapper extends AbstractIdentifiedMapper<TournamentEntity, TournamentDTO> {
+@Mapper(uses = {TeamMapper.class, TournamentURLMapper.class, JavaTimeMapper.class})
+public abstract class TournamentMapper extends AbstractOverallIdentifiedMapper<TournamentEntity, TournamentDTO, TournamentShortDTO, TournamentLinkDTO> {
 
     @Mappings({
             @Mapping(target = "name", source = "bundle.textLabel"),
@@ -28,6 +31,20 @@ public abstract class TournamentMapper extends AbstractIdentifiedMapper<Tourname
             @Mapping(target = "isFixed", nullValuePropertyMappingStrategy = IGNORE)
     })
     public abstract TournamentEntity toEntity(TournamentDTO dto);
+
+
+    @Mappings({
+            @Mapping(target = "name", source = "bundle.textLabel"),
+            @Mapping(target = "tournamentURL", source = "id", qualifiedByName = {"toTournamentURL", "fromId"})
+    })
+    public abstract TournamentShortDTO toShortDTO(TournamentEntity entity);
+
+
+    @Mappings({
+            @Mapping(target = "name", source = "bundle.textLabel"),
+            @Mapping(target = "tournamentURL", source = "id", qualifiedByName = {"toTournamentURL", "fromId"})
+    })
+    public abstract TournamentLinkDTO toLinkDTO(TournamentEntity entity);
 
 
     @Override
@@ -64,6 +81,7 @@ public abstract class TournamentMapper extends AbstractIdentifiedMapper<Tourname
         acceptor.setFinishDate(donor.getFinishDate());
         return acceptor;
     }
+
 
     @AfterMapping
     public void synchronize(@MappingTarget TournamentEntity entity, TournamentDTO dto) {
