@@ -16,6 +16,8 @@ import java.util.List;
 @Setter
 public class TeamParticipationDTO implements DataTransferObject {
 
+    private String name;
+    private Boolean isFixed;
     private TeamLinkDTO team;
     private TournamentLinkDTO tournament;
     private List<PlayerLinkDTO> players;
