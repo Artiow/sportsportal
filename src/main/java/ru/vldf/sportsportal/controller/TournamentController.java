@@ -59,4 +59,22 @@ public class TournamentController {
     ) throws MethodArgumentNotAcceptableException {
         return ResponseEntity.created(buildURL(tournamentService.generate(tournamentDTO))).build();
     }
+
+    /**
+     * Update and save tournament details by tournament identifier.
+     *
+     * @param id            the tournament identifier.
+     * @param tournamentDTO the tournament new details.
+     * @return no content.
+     * @throws MethodArgumentNotAcceptableException if method argument not acceptable.
+     * @throws ResourceNotFoundException            if tournament not found.
+     */
+    @PostMapping("/{id}")
+    @ApiOperation("редактировать турнир")
+    public ResponseEntity<Void> generate(
+            @PathVariable int id, @RequestBody @Validated(TournamentDTO.UpdateCheck.class) TournamentDTO tournamentDTO
+    ) throws MethodArgumentNotAcceptableException, ResourceNotFoundException {
+        tournamentService.update(id, tournamentDTO);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -64,8 +64,10 @@ protectedRoutes:
     httpMethod: DELETE
   - pattern: /player/*
     httpMethod: DELETE
-  - pattern: /tournament/*
+  - pattern: /tournament/generating
     httpMethod: POST
+  - pattern: /tournament/*
+    httpMethod: PUT
 
   USER:
   - pattern: /order/*
