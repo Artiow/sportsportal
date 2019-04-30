@@ -42,12 +42,12 @@ public class TournamentEntity extends AbstractIdentifiedEntity {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.PERSIST)
     private Collection<GameEntity> games;
 
-    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.ALL)
     private Collection<TeamParticipationEntity> teamParticipations;
 
     @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.PERSIST)
     private Collection<PlayerParticipationEntity> playerParticipations;
 
-    @OneToMany(mappedBy = "pk.team", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "pk.tournament", cascade = CascadeType.PERSIST)
     private Collection<PlayerResultEntity> playerResults;
 }

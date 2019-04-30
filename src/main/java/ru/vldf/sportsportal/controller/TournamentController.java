@@ -69,7 +69,7 @@ public class TournamentController {
      * @throws MethodArgumentNotAcceptableException if method argument not acceptable.
      * @throws ResourceNotFoundException            if tournament not found.
      */
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     @ApiOperation("редактировать турнир")
     public ResponseEntity<Void> generate(
             @PathVariable int id, @RequestBody @Validated(TournamentDTO.UpdateCheck.class) TournamentDTO tournamentDTO
