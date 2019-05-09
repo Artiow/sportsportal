@@ -113,8 +113,7 @@ class RegistrationForm extends React.Component {
                 email: this.state.email,
                 password: this.state.password
             });
-        }
-        else {
+        } else {
             this.setState({errorMessages: {password: 'Введенные пароли не совпадают!'}});
         }
     }
@@ -142,22 +141,22 @@ class RegistrationForm extends React.Component {
                 <div className="form-row-main-container">
                     <div className="form-row-container">
                         <InputField identifier={'name'} placeholder={'Имя'}
-                                    errorMessage={this.state.errorMessages.name[0]}
+                                    errorMessage={this.state.errorMessages.name}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                         <InputField identifier={'surname'} placeholder={'Фамилия'}
-                                    errorMessage={this.state.errorMessages.surname[0]}
+                                    errorMessage={this.state.errorMessages.surname}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                         <InputField identifier={'email'} placeholder={'Email'}
                                     type={'email'} autoComplete="email"
-                                    errorMessage={this.state.errorMessages.email[0]}
+                                    errorMessage={this.state.errorMessages.email}
                                     onChange={this.handleInputChange.bind(this)}
                                     required={'required'}/>
                     </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                         secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
-                                        errorMessage={this.state.errorMessages.password[0]}
+                                        errorMessage={this.state.errorMessages.password}
                                         onChange={this.handleInputChange.bind(this)}
                                         required={'required'}/>
                 </div>
@@ -185,7 +184,8 @@ class RegistrationForm extends React.Component {
 }
 
 function InputField(props) {
-    const error = ((props.errorMessage != null) && (props.errorMessage !== ''));
+    const errorMessage = Array.isArray(props.errorMessage) ? props.errorMessage[0] : null;
+    const error = ((errorMessage != null) && (errorMessage !== ''));
     return (
         <div className="form-row">
             <label htmlFor={props.identifier} className="col-sm-3 col-form-label">
@@ -202,7 +202,7 @@ function InputField(props) {
                            required={props.required}/>
                 <div style={(!error) ? {display: 'none'} : {display: 'block'}}
                      className="invalid-feedback">
-                    {props.errorMessage}
+                    {errorMessage}
                 </div>
             </div>
         </div>
@@ -210,7 +210,8 @@ function InputField(props) {
 }
 
 function PasswordInputField(props) {
-    const error = ((props.errorMessage != null) && (props.errorMessage !== ''));
+    const errorMessage = Array.isArray(props.errorMessage) ? props.errorMessage[0] : null;
+    const error = ((errorMessage != null) && (errorMessage !== ''));
     return (
         <div className="form-row-container">
             <div className="form-row">
@@ -237,7 +238,7 @@ function PasswordInputField(props) {
                            required={props.required}/>
                     <div style={(!error) ? {display: 'none'} : {display: 'block'}}
                          className="invalid-feedback">
-                        {props.errorMessage}
+                        {errorMessage}
                     </div>
                 </div>
             </div>

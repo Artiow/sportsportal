@@ -7,7 +7,7 @@ import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.shortcut.UserShortDTO;
-import ru.vldf.sportsportal.mapper.general.AbstractOverallVersionedMapper;
+import ru.vldf.sportsportal.mapper.general.AbstractOverallRightsBasedMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
 
@@ -16,28 +16,15 @@ import javax.persistence.OptimisticLockException;
 /**
  * @author Namednev Artem
  */
+@SuppressWarnings("UnmappedTargetProperties")
 @Mapper(uses = {RoleMapper.class, PictureLinkMapper.class, PictureURLMapper.class, UserURLMapper.class})
-public abstract class UserMapper extends AbstractOverallVersionedMapper<UserEntity, UserDTO, UserShortDTO, UserLinkDTO> {
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true)
-    })
-    public abstract UserEntity toEntity(UserDTO dto);
-
+public abstract class UserMapper extends AbstractOverallRightsBasedMapper<UserEntity, UserDTO, UserShortDTO, UserLinkDTO> {
 
     @Mappings({
             @Mapping(target = "userURL", source = "id", qualifiedByName = {"toUserURL", "fromId"}),
             @Mapping(target = "avatarURL", source = "avatar", qualifiedByName = {"toPictureURL", "fromEntity"})
     })
     public abstract UserLinkDTO toLinkDTO(UserEntity entity);
-
-    @Mappings({
-            @Mapping(target = "email", ignore = true),
-            @Mapping(target = "name", ignore = true),
-            @Mapping(target = "surname", ignore = true),
-            @Mapping(target = "phone", ignore = true)
-    })
-    public abstract UserEntity toLinkEntity(UserLinkDTO dto);
 
 
     @Mappings({
@@ -50,7 +37,6 @@ public abstract class UserMapper extends AbstractOverallVersionedMapper<UserEnti
     @Override
     public UserEntity merge(UserEntity acceptor, UserEntity donor) throws OptimisticLockException {
         super.merge(acceptor, donor);
-
         acceptor.setEmail(donor.getEmail());
         acceptor.setPassword(donor.getPassword());
         acceptor.setName(donor.getName());
@@ -60,7 +46,6 @@ public abstract class UserMapper extends AbstractOverallVersionedMapper<UserEnti
         acceptor.setPhone(donor.getPhone());
         acceptor.setConfirmCode(donor.getConfirmCode());
         acceptor.setAvatar(donor.getAvatar());
-
         return acceptor;
     }
 }

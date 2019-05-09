@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.sectional.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.general.VersionedDTO;
+import ru.vldf.sportsportal.dto.general.RightsBasedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
@@ -16,8 +16,9 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class UserDTO implements VersionedDTO {
+public class UserDTO implements RightsBasedDTO {
 
+    @Null(groups = FieldCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
@@ -53,6 +54,12 @@ public class UserDTO implements VersionedDTO {
     @Trimmed(groups = FieldCheck.class)
     @Size(min = 5, max = 254, groups = FieldCheck.class)
     private String address;
+
+    @Null(groups = FieldCheck.class)
+    private Boolean isLocked;
+
+    @Null(groups = FieldCheck.class)
+    private Boolean isDisabled;
 
     @Trimmed(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)

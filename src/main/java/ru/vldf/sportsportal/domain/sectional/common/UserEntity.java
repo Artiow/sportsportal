@@ -54,14 +54,6 @@ public class UserEntity extends AbstractRightsBasedEntity {
     @Column(name = "confirm_code")
     private String confirmCode;
 
-    @Basic
-    @Column(name = "locked", nullable = false)
-    private Boolean isLocked = false;
-
-    @Basic
-    @Column(name = "disabled", nullable = false)
-    private Boolean isDisabled = true;
-
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")

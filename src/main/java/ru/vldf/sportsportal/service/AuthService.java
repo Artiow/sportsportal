@@ -1,5 +1,6 @@
 package ru.vldf.sportsportal.service;
 
+import lombok.var;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,6 @@ import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -92,19 +92,18 @@ public class AuthService extends AbstractSecurityService {
             noRollbackFor = {EntityNotFoundException.class, OptimisticLockException.class, DataAccessException.class}
     )
     public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
-        String email = userDTO.getEmail();
         UserRepository userRepository = userRepository();
-        if (userRepository.isEnabled(email)) {
-            throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", email));
+        if (userRepository.existsByEmailAndIsDisabledIsFalse(userDTO.getEmail())) {
+            throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", userDTO.getEmail()));
         } else try {
             // password encoding and user saving
-            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             UserEntity userEntity = userMapper.toEntity(userDTO);
-            userEntity.setRoles(Collections.emptyList());
-            userEntity.setIsDisabled(true);
-            if (userRepository.existsByEmail(email)) {
+            userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+            if (userRepository.existsByEmail(userEntity.getEmail())) {
                 try {
-                    userEntity = userMapper.merge(userRepository.findByEmail(email), userEntity);
+                    var existing = userRepository.findByEmail(userEntity.getEmail());
+                    userEntity.setVersion(existing.getVersion()); // version synchronization
+                    userEntity = userMapper.merge(existing, userEntity);
                 } catch (EntityNotFoundException e) {
                     throw new RuntimeException(msg("sportsportal.common.User.cannotCreate.message"), e);
                 } catch (OptimisticLockException e) {
