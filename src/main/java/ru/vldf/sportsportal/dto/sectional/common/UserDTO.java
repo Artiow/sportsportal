@@ -61,8 +61,8 @@ public class UserDTO implements RightsBasedDTO {
     @Null(groups = FieldCheck.class)
     private Boolean isDisabled;
 
-    @Trimmed(groups = FieldCheck.class)
     @Phone(groups = FieldCheck.class)
+    @NotBlank(groups = FieldCheck.class)
     private String phone;
 
     @Null(groups = FieldCheck.class)

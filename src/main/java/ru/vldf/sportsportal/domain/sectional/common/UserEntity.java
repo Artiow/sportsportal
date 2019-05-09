@@ -47,7 +47,7 @@ public class UserEntity extends AbstractRightsBasedEntity {
     private String address;
 
     @Basic
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     private String phone;
 
     @Basic

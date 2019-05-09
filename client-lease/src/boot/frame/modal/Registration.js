@@ -77,11 +77,12 @@ class RegistrationForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: null,
-            surname: null,
-            email: null,
-            password: null,
-            confirm: null,
+            name: '',
+            surname: '',
+            email: '',
+            phone: '',
+            password: '',
+            confirm: '',
             errorMessage: ((props.errorMessage != null) ? props.errorMessage : null),
             errorMessages: ((props.errorMessages != null) ? props.errorMessages : {})
         }
@@ -90,6 +91,12 @@ class RegistrationForm extends React.Component {
     reset() {
         this.submitForm.reset();
         this.setState({
+            name: '',
+            surname: '',
+            email: '',
+            phone: '',
+            password: '',
+            confirm: '',
             errorMessage: ((this.props.errorMessage != null) ? this.props.errorMessage : null),
             errorMessages: ((this.props.errorMessages != null) ? this.props.errorMessages : {})
         });
@@ -111,10 +118,11 @@ class RegistrationForm extends React.Component {
                 name: this.state.name,
                 surname: this.state.surname,
                 email: this.state.email,
+                phone: this.state.phone,
                 password: this.state.password
             });
         } else {
-            this.setState({errorMessages: {password: 'Введенные пароли не совпадают!'}});
+            this.setState({errorMessages: {password: ['Введенные пароли не совпадают!']}});
         }
     }
 
@@ -143,15 +151,25 @@ class RegistrationForm extends React.Component {
                         <InputField identifier={'name'} placeholder={'Имя'}
                                     errorMessage={this.state.errorMessages.name}
                                     onChange={this.handleInputChange.bind(this)}
+                                    value={this.state.name}
                                     required={'required'}/>
                         <InputField identifier={'surname'} placeholder={'Фамилия'}
                                     errorMessage={this.state.errorMessages.surname}
                                     onChange={this.handleInputChange.bind(this)}
+                                    value={this.state.surname}
                                     required={'required'}/>
                         <InputField identifier={'email'} placeholder={'Email'}
-                                    type={'email'} autoComplete="email"
+                                    type={'email'} autoComplete={'email'}
                                     errorMessage={this.state.errorMessages.email}
                                     onChange={this.handleInputChange.bind(this)}
+                                    value={this.state.email}
+                                    required={'required'}/>
+                        <InputField identifier={'phone'} placeholder={'Телефон'}
+                                    type={'text'} autoComplete={'phone'}
+                                    errorMessage={this.state.errorMessages.phone}
+                                    onChange={this.handleInputChange.bind(this)}
+                                    mask={'+7(999)999-99-99'}
+                                    value={this.state.phone}
                                     required={'required'}/>
                     </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
@@ -194,9 +212,11 @@ function InputField(props) {
             <div className="col-sm-9">
                 <InputMask id={`reg_form_${props.identifier}`}
                            type={(props.type != null) ? props.type : 'text'}
-                           name={props.identifier} placeholder={props.placeholder}
+                           name={props.identifier}
+                           placeholder={props.placeholder}
                            className={(!error) ? 'form-control' : 'form-control is-invalid'}
-                           maskChar={props.maskChar} mask={props.mask}
+                           mask={props.mask}
+                           value={props.value}
                            autoComplete={props.autoComplete}
                            onChange={props.onChange}
                            required={props.required}/>
