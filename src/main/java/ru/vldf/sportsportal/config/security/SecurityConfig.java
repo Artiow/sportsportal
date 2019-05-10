@@ -81,7 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable()
-                .csrf().disable();
+                .csrf().disable()
+                .cors();
 
         ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry authorizeRequests = http.authorizeRequests();
         for (Map.Entry<String, RequestMatcher> entry : router.getSecurityRouteMap().entrySet()) {
@@ -149,7 +150,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationFailureHandler failureHandler() {
         return (request, response, ex) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             ServletOutputStream out = response.getOutputStream();
             new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Unauthorized access attempt"));
             out.flush();
@@ -160,7 +161,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, ex) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
             ServletOutputStream out = response.getOutputStream();
             new ObjectMapper().writeValue(out, adviseController.warnDTO(ex, "Forbidden access attempt"));
             out.flush();
