@@ -38,6 +38,11 @@
     padding-top: 15px;
 }
 
+.PlaygroundFilter form.card div.filter-accordion .card .card-body hr.card-liner {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 .PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge-sub {
     display: inline-block;
     min-width: 21px;

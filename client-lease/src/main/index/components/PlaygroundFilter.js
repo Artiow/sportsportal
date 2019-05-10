@@ -29,7 +29,7 @@ export default class PlaygroundFilter extends React.Component {
             sportCodes: [],
             featureCodes: [],
             searchString: '',
-            includeFree: true,
+            includeFreed: true,
             includeLeased: true,
             minPrice: PlaygroundFilter.MIN_PRICE,
             maxPrice: PlaygroundFilter.MAX_PRICE,
@@ -201,6 +201,17 @@ export default class PlaygroundFilter extends React.Component {
                             </div>
                             <div id="pg_filter_collapse_3" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
+                                    <CustomCheckbox id={'include_freed'}
+                                                    value={true}
+                                                    defaultChecked={this.state.includeFreed}>
+                                        Свободные
+                                    </CustomCheckbox>
+                                    <CustomCheckbox id={'include_leased'}
+                                                    value={true}
+                                                    defaultChecked={this.state.includeLeased}>
+                                        Арендуемые
+                                    </CustomCheckbox>
+                                    <hr className="card-liner"/>
                                     <h6>
                                         <span
                                             className={`badge-sub badge-sub-${this.state.includeLeased ? 'dark' : 'secondary'}`}>

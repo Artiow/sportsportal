@@ -9,9 +9,16 @@ import React from 'react';
 export default function CustomCheckbox(props) {
     return (
         <div className="CustomCheckbox custom-control custom-checkbox">
-            <input type="checkbox" className="custom-control-input"
-                   id={props.id} value={props.value} onChange={props.onChange}/>
-            <label className="custom-control-label" htmlFor={props.id}>{props.children}</label>
+            <input id={props.id}
+                   type="checkbox"
+                   value={props.value}
+                   className="custom-control-input"
+                   onChange={props.onChange}
+                   defaultChecked={props.defaultChecked}/>
+            <label className="custom-control-label"
+                   htmlFor={props.id}>
+                {props.children}
+            </label>
         </div>
     )
 }
