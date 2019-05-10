@@ -13,8 +13,9 @@ export default function CustomCheckbox(props) {
                    type="checkbox"
                    value={props.value}
                    className="custom-control-input"
+                   defaultChecked={props.defaultChecked}
                    onChange={props.onChange}
-                   defaultChecked={props.defaultChecked}/>
+                   disabled={props.disabled}/>
             <label className="custom-control-label"
                    htmlFor={props.id}>
                 {props.children}

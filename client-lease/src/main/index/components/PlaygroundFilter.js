@@ -30,7 +30,7 @@ export default class PlaygroundFilter extends React.Component {
             featureCodes: [],
             searchString: '',
             includeFreed: true,
-            includeLeased: true,
+            includeLeased: false,
             minPrice: PlaygroundFilter.MIN_PRICE,
             maxPrice: PlaygroundFilter.MAX_PRICE,
             opening: PlaygroundFilter.MIN_TIME,
@@ -71,6 +71,7 @@ export default class PlaygroundFilter extends React.Component {
     componentDidMount() {
         this.uploadFilterDictionaryData('feature', 'features');
         this.uploadFilterDictionaryData('sport', 'sports');
+        this.handleSubmit();
     }
 
     /**
@@ -99,7 +100,7 @@ export default class PlaygroundFilter extends React.Component {
     }
 
     handleSubmit(event) {
-        event.preventDefault();
+        if (event) event.preventDefault();
         const onChange = this.props.onChange;
         if (typeof onChange === 'function') onChange({
             searchString: this.state.searchString,
@@ -205,12 +206,14 @@ export default class PlaygroundFilter extends React.Component {
                                 <div className="card-body">
                                     <CustomCheckbox id={'include_freed'}
                                                     defaultChecked={this.state.includeFreed}
-                                                    onChange={e => this.setState({includeFreed: e.target.checked})}>
+                                                    onChange={e => this.setState({includeFreed: e.target.checked})}
+                                                    disabled={true} /* choice disabling */>
                                         Свободные
                                     </CustomCheckbox>
                                     <CustomCheckbox id={'include_leased'}
                                                     defaultChecked={this.state.includeLeased}
-                                                    onChange={e => this.setState({includeLeased: e.target.checked})}>
+                                                    onChange={e => this.setState({includeLeased: e.target.checked})}
+                                                    disabled={true} /* choice disabling */>
                                         Арендуемые
                                     </CustomCheckbox>
                                     <hr className="card-liner"/>

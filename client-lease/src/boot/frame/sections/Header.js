@@ -96,7 +96,8 @@ class AuthBlock extends React.Component {
             <div className="AuthBlock col-4">
                 {this.state.isAuthorized ? (
                     <div className="auth">
-                        <Link to="/home" className="row">
+                        <Link to="/home" className="row"
+                              onClick={e => e.preventDefault()}>
                             <i className="fa fa-user col-1"/>
                             <span className="col-11 col-label">{this.state.username}</span>
                         </Link>

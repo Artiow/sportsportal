@@ -18,10 +18,6 @@ export default class PlaygroundSearcher extends React.Component {
         this.query(this.filter);
     };
 
-    componentDidMount() {
-        this.query(this.filter);
-    }
-
     /**
      * Downloading playground page.
      * @param filter {object} playground filter
