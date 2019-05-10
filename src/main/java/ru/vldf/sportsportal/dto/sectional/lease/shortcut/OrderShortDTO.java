@@ -21,7 +21,8 @@ public class OrderShortDTO extends AbstractVersionedShortDTO {
     private LocalDateTime datetime;
     private LocalDateTime expiration;
     private Boolean isPaid;
-    private Boolean isOwnerOccupied;
+    private Boolean isOwned;
+    private Boolean isFreed;
     private URI orderURL;
     private URI customerURL;
     private List<ReservationResumeDTO> reservations;

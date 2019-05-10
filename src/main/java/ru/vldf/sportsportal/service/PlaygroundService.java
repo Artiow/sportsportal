@@ -279,7 +279,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
             order.setSum(sumPrice);
             order.setIsPaid(isOwner);
-            order.setIsOwnerOccupied(isOwner);
+            order.setIsOwned(isOwner);
             order.setReservations(reservations);
 
             OrderEntity newOrderEntity = orderRepository.save(order);

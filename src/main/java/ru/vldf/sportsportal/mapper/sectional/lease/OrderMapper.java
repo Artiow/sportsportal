@@ -28,7 +28,8 @@ public abstract class OrderMapper extends AbstractOverallVersionedMapper<OrderEn
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "customer", ignore = true),
             @Mapping(target = "reservations", ignore = true),
-            @Mapping(target = "isOwnerOccupied", ignore = true)
+            @Mapping(target = "isOwned", ignore = true),
+            @Mapping(target = "isFreed", ignore = true)
     })
     public abstract OrderEntity toEntity(OrderDTO dto);
 
@@ -61,7 +62,7 @@ public abstract class OrderMapper extends AbstractOverallVersionedMapper<OrderEn
 
     public OrderDTO toDTO(OrderEntity entity, URI paymentLink) {
         OrderDTO dto = toDTO(entity);
-        dto.setPaymentLink(!entity.getIsOwnerOccupied() ? paymentLink : null);
+        dto.setPaymentLink(!entity.getIsOwned() ? paymentLink : null);
         return dto;
     }
 

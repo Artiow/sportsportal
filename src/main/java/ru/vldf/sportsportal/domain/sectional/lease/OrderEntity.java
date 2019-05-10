@@ -38,8 +38,12 @@ public class OrderEntity extends AbstractVersionedEntity {
     private Boolean isPaid = false;
 
     @Basic
-    @Column(name = "occupied", nullable = false)
-    private Boolean isOwnerOccupied = false;
+    @Column(name = "owned", nullable = false)
+    private Boolean isOwned = false;
+
+    @Basic
+    @Column(name = "freed", nullable = false)
+    private Boolean isFreed = false;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -46,7 +46,10 @@ public class OrderDTO implements VersionedDTO {
     private Boolean isPaid;
 
     @NotNull(groups = FieldCheck.class)
-    private Boolean isOwnerOccupied;
+    private Boolean isOwned;
+
+    @NotNull(groups = FieldCheck.class)
+    private Boolean isFreed;
 
     @Valid
     @NotNull(groups = FieldCheck.class)
