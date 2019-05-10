@@ -20,13 +20,15 @@ export default function PlaygroundPageableContainer(props) {
         <div className="PlaygroundPageableContainer col-xs-12 col-sm-8">
             {(!content || loading) ? (
                 <LoadingSpinner className="text-secondary mt-5"/>
-            ) : (<div className="col-xs-12 col-sm-12 mb-12">
-                <div className="alert alert-light">
-                    <h4 className="alert-heading">Ничего не найдено!</h4>
-                    <hr/>
-                    <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
+            ) : (
+                <div className="col-xs-12 col-sm-12 mb-12">
+                    <div className="alert alert-light">
+                        <h4 className="alert-heading">Ничего не найдено!</h4>
+                        <hr/>
+                        <p className="mb-0">Не существует таких площадок, которые удовлетворяли бы запросу.</p>
+                    </div>
                 </div>
-            </div>)}
+            )}
         </div>
     );
 }
@@ -61,9 +63,15 @@ function PlaygroundCard(props) {
                         <StarRate value={playground.rate}/>
                     </h6>
                     <p className="card-text">
-                        <span className={'badge badge-dark' + (disabled ? ' text-muted' : '')}>
+                        {(!playground.isFreed) ? (
+                            <span className={'badge badge-dark' + (disabled ? ' text-muted' : '')}>
                             от<span className="mx-1">{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
-                        </span>
+                            </span>
+                        ) : (
+                            <span className={'badge badge-success' + (disabled ? ' text-muted' : '')}>
+                            открытая<span className="mx-1">{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
+                            </span>
+                        )}
                     </p>
                     <Link className={'btn btn-outline-info btn-sm' + (disabled ? ' disabled' : '')}
                           to={"/playground/id" + playground.id}>

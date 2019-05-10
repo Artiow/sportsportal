@@ -19,8 +19,6 @@ public class PlaygroundLinkDTO extends AbstractVersionedLinkDTO {
     private String address;
     private String phone;
     private Integer rate;
-    private Boolean halfHourAvailable;
-    private Boolean fullHourRequired;
     private BigDecimal price;
     private URI playgroundURL;
     private List<URI> ownersURLs;

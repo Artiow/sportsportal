@@ -22,15 +22,7 @@ values (1, 1),
 
 -- playground
 
-insert into lease.playground (id,
-                              name,
-                              address,
-                              phone,
-                              opening,
-                              closing,
-                              half_hour_available,
-                              full_hour_required,
-                              price)
+insert into lease.playground (id, name, address, phone, opening, closing, half_hour_available, full_hour_required, price)
 values (1,
         'Площадка один',
         'г. Москва, ул. Ленина 1',

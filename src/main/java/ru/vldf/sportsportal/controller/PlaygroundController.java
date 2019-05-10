@@ -69,6 +69,8 @@ public class PlaygroundController {
             @RequestParam(required = false) @DateTimeFormat(iso = ISO.TIME) LocalTime closing,
             @RequestParam(required = false) Collection<String> featureCodes,
             @RequestParam(required = false) Collection<String> sportCodes,
+            @RequestParam(required = false) Boolean includeFreed,
+            @RequestParam(required = false) Boolean includeLeased,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String searchString,
@@ -80,6 +82,8 @@ public class PlaygroundController {
         PlaygroundFilterDTO playgroundFilterDTO = new PlaygroundFilterDTO();
         playgroundFilterDTO.setFeatureCodes(featureCodes);
         playgroundFilterDTO.setSportCodes(sportCodes);
+        playgroundFilterDTO.setIncludeFreed(includeFreed);
+        playgroundFilterDTO.setIncludeLeased(includeLeased);
         playgroundFilterDTO.setMinPrice(minPrice);
         playgroundFilterDTO.setMaxPrice(maxPrice);
         playgroundFilterDTO.setMinRate(minRate);

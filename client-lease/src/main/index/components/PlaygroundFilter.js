@@ -105,6 +105,8 @@ export default class PlaygroundFilter extends React.Component {
             searchString: this.state.searchString,
             featureCodes: this.state.featureCodes,
             sportCodes: this.state.sportCodes,
+            includeFreed: this.state.includeFreed,
+            includeLeased: this.state.includeLeased,
             minPrice: this.state.minPrice,
             maxPrice: this.state.maxPrice,
             opening: this.state.opening,
@@ -202,19 +204,18 @@ export default class PlaygroundFilter extends React.Component {
                             <div id="pg_filter_collapse_3" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     <CustomCheckbox id={'include_freed'}
-                                                    value={true}
-                                                    defaultChecked={this.state.includeFreed}>
+                                                    defaultChecked={this.state.includeFreed}
+                                                    onChange={e => this.setState({includeFreed: e.target.checked})}>
                                         Свободные
                                     </CustomCheckbox>
                                     <CustomCheckbox id={'include_leased'}
-                                                    value={true}
-                                                    defaultChecked={this.state.includeLeased}>
+                                                    defaultChecked={this.state.includeLeased}
+                                                    onChange={e => this.setState({includeLeased: e.target.checked})}>
                                         Арендуемые
                                     </CustomCheckbox>
                                     <hr className="card-liner"/>
                                     <h6>
-                                        <span
-                                            className={`badge-sub badge-sub-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
+                                        <span className={`badge-sub ${!this.state.includeLeased ? 'text-muted' : ''}`}>
                                             от
                                         </span>
                                         <span
@@ -226,8 +227,7 @@ export default class PlaygroundFilter extends React.Component {
                                         </span>
                                     </h6>
                                     <h6>
-                                        <span
-                                            className={`badge-sub badge-sub-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
+                                        <span className={`badge-sub ${!this.state.includeLeased ? 'text-muted' : ''}`}>
                                             до
                                         </span>
                                         <span

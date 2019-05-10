@@ -17,5 +17,6 @@ public class PlaygroundBoardDTO implements DataTransferObject {
     private Boolean fullHourRequired;
     private ReservationGridDTO grid;
     private String phone;
-    private Boolean test;
+    private Boolean isTested;
+    private Boolean isFreed;
 }

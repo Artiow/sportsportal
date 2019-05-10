@@ -26,6 +26,8 @@ public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements Wor
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
     private BigDecimal price;
+    private Boolean isTested;
+    private Boolean isFreed;
     private List<String> specializations;
     private List<String> capabilities;
     private URI playgroundURL;

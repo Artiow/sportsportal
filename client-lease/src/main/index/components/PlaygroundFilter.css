@@ -48,14 +48,6 @@
     min-width: 21px;
 }
 
-.PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge-sub.badge-sub-dark {
-    color: inherit;
-}
-
-.PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge-sub.badge-sub-secondary {
-    color: #6c757d;
-}
-
 .PlaygroundFilter form.card div.filter-accordion .card .card-body span.badge span.badge-param {
     margin: 0 3px 0 0;
 }

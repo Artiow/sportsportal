@@ -17,6 +17,8 @@ public class PlaygroundFilterDTO extends StringSearcherDTO {
 
     private Collection<String> featureCodes;
     private Collection<String> sportCodes;
+    private Boolean includeFreed;
+    private Boolean includeLeased;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private LocalTime opening;

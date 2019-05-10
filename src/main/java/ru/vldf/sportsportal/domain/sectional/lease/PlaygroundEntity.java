@@ -60,8 +60,12 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     private BigDecimal price = BigDecimal.valueOf(0, 2);
 
     @Basic
-    @Column(name = "test", nullable = false)
-    private Boolean test = true;
+    @Column(name = "tested", nullable = false)
+    private Boolean isTested = false;
+
+    @Basic
+    @Column(name = "freed", nullable = false)
+    private Boolean isFreed = false;
 
 
     @OrderBy("pk.datetime")

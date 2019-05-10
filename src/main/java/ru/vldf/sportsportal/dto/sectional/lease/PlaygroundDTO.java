@@ -70,6 +70,14 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
     private BigDecimal price;
 
+    // todo: isTested required here!
+    // @NotNull(groups = FieldCheck.class)
+    // private Boolean isTested;
+
+    // todo: isFreed required here!
+    // @NotNull(groups = FieldCheck.class)
+    // private Boolean isFreed;
+
     @Valid
     @NotNull(groups = FieldCheck.class)
     private List<SportDTO> specializations;

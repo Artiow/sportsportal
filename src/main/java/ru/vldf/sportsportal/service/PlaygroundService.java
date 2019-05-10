@@ -231,8 +231,8 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
             boolean isOwner = (playground.getOwners().contains(currentUser));
-            if (!isOwner && playground.getTest()) {
-                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.isTest.message"));
+            if (!isOwner && playground.getIsTested()) {
+                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.isTested.message"));
             }
 
             LocalDateTime now = LocalDateTime.now();
@@ -391,6 +391,8 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
         private Collection<String> featureCodes;
         private Collection<String> sportCodes;
+        private boolean includeFreed;
+        private boolean includeLeased;
         private BigDecimal minPrice;
         private BigDecimal maxPrice;
         private Timestamp opening;
@@ -429,6 +431,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
 
         private void configureSearchByPrice(PlaygroundFilterDTO dto) {
+            // fields 'includeFreed' and 'includeLeased' cannot be null, default values used
+            this.includeFreed = Optional.ofNullable(dto.getIncludeFreed()).orElse(true);
+            this.includeLeased = Optional.ofNullable(dto.getIncludeLeased()).orElse(true);
             this.minPrice = dto.getMinPrice();
             this.maxPrice = dto.getMaxPrice();
         }
@@ -450,10 +455,17 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
             }
-            if (minPrice != null) {
+            if (!(includeFreed && includeLeased)) {
+                if (includeFreed ^ includeLeased) {
+                    predicates.add(cb.equal(root.get(PlaygroundEntity_.isFreed), (includeFreed)));
+                } else {
+                    predicates.add(cb.disjunction());
+                }
+            }
+            if (includeLeased && minPrice != null) {
                 predicates.add(searchByMinPricePredicate(root, cb));
             }
-            if (maxPrice != null) {
+            if (includeLeased && maxPrice != null) {
                 predicates.add(searchByMaxPricePredicate(root, cb));
             }
             if (minRate != null) {
@@ -497,11 +509,23 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
 
         private Predicate searchByMinPricePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            return cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.price), minPrice);
+            return cb.or(
+                    cb.equal(root.get(PlaygroundEntity_.isFreed), true),
+                    cb.and(
+                            cb.equal(root.get(PlaygroundEntity_.isFreed), false),
+                            cb.greaterThanOrEqualTo(root.get(PlaygroundEntity_.price), minPrice)
+                    )
+            );
         }
 
         private Predicate searchByMaxPricePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {
-            return cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.price), maxPrice);
+            return cb.or(
+                    cb.equal(root.get(PlaygroundEntity_.isFreed), true),
+                    cb.and(
+                            cb.equal(root.get(PlaygroundEntity_.isFreed), false),
+                            cb.lessThanOrEqualTo(root.get(PlaygroundEntity_.price), maxPrice)
+                    )
+            );
         }
 
         private Predicate searchByMinRatePredicate(Root<PlaygroundEntity> root, CriteriaBuilder cb) {

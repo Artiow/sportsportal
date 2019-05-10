@@ -38,7 +38,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
             };
             this.state = {
                 price: null,
-                isTest: null,
+                tested: null,
                 contact: null,
                 schedule: null,
                 dateList: null,
@@ -182,7 +182,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         halfHourAvailable: data.halfHourAvailable,
                         fullHourRequired: data.fullHourRequired,
                         contact: data.phone,
-                        isTest: data.test,
+                        tested: data.isTested,
                     });
                 })
                 .catch(error => {
@@ -336,8 +336,8 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
             const contact = this.state.contact;
             const schedule = this.state.schedule;
             const reservation = this.state.reservation;
-            const isTest = access && !owner && this.state.isTest;
-            const disabled = isTest || !(reservation.length > 0);
+            const tested = access && !owner && this.state.tested;
+            const disabled = tested || !(reservation.length > 0);
             const totalPrice = ((reservation != null) && (price != null)) ? reservation.length * price : 0;
             if (schedule != null) {
                 return (
@@ -373,7 +373,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         <div className="order-group">
                             {(!access) ? (
                                 <AuthAlert link="/login" onClick={this.props.mainframe.showLogin}/>
-                            ) : (isTest) ? (
+                            ) : (tested) ? (
                                 <TestAlert contact={contact}/>
                             ) : (null)}
                             <div className="btn-group">
