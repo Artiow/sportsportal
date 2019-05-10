@@ -11,6 +11,13 @@ export default class PlaygroundFilter extends React.Component {
     static MAX_PRICE = 10000;
     static PRICE_STEP = 100;
 
+    static MIN_TIME = '00:00';
+    static MAX_TIME = '00:00';
+    static MIN_NUMERIC_TIME = 0;
+    static MAX_NUMERIC_TIME = 48;
+    static TIME_STEP = 1;
+
+
     constructor(props) {
         super(props);
         this.dictionary = {
@@ -22,12 +29,15 @@ export default class PlaygroundFilter extends React.Component {
             sportCodes: [],
             featureCodes: [],
             searchString: '',
+            includeFree: true,
+            includeLeased: true,
             minPrice: PlaygroundFilter.MIN_PRICE,
             maxPrice: PlaygroundFilter.MAX_PRICE,
-            opening: '00:00',
-            closing: '00:00'
+            opening: PlaygroundFilter.MIN_TIME,
+            closing: PlaygroundFilter.MAX_TIME
         };
     }
+
 
     static updateCheckboxArray(codes, code, checked) {
         const idx = codes.indexOf(code);
@@ -36,10 +46,11 @@ export default class PlaygroundFilter extends React.Component {
         return codes;
     }
 
+
     updatePriceCallback = range => {
         this.setState({
-            startPrice: range[0],
-            endPrice: range[1]
+            minPrice: range[0],
+            maxPrice: range[1]
         });
     };
 
@@ -55,6 +66,7 @@ export default class PlaygroundFilter extends React.Component {
             closing: normalize(range[1])
         });
     };
+
 
     componentDidMount() {
         this.uploadFilterDictionaryData('feature', 'features');
@@ -190,8 +202,12 @@ export default class PlaygroundFilter extends React.Component {
                             <div id="pg_filter_collapse_3" className="collapse" data-parent="#pg_filter_accordion">
                                 <div className="card-body">
                                     <h6>
-                                        <span className="badge-sub">от</span>
-                                        <span className="badge badge-dark">
+                                        <span
+                                            className={`badge-sub badge-sub-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
+                                            от
+                                        </span>
+                                        <span
+                                            className={`badge badge-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
                                             <span className="badge-param">
                                                 {Math.floor(this.state.minPrice)}
                                             </span>
@@ -199,8 +215,12 @@ export default class PlaygroundFilter extends React.Component {
                                         </span>
                                     </h6>
                                     <h6>
-                                        <span className="badge-sub">до</span>
-                                        <span className="badge badge-dark">
+                                        <span
+                                            className={`badge-sub badge-sub-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
+                                            до
+                                        </span>
+                                        <span
+                                            className={`badge badge-${this.state.includeLeased ? 'dark' : 'secondary'}`}>
                                             <span className="badge-param">
                                                 {Math.floor(this.state.maxPrice)}
                                             </span>
@@ -208,10 +228,12 @@ export default class PlaygroundFilter extends React.Component {
                                         </span>
                                     </h6>
                                     <Range allowCross={false}
-                                           min={PlaygroundFilter.MIN_PRICE} max={PlaygroundFilter.MAX_PRICE}
+                                           min={PlaygroundFilter.MIN_PRICE}
+                                           max={PlaygroundFilter.MAX_PRICE}
                                            defaultValue={[PlaygroundFilter.MIN_PRICE, PlaygroundFilter.MAX_PRICE]}
                                            step={PlaygroundFilter.PRICE_STEP}
-                                           onChange={this.updatePriceCallback}/>
+                                           onChange={this.updatePriceCallback}
+                                           disabled={!this.state.includeLeased}/>
                                 </div>
                             </div>
                         </div>
@@ -238,7 +260,11 @@ export default class PlaygroundFilter extends React.Component {
                                             <span className="badge-param">{this.state.closing}</span>
                                         </span>
                                     </h6>
-                                    <Range min={0} max={48} allowCross={false} defaultValue={[0, 48]}
+                                    <Range allowCross={false}
+                                           min={PlaygroundFilter.MIN_NUMERIC_TIME}
+                                           max={PlaygroundFilter.MAX_NUMERIC_TIME}
+                                           defaultValue={[PlaygroundFilter.MIN_NUMERIC_TIME, PlaygroundFilter.MAX_NUMERIC_TIME]}
+                                           step={PlaygroundFilter.TIME_STEP}
                                            onChange={this.updateTimeCallback}/>
                                 </div>
                             </div>

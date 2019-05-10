@@ -4,7 +4,7 @@ import {BrowserRouter} from 'react-router-dom';
 
 import './index.css';
 import Application from './boot/Application';
-import register from './util/registerServiceWorker';
+import register from './util/serviceWorker';
 
 // define a new console
 const console = (function (nativeConsole) {
