@@ -67,10 +67,15 @@ export default class PlaygroundPage extends React.Component {
                     <div className="col-4">
                         <h4 className="row-h info-h info-price">
                             <span className="mr-md-2">Стоимость:</span>
-                            <span className="badge badge-secondary">
-                                <span>{Math.floor(playground.price)}</span>
-                                <i className="fa fa-rub ml-1"/>/час
-                            </span>
+                            {(playground.isFreed) ? (
+                                <span className="badge badge-success">
+                                    отсутствует
+                                </span>
+                            ) : (
+                                <span className="badge badge-secondary">
+                                    <span>{Math.floor(playground.price)}</span><i className="fa fa-rub ml-1"/>/час
+                                </span>
+                            )}
                         </h4>
                         {(features != null) ? (
                             <h5 className="feature">Инфраструктура:</h5>

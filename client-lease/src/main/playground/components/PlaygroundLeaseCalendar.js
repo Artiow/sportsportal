@@ -38,6 +38,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
             };
             this.state = {
                 price: null,
+                freed: null,
                 tested: null,
                 contact: null,
                 schedule: null,
@@ -182,6 +183,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                         halfHourAvailable: data.halfHourAvailable,
                         fullHourRequired: data.fullHourRequired,
                         contact: data.phone,
+                        freed: data.isFreed,
                         tested: data.isTested,
                     });
                 })
@@ -273,10 +275,12 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
         }
 
         render() {
+
             const cancel = event => {
                 this.setState({reservation: []});
                 saveReservation(this.playgroundId, this.playgroundVersion, []);
             };
+
             const headerLineBuilder = dateList => {
                 const headerLine = [];
                 if ((dateList != null) && (dateList.length > 0)) {
@@ -294,6 +298,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                 }
                 return headerLine;
             };
+
             const tableBuilder = (timeList, price, schedule) => {
                 const table = [];
                 const checked = this.state.fullHourRequired && this.state.halfHourAvailable;
@@ -303,8 +308,14 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                 timeList.forEach((time, index, array) => {
                     const rows = [(<td key={0}><span className="badge badge-secondary">{time}</span></td>)];
                     schedule.forEach((value, date) => {
-                        const content = (<span>{price}<i className="fa fa-rub ml-1"/></span>);
                         const datetime = date + 'T' + time;
+
+                        const content = price ? (
+                            <span>{price}<i className="fa fa-rub ml-1"/></span>
+                        ) : (
+                            <span className="px-3"><i className="fa fa-circle-thin"/></span>
+                        );
+
                         rows.push(
                             <td key={rows.length}>
                                 {(value.get(time) && !(checked && !value.get(array[index - 1]) && !value.get(array[index + 1]))) ? (
@@ -330,7 +341,7 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
                 });
                 return (table);
             };
-            const price = this.state.price;
+
             const owner = this.state.owner;
             const access = this.state.access;
             const contact = this.state.contact;
@@ -338,7 +349,10 @@ export default withMainFrameContext(withRouter(class PlaygroundLeaseCalendar ext
             const reservation = this.state.reservation;
             const tested = access && !owner && this.state.tested;
             const disabled = tested || !(reservation.length > 0);
-            const totalPrice = ((reservation != null) && (price != null)) ? reservation.length * price : 0;
+
+            const price = !this.state.freed ? this.state.price : null;
+            const totalPrice = ((reservation != null) && (price != null)) ? reservation.length * price : null;
+
             if (schedule != null) {
                 return (
                     <form className="PlaygroundLeaseCalendar" onSubmit={this.submit.bind(this)}>
@@ -415,8 +429,14 @@ function SubmitButton(props) {
                 data-target={props.disabled || !props.access ? undefined : `#${props.dataTarget}`}
                 onClick={!props.access ? props.onForbidden : undefined}
                 className={finalClass}>
-            {props.owner ? props.ownerTitle : props.userTitle}
-            {props.owner ? (null) : (
+            {(props.owner) ? (
+                props.ownerTitle
+            ) : (
+                props.userTitle
+            )}
+            {(props.owner || !props.price) ? (
+                null // no price in this case
+            ) : (
                 <span className="badge badge-dark ml-1">
                     {props.price}<i className="fa fa-rub ml-1"/>
                 </span>

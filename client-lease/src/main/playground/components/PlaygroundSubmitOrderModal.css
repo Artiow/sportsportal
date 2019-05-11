@@ -22,3 +22,7 @@
     height: 50px;
     width: 100%;
 }
+
+.PlaygroundSubmitOrderModal .modal-footer button.btn {
+    font-weight: 600;
+}

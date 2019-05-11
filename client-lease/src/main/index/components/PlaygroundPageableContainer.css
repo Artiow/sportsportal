@@ -4,3 +4,7 @@
     right: 0;
     left: 0;
 }
+
+.PlaygroundPageableContainer .PlaygroundContainer .PlaygroundCard span.badge {
+    min-height: 19px;
+}

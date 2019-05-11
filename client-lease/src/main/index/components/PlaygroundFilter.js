@@ -208,7 +208,7 @@ export default class PlaygroundFilter extends React.Component {
                                                     defaultChecked={this.state.includeFreed}
                                                     onChange={e => this.setState({includeFreed: e.target.checked})}
                                                     disabled={true} /* choice disabling */>
-                                        Свободные
+                                        Общественные
                                     </CustomCheckbox>
                                     <CustomCheckbox id={'include_leased'}
                                                     defaultChecked={this.state.includeLeased}

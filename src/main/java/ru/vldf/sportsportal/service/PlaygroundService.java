@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
@@ -228,9 +227,8 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     )
     public Integer reserve(Integer id, ReservationListDTO reservationListDTO) throws UnauthorizedAccessException, ResourceNotFoundException, ResourceCannotCreateException {
         try {
-            UserEntity currentUser = getCurrentUserEntity();
             PlaygroundEntity playground = playgroundRepository.getOne(id);
-            boolean isOwner = (playground.getOwners().contains(currentUser));
+            boolean isOwner = currentUserIn(playground.getOwners());
             if (!isOwner && playground.getIsTested()) {
                 throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.isTested.message"));
             }
@@ -239,7 +237,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             LocalDateTime expiration = now.plus(orderExpirationAmount, ChronoUnit.valueOf(orderExpirationUnit));
 
             OrderEntity order = new OrderEntity();
-            order.setCustomer(currentUser);
+            order.setCustomer(getCurrentUserEntity());
             order.setDatetime(Timestamp.valueOf(now));
             order.setExpiration(!isOwner ? Timestamp.valueOf(expiration) : null);
 

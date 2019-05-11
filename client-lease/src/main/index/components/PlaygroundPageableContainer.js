@@ -69,7 +69,7 @@ function PlaygroundCard(props) {
                             </span>
                         ) : (
                             <span className={'badge badge-success' + (disabled ? ' text-muted' : '')}>
-                            открытая<span className="mx-1">{Math.floor(playground.price)}</span><i className="fa fa-rub"/>/час
+                            общественная
                             </span>
                         )}
                     </p>

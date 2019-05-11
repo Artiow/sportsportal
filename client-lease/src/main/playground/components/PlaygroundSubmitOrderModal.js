@@ -162,10 +162,18 @@ export default class PlaygroundSubmitOrderModal extends React.Component {
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">
                                     {this.props.closeTitle}
                                 </button>
-                            ) : (null)}
+                            ) : (
+                                null
+                            )}
                             <button type="submit" className={this.props.owner ? 'btn btn-primary' : 'btn btn-success'}>
-                                {this.props.owner ? this.props.ownerTitle : this.props.userTitle}
-                                {this.props.owner ? (null) : (
+                                {(this.props.owner) ? (
+                                    this.props.ownerTitle
+                                ) : (
+                                    this.props.userTitle
+                                )}
+                                {(this.props.owner || !this.props.price) ? (
+                                    null // no price in this case
+                                ) : (
                                     <span className="badge badge-dark ml-1">
                                         {this.props.price}<i className="fa fa-rub ml-1"/>
                                     </span>

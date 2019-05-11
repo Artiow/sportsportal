@@ -26,7 +26,6 @@ import java.util.Objects;
 /**
  * @author Namednev Artem
  */
-@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "unused"})
 public abstract class AbstractSecurityService extends AbstractMessageService {
 
     private Map<String, GrantedAuthority> authorities = Collections.emptyMap();
