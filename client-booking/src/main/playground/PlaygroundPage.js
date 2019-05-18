@@ -30,7 +30,7 @@ export default class PlaygroundPage extends React.Component {
         const photoExtractor = photoItems => {
             const photos = [];
             if (photoItems != null) {
-                photoItems.forEach(value => photos.push(value.url + '?size=mdh'));
+                photoItems.forEach(value => photos.push(value.pictureURL + '?size=mdh'));
             }
             return photos;
         };
