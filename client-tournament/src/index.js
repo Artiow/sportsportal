@@ -1,12 +1,50 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter} from 'react-router-dom';
+
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import Application from './boot/Application';
+import register from './util/serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// define a new console
+const console = (function (nativeConsole) {
+    const prefix = function (sender, action) {
+        action = `[${action}]:`;
+        const FILLER = '                                  ';
+        return sender + FILLER.substring(sender.length, FILLER.length - action.length) + action;
+    };
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    // noinspection ES6ModulesDependencies
+    return {
+        debug: (process.env.NODE_ENV === 'development') ? (
+            function (sender, action, message, ...optionalParams) {
+                nativeConsole.debug(' ', prefix(sender, action), message, ...optionalParams);
+            }
+        ) : (
+            function (sender, action, message, ...optionalParams) {
+            }
+        ),
+        log: function (sender, action, message, ...optionalParams) {
+            nativeConsole.log(' ', prefix(sender, action), message, ...optionalParams);
+        },
+        info: function (sender, action, message, ...optionalParams) {
+            nativeConsole.info(' ', prefix(sender, action), message, ...optionalParams);
+        },
+        warn: function (sender, action, message, ...optionalParams) {
+            nativeConsole.warn(prefix(sender, action), message, ...optionalParams);
+        },
+        error: function (sender, action, message, ...optionalParams) {
+            nativeConsole.error(prefix(sender, action), message, ...optionalParams);
+        }
+    };
+}(window.console));
+
+// noinspection JSValidateTypes
+window.console = console;
+
+ReactDOM.render((
+    <BrowserRouter>
+        <Application/>
+    </BrowserRouter>
+), document.getElementById('root'));
+register();

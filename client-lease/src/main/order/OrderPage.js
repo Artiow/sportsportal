@@ -35,12 +35,6 @@ export default withMainFrameContext(class OrderPage extends React.Component {
     }
 
     render() {
-        const orderId = id => {
-            let result = '' + id;
-            while (result.length < OrderPage.UUID_LENGTH)
-                result = '0' + result;
-            return result;
-        };
         const orderStatusComponent = (paid, owner, freed) => {
             let text = 'ошибка';
             let styleClass = 'danger';
@@ -130,7 +124,7 @@ export default withMainFrameContext(class OrderPage extends React.Component {
         };
         const order = this.state.content;
         const link = order ? order.paymentLink : null;
-        const title = order ? `Заказ #${orderId(order.id)}` : null;
+        const title = order ? `Заказ #${order.id}` : null;
         const expiration = order ? order.expiration : null;
         let minute = 0;
         let second = 0;

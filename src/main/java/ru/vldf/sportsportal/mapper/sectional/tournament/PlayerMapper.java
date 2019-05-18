@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.mapper.sectional.tournament;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
 import ru.vldf.sportsportal.dto.sectional.tournament.PlayerDTO;
 import ru.vldf.sportsportal.dto.sectional.tournament.links.PlayerLinkDTO;
@@ -23,6 +24,13 @@ import javax.persistence.OptimisticLockException;
 @SuppressWarnings("UnmappedTargetProperties")
 @Mapper(uses = {UserMapper.class, PictureLinkMapper.class, PlayerURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class})
 public abstract class PlayerMapper extends AbstractOverallRightsBasedMapper<PlayerEntity, PlayerDTO, PlayerShortDTO, PlayerLinkDTO> {
+
+    @Mappings({
+            @Mapping(target = "user", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE),
+            @Mapping(target = "avatar", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    })
+    public abstract PlayerEntity toEntity(PlayerDTO dto);
+
 
     @Mappings({
             @Mapping(target = "playerURL", source = "id", qualifiedByName = {"toPlayerURL", "fromId"}),

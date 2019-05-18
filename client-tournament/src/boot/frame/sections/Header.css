@@ -1,0 +1,54 @@
+header.Header {
+    background-color: #24292e;
+    min-height: 90px;
+}
+
+header.Header a {
+    color: #dddddd;
+}
+
+header.Header a:hover {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+header.Header .MainBlock .sub-block {
+    display: inline-block;
+    vertical-align: top;
+    margin: 7px 5px 7px 0;
+}
+
+header.Header .MainBlock .sub-block h3 {
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: 100;
+    font-family: 'Open Sans', sans-serif;
+}
+
+header.Header .MainBlock .sub-block .breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+header.Header .AuthBlock {
+    text-align: right;
+    margin-bottom: 0;
+}
+
+header.Header .AuthBlock .auth {
+    float: right;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+header.Header .AuthBlock .auth a {
+    display: block;
+    text-align: left;
+}
+
+header.Header .AuthBlock .auth a.row .col-11.col-label {
+    padding: 0 0 0 5px;
+}

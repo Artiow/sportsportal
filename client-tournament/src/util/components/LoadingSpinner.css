@@ -1,0 +1,9 @@
+.LoadingSpinner {
+    text-align: center;
+    width: 100%;
+}
+
+.LoadingSpinner i.fa.fa-spin,
+.LoadingSpinner i.fa.fa-pulse {
+    -webkit-filter: blur(0);
+}

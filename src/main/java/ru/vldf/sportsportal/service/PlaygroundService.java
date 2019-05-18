@@ -236,14 +236,14 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         order.setIsFreed(isFreed);
         order.setReservations(reservations);
 
-        orderRepository.save(order);
+        Integer newOrderId = orderRepository.saveAndFlush(order).getId();
+        order.setId(newOrderId);
 
         // if expiration date set, do scheduled job
         if (Optional.ofNullable(order.getExpiration()).isPresent()) {
-            Integer expiredOrderId = order.getId();
             ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
             executorService.schedule(() ->
-                    orderRepository.deleteByIdAndIsPaidIsFalse(expiredOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS
+                    orderRepository.deleteByIdAndIsPaidIsFalse(newOrderId), ChronoUnit.MILLIS.between(LocalDateTime.now(), expiration), TimeUnit.MILLISECONDS
             );
         }
 
@@ -254,7 +254,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             throw new ResourceCannotCreateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
 
-        return order.getId();
+        return newOrderId;
     }
 
     /**

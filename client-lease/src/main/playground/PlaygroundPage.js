@@ -88,7 +88,11 @@ export default class PlaygroundPage extends React.Component {
                 </ContentRow>
                 <ContentRow className="calendar">
                     <div className="col-12">
-                        <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
+                        {(playground.isFreed) ? (
+                            <h4 className="row-h calendar-h calendar-header">Бронирование:</h4>
+                        ) : (
+                            <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
+                        )}
                         <PlaygroundLeaseCalendar identifier={this.id} version={playground.version}/>
                     </div>
                 </ContentRow>

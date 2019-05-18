@@ -151,9 +151,9 @@ public class PlayerController {
     /**
      * Assign player to user.
      *
-     * @param id     the player identifier.
-     * @param userId the user identifier.
-     * @param force  {@literal true} if assigning must be override, {@literal false} otherwise.
+     * @param id               the player identifier.
+     * @param associatedUserId the associated user identifier.
+     * @param force            {@literal true} if assigning must be override, {@literal false} otherwise.
      * @return no content.
      * @throws UnauthorizedAccessException   if authorization is missing.
      * @throws ForbiddenAccessException      if user don't have permission to update this player details.
@@ -162,9 +162,9 @@ public class PlayerController {
      */
     @PutMapping("/{id}/assignment")
     public ResponseEntity<Void> assign(
-            @PathVariable int id, @RequestParam(required = false) Integer userId, @RequestParam(required = false) Boolean force
+            @PathVariable int id, @RequestParam(required = false) Integer associatedUserId, @RequestParam(required = false) Boolean force
     ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException {
-        playerService.assign(id, userId, force);
+        playerService.assign(id, associatedUserId, force);
         return ResponseEntity.noContent().build();
     }
 

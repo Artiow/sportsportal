@@ -25,6 +25,7 @@ import java.util.List;
 @ValidWorkTime(groups = {PlaygroundDTO.CreateCheck.class, PlaygroundDTO.UpdateCheck.class})
 public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
 
+    @Null(groups = FieldCheck.class)
     @NotNull(groups = IdCheck.class)
     @Min(value = 1, groups = IdCheck.class)
     private Integer id;
@@ -70,13 +71,11 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
     private BigDecimal price;
 
-    // todo: isTested required here!
-    // @NotNull(groups = FieldCheck.class)
-    // private Boolean isTested;
+    @NotNull(groups = FieldCheck.class)
+    private Boolean isTested;
 
-    // todo: isFreed required here!
-    // @NotNull(groups = FieldCheck.class)
-    // private Boolean isFreed;
+    @NotNull(groups = FieldCheck.class)
+    private Boolean isFreed;
 
     @Valid
     @NotNull(groups = FieldCheck.class)

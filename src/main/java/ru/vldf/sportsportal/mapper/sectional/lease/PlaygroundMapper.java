@@ -33,13 +33,11 @@ import java.util.function.Function;
 /**
  * @author Namednev Artem
  */
+@SuppressWarnings("UnmappedTargetProperties")
 @Mapper(uses = {UserMapper.class, SportMapper.class, FeatureMapper.class, PictureLinkMapper.class, PlaygroundURLMapper.class, UserURLMapper.class, PictureURLMapper.class, JavaTimeMapper.class})
 public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundShortDTO, PlaygroundLinkDTO> {
 
     @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "reservations", ignore = true),
-            @Mapping(target = "owners", ignore = true),
             @Mapping(target = "photos", ignore = true)
     })
     public abstract PlaygroundEntity toEntity(PlaygroundDTO dto);
@@ -51,14 +49,6 @@ public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<Pl
             @Mapping(target = "photoURLs", source = "photos", qualifiedByName = {"toPictureURL", "fromCollection"})
     })
     public abstract PlaygroundLinkDTO toLinkDTO(PlaygroundEntity entity);
-
-    @Mappings({
-            @Mapping(target = "name", ignore = true),
-            @Mapping(target = "address", ignore = true),
-            @Mapping(target = "phone", ignore = true),
-            @Mapping(target = "rate", ignore = true)
-    })
-    public abstract PlaygroundEntity toLinkEntity(PlaygroundLinkDTO dto);
 
 
     @Mappings({

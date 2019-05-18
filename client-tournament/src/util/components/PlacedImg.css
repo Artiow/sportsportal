@@ -1,0 +1,14 @@
+div.placed-img-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+div.placed-img-wrapper:after {
+    background: rgba(0, 0, 0, 0.075) repeat;
+    position: absolute;
+    content: '';
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+}
