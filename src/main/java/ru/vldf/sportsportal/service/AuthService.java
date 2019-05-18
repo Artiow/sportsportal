@@ -143,7 +143,7 @@ public class AuthService extends AbstractSecurityService {
                 throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
             }
         } catch (MessagingException e) {
-            throw new ResourceCannotUpdateException(msg("sportsportal.common.User.cannotSendEmail.message"), e);
+            throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
     }
 
@@ -190,9 +190,12 @@ public class AuthService extends AbstractSecurityService {
      * @param confirmCode   the confirm code.
      * @throws MessagingException if could not sent email.
      */
-    private void sendConfirmationEmail(String emailAddress, String confirmOrigin, String confirmCode) throws MessagingException {
+    private void sendConfirmationEmail(
+            String emailAddress, String confirmOrigin, String confirmCode
+    ) throws MessagingException {
         mailService.sender()
-                .setDestination(emailAddress)
+                .setTo(emailAddress)
+                .setFrom(msg("sportsportal.email.confirm.from"), msg("sportsportal.email.confirm.personal"))
                 .setSubject(msg("sportsportal.email.confirm.subject"))
                 .setHtml(String.format(
                         "<p>%s</p>",

@@ -41,18 +41,24 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                 result = '0' + result;
             return result;
         };
-        const orderStatusComponent = (paid, owner) => {
+        const orderStatusComponent = (paid, owner, freed) => {
             let text = 'ошибка';
             let styleClass = 'danger';
-            if (paid && owner) {
+            if (owner && paid) {
                 text = 'зарезервировано';
                 styleClass = 'primary';
-            } else if (paid && !owner) {
+            } else if (freed && paid) {
+                text = 'забронировано';
+                styleClass = 'success';
+            } else if (paid) {
                 text = 'оплачено';
                 styleClass = 'success';
-            } else if (!paid && !owner) {
+            } else if (!paid) {
                 text = 'не оплачено';
                 styleClass = 'warning';
+            } else {
+                text = 'не определен';
+                styleClass = 'danger';
             }
             return (<span className={`badge badge-${styleClass}`}>{text}</span>)
         };
@@ -139,7 +145,7 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                 <ContentRow className="header">
                     <div className="col-12">
                         <h1 className="mb-1">{title}</h1>
-                        <h4>статус: {orderStatusComponent(order.isPaid, order.isOwned)}</h4>
+                        <h4>статус: {orderStatusComponent(order.isPaid, order.isOwned, order.isFreed)}</h4>
                         {expiration ? (
                             <div className="alert alert-danger my-0">
                                 <h4 className="alert-heading">Внимание!</h4>

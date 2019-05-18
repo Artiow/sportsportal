@@ -205,14 +205,13 @@ public class PlaygroundController {
      * @throws UnauthorizedAccessException     if authorization is missing.
      * @throws ForbiddenAccessException        if user don't have permission to update this playground.
      * @throws ResourceNotFoundException       if playground not found.
-     * @throws ResourceCannotUpdateException   if playground cannot be updated.
      * @throws ResourceOptimisticLockException if playground was already updated.
      */
     @PutMapping("/{id}")
     @ApiOperation("редактировать площадку")
     public ResponseEntity<Void> update(
             @PathVariable int id, @RequestBody @Validated(PlaygroundDTO.UpdateCheck.class) PlaygroundDTO playgroundDTO
-    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotUpdateException, ResourceOptimisticLockException {
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceOptimisticLockException {
         playgroundService.update(id, playgroundDTO);
         return ResponseEntity.noContent().build();
     }

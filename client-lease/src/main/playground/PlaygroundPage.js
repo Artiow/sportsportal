@@ -68,7 +68,7 @@ export default class PlaygroundPage extends React.Component {
                         <h4 className="row-h info-h info-price">
                             <span className="mr-md-2">Стоимость:</span>
                             {(playground.isFreed) ? (
-                                <span className="badge badge-success">
+                                <span className="badge badge-secondary">
                                     отсутствует
                                 </span>
                             ) : (
