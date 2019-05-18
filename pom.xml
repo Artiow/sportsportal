@@ -221,7 +221,7 @@
                     <schemas>
                         <schema>flyway</schema>
                         <schema>common</schema>
-                        <schema>lease</schema>
+                        <schema>booking</schema>
                         <schema>tournament</schema>
                     </schemas>
                 </configuration>

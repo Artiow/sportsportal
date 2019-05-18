@@ -11,10 +11,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.PlaygroundDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.shortcut.PlaygroundShortDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.PlaygroundBoardDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.general.throwable.*;
 
@@ -31,12 +31,12 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
  */
 @RestController
 @Api(tags = {"Playground"})
-@RequestMapping("${api.path.lease.playground}")
+@RequestMapping("${api.path.booking.playground}")
 public class PlaygroundController {
 
     private final PlaygroundService playgroundService;
 
-    @Value("${api.path.lease.order}")
+    @Value("${api.path.booking.order}")
     private String orderPath;
 
 
@@ -49,17 +49,19 @@ public class PlaygroundController {
     /**
      * Returns requested page with playgrounds for current playground filter.
      *
-     * @param opening      the opening time.
-     * @param closing      the closing time.
-     * @param featureCodes the list of feature codes.
-     * @param sportCodes   the list of sport codes.
-     * @param minPrice     the minimal playground price.
-     * @param maxPrice     the maximal playground price.
-     * @param searchString the search string.
-     * @param pageSize     the page size.
-     * @param pageNum      the page number.
-     * @param minRate      the minimal playground rate.
-     * @param maxRate      the maximal playground rate.
+     * @param opening       the opening time.
+     * @param closing       the closing time.
+     * @param featureCodes  the list of feature codes.
+     * @param sportCodes    the list of sport codes.
+     * @param minPrice      the minimal playground price.
+     * @param maxPrice      the maximal playground price.
+     * @param includeFreed  the include freed playgrounds flag.
+     * @param includeBooked the include booked playgrounds flag.
+     * @param searchString  the search string.
+     * @param pageSize      the page size.
+     * @param pageNum       the page number.
+     * @param minRate       the minimal playground rate.
+     * @param maxRate       the maximal playground rate.
      * @return page with short playgrounds details.
      */
     @GetMapping("/list")
@@ -70,7 +72,7 @@ public class PlaygroundController {
             @RequestParam(required = false) Collection<String> featureCodes,
             @RequestParam(required = false) Collection<String> sportCodes,
             @RequestParam(required = false) Boolean includeFreed,
-            @RequestParam(required = false) Boolean includeLeased,
+            @RequestParam(required = false) Boolean includeBooked,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String searchString,
@@ -83,7 +85,7 @@ public class PlaygroundController {
         playgroundFilterDTO.setFeatureCodes(featureCodes);
         playgroundFilterDTO.setSportCodes(sportCodes);
         playgroundFilterDTO.setIncludeFreed(includeFreed);
-        playgroundFilterDTO.setIncludeLeased(includeLeased);
+        playgroundFilterDTO.setIncludeBooked(includeBooked);
         playgroundFilterDTO.setMinPrice(minPrice);
         playgroundFilterDTO.setMaxPrice(maxPrice);
         playgroundFilterDTO.setMinRate(minRate);

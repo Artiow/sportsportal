@@ -7,21 +7,21 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.vldf.sportsportal.domain.sectional.booking.*;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.PlaygroundDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.shortcut.PlaygroundShortDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationListDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.PlaygroundDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.shortcut.PlaygroundShortDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.PlaygroundBoardDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
-import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
-import ru.vldf.sportsportal.repository.lease.OrderRepository;
-import ru.vldf.sportsportal.repository.lease.PlaygroundRepository;
-import ru.vldf.sportsportal.repository.lease.ReservationRepository;
+import ru.vldf.sportsportal.mapper.sectional.booking.PlaygroundMapper;
+import ru.vldf.sportsportal.repository.booking.OrderRepository;
+import ru.vldf.sportsportal.repository.booking.PlaygroundRepository;
+import ru.vldf.sportsportal.repository.booking.ReservationRepository;
 import ru.vldf.sportsportal.service.general.AbstractSecurityService;
 import ru.vldf.sportsportal.service.general.CRUDService;
 import ru.vldf.sportsportal.service.general.throwable.*;
@@ -121,7 +121,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         try {
             return playgroundMapper.makeSchedule(playgroundMapper.toGridDTO(findById(id)), LocalDateTime.now(), from, to, reservationRepository.findAll(new ReservationFilter(id, from, to)));
         } catch (DataCorruptedException e) {
-            throw new ResourceCorruptedException(msg("sportsportal.lease.Playground.dataCorrupted.message", id), e);
+            throw new ResourceCorruptedException(msg("sportsportal.booking.Playground.dataCorrupted.message", id), e);
         }
     }
 
@@ -184,7 +184,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         boolean isOwned = currentUserIn(playground.getOwners());
         boolean isFreed = playground.getIsFreed();
         if (!isOwned && playground.getIsTested()) {
-            throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.isTested.message"));
+            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.isTested.message"));
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -197,7 +197,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
         List<LocalDateTime> datetimes = CollectionSorter.getSorted(reservationListDTO.getReservations());
         if (!LocalDateTimeGridChecker.check(datetimes, playground.getHalfHourAvailable(), playground.getFullHourRequired())) {
-            throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.notSupportedTime.message"));
+            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.notSupportedTime.message"));
         }
 
         BigDecimal sumPrice = BigDecimal.valueOf(0, 2);
@@ -211,11 +211,11 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             Timestamp midnight = javaTimeMapper.toTimestamp(LocalTime.MIDNIGHT);
             Timestamp reservedTime = javaTimeMapper.toTimestamp(datetime.toLocalTime());
             if (!(!reservedTime.before(playground.getOpening()) && (reservedTime.before(playground.getClosing()) || midnight.equals(playground.getClosing())))) {
-                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.notWorkingTime.message"));
+                throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.notWorkingTime.message"));
             }
             Timestamp reservedDatetime = Timestamp.valueOf(datetime);
             if (reservationRepository.existsByPkPlaygroundAndPkDatetime(playground, reservedDatetime)) {
-                throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.alreadyReservedTime.message"));
+                throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.alreadyReservedTime.message"));
             }
 
             ReservationEntity reservation = new ReservationEntity();
@@ -277,7 +277,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             playgroundEntity.setPhotos(Collections.emptyList());
             return playgroundRepository.save(playgroundEntity).getId();
         } catch (JpaObjectRetrievalFailureException e) {
-            throw new ResourceCannotCreateException(msg("sportsportal.lease.Playground.cannotCreate.message"), e);
+            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.cannotCreate.message"), e);
         }
     }
 
@@ -299,11 +299,11 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     public void update(Integer id, PlaygroundDTO playgroundDTO) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceOptimisticLockException {
         PlaygroundEntity playgroundEntity = findById(id);
         if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
         } else try {
             playgroundRepository.save(playgroundMapper.inject(playgroundEntity, playgroundDTO));
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            throw new ResourceOptimisticLockException(msg("sportsportal.lease.Playground.optimisticLock.message"), e);
+            throw new ResourceOptimisticLockException(msg("sportsportal.booking.Playground.optimisticLock.message"), e);
         }
     }
 
@@ -320,7 +320,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         PlaygroundEntity playgroundEntity = findById(id);
         if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.lease.Playground.forbidden.message"));
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
         } else {
             playgroundRepository.delete(playgroundEntity);
         }
@@ -328,7 +328,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
 
 
     private PlaygroundEntity findById(int id) throws ResourceNotFoundException {
-        return playgroundRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.lease.Playground.notExistById.message", id)));
+        return playgroundRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.booking.Playground.notExistById.message", id)));
     }
 
 
@@ -359,7 +359,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         private Collection<String> featureCodes;
         private Collection<String> sportCodes;
         private boolean includeFreed;
-        private boolean includeLeased;
+        private boolean includeBooked;
         private BigDecimal minPrice;
         private BigDecimal maxPrice;
         private Timestamp opening;
@@ -398,9 +398,9 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
 
         private void configureSearchByPrice(PlaygroundFilterDTO dto) {
-            // fields 'includeFreed' and 'includeLeased' cannot be null, default values used
+            // fields 'includeFreed' and 'includeBooked' cannot be null, default values used
             this.includeFreed = Optional.ofNullable(dto.getIncludeFreed()).orElse(true);
-            this.includeLeased = Optional.ofNullable(dto.getIncludeLeased()).orElse(true);
+            this.includeBooked = Optional.ofNullable(dto.getIncludeBooked()).orElse(true);
             this.minPrice = dto.getMinPrice();
             this.maxPrice = dto.getMaxPrice();
         }
@@ -422,17 +422,17 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             if (opening != null) {
                 predicates.add(searchByWorkTimePredicate(root, cb));
             }
-            if (!(includeFreed && includeLeased)) {
-                if (includeFreed ^ includeLeased) {
+            if (!(includeFreed && includeBooked)) {
+                if (includeFreed ^ includeBooked) {
                     predicates.add(cb.equal(root.get(PlaygroundEntity_.isFreed), (includeFreed)));
                 } else {
                     predicates.add(cb.disjunction());
                 }
             }
-            if (includeLeased && minPrice != null) {
+            if (includeBooked && minPrice != null) {
                 predicates.add(searchByMinPricePredicate(root, cb));
             }
-            if (includeLeased && maxPrice != null) {
+            if (includeBooked && maxPrice != null) {
                 predicates.add(searchByMaxPricePredicate(root, cb));
             }
             if (minRate != null) {

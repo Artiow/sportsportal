@@ -4,8 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.general.AbstractRightsBasedEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.booking.OrderEntity;
+import ru.vldf.sportsportal.domain.sectional.booking.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.PlayerEntity;
 import ru.vldf.sportsportal.domain.sectional.tournament.TeamEntity;
 

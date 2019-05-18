@@ -1,0 +1,70 @@
+.PlaygroundBookingCalendar {
+    margin-bottom: 5px;
+    margin-top: 15px;
+}
+
+.PlaygroundBookingCalendar table {
+    table-layout: fixed;
+    margin: 0;
+}
+
+.PlaygroundBookingCalendar thead tr th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+/*                                                      */
+/* STICKY TABLE HEADER                                  */
+/*                                                      */
+/*.PlaygroundBookingCalendar thead tr:first-child th {    */
+/*   border: none;                                      */
+/*   position: sticky;                                  */
+/*   z-index: 100;                                      */
+/*   top: -1px;                                         */
+/*}                                                     */
+/*                                                      */
+
+.PlaygroundBookingCalendar thead tr th.th-control {
+    width: 80px;
+}
+
+.PlaygroundBookingCalendar thead tr th button {
+    padding: 0 .5rem;
+    font-size: 1.125rem;
+}
+
+.PlaygroundBookingCalendar thead tr th button:first-child {
+    float: left;
+}
+
+.PlaygroundBookingCalendar thead tr th button:last-child {
+    float: right;
+}
+
+.PlaygroundBookingCalendar tbody tr td {
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.PlaygroundBookingCalendar tbody tr td .badge {
+    margin-top: 3px;
+    vertical-align: top;
+    font-size: 90%;
+}
+
+.PlaygroundBookingCalendar tbody tr td button.btn,
+.PlaygroundBookingCalendar tbody tr td .CheckButton {
+    padding-bottom: 0;
+    padding-top: 0;
+    margin: 0;
+}
+
+.PlaygroundBookingCalendar .order-group {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.PlaygroundBookingCalendar .order-group .btn-group .btn {
+    font-weight: 600;
+}

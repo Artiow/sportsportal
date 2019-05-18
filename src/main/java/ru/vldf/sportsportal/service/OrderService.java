@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.vldf.sportsportal.domain.sectional.lease.OrderEntity;
+import ru.vldf.sportsportal.domain.sectional.booking.OrderEntity;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
 import ru.vldf.sportsportal.dto.payment.PaymentCheckDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.OrderDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.integration.payment.RobokassaSecurityException;
 import ru.vldf.sportsportal.integration.payment.RobokassaService;
-import ru.vldf.sportsportal.mapper.sectional.lease.OrderMapper;
-import ru.vldf.sportsportal.repository.lease.OrderRepository;
+import ru.vldf.sportsportal.mapper.sectional.booking.OrderMapper;
+import ru.vldf.sportsportal.repository.booking.OrderRepository;
 import ru.vldf.sportsportal.service.general.AbstractSecurityService;
 import ru.vldf.sportsportal.service.general.CRUDService;
 import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
@@ -80,12 +80,12 @@ public class OrderService extends AbstractSecurityService implements CRUDService
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
             if ((!currentUserIsAdmin()) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.booking.Order.forbidden.message"));
             } else {
                 return orderMapper.toDTO(orderEntity, robokassaService.computeLink(orderMapper.toPayment(orderEntity)));
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Order.notExistById.message", id), e);
         }
     }
 
@@ -130,16 +130,16 @@ public class OrderService extends AbstractSecurityService implements CRUDService
             id = robokassaService.payment(check);
             OrderEntity orderEntity = orderRepository.getOne(id);
             if (orderEntity.getIsPaid()) {
-                throw new ResourceCannotUpdateException(msg("sportsportal.lease.Order.alreadyPaid.message", id));
+                throw new ResourceCannotUpdateException(msg("sportsportal.booking.Order.alreadyPaid.message", id));
             } else {
                 orderEntity.setIsPaid(true);
                 orderEntity.setExpiration(null);
                 orderRepository.save(orderEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Order.notExistById.message", id), e);
         } catch (RobokassaSecurityException e) {
-            throw new ForbiddenAccessException(msg("sportsportal.lease.Order.cannotPaid.message", e.getInvId()), e);
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Order.cannotPaid.message", e.getInvId()), e);
         }
         return "OK" + id;
     }
@@ -160,12 +160,12 @@ public class OrderService extends AbstractSecurityService implements CRUDService
         try {
             OrderEntity orderEntity = orderRepository.getOne(id);
             if ((!currentUserIsAdmin()) && (!isCurrentUser(orderEntity.getCustomer()))) {
-                throw new ForbiddenAccessException(msg("sportsportal.lease.Order.forbidden.message"));
+                throw new ForbiddenAccessException(msg("sportsportal.booking.Order.forbidden.message"));
             } else {
                 orderRepository.delete(orderEntity);
             }
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(msg("sportsportal.lease.Order.notExistById.message", id), e);
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Order.notExistById.message", id), e);
         }
     }
 }

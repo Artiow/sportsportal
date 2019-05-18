@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.generic.PageDividerDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.OrderDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.shortcut.OrderShortDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.OrderDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.shortcut.OrderShortDTO;
 import ru.vldf.sportsportal.service.OrderService;
 import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
@@ -19,7 +19,7 @@ import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessExceptio
  */
 @RestController
 @Api(tags = {"Order"})
-@RequestMapping("${api.path.lease.order}")
+@RequestMapping("${api.path.booking.order}")
 public class OrderController {
 
     private final OrderService orderService;

@@ -8,12 +8,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.vldf.sportsportal.domain.sectional.lease.PlaygroundEntity;
-import ru.vldf.sportsportal.domain.sectional.lease.ReservationEntity;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.PlaygroundBoardDTO;
-import ru.vldf.sportsportal.dto.sectional.lease.specialized.ReservationGridDTO;
+import ru.vldf.sportsportal.domain.sectional.booking.PlaygroundEntity;
+import ru.vldf.sportsportal.domain.sectional.booking.ReservationEntity;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.PlaygroundBoardDTO;
+import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationGridDTO;
 import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
-import ru.vldf.sportsportal.mapper.sectional.lease.PlaygroundMapper;
+import ru.vldf.sportsportal.mapper.sectional.booking.PlaygroundMapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
