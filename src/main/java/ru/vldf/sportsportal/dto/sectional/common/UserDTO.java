@@ -5,6 +5,7 @@ import lombok.Setter;
 import ru.vldf.sportsportal.dto.general.RightsBasedDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
+import ru.vldf.sportsportal.dto.validation.annotations.Password;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
@@ -27,12 +28,14 @@ public class UserDTO implements RightsBasedDTO {
     @Min(value = 0, groups = VersionCheck.class)
     private Long version;
 
+    @Email(groups = FieldCheck.class)
     @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 5, max = 254, groups = FieldCheck.class)
-    @Email(groups = FieldCheck.class)
     private String email;
 
+    @Password(groups = FieldCheck.class)
+    @Trimmed(groups = FieldCheck.class)
     @NotBlank(groups = FieldCheck.class)
     @Size(min = 4, max = 50, groups = FieldCheck.class)
     private String password;
