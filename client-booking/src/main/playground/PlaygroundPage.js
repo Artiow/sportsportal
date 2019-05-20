@@ -95,10 +95,10 @@ export default class PlaygroundPage extends React.Component {
                         <div className="col-12">
                             <h4>Как добраться:</h4>
                             <YMaps query={{apikey: env.YANDEX_MAP_API_KEY, lang: 'ru_RU'}}
-                                   version="2.1.73">
+                                   version={env.YANDEX_MAP_API_VERSION}>
                                 <Map width={890} height={320} defaultState={{
                                     center: [location.latitude, location.longitude],
-                                    zoom: 14
+                                    zoom: 16
                                 }}>
                                     <GeoObject geometry={{
                                         coordinates: [location.latitude, location.longitude],

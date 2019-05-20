@@ -1,7 +1,8 @@
 // noinspection JSUnresolvedVariable
 export const env = Object.freeze({
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
-    YANDEX_MAP_API_KEY: process.env.REACT_APP_YANDEX_API_KEY,
+    YANDEX_MAP_API_KEY: process.env.REACT_APP_YANDEX_MAP_API_KEY,
+    YANDEX_MAP_API_VERSION: process.env.REACT_APP_YANDEX_MAP_API_VERSION,
     MAIN_HOST: process.env.REACT_APP_MAIN_HOST,
     API_HOST: process.env.REACT_APP_API_HOST,
     ANIMATION_TIMEOUT: 325,
