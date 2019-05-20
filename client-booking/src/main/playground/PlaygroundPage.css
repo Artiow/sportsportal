@@ -1,8 +1,8 @@
-.PlaygroundPage .ContentRow.header h1.header {
+.PlaygroundPage .ContentRow.header h1 {
     margin-bottom: 4px;
 }
 
-.PlaygroundPage .ContentRow.feature h5.feature {
+.PlaygroundPage .ContentRow.feature h5 {
     padding: .25rem .75rem;
 }
 
@@ -10,4 +10,8 @@
     padding: .5rem .75rem;
     background: inherit;
     font-weight: 300;
+}
+
+.PlaygroundPage .ContentRow.map h4 {
+    margin-bottom: 12px;
 }

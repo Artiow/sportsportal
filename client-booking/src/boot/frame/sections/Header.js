@@ -30,7 +30,7 @@ function MainBlock(props) {
     return (
         <div className="MainBlock col-8">
             <div className="sub-block">
-                <a href={env.MAIN_HOST_URL}>
+                <a href={env.MAIN_HOST}>
                     <img src={logo} width={LOGO_W} height={LOGO_H} alt="logo"/>
                 </a>
             </div>

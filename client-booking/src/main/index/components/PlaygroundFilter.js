@@ -166,10 +166,12 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
-                                       data-toggle="collapse" data-target="#pg_filter_collapse_1">
+                                    <button type="button"
+                                            className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                            data-target="#pg_filter_collapse_1"
+                                            data-toggle="collapse">
                                         Виды спорта
-                                    </a>
+                                    </button>
                                 </h5>
                             </div>
                             <div id="pg_filter_collapse_1" className="collapse" data-parent="#pg_filter_accordion">
@@ -181,10 +183,12 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
-                                       data-toggle="collapse" data-target="#pg_filter_collapse_2">
+                                    <button type="button"
+                                            className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                            data-target="#pg_filter_collapse_2"
+                                            data-toggle="collapse">
                                         Инфраструктура
-                                    </a>
+                                    </button>
                                 </h5>
                             </div>
                             <div id="pg_filter_collapse_2" className="collapse" data-parent="#pg_filter_accordion">
@@ -196,10 +200,12 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
-                                       data-toggle="collapse" data-target="#pg_filter_collapse_3">
+                                    <button type="button"
+                                            className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                            data-target="#pg_filter_collapse_3"
+                                            data-toggle="collapse">
                                         Стоимость часа аренды
-                                    </a>
+                                    </button>
                                 </h5>
                             </div>
                             <div id="pg_filter_collapse_3" className="collapse" data-parent="#pg_filter_accordion">
@@ -254,10 +260,12 @@ export default class PlaygroundFilter extends React.Component {
                         <div className="card">
                             <div className="card-header">
                                 <h5 className="mb-0">
-                                    <a className={'btn btn-link' + (loading ? ' disabled' : '')}
-                                       data-toggle="collapse" data-target="#pg_filter_collapse_4">
+                                    <button type="button"
+                                            className={'btn btn-link' + (loading ? ' disabled' : '')}
+                                            data-target="#pg_filter_collapse_4"
+                                            data-toggle="collapse">
                                         Время работы
-                                    </a>
+                                    </button>
                                 </h5>
                             </div>
                             <div id="pg_filter_collapse_4" className="collapse" data-parent="#pg_filter_accordion">

@@ -8,7 +8,7 @@ export default function Footer(props) {
             <div className="container">
                 <div className="row">
                     <div className="col-md-6">
-                        <a href={env.API_HOST_URL + '/swagger-ui.html'}>
+                        <a href={env.API_HOST + '/swagger-ui.html'}>
                             <h6>
                                 <i className="fa fa-cogs"/>
                                 <small>SportsPortal API Documentation</small>

@@ -1,4 +1,6 @@
 import React from 'react';
+import {env} from '../../boot/constants';
+import {GeoObject, Map, YMaps} from 'react-yandex-maps';
 import Playground from '../../connector/Playground';
 import PlaygroundBookingCalendar from './components/PlaygroundBookingCalendar';
 import ContentContainer from '../../util/components/special/ContentContainer';
@@ -51,6 +53,11 @@ export default class PlaygroundPage extends React.Component {
             }
         };
         const playground = this.state.content;
+        const coordinate = {
+            apiKey: env.YANDEX_MAP_API_KEY,
+            x: 55.751574,
+            y: 37.618856
+        };
         const didLoad = (playground != null);
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
@@ -58,14 +65,14 @@ export default class PlaygroundPage extends React.Component {
             <ContentContainer className="PlaygroundPage">
                 <ContentRow className="header">
                     <div className="col-12">
-                        <h1 className="header">{playground.name}</h1>
+                        <h1>{playground.name}</h1>
                         <h4>{playground.address}</h4>
                         <h6><StarRate value={playground.rate}/></h6>
                     </div>
                 </ContentRow>
                 <ContentRow className="feature">
                     <div className="col-4">
-                        <h4 className="row-h info-h info-price">
+                        <h4>
                             <span className="mr-md-2">Стоимость:</span>
                             {(playground.isFreed) ? (
                                 <span className="badge badge-secondary">
@@ -77,22 +84,35 @@ export default class PlaygroundPage extends React.Component {
                                 </span>
                             )}
                         </h4>
-                        {(features != null) ? (
-                            <h5 className="feature">Инфраструктура:</h5>
-                        ) : (null)}
+                        {(features != null) ? (<h5>Инфраструктура:</h5>) : (null)}
                         {features}
                     </div>
                     <div className="col-8">
                         <PhotoCarousel identifier="pg_photo_carousel" photos={photos} placeimg={noImage}/>
                     </div>
                 </ContentRow>
+                {(coordinate) ? (
+                    <ContentRow className="map">
+                        <div className="col-12">
+                            <h4>Как добраться:</h4>
+                            <YMaps query={{apikey: coordinate.apiKey, lang: 'ru_RU'}}
+                                   version="2.1.73">
+                                <Map width={890} height={320} defaultState={{
+                                    center: [coordinate.x, coordinate.y],
+                                    zoom: 14
+                                }}>
+                                    <GeoObject geometry={{
+                                        coordinates: [coordinate.x, coordinate.y],
+                                        type: "Point"
+                                    }}/>
+                                </Map>
+                            </YMaps>
+                        </div>
+                    </ContentRow>
+                ) : (null)}
                 <ContentRow className="calendar">
                     <div className="col-12">
-                        {(playground.isFreed) ? (
-                            <h4 className="row-h calendar-h calendar-header">Бронирование:</h4>
-                        ) : (
-                            <h4 className="row-h calendar-h calendar-header">Аренда:</h4>
-                        )}
+                        {(playground.isFreed) ? (<h4>Бронирование:</h4>) : (<h4>Аренда:</h4>)}
                         <PlaygroundBookingCalendar identifier={this.id} version={playground.version}/>
                     </div>
                 </ContentRow>

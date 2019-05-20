@@ -1,8 +1,9 @@
 // noinspection JSUnresolvedVariable
 export const env = Object.freeze({
     ROLE: Object.freeze({ADMIN: 'admin', USER: 'user'}),
-    MAIN_HOST_URL: process.env.REACT_APP_MAIN_HOST,
-    API_HOST_URL: process.env.REACT_APP_API_HOST,
+    YANDEX_MAP_API_KEY: process.env.REACT_APP_YANDEX_API_KEY,
+    MAIN_HOST: process.env.REACT_APP_MAIN_HOST,
+    API_HOST: process.env.REACT_APP_API_HOST,
     ANIMATION_TIMEOUT: 325,
     MONTH_NAMES: [
         'январь',
@@ -45,11 +46,11 @@ export const env = Object.freeze({
 export default class API {
 
     /**
-     * Returns depending on {@link API_HOST_URL} URL API.
+     * Returns depending on {@link API_HOST} URL API.
      * @param path {string}
      * @return {string}
      */
     static url(path) {
-        return env.API_HOST_URL + path;
+        return env.API_HOST + path;
     }
 }

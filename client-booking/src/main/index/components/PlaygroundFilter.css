@@ -20,7 +20,7 @@
     border: 0;
 }
 
-.PlaygroundFilter form.card div.filter-accordion .card .card-header a {
+.PlaygroundFilter form.card div.filter-accordion .card .card-header button {
     cursor: pointer !important;
     text-decoration: none;
     text-align: left;
@@ -29,7 +29,7 @@
     width: 100%;
 }
 
-.PlaygroundFilter form.card div.filter-accordion .card .card-header a:hover {
+.PlaygroundFilter form.card div.filter-accordion .card .card-header button:hover {
     color: black;
 }
 
