@@ -3,12 +3,14 @@ package ru.vldf.sportsportal.dto.sectional.booking;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.general.LinkedDTO;
+import ru.vldf.sportsportal.dto.general.LocatedDTO;
 import ru.vldf.sportsportal.dto.general.VersionedDTO;
 import ru.vldf.sportsportal.dto.general.WorkTimeDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.PictureLinkDTO;
 import ru.vldf.sportsportal.dto.sectional.common.links.UserLinkDTO;
 import ru.vldf.sportsportal.dto.validation.annotations.Phone;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
+import ru.vldf.sportsportal.dto.validation.annotations.ValidLocation;
 import ru.vldf.sportsportal.dto.validation.annotations.ValidWorkTime;
 
 import javax.validation.Valid;
@@ -22,8 +24,9 @@ import java.util.List;
  */
 @Getter
 @Setter
+@ValidLocation(groups = {PlaygroundDTO.CreateCheck.class, PlaygroundDTO.UpdateCheck.class})
 @ValidWorkTime(groups = {PlaygroundDTO.CreateCheck.class, PlaygroundDTO.UpdateCheck.class})
-public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
+public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO, LocatedDTO {
 
     @Null(groups = FieldCheck.class)
     @NotNull(groups = IdCheck.class)
@@ -70,6 +73,10 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO {
     @Min(value = 0, groups = FieldCheck.class)
     @Digits(integer = 6, fraction = 2, groups = FieldCheck.class)
     private BigDecimal price;
+
+    private Double locationLatitude;
+
+    private Double locationLongitude;
 
     @NotNull(groups = FieldCheck.class)
     private Boolean isTested;

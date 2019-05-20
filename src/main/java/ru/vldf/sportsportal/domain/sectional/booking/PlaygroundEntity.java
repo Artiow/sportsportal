@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.domain.general.AbstractVersionedEntity;
+import ru.vldf.sportsportal.domain.sectional.common.LocationEntity;
 import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
@@ -68,9 +69,15 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     private Boolean isFreed = false;
 
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private LocationEntity location;
+
+
     @OrderBy("pk.datetime")
     @OneToMany(mappedBy = "pk.playground")
     private Collection<ReservationEntity> reservations;
+
 
     @ManyToMany
     @JoinTable(

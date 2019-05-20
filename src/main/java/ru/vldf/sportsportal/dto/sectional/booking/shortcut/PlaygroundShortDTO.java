@@ -3,6 +3,7 @@ package ru.vldf.sportsportal.dto.sectional.booking.shortcut;
 import lombok.Getter;
 import lombok.Setter;
 import ru.vldf.sportsportal.dto.general.AbstractVersionedShortDTO;
+import ru.vldf.sportsportal.dto.general.LocatedDTO;
 import ru.vldf.sportsportal.dto.general.WorkTimeDTO;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements WorkTimeDTO {
+public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements WorkTimeDTO, LocatedDTO {
 
     private String name;
     private String address;
@@ -26,6 +27,8 @@ public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements Wor
     private Boolean halfHourAvailable;
     private Boolean fullHourRequired;
     private BigDecimal price;
+    private Double locationLatitude;
+    private Double locationLongitude;
     private Boolean isTested;
     private Boolean isFreed;
     private List<String> specializations;

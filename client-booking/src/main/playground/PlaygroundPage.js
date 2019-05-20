@@ -53,10 +53,13 @@ export default class PlaygroundPage extends React.Component {
             }
         };
         const playground = this.state.content;
-        const location = playground.location;
         const didLoad = (playground != null);
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
+        const location = didLoad ? {
+            latitude: playground.locationLatitude,
+            longitude: playground.locationLongitude
+        } : null;
         return didLoad ? (
             <ContentContainer className="PlaygroundPage">
                 <ContentRow className="header">

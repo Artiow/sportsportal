@@ -13,9 +13,9 @@ import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationGridDTO
 import ru.vldf.sportsportal.mapper.general.AbstractOverallVersionedMapper;
 import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
 import ru.vldf.sportsportal.mapper.manual.JavaTimeMapper;
+import ru.vldf.sportsportal.mapper.manual.url.booking.PlaygroundURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.PictureURLMapper;
 import ru.vldf.sportsportal.mapper.manual.url.common.UserURLMapper;
-import ru.vldf.sportsportal.mapper.manual.url.booking.PlaygroundURLMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.PictureLinkMapper;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 
@@ -38,7 +38,15 @@ import java.util.function.Function;
 public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<PlaygroundEntity, PlaygroundDTO, PlaygroundShortDTO, PlaygroundLinkDTO> {
 
     @Mappings({
-            @Mapping(target = "photos", ignore = true)
+            @Mapping(target = "locationLatitude", source = "location.latitude"),
+            @Mapping(target = "locationLongitude", source = "location.longitude")
+    })
+    public abstract PlaygroundDTO toDTO(PlaygroundEntity entity);
+
+    @Mappings({
+            @Mapping(target = "photos", ignore = true),
+            @Mapping(target = "location.latitude", source = "locationLatitude"),
+            @Mapping(target = "location.longitude", source = "locationLongitude")
     })
     public abstract PlaygroundEntity toEntity(PlaygroundDTO dto);
 
