@@ -53,11 +53,7 @@ export default class PlaygroundPage extends React.Component {
             }
         };
         const playground = this.state.content;
-        const coordinate = {
-            apiKey: env.YANDEX_MAP_API_KEY,
-            x: 55.751574,
-            y: 37.618856
-        };
+        const location = playground.location;
         const didLoad = (playground != null);
         const photos = didLoad ? photoExtractor(playground.photos) : null;
         const features = didLoad ? featureBuilder(playground.capabilities) : null;
@@ -75,7 +71,7 @@ export default class PlaygroundPage extends React.Component {
                         <h4>
                             <span className="mr-md-2">Стоимость:</span>
                             {(playground.isFreed) ? (
-                                <span className="badge badge-secondary">
+                                <span className="badge badge-success">
                                     отсутствует
                                 </span>
                             ) : (
@@ -91,18 +87,18 @@ export default class PlaygroundPage extends React.Component {
                         <PhotoCarousel identifier="pg_photo_carousel" photos={photos} placeimg={noImage}/>
                     </div>
                 </ContentRow>
-                {(coordinate) ? (
+                {(location) ? (
                     <ContentRow className="map">
                         <div className="col-12">
                             <h4>Как добраться:</h4>
-                            <YMaps query={{apikey: coordinate.apiKey, lang: 'ru_RU'}}
+                            <YMaps query={{apikey: env.YANDEX_MAP_API_KEY, lang: 'ru_RU'}}
                                    version="2.1.73">
                                 <Map width={890} height={320} defaultState={{
-                                    center: [coordinate.x, coordinate.y],
+                                    center: [location.latitude, location.longitude],
                                     zoom: 14
                                 }}>
                                     <GeoObject geometry={{
-                                        coordinates: [coordinate.x, coordinate.y],
+                                        coordinates: [location.latitude, location.longitude],
                                         type: "Point"
                                     }}/>
                                 </Map>
@@ -112,7 +108,7 @@ export default class PlaygroundPage extends React.Component {
                 ) : (null)}
                 <ContentRow className="calendar">
                     <div className="col-12">
-                        {(playground.isFreed) ? (<h4>Бронирование:</h4>) : (<h4>Аренда:</h4>)}
+                        <h4>Бронирование:</h4>
                         <PlaygroundBookingCalendar identifier={this.id} version={playground.version}/>
                     </div>
                 </ContentRow>
