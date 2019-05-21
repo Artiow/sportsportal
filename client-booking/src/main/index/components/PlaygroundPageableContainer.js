@@ -48,12 +48,11 @@ function PlaygroundContainer(props) {
 function PlaygroundCard(props) {
     const disabled = props.disabled;
     const playground = props.playground;
-    const photoURLs = playground.photoURLs;
-    const photoURL = ((photoURLs.length > 0) ? (photoURLs[0] + '?size=sm') : placeimg);
+    const avatarURL = ((playground.avatarURL) ? (playground.avatarURL + '?size=sm') : placeimg);
     return (
         <div className="PlaygroundCard col-xs-12 col-sm-6 mb-4">
             <div className="card">
-                <PlacedImg className="card-img" src={photoURL} placeImg={placeimg} alt={playground.name}
+                <PlacedImg className="card-img" src={avatarURL} placeImg={placeimg} alt={playground.name}
                            disabled={disabled}/>
                 <div className="card-body">
                     <h4 className={'card-title mb-1' + (disabled ? ' text-muted' : '')}>
