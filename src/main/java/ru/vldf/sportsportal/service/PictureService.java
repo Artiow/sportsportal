@@ -1,6 +1,6 @@
 package ru.vldf.sportsportal.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,14 +13,12 @@ import ru.vldf.sportsportal.repository.common.PictureSizeRepository;
 import ru.vldf.sportsportal.service.filesystem.PictureFileService;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.service.general.AbstractSecurityService;
-import ru.vldf.sportsportal.service.general.throwable.ForbiddenAccessException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.util.CollectionConverter;
 import ru.vldf.sportsportal.util.models.ResourceBundle;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -29,6 +27,7 @@ import java.util.Objects;
  * @author Namednev Artem
  */
 @Service
+@RequiredArgsConstructor
 public class PictureService extends AbstractSecurityService {
 
     private final PictureFileService fileService;
@@ -36,20 +35,6 @@ public class PictureService extends AbstractSecurityService {
     private final PictureRepository pictureRepository;
     private final PictureSizeRepository pictureSizeRepository;
     private final PictureSizeMapper pictureSizeMapper;
-
-
-    @Autowired
-    public PictureService(
-            PictureFileService fileService,
-            PictureRepository pictureRepository,
-            PictureSizeRepository pictureSizeRepository,
-            PictureSizeMapper pictureSizeMapper
-    ) {
-        this.fileService = fileService;
-        this.pictureRepository = pictureRepository;
-        this.pictureSizeRepository = pictureSizeRepository;
-        this.pictureSizeMapper = pictureSizeMapper;
-    }
 
 
     /**
@@ -77,53 +62,43 @@ public class PictureService extends AbstractSecurityService {
         }
     }
 
+
     /**
      * Upload new picture and returns its identifier.
+     * WARING: recommend for service use only!
      *
      * @param picture the picture resource file.
-     * @return new created picture resource identifier.
+     * @return new created picture entity.
      * @throws UnauthorizedAccessException   if authorization is missing.
      * @throws ResourceCannotCreateException if resource cannot create.
      */
-    @Transactional(
-            rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
-            noRollbackFor = {IOException.class}
-    )
-    public Integer upload(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class})
+    public PictureEntity upload(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
             throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.wrongExtension.message"));
         } else {
             PictureEntity pictureEntity = new PictureEntity();
             pictureEntity.setUploader(getCurrentUserEntity());
             pictureEntity.setUploaded(Timestamp.valueOf(LocalDateTime.now()));
-            Integer newId = pictureRepository.save(pictureEntity).getId();
-            try {
-                return fileService.create(newId, picture.getInputStream(), sizes());
-            } catch (IOException e) {
-                throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.couldNotStore.message"), e);
-            }
+            Integer newId = pictureRepository.saveAndFlush(pictureEntity).getId();
+            return pictureRepository.getOne(fileService.create(newId, picture, sizes()));
         }
     }
 
     /**
      * Delete picture by identifier.
+     * WARING: recommend for service use only!
      *
      * @param id the picture identifier.
-     * @throws UnauthorizedAccessException if authorization is missing.
-     * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
-     * @throws ResourceNotFoundException   if picture not found in database.
+     * @throws ResourceNotFoundException if picture not found.
      */
-    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
-    public void delete(Integer id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
+    public void delete(Integer id) throws ResourceNotFoundException {
         PictureEntity pictureEntity = pictureRepository.findById(id).orElseThrow(
                 ResourceNotFoundException.supplier(msg("sportsportal.common.Picture.notExistById.message", id))
         );
-        if ((!currentUserIsAdmin()) && (!isCurrentUser(pictureEntity.getUploader()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.common.Picture.forbidden.message"));
-        } else {
-            pictureRepository.delete(pictureEntity);
-            fileService.delete(id);
-        }
+        pictureRepository.delete(pictureEntity);
+        fileService.delete(id);
     }
 
 

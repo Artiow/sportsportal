@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.domain.sectional.booking.*;
+import ru.vldf.sportsportal.domain.sectional.common.PictureEntity;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
 import ru.vldf.sportsportal.dto.pagination.filters.PlaygroundFilterDTO;
@@ -28,7 +29,6 @@ import ru.vldf.sportsportal.service.general.CRUDService;
 import ru.vldf.sportsportal.service.general.throwable.*;
 import ru.vldf.sportsportal.util.CollectionSorter;
 import ru.vldf.sportsportal.util.LocalDateTimeGridChecker;
-import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import javax.mail.MessagingException;
 import javax.persistence.OptimisticLockException;
@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PlaygroundService extends AbstractSecurityService implements CRUDService<PlaygroundEntity, PlaygroundDTO> {
+
+    private final PictureService pictureService;
 
     private final OrderRepository orderRepository;
     private final ReservationRepository reservationRepository;
@@ -309,16 +311,33 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
     }
 
-    public ResourceBundle downloadPhoto(Integer pgId, Integer phId, String size) throws ResourceNotFoundException {
-        return null;
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class})
+    public Integer uploadPhoto(Integer playgroundId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else if (playgroundEntity.getPhotos().size() == 5) {
+            // todo: add message text!
+            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.photoLimit.message"));
+        } else {
+            PictureEntity pictureEntity = pictureService.upload(picture);
+            playgroundEntity.getPhotos().add(pictureEntity);
+            return pictureEntity.getId();
+        }
     }
 
-    public String uploadPhoto(Integer pgId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
-        return null;
-    }
-
-    public void deletePhoto(Integer pgId, Integer phId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
-
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
+    public void deletePhoto(Integer playgroundId, Integer photoId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else if (!playgroundEntity.getPhotos().removeIf(pictureEntity -> pictureEntity.getId().equals(photoId))) {
+            // todo: add message text!
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.photoNotExistById.message"));
+        } else {
+            playgroundRepository.saveAndFlush(playgroundEntity);
+            pictureService.delete(photoId);
+        }
     }
 
     /**
@@ -341,7 +360,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
     }
 
 
-    private PlaygroundEntity findById(int id) throws ResourceNotFoundException {
+    private PlaygroundEntity findById(Integer id) throws ResourceNotFoundException {
         return playgroundRepository.findById(id).orElseThrow(ResourceNotFoundException.supplier(msg("sportsportal.booking.Playground.notExistById.message", id)));
     }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.service.filesystem.model.PictureSize;
 import ru.vldf.sportsportal.util.models.ResourceBundle;
 
@@ -79,14 +80,15 @@ public class PictureFileService {
     /**
      * Create new picture and returns its identifier.
      *
-     * @param id     the picture identifier.
-     * @param source source picture input stream.
-     * @param sizes  the picture stored sizes.
+     * @param id    the picture identifier.
+     * @param pic   the source picture.
+     * @param sizes the picture stored sizes.
      * @return new created picture resource identifier.
      * @throws PictureCannotCreateException if {@link IOException} occur.
      */
-    public Integer create(Integer id, InputStream source, PictureSize[] sizes) throws PictureCannotCreateException {
+    public Integer create(Integer id, MultipartFile pic, PictureSize[] sizes) throws PictureCannotCreateException {
         try {
+            InputStream source = pic.getInputStream();
             Files.createDirectories(resolvePath(id));
             BufferedInputStream stream = presizePicture(source);
             stream.mark(Integer.MAX_VALUE);

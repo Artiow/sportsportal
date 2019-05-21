@@ -41,8 +41,6 @@ publicRoutes:
     httpMethod: GET
   - pattern: /playground/*/short
     httpMethod: GET
-  - pattern: /playground/*/photo/*
-    httpMethod: GET
   - pattern: /team/*
     httpMethod: GET
   - pattern: /team/*/short
@@ -56,10 +54,6 @@ publicRoutes:
 
 protectedRoutes:
   ADMIN:
-    - pattern: /picture
-      httpMethod: POST
-    - pattern: /picture/*
-      httpMethod: DELETE
     - pattern: /user/*
       httpMethod: DELETE
     - pattern: /team/*
@@ -82,12 +76,12 @@ protectedRoutes:
       httpMethod: PUT
     - pattern: /playground/*
       httpMethod: DELETE
+    - pattern: /playground/*/reserve
+      httpMethod: POST
     - pattern: /playground/*/photo
       httpMethod: POST
     - pattern: /playground/*/photo/*
       httpMethod: DELETE
-    - pattern: /playground/*/reserve
-      httpMethod: POST
     - pattern: /user/*
       httpMethod: GET
     - pattern: /team

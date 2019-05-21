@@ -4,10 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +18,6 @@ import ru.vldf.sportsportal.dto.sectional.booking.specialized.PlaygroundBoardDTO
 import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationListDTO;
 import ru.vldf.sportsportal.service.PlaygroundService;
 import ru.vldf.sportsportal.service.general.throwable.*;
-import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +36,9 @@ import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 public class PlaygroundController {
 
     private final PlaygroundService playgroundService;
+
+    @Value("${api.path.common.picture}")
+    private String picturePath;
 
     @Value("${api.path.booking.order}")
     private String orderPath;
@@ -223,58 +223,40 @@ public class PlaygroundController {
     }
 
     /**
-     * Download playground photo by playground identifier and picture identifier.
-     *
-     * @param pgId the playground identifier.
-     * @param phId the picture identifier.
-     * @param size the picture size code.
-     * @return picture resource.
-     * @throws ResourceNotFoundException if picture not found.
-     */
-    @GetMapping("/{pgId}/photo/{phId}")
-    @ApiOperation("получить фото площадки")
-    public ResponseEntity<Resource> downloadPhoto(
-            @PathVariable int pgId, @PathVariable int phId, @RequestParam(name = "size", required = false) String size
-    ) throws ResourceNotFoundException {
-        ResourceBundle resource = playgroundService.downloadPhoto(pgId, phId, size);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, resource.getContentDisposition()).contentType(resource.getContentType()).body(resource.getBody());
-    }
-
-    /**
      * Upload playground photo and returns its URL.
      *
-     * @param pgId    the playground identifier.
-     * @param picture the picture file.
+     * @param playgroundId the playground identifier.
+     * @param picture      the picture file.
      * @return uploaded picture location.
      * @throws UnauthorizedAccessException   if authorization is missing.
      * @throws ForbiddenAccessException      if user don't have permission to upload this playground photos.
      * @throws ResourceNotFoundException     if playground not found.
      * @throws ResourceCannotCreateException if picture resource cannot be create.
      */
-    @PostMapping("/{pgId}/photo")
+    @PostMapping("/{playgroundId}/photo")
     @ApiOperation("загрузить фото площадки")
     public ResponseEntity<Void> uploadPhoto(
-            @PathVariable int pgId, @RequestParam("photo") MultipartFile picture
+            @PathVariable int playgroundId, @RequestParam("photo") MultipartFile picture
     ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(playgroundService.uploadPhoto(pgId, picture))).build();
+        return ResponseEntity.created(buildURL(picturePath, playgroundService.uploadPhoto(playgroundId, picture))).build();
     }
 
     /**
      * Delete playground photo by playground identifier and picture identifier.
      *
-     * @param pgId the playground identifier.
-     * @param phId the picture identifier.
+     * @param playgroundId the playground identifier.
+     * @param photoId      the picture identifier.
      * @return no content.
      * @throws UnauthorizedAccessException if authorization is missing.
      * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
      * @throws ResourceNotFoundException   if picture not found in database.
      */
-    @DeleteMapping("/{pgId}/photo/{phId}")
+    @DeleteMapping("/{playgroundId}/photo/{photoId}")
     @ApiOperation("удалить фото площадки")
     public ResponseEntity<Void> deletePhoto(
-            @PathVariable int pgId, @PathVariable int phId
+            @PathVariable int playgroundId, @PathVariable int photoId
     ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
-        playgroundService.deletePhoto(pgId, phId);
+        playgroundService.deletePhoto(playgroundId, photoId);
         return ResponseEntity.noContent().build();
     }
 
