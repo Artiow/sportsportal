@@ -156,10 +156,11 @@ export default withMainFrameContext(withRouter(class PlaygroundBookingCalendar e
             Playground.getBoard(id, from, to)
                 .then(data => {
                     console.debug('PlaygroundBookingCalendar', 'query', 'success');
-                    this.calculateAuthority(null, data.playground.ownersURLs);
+                    const playground = data.playground;
+                    this.calculateAuthority(null, playground.ownersURLs);
                     const dateList = [];
                     const timeList = [];
-                    const price = data.halfHourAvailable ? Math.floor(data.playground.price / 2) : data.playground.price;
+                    const price = playground.halfHourAvailable ? Math.floor(playground.price / 2) : playground.price;
                     const array = Object.entries(data.grid.schedule);
                     Object.entries(array[0][1]).forEach(item => {
                         timeList.push(item[0])
@@ -180,11 +181,11 @@ export default withMainFrameContext(withRouter(class PlaygroundBookingCalendar e
                         dateList: dateList,
                         timeList: timeList,
                         schedule: schedule,
-                        halfHourAvailable: data.halfHourAvailable,
-                        fullHourRequired: data.fullHourRequired,
-                        contact: data.phone,
-                        freed: data.isFreed,
-                        tested: data.isTested,
+                        halfHourAvailable: playground.halfHourAvailable,
+                        fullHourRequired: playground.fullHourRequired,
+                        contact: playground.phone,
+                        freed: playground.isFreed,
+                        tested: playground.isTested,
                     });
                 })
                 .catch(error => {

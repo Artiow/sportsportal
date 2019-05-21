@@ -68,7 +68,7 @@ public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<Pl
 
 
     @Mappings({
-            @Mapping(target = "playground", expression = "java(toLinkDTO(entity))"),
+            @Mapping(target = "playground", expression = "java(toShortDTO(entity))"),
             @Mapping(target = "grid", expression = "java(getRawReservationGridDTO(entity))")
     })
     public abstract PlaygroundBoardDTO toGridDTO(PlaygroundEntity entity) throws DataCorruptedException;
@@ -136,12 +136,13 @@ public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<Pl
             LocalDate date = datetime.toLocalDate();
             LocalTime time = datetime.toLocalTime();
 
-            Map<LocalTime, Boolean> line = Optional
-                    .ofNullable(schedule.get(date))
-                    .orElseThrow(() -> new DataCorruptedException("Reservation date not supported!"));
+            Map<LocalTime, Boolean> line = Optional.ofNullable(schedule.get(date)).orElseThrow(
+                    () -> new DataCorruptedException("Reservation date not supported!")
+            );
 
-            if (Optional.ofNullable(line.get(time))
-                    .orElseThrow(() -> new DataCorruptedException("Reservation time not supported!"))) {
+            if (Optional.ofNullable(line.get(time)).orElseThrow(
+                    () -> new DataCorruptedException("Reservation time not supported!")
+            )) {
                 line.put(time, false);
             }
         }
@@ -174,7 +175,7 @@ public abstract class PlaygroundMapper extends AbstractOverallVersionedMapper<Pl
         // step increment definition
         int amountToAdd;
         ChronoUnit unitToAdd;
-        if (playgroundBoardDTO.getHalfHourAvailable()) {
+        if (playgroundBoardDTO.getPlayground().getHalfHourAvailable()) {
             unitToAdd = ChronoUnit.MINUTES;
             amountToAdd = 30;
         } else {

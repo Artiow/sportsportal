@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.vldf.sportsportal.domain.sectional.booking.PlaygroundEntity;
 import ru.vldf.sportsportal.domain.sectional.booking.ReservationEntity;
+import ru.vldf.sportsportal.dto.sectional.booking.shortcut.PlaygroundShortDTO;
 import ru.vldf.sportsportal.dto.sectional.booking.specialized.PlaygroundBoardDTO;
 import ru.vldf.sportsportal.dto.sectional.booking.specialized.ReservationGridDTO;
 import ru.vldf.sportsportal.mapper.general.throwable.DataCorruptedException;
@@ -228,12 +229,15 @@ public class PlaygroundMapperTests {
         reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 13:00:00"));
         reservationEntities.add(reservationEntity);
 
+        PlaygroundShortDTO playgroundShortDTO = new PlaygroundShortDTO();
+        playgroundShortDTO.setHalfHourAvailable(false);
+
         ReservationGridDTO reservationGridDTO = new ReservationGridDTO();
         reservationGridDTO.setStartTime(LocalTime.of(9, 0));
         reservationGridDTO.setEndTime(LocalTime.of(20, 0));
 
         PlaygroundBoardDTO playgroundBoardDTO = new PlaygroundBoardDTO();
-        playgroundBoardDTO.setHalfHourAvailable(false);
+        playgroundBoardDTO.setPlayground(playgroundShortDTO);
         playgroundBoardDTO.setGrid(reservationGridDTO);
 
         // act
@@ -266,12 +270,15 @@ public class PlaygroundMapperTests {
         reservationEntity.setDatetime(Timestamp.valueOf("2000-01-01 13:00:00"));
         reservationEntities.add(reservationEntity);
 
+        PlaygroundShortDTO playgroundShortDTO = new PlaygroundShortDTO();
+        playgroundShortDTO.setHalfHourAvailable(false);
+
         ReservationGridDTO reservationGridDTO = new ReservationGridDTO();
         reservationGridDTO.setStartTime(LocalTime.of(9, 0));
         reservationGridDTO.setEndTime(LocalTime.of(20, 0));
 
         PlaygroundBoardDTO playgroundBoardDTO = new PlaygroundBoardDTO();
-        playgroundBoardDTO.setHalfHourAvailable(false);
+        playgroundBoardDTO.setPlayground(playgroundShortDTO);
         playgroundBoardDTO.setGrid(reservationGridDTO);
 
         // act
@@ -293,12 +300,15 @@ public class PlaygroundMapperTests {
         LocalDate startDate = LocalDate.of(1999, 12, 30);
         LocalDate endDate = LocalDate.of(2000, 1, 2);
 
+        PlaygroundShortDTO playgroundShortDTO = new PlaygroundShortDTO();
+        playgroundShortDTO.setHalfHourAvailable(false);
+
         ReservationGridDTO reservationGridDTO = new ReservationGridDTO();
         reservationGridDTO.setStartTime(LocalTime.of(9, 0));
         reservationGridDTO.setEndTime(LocalTime.of(20, 0));
 
         PlaygroundBoardDTO playgroundBoardDTO = new PlaygroundBoardDTO();
-        playgroundBoardDTO.setHalfHourAvailable(false);
+        playgroundBoardDTO.setPlayground(playgroundShortDTO);
         playgroundBoardDTO.setGrid(reservationGridDTO);
 
         // act
