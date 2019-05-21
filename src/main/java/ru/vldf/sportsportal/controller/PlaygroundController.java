@@ -223,44 +223,6 @@ public class PlaygroundController {
     }
 
     /**
-     * Upload playground photo and returns its URL.
-     *
-     * @param playgroundId the playground identifier.
-     * @param picture      the picture file.
-     * @return uploaded picture location.
-     * @throws UnauthorizedAccessException   if authorization is missing.
-     * @throws ForbiddenAccessException      if user don't have permission to upload this playground photos.
-     * @throws ResourceNotFoundException     if playground not found.
-     * @throws ResourceCannotCreateException if picture resource cannot be create.
-     */
-    @PostMapping("/{playgroundId}/photo")
-    @ApiOperation("загрузить фото площадки")
-    public ResponseEntity<Void> uploadPhoto(
-            @PathVariable int playgroundId, @RequestParam("photo") MultipartFile picture
-    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(picturePath, playgroundService.uploadPhoto(playgroundId, picture))).build();
-    }
-
-    /**
-     * Delete playground photo by playground identifier and picture identifier.
-     *
-     * @param playgroundId the playground identifier.
-     * @param photoId      the picture identifier.
-     * @return no content.
-     * @throws UnauthorizedAccessException if authorization is missing.
-     * @throws ForbiddenAccessException    if user don't have permission to delete this picture.
-     * @throws ResourceNotFoundException   if picture not found in database.
-     */
-    @DeleteMapping("/{playgroundId}/photo/{photoId}")
-    @ApiOperation("удалить фото площадки")
-    public ResponseEntity<Void> deletePhoto(
-            @PathVariable int playgroundId, @PathVariable int photoId
-    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
-        playgroundService.deletePhoto(playgroundId, photoId);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
      * Delete playground by id.
      *
      * @param id the playground identifier.
@@ -273,6 +235,82 @@ public class PlaygroundController {
     @ApiOperation("удалить площадку")
     public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         playgroundService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    /**
+     * Upload playground avatar and returns its picture location.
+     *
+     * @param playgroundId the playground identifier.
+     * @param picture      the picture file.
+     * @return uploaded avatar picture location.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to upload this playground avatar.
+     * @throws ResourceNotFoundException     if playground not found.
+     * @throws ResourceCannotCreateException if picture resource cannot be create.
+     */
+    @PostMapping("/{playgroundId}/avatar")
+    @ApiOperation("загрузить фото площадки")
+    public ResponseEntity<Void> uploadAvatar(
+            @PathVariable int playgroundId, @RequestParam("avatar") MultipartFile picture
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        return ResponseEntity.created(buildURL(picturePath, playgroundService.uploadAvatar(playgroundId, picture))).build();
+    }
+
+    /**
+     * Delete playground avatar by playground identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @return no content.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground avatar.
+     * @throws ResourceNotFoundException   if playground not found.
+     */
+    @DeleteMapping("/{playgroundId}/avatar")
+    @ApiOperation("удалить фото площадки")
+    public ResponseEntity<Void> deletePhoto(
+            @PathVariable int playgroundId
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        playgroundService.deleteAvatar(playgroundId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Upload playground photo and returns its picture location.
+     *
+     * @param playgroundId the playground identifier.
+     * @param picture      the picture file.
+     * @return uploaded photo picture location.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to upload this playground photo.
+     * @throws ResourceNotFoundException     if playground not found.
+     * @throws ResourceCannotCreateException if picture resource cannot be create.
+     */
+    @PostMapping("/{playgroundId}/photo")
+    @ApiOperation("загрузить фото площадки")
+    public ResponseEntity<Void> uploadPhoto(
+            @PathVariable int playgroundId, @RequestParam("photo") MultipartFile picture
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        return ResponseEntity.created(buildURL(picturePath, playgroundService.uploadPhoto(playgroundId, picture))).build();
+    }
+
+    /**
+     * Delete playground photo by playground identifier and photo picture identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @param photoId      the photo picture identifier.
+     * @return no content.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground photo.
+     * @throws ResourceNotFoundException   if playground not found.
+     */
+    @DeleteMapping("/{playgroundId}/photo/{photoId}")
+    @ApiOperation("удалить фото площадки")
+    public ResponseEntity<Void> deletePhoto(
+            @PathVariable int playgroundId, @PathVariable int photoId
+    ) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        playgroundService.deletePhoto(playgroundId, photoId);
         return ResponseEntity.noContent().build();
     }
 }

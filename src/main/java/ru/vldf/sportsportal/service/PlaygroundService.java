@@ -311,33 +311,6 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         }
     }
 
-    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class})
-    public Integer uploadPhoto(Integer playgroundId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
-        PlaygroundEntity playgroundEntity = findById(playgroundId);
-        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
-        } else if (playgroundEntity.getPhotos().size() == 5) {
-            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.photoLimit.message"));
-        } else {
-            PictureEntity pictureEntity = pictureService.upload(picture);
-            playgroundEntity.getPhotos().add(pictureEntity);
-            return pictureEntity.getId();
-        }
-    }
-
-    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
-    public void deletePhoto(Integer playgroundId, Integer photoId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
-        PlaygroundEntity playgroundEntity = findById(playgroundId);
-        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
-            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
-        } else if (!playgroundEntity.getPhotos().removeIf(pictureEntity -> pictureEntity.getId().equals(photoId))) {
-            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.photoNotExistById.message", photoId, playgroundId));
-        } else {
-            playgroundRepository.saveAndFlush(playgroundEntity);
-            pictureService.delete(photoId);
-        }
-    }
-
     /**
      * Delete playground.
      *
@@ -354,6 +327,109 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
         } else {
             playgroundRepository.delete(playgroundEntity);
+        }
+    }
+
+
+    /**
+     * Upload playground avatar and returns its picture identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @param picture      the picture file.
+     * @return uploaded avatar picture identifier.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to upload this playground avatar.
+     * @throws ResourceNotFoundException     if playground not found.
+     * @throws ResourceCannotCreateException if picture resource cannot be create.
+     */
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class})
+    public Integer uploadAvatar(Integer playgroundId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else {
+            PictureEntity oldPictureEntity = playgroundEntity.getAvatar();
+            PictureEntity newPictureEntity = pictureService.upload(picture);
+            playgroundEntity.setAvatar(newPictureEntity);
+            playgroundRepository.saveAndFlush(playgroundEntity);
+
+            // old avatar deleting
+            if (oldPictureEntity != null) {
+                pictureService.delete(oldPictureEntity.getId());
+            }
+
+            return newPictureEntity.getId();
+        }
+    }
+
+    /**
+     * Delete playground avatar by playground identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground avatar.
+     * @throws ResourceNotFoundException   if picture not found in database.
+     */
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
+    public void deleteAvatar(Integer playgroundId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else if (playgroundEntity.getAvatar() == null) {
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.avatarNotExist.message", playgroundId));
+        } else {
+            PictureEntity pictureEntity = playgroundEntity.getAvatar();
+            playgroundEntity.setAvatar(null);
+            playgroundRepository.saveAndFlush(playgroundEntity);
+            pictureService.delete(pictureEntity.getId());
+        }
+    }
+
+    /**
+     * Upload playground photo and returns its picture identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @param picture      the picture file.
+     * @return uploaded photo picture identifier.
+     * @throws UnauthorizedAccessException   if authorization is missing.
+     * @throws ForbiddenAccessException      if user don't have permission to upload this playground photo.
+     * @throws ResourceNotFoundException     if playground not found.
+     * @throws ResourceCannotCreateException if picture resource cannot be create.
+     */
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class, ResourceCannotCreateException.class})
+    public Integer uploadPhoto(Integer playgroundId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else if (playgroundEntity.getPhotos().size() == 5) {
+            throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.photoLimit.message"));
+        } else {
+            PictureEntity pictureEntity = pictureService.upload(picture);
+            playgroundEntity.getPhotos().add(pictureEntity);
+            playgroundRepository.saveAndFlush(playgroundEntity);
+            return pictureEntity.getId();
+        }
+    }
+
+    /**
+     * Delete playground photo by playground identifier and photo picture identifier.
+     *
+     * @param playgroundId the playground identifier.
+     * @param photoId      the photo picture identifier.
+     * @throws UnauthorizedAccessException if authorization is missing.
+     * @throws ForbiddenAccessException    if user don't have permission to delete this playground photo.
+     * @throws ResourceNotFoundException   if playground not found.
+     */
+    @Transactional(rollbackFor = {UnauthorizedAccessException.class, ForbiddenAccessException.class, ResourceNotFoundException.class})
+    public void deletePhoto(Integer playgroundId, Integer photoId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+        PlaygroundEntity playgroundEntity = findById(playgroundId);
+        if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
+            throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
+        } else if (!playgroundEntity.getPhotos().removeIf(pictureEntity -> pictureEntity.getId().equals(photoId))) {
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.photoNotExistById.message", photoId, playgroundId));
+        } else {
+            playgroundRepository.saveAndFlush(playgroundEntity);
+            pictureService.delete(photoId);
         }
     }
 
