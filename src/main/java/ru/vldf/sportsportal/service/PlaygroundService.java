@@ -317,7 +317,6 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
             throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
         } else if (playgroundEntity.getPhotos().size() == 5) {
-            // todo: add message text!
             throw new ResourceCannotCreateException(msg("sportsportal.booking.Playground.photoLimit.message"));
         } else {
             PictureEntity pictureEntity = pictureService.upload(picture);
@@ -332,8 +331,7 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         if ((!currentUserIsAdmin()) && (!currentUserIn(playgroundEntity.getOwners()))) {
             throw new ForbiddenAccessException(msg("sportsportal.booking.Playground.forbidden.message"));
         } else if (!playgroundEntity.getPhotos().removeIf(pictureEntity -> pictureEntity.getId().equals(photoId))) {
-            // todo: add message text!
-            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.photoNotExistById.message"));
+            throw new ResourceNotFoundException(msg("sportsportal.booking.Playground.photoNotExistById.message", photoId, playgroundId));
         } else {
             playgroundRepository.saveAndFlush(playgroundEntity);
             pictureService.delete(photoId);
