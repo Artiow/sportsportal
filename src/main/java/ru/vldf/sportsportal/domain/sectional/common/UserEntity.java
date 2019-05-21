@@ -55,12 +55,16 @@ public class UserEntity extends AbstractRightsBasedEntity {
     private String confirmCode;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "avatar_id", referencedColumnName = "id")
-    private PictureEntity avatar;
-
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private PlayerEntity player;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "avatar_id",
+            referencedColumnName = "id"
+    )
+    private PictureEntity avatar;
+
 
     @OneToMany(mappedBy = "customer")
     private Collection<OrderEntity> orders;
@@ -73,6 +77,7 @@ public class UserEntity extends AbstractRightsBasedEntity {
 
     @OneToMany(mappedBy = "viceCaptain")
     private Collection<TeamEntity> managedViceTeams;
+
 
     @ManyToMany(mappedBy = "owners")
     private Collection<PlaygroundEntity> playgrounds;

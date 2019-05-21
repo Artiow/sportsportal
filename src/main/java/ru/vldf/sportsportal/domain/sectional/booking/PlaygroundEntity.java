@@ -73,6 +73,13 @@ public class PlaygroundEntity extends AbstractVersionedEntity {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private LocationEntity location;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "avatar_id",
+            referencedColumnName = "id"
+    )
+    private PictureEntity avatar;
+
 
     @OrderBy("pk.datetime")
     @OneToMany(mappedBy = "pk.playground")

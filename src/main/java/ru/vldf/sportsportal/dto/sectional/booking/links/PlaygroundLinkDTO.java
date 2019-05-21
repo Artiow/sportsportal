@@ -21,6 +21,5 @@ public class PlaygroundLinkDTO extends AbstractVersionedLinkDTO {
     private Integer rate;
     private BigDecimal price;
     private URI playgroundURL;
-    private List<URI> ownersURLs;
-    private List<URI> photoURLs;
+    private URI avatarURL;
 }

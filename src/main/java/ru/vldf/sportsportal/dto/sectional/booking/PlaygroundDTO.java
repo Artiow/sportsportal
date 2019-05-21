@@ -97,6 +97,9 @@ public class PlaygroundDTO implements VersionedDTO, WorkTimeDTO, LocatedDTO {
     private List<UserLinkDTO> owners;
 
     @Null(groups = FieldCheck.class)
+    private PictureLinkDTO avatar;
+
+    @Null(groups = FieldCheck.class)
     private List<PictureLinkDTO> photos;
 
 

@@ -35,5 +35,6 @@ public class PlaygroundShortDTO extends AbstractVersionedShortDTO implements Wor
     private List<String> capabilities;
     private URI playgroundURL;
     private List<URI> ownersURLs;
+    private URI avatarURL;
     private List<URI> photoURLs;
 }

@@ -34,31 +34,31 @@ public class RightsDifferentiationConfigurator implements RightsDifferentiationR
         // login routing config
         RoutePath loginRoute = params.getLoginRoute();
         loginRequestPath = loginRoute.getPattern();
-        loginRequestMatcher = toRequestMatcher(loginRoute);
+        loginRequestMatcher = toAntPathRequestMatcher(loginRoute);
 
         // refresh routing config
         RoutePath refreshRoute = params.getRefreshRoute();
         refreshRequestPath = refreshRoute.getPattern();
-        refreshRequestMatcher = toRequestMatcher(refreshRoute);
+        refreshRequestMatcher = toAntPathRequestMatcher(refreshRoute);
 
         // public routing config
-        publicRequestMatcher = new OrRequestMatcher(loginRequestMatcher, refreshRequestMatcher, toRequestMatcher(params.getPublicRoutes()));
+        publicRequestMatcher = new OrRequestMatcher(loginRequestMatcher, refreshRequestMatcher, toOrRequestMatcher(params.getPublicRoutes()));
 
         // security routing config
         routeMap = params.getProtectedRoutes().entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey, entry -> new AndRequestMatcher(new NegatedRequestMatcher(publicRequestMatcher), toRequestMatcher(entry.getValue())))
+                Map.Entry::getKey, entry -> new AndRequestMatcher(new NegatedRequestMatcher(publicRequestMatcher), toOrRequestMatcher(entry.getValue())))
         );
 
         // protected routing config
         this.protectedRequestMatcher = new OrRequestMatcher(Lists.newArrayList(this.routeMap.values()));
     }
 
-    private RequestMatcher toRequestMatcher(RoutePath routePath) {
+    private RequestMatcher toAntPathRequestMatcher(RoutePath routePath) {
         return new AntPathRequestMatcher(routePath.getPattern(), routePath.getHttpMethod());
     }
 
-    private RequestMatcher toRequestMatcher(List<RoutePath> routePaths) {
-        return new OrRequestMatcher(routePaths.stream().map(this::toRequestMatcher).collect(Collectors.toList()));
+    private RequestMatcher toOrRequestMatcher(List<RoutePath> routePaths) {
+        return new OrRequestMatcher(routePaths.stream().map(this::toAntPathRequestMatcher).collect(Collectors.toList()));
     }
 
 
