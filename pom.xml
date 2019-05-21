@@ -54,9 +54,9 @@
 
         <java.version>1.8</java.version>
 
-        <database.url>jdbc:postgresql://localhost:5432/playliga</database.url>
-        <database.username>playliga</database.username>
-        <database.password>playliga</database.password>
+        <database.url>jdbc:postgresql://localhost:5432/record</database.url>
+        <database.username>record</database.username>
+        <database.password>record</database.password>
 
         <maven.plugin.war.version>3.2.2</maven.plugin.war.version>
         <maven.plugin.compiler.version>3.8.0</maven.plugin.compiler.version>
