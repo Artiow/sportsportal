@@ -61,7 +61,7 @@ public class PictureService extends AbstractSecurityService {
      * @throws ResourceNotFoundException if picture not found.
      */
     @Transactional(readOnly = true, rollbackFor = ResourceNotFoundException.class)
-    public ResourceBundle get(Integer id, String sizeCode) throws ResourceNotFoundException {
+    public ResourceBundle download(Integer id, String sizeCode) throws ResourceNotFoundException {
         boolean sizeIsPresent = StringUtils.hasText(sizeCode);
         if (!pictureRepository.existsById(id)) {
             throw new ResourceNotFoundException(msg("sportsportal.common.Picture.notExistById.message", id));
@@ -78,7 +78,7 @@ public class PictureService extends AbstractSecurityService {
     }
 
     /**
-     * Create new picture and returns its identifier.
+     * Upload new picture and returns its identifier.
      *
      * @param picture the picture resource file.
      * @return new created picture resource identifier.
@@ -89,7 +89,7 @@ public class PictureService extends AbstractSecurityService {
             rollbackFor = {UnauthorizedAccessException.class, ResourceCannotCreateException.class},
             noRollbackFor = {IOException.class}
     )
-    public Integer create(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
+    public Integer upload(MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
         if (!Objects.equals(picture.getContentType(), MediaType.IMAGE_JPEG_VALUE)) {
             throw new ResourceCannotCreateException(msg("sportsportal.common.Picture.wrongExtension.message"));
         } else {

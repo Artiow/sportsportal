@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.vldf.sportsportal.domain.sectional.booking.*;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.pagination.PageDTO;
@@ -27,6 +28,7 @@ import ru.vldf.sportsportal.service.general.CRUDService;
 import ru.vldf.sportsportal.service.general.throwable.*;
 import ru.vldf.sportsportal.util.CollectionSorter;
 import ru.vldf.sportsportal.util.LocalDateTimeGridChecker;
+import ru.vldf.sportsportal.util.models.ResourceBundle;
 
 import javax.mail.MessagingException;
 import javax.persistence.OptimisticLockException;
@@ -305,6 +307,18 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             throw new ResourceOptimisticLockException(msg("sportsportal.booking.Playground.optimisticLock.message"), e);
         }
+    }
+
+    public ResourceBundle downloadPhoto(Integer pgId, Integer phId, String size) throws ResourceNotFoundException {
+        return null;
+    }
+
+    public String uploadPhoto(Integer pgId, MultipartFile picture) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException, ResourceCannotCreateException {
+        return null;
+    }
+
+    public void deletePhoto(Integer pgId, Integer phId) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
+
     }
 
     /**

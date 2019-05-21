@@ -37,7 +37,7 @@ public class PictureController {
 
 
     /**
-     * Download picture by id.
+     * Download picture by picture identifier.
      *
      * @param id   the picture identifier.
      * @param size the picture size code.
@@ -45,9 +45,9 @@ public class PictureController {
      * @throws ResourceNotFoundException if picture not found.
      */
     @GetMapping("/{id}")
-    @ApiOperation("получить ресурс")
+    @ApiOperation("получить картинку")
     public ResponseEntity<Resource> download(@PathVariable int id, @RequestParam(name = "size", required = false) String size) throws ResourceNotFoundException {
-        ResourceBundle resource = pictureService.get(id, size);
+        ResourceBundle resource = pictureService.download(id, size);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, resource.getContentDisposition()).contentType(resource.getContentType()).body(resource.getBody());
     }
 
@@ -57,12 +57,12 @@ public class PictureController {
      * @param picture the picture file.
      * @return uploaded picture location.
      * @throws UnauthorizedAccessException   if authorization is missing.
-     * @throws ResourceCannotCreateException if resource cannot be create.
+     * @throws ResourceCannotCreateException if picture resource cannot be create.
      */
     @PostMapping
-    @ApiOperation("загрузить ресурс")
+    @ApiOperation("загрузить картинку")
     public ResponseEntity<Void> upload(@RequestParam("picture") MultipartFile picture) throws UnauthorizedAccessException, ResourceCannotCreateException {
-        return ResponseEntity.created(buildURL(pictureService.create(picture))).build();
+        return ResponseEntity.created(buildURL(pictureService.upload(picture))).build();
     }
 
     /**
@@ -75,7 +75,7 @@ public class PictureController {
      * @throws ResourceNotFoundException   if picture not found in database.
      */
     @DeleteMapping("/{id}")
-    @ApiOperation("удалить ресурс")
+    @ApiOperation("удалить картинку")
     public ResponseEntity<Void> delete(@PathVariable int id) throws UnauthorizedAccessException, ForbiddenAccessException, ResourceNotFoundException {
         pictureService.delete(id);
         return ResponseEntity.noContent().build();
