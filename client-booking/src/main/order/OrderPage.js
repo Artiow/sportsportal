@@ -101,7 +101,7 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                                 <h4 className="mb-2">{playground.address}</h4>
                                 <h6><StarRate value={playground.rate}/></h6>
                                 <PlacedImg className="card-img mt-2"
-                                           src={`${playground.photoURLs[0]}?size=sm`}
+                                           src={`${playground.avatarURL}?size=sm`}
                                            placeImg={placeimg} alt={playground.name}/>
                             </div>
                             <div className="col-8">
