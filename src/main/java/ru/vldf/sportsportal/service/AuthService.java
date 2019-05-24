@@ -1,5 +1,7 @@
 package ru.vldf.sportsportal.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +63,13 @@ public class AuthService extends AbstractSecurityService {
      * @throws UnauthorizedAccessException if user authorization is missing.
      */
     public JwtPairDTO login() throws UnauthorizedAccessException {
-        // confirm code clearing
         UserEntity userEntity = getCurrentUserEntity();
+        // confirm code clearing
         if (userEntity.getConfirmCode() != null) {
             userEntity.setConfirmCode(null);
             userRepository().save(userEntity);
         }
-
-        return buildJwtPair(securityProvider.generate(getCurrentUserDetails().getId()));
+        return buildJwtPair(securityProvider.generate(userEntity.getId()));
     }
 
 
@@ -117,7 +118,7 @@ public class AuthService extends AbstractSecurityService {
             UserEntity userEntity = findUserById(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
+                sendUserConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
                 userRepository().save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
@@ -192,31 +193,82 @@ public class AuthService extends AbstractSecurityService {
         return jwtPairDTO;
     }
 
+
     /**
-     * Confirmation email sending.
+     * User confirmation email sending.
      *
      * @param emailAddress  the sending address.
      * @param confirmOrigin the confirm host.
      * @param confirmCode   the confirm code.
      * @throws MessagingException if could not sent email.
      */
-    private void sendConfirmationEmail(
+    private void sendUserConfirmationEmail(
             String emailAddress, String confirmOrigin, String confirmCode
+    ) throws MessagingException {
+        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.USER_CONFIRMATION);
+    }
+
+    /**
+     * Password recovery email sending.
+     *
+     * @param emailAddress  the sending address.
+     * @param confirmOrigin the confirm host.
+     * @param confirmCode   the confirm code.
+     * @throws MessagingException if could not sent email.
+     */
+    private void sendPasswordRecoveryEmail(
+            String emailAddress, String confirmOrigin, String confirmCode
+    ) throws MessagingException {
+        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.PASSWORD_RECOVERY);
+    }
+
+    private void sendEmail(
+            String emailAddress, String confirmOrigin, String confirmCode, EmailConfirmationType confirmationType
     ) throws MessagingException {
         mailService.sender()
                 .setTo(emailAddress)
-                .setFrom(msg("sportsportal.email.confirm.from"), msg("sportsportal.email.confirm.personal"))
-                .setSubject(msg("sportsportal.email.confirm.subject"))
-                .setHtml(String.format(
-                        "<p>%s</p>",
-                        msg(
-                                "sportsportal.email.confirm.text.env",
-                                String.format(
-                                        "<a href=\"%s\">%s</a>",
-                                        String.format(confirmPath, confirmOrigin, confirmCode),
-                                        msg("sportsportal.email.confirm.text.link")
+                .setFrom(msg(confirmationType.getFrom()), msg(confirmationType.getPersonal()))
+                .setSubject(msg(confirmationType.getSubject()))
+                .setHtml(
+                        String.format(
+                                "<p>%s</p>",
+                                msg(
+                                        confirmationType.getTextEnv(),
+                                        String.format(
+                                                "<a href=\"%s\">%s</a>",
+                                                String.format(confirmPath, confirmOrigin, confirmCode),
+                                                msg(confirmationType.getTextLink())
+                                        )
                                 )
                         )
-                )).send();
+                ).send();
+    }
+
+
+    @Getter
+    @RequiredArgsConstructor
+    private enum EmailConfirmationType {
+
+        USER_CONFIRMATION(
+                "sportsportal.email.confirm.from",
+                "sportsportal.email.confirm.personal",
+                "sportsportal.email.confirm.subject",
+                "sportsportal.email.confirm.text.env",
+                "sportsportal.email.confirm.text.link"
+        ),
+
+        PASSWORD_RECOVERY(
+                "sportsportal.email.recover.from",
+                "sportsportal.email.recover.personal",
+                "sportsportal.email.recover.subject",
+                "sportsportal.email.recover.text.env",
+                "sportsportal.email.recover.text.link"
+        );
+
+        private final String from;
+        private final String personal;
+        private final String subject;
+        private final String textEnv;
+        private final String textLink;
     }
 }
