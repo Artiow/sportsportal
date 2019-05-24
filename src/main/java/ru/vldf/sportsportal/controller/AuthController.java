@@ -4,20 +4,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.PasswordHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
-
-import javax.validation.constraints.NotBlank;
 
 import static ru.vldf.sportsportal.util.ResourceLocationBuilder.buildURL;
 
@@ -64,7 +61,7 @@ public class AuthController {
     @PostMapping("/register")
     @ApiOperation("регистрация")
     public ResponseEntity<Void> register(
-            @RequestBody @Validated(UserDTO.CreateCheck.class) UserDTO userDTO
+            @RequestBody @Validated(UserDTO.RegisterCheck.class) UserDTO userDTO
     ) throws ResourceCannotCreateException {
         return ResponseEntity.created(buildURL(userPath, authService.register(userDTO))).build();
     }
@@ -81,14 +78,14 @@ public class AuthController {
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
     public ResponseEntity<Void> confirm(
-            @PathVariable int id, @RequestParam(required = false) String origin
+            @PathVariable int id, @RequestParam String origin
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
         authService.initConfirmation(id, origin);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * Confirm user (by PUT method).
+     * Confirm user.
      *
      * @param token the user confirmation token.
      * @return no content.
@@ -96,26 +93,45 @@ public class AuthController {
      */
     @PutMapping("/confirm")
     @ApiOperation("подтвердить пользователя")
-    public ResponseEntity<Void> putConfirm(
-            @RequestBody @Validated @NotBlank String token
+    public ResponseEntity<Void> confirm(
+            @RequestParam String token
     ) throws ResourceNotFoundException {
         authService.confirm(token);
         return ResponseEntity.noContent().build();
     }
 
     /**
-     * Confirm user (by GET method) and redirect to main page.
+     * Initiate user password recovery and send confirmation email.
      *
-     * @param token the user confirmation token.
-     * @return redirect to main page.
+     * @param id     the user identifier.
+     * @param origin the confirmation link origin.
+     * @return no content.
+     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceCannotUpdateException if could not sent email.
+     */
+    @PutMapping("/recover/{id}")
+    @ApiOperation("отправить письмо для восстановления пароля")
+    public ResponseEntity<Void> recover(
+            @PathVariable int id, @RequestParam String origin
+    ) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        authService.initRecovery(id, origin);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Recover user password.
+     *
+     * @param token             the user confirmation token.
+     * @param passwordHolderDTO the user new password holder.
+     * @return no content.
      * @throws ResourceNotFoundException if user not found by confirm code.
      */
-    @GetMapping("/confirm")
-    @ApiOperation("подтвердить пользователя")
-    public ResponseEntity<Void> getConfirm(
-            @RequestParam @Validated @NotBlank String token
+    @PutMapping("/recover")
+    @ApiOperation("восстановить пароль пользователя")
+    public ResponseEntity<Void> recover(
+            @RequestParam String token, @RequestBody @Validated PasswordHolderDTO passwordHolderDTO
     ) throws ResourceNotFoundException {
-        authService.confirm(token);
-        return ResponseEntity.status(HttpStatus.SEE_OTHER).header(HttpHeaders.LOCATION, buildURL().toString()).build();
+        authService.recover(token, passwordHolderDTO);
+        return ResponseEntity.noContent().build();
     }
 }

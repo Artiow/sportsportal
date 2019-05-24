@@ -46,9 +46,7 @@ export default class Authentication {
     static doConfirmation(token) {
         return new Promise((resolve, reject) => {
             axios
-                .put(API.url('/auth/confirm'), token, {
-                    headers: {'Content-Type': 'text/plain'}
-                })
+                .put(API.url(`/auth/confirm?token=${token}`))
                 .then(response => {
                     console.debug('Authentication', 'doConfirmation', response);
                     resolve();

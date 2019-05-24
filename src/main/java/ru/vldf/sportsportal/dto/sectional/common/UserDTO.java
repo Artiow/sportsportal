@@ -58,10 +58,10 @@ public class UserDTO implements RightsBasedDTO {
     @Size(min = 5, max = 254, groups = FieldCheck.class)
     private String address;
 
-    @Null(groups = FieldCheck.class)
+    @Null(groups = RegisterCheck.class)
     private Boolean isLocked;
 
-    @Null(groups = FieldCheck.class)
+    @Null(groups = RegisterCheck.class)
     private Boolean isDisabled;
 
     @Phone(groups = FieldCheck.class)
@@ -76,6 +76,10 @@ public class UserDTO implements RightsBasedDTO {
 
 
     public interface IdCheck extends VersionCheck {
+
+    }
+
+    public interface RegisterCheck extends FieldCheck {
 
     }
 

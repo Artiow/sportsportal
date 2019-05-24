@@ -4,14 +4,13 @@ import lombok.var;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.sectional.common.specialized.PasswordHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
@@ -24,9 +23,6 @@ import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessExceptio
 import ru.vldf.sportsportal.service.security.SecurityProvider;
 
 import javax.mail.MessagingException;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.OptimisticLockException;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 /**
@@ -39,17 +35,6 @@ public class AuthService extends AbstractSecurityService {
     private final SecurityProvider securityProvider;
     private final MailService mailService;
     private final UserMapper userMapper;
-
-
-    @Value("${api.protocol}")
-    private String apiProtocol;
-
-    @Value("${api.host}")
-    private String apiHost;
-
-    @Value("${api.path.common.auth}")
-    private String apiPath;
-
 
     @Value("${api.path.auth.confirm}")
     private String confirmPath;
@@ -76,6 +61,13 @@ public class AuthService extends AbstractSecurityService {
      * @throws UnauthorizedAccessException if user authorization is missing.
      */
     public JwtPairDTO login() throws UnauthorizedAccessException {
+        // confirm code clearing
+        UserEntity userEntity = getCurrentUserEntity();
+        if (userEntity.getConfirmCode() != null) {
+            userEntity.setConfirmCode(null);
+            userRepository().save(userEntity);
+        }
+
         return buildJwtPair(securityProvider.generate(getCurrentUserDetails().getId()));
     }
 
@@ -88,31 +80,22 @@ public class AuthService extends AbstractSecurityService {
      * @throws ResourceCannotCreateException if user could not create.
      */
     @Transactional(
-            rollbackFor = {ResourceCannotCreateException.class},
-            noRollbackFor = {EntityNotFoundException.class, OptimisticLockException.class, DataAccessException.class}
+            rollbackFor = {ResourceCannotCreateException.class}
     )
-    public Integer register(@NotNull UserDTO userDTO) throws ResourceCannotCreateException {
+    public Integer register(UserDTO userDTO) throws ResourceCannotCreateException {
         UserRepository userRepository = userRepository();
         if (userRepository.existsByEmailAndIsDisabledIsFalse(userDTO.getEmail())) {
             throw new ResourceCannotCreateException(msg("sportsportal.common.User.alreadyExistByEmail.message", userDTO.getEmail()));
-        } else try {
+        } else {
             // password encoding and user saving
             UserEntity userEntity = userMapper.toEntity(userDTO);
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
             if (userRepository.existsByEmail(userEntity.getEmail())) {
-                try {
-                    var existing = userRepository.findByEmail(userEntity.getEmail());
-                    userEntity.setVersion(existing.getVersion()); // version synchronization
-                    userEntity = userMapper.merge(existing, userEntity);
-                } catch (EntityNotFoundException e) {
-                    throw new RuntimeException(msg("sportsportal.common.User.cannotCreate.message"), e);
-                } catch (OptimisticLockException e) {
-                    throw new ResourceCannotCreateException(msg("sportsportal.common.User.cannotCreate.message"), e);
-                }
+                var existing = userRepository.findByEmail(userEntity.getEmail());
+                userEntity.setVersion(existing.getVersion()); // version synchronization
+                userEntity = userMapper.merge(existing, userEntity);
             }
             return userRepository.save(userEntity).getId();
-        } catch (DataAccessException e) {
-            throw new ResourceCannotCreateException(msg("sportsportal.common.User.cannotCreate.message"), e);
         }
     }
 
@@ -126,12 +109,9 @@ public class AuthService extends AbstractSecurityService {
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
-            noRollbackFor = {EntityNotFoundException.class}
+            noRollbackFor = {MessagingException.class}
     )
     public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        if (!StringUtils.hasText(confirmOrigin)) {
-            confirmOrigin = String.format("%s://%s%s", apiProtocol, apiHost, apiPath);
-        }
         try {
             String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
             UserEntity userEntity = findUserById(userId);
@@ -168,6 +148,36 @@ public class AuthService extends AbstractSecurityService {
             userRepository.save(userEntity);
         }
     }
+
+    /**
+     * Init password recovery for user.
+     *
+     * @param userId        the user identifier.
+     * @param confirmOrigin the confirmation link origin.
+     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceCannotUpdateException if could not sent email.
+     */
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
+            noRollbackFor = {MessagingException.class}
+    )
+    public void initRecovery(int userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
+
+    }
+
+    /**
+     * Recover user password.
+     *
+     * @param confirmCode the user's confirmation code.
+     * @throws ResourceNotFoundException if user not found by confirm code.
+     */
+    @Transactional(
+            rollbackFor = {ResourceNotFoundException.class}
+    )
+    public void recover(String confirmCode, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
+
+    }
+
 
     /**
      * Returns built JWT pair.
