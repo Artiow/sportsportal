@@ -101,10 +101,10 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Init user confirmation .
+     * Initiate user email confirmation and send confirmation email.
      *
-     * @param userId        the user identifier.
-     * @param confirmOrigin the confirmation link origin.
+     * @param userId the user identifier.
+     * @param origin the confirmation link origin.
      * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
@@ -112,17 +112,14 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        try {
-            String confirmCode = UuidGenerator.uniqueBase64();
-            UserEntity userEntity = findUserById(userId);
-            if (userEntity.getRoles().isEmpty()) {
-                userEntity.setConfirmCode(confirmCode);
-                sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
-                userRepository().save(userEntity);
-            } else {
-                throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
-            }
+    public void confirmationInit(Integer userId, String origin) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        UserEntity userEntity = findUserById(userId);
+        if (!userEntity.getRoles().isEmpty()) {
+            throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
+        } else try {
+            userEntity.setConfirmCode(UuidGenerator.uniqueBase64());
+            userRepository().save(userEntity);
+            sendConfirmationEmail(userEntity.getEmail(), origin, userEntity.getConfirmCode());
         } catch (MessagingException e) {
             throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
@@ -131,22 +128,21 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Confirm user and assign its with user role.
      *
-     * @param confirmCode the user's confirmation code.
+     * @param token the user confirmation code.
      * @throws ResourceNotFoundException if user not found by confirm code.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class}
     )
-    public void confirm(String confirmCode) throws ResourceNotFoundException {
-        UserRepository userRepository = userRepository();
-        UserEntity userEntity = userRepository.findByConfirmCode(confirmCode);
-        if (userEntity == null) {
+    public void confirmationAct(String token) throws ResourceNotFoundException {
+        UserEntity userEntity;
+        if ((userEntity = userRepository().findByConfirmCode(token)) == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByConfirmCode.message"));
         } else {
             userEntity.setIsDisabled(false);
             userEntity.setConfirmCode(null);
             userEntity.getRoles().add(userRole());
-            userRepository.save(userEntity);
+            userRepository().save(userEntity);
         }
     }
 
@@ -166,7 +162,7 @@ public class AuthService extends AbstractSecurityService {
     public void recoveryInit(String origin, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
         UserEntity userEntity;
         if ((userEntity = userRepository().findByEmail(emailHolderDTO.getEmail())) == null) {
-            throw new ResourceNotFoundException(msg("sportsportal.mail.cannotSendEmail.message", emailHolderDTO.getEmail()));
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByEmail.message", emailHolderDTO.getEmail()));
         } else try {
             userEntity.setRecoverCode(UuidGenerator.uniqueBase64());
             userRepository().save(userEntity);
@@ -186,14 +182,13 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class}
     )
     public void recoveryAct(String token, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
-        UserRepository userRepository = userRepository();
-        UserEntity userEntity = userRepository.findByRecoverCode(token);
-        if (userEntity == null) {
+        UserEntity userEntity;
+        if ((userEntity = userRepository().findByRecoverCode(token)) == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByRecoverCode.message"));
         } else {
             userEntity.setPassword(passwordEncoder.encode(passwordHolderDTO.getPassword()));
             userEntity.setRecoverCode(null);
-            userRepository.save(userEntity);
+            userRepository().save(userEntity);
         }
     }
 

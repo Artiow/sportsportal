@@ -27,9 +27,7 @@ export default class Authentication {
             axios
                 .put(API.url(`/auth/confirm/${id}`), '', {
                     paramsSerializer: ParamsSerializer.stringify(),
-                    params: {
-                        origin: origin
-                    }
+                    params: {origin: origin}
                 })
                 .then(response => {
                     console.debug('Authentication', 'initConfirmation', response);
@@ -46,7 +44,10 @@ export default class Authentication {
     static doConfirmation(token) {
         return new Promise((resolve, reject) => {
             axios
-                .put(API.url(`/auth/confirm?token=${token}`))
+                .put(API.url('/auth/confirm'), '', {
+                    paramsSerializer: ParamsSerializer.stringify(),
+                    params: {token: token}
+                })
                 .then(response => {
                     console.debug('Authentication', 'doConfirmation', response);
                     resolve();
@@ -54,6 +55,48 @@ export default class Authentication {
                 .catch(error => {
                     const response = error.response;
                     console.warn('Authentication', 'doConfirmation', response ? response : error);
+                    reject((response && response.data) ? response.data : error);
+                })
+        });
+    }
+
+    static initRecovery(origin, email) {
+        return new Promise((resolve, reject) => {
+            axios
+                .put(API.url(`/auth/recovery-init`), {
+                    email: email
+                }, {
+                    paramsSerializer: ParamsSerializer.stringify(),
+                    params: {origin: origin}
+                })
+                .then(response => {
+                    console.debug('Authentication', 'initRecovery', response);
+                    resolve();
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication', 'initRecovery', response ? response : error);
+                    reject((response && response.data) ? response.data : error);
+                })
+        });
+    }
+
+    static doRecovery(token, password) {
+        return new Promise((resolve, reject) => {
+            axios
+                .put(API.url('/auth/recovery-act'), {
+                    password: password
+                }, {
+                    paramsSerializer: ParamsSerializer.stringify(),
+                    params: {token: token}
+                })
+                .then(response => {
+                    console.debug('Authentication', 'doRecovery', response);
+                    resolve();
+                })
+                .catch(error => {
+                    const response = error.response;
+                    console.warn('Authentication', 'doRecovery', response ? response : error);
                     reject((response && response.data) ? response.data : error);
                 })
         });

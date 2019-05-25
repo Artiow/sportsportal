@@ -81,7 +81,7 @@ public class AuthController {
     public ResponseEntity<Void> confirm(
             @PathVariable int id, @RequestParam String origin
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.initConfirmation(id, origin);
+        authService.confirmationInit(id, origin);
         return ResponseEntity.noContent().build();
     }
 
@@ -97,7 +97,7 @@ public class AuthController {
     public ResponseEntity<Void> confirm(
             @RequestParam String token
     ) throws ResourceNotFoundException {
-        authService.confirm(token);
+        authService.confirmationAct(token);
         return ResponseEntity.noContent().build();
     }
 
@@ -113,7 +113,7 @@ public class AuthController {
      */
     @PutMapping("/recovery-init")
     @ApiOperation("отправить письмо для восстановления пароля")
-    public ResponseEntity<Void> recoveryInit(
+    public ResponseEntity<Void> recovery(
             @RequestParam String origin, @RequestBody @Validated EmailHolderDTO emailHolderDTO
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
         authService.recoveryInit(origin, emailHolderDTO);
@@ -130,7 +130,7 @@ public class AuthController {
      */
     @PutMapping("/recovery-act")
     @ApiOperation("восстановить пароль пользователя")
-    public ResponseEntity<Void> recoveryAct(
+    public ResponseEntity<Void> recovery(
             @RequestParam String token, @RequestBody @Validated PasswordHolderDTO passwordHolderDTO
     ) throws ResourceNotFoundException {
         authService.recoveryAct(token, passwordHolderDTO);
