@@ -8,6 +8,8 @@ import ru.vldf.sportsportal.repository.AbstractIdentifiedRepository;
  */
 public interface UserRepository extends AbstractIdentifiedRepository<UserEntity> {
 
+    UserEntity findByRecoverCode(String recoverCode);
+
     UserEntity findByConfirmCode(String confirmCode);
 
     UserEntity findByEmail(String email);

@@ -29,6 +29,6 @@ public final class Base64Credentials {
         Assert.hasText(credentials, "credentials must not be blank");
         String[] arr = new String(Base64Utils.decodeFromString(credentials), StandardCharsets.UTF_8).split(":", 2);
         if (arr.length == 2) return Base64Credentials.of(arr[0], arr[1]);
-        else throw new IllegalArgumentException("invalid base64 credentials format");
+        else throw new IllegalArgumentException("invalid uniqueBase64 credentials format");
     }
 }

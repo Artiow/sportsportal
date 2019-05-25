@@ -54,6 +54,10 @@ public class UserEntity extends AbstractRightsBasedEntity {
     @Column(name = "confirm_code")
     private String confirmCode;
 
+    @Basic
+    @Column(name = "recover_code")
+    private String recoverCode;
+
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private PlayerEntity player;

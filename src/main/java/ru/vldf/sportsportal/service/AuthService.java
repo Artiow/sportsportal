@@ -3,7 +3,6 @@ package ru.vldf.sportsportal.service;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
-import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
@@ -12,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
-import ru.vldf.sportsportal.dto.sectional.common.specialized.PasswordHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
+import ru.vldf.sportsportal.dto.security.PasswordHolderDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
 import ru.vldf.sportsportal.mapper.sectional.common.UserMapper;
 import ru.vldf.sportsportal.repository.common.UserRepository;
@@ -23,9 +22,9 @@ import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateExcept
 import ru.vldf.sportsportal.service.general.throwable.ResourceNotFoundException;
 import ru.vldf.sportsportal.service.general.throwable.UnauthorizedAccessException;
 import ru.vldf.sportsportal.service.security.SecurityProvider;
+import ru.vldf.sportsportal.util.UuidGenerator;
 
 import javax.mail.MessagingException;
-import java.util.UUID;
 
 /**
  * @author Namednev Artem
@@ -64,9 +63,9 @@ public class AuthService extends AbstractSecurityService {
      */
     public JwtPairDTO login() throws UnauthorizedAccessException {
         UserEntity userEntity = getCurrentUserEntity();
-        // confirm code clearing
-        if (userEntity.getConfirmCode() != null) {
-            userEntity.setConfirmCode(null);
+        // recover code clearing if exist
+        if (userEntity.getRecoverCode() != null) {
+            userEntity.setRecoverCode(null);
             userRepository().save(userEntity);
         }
         return buildJwtPair(securityProvider.generate(userEntity.getId()));
@@ -101,7 +100,7 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Init confirmation for user.
+     * Init user confirmation .
      *
      * @param userId        the user identifier.
      * @param confirmOrigin the confirmation link origin.
@@ -114,11 +113,11 @@ public class AuthService extends AbstractSecurityService {
     )
     public void initConfirmation(Integer userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
         try {
-            String confirmCode = Base64.encodeBytes(UUID.randomUUID().toString().getBytes());
+            String confirmCode = UuidGenerator.uniqueBase64();
             UserEntity userEntity = findUserById(userId);
             if (userEntity.getRoles().isEmpty()) {
                 userEntity.setConfirmCode(confirmCode);
-                sendUserConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
+                sendConfirmationEmail(userEntity.getEmail(), confirmOrigin, confirmCode);
                 userRepository().save(userEntity);
             } else {
                 throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
@@ -154,7 +153,7 @@ public class AuthService extends AbstractSecurityService {
      * Init password recovery for user.
      *
      * @param userId        the user identifier.
-     * @param confirmOrigin the confirmation link origin.
+     * @param recoverOrigin the recovery link origin.
      * @throws ResourceNotFoundException     if user could not found.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
@@ -162,21 +161,37 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void initRecovery(int userId, String confirmOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
-
+    public void initRecovery(int userId, String recoverOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        try {
+            String recoverCode = UuidGenerator.uniqueBase64();
+            UserEntity userEntity = findUserById(userId);
+            userEntity.setRecoverCode(recoverCode);
+            sendRecoveryEmail(userEntity.getEmail(), recoverOrigin, recoverCode);
+            userRepository().save(userEntity);
+        } catch (MessagingException e) {
+            throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
+        }
     }
 
     /**
      * Recover user password.
      *
-     * @param confirmCode the user's confirmation code.
-     * @throws ResourceNotFoundException if user not found by confirm code.
+     * @param recoverCode the user's recovery code.
+     * @throws ResourceNotFoundException if user not found by recover code.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class}
     )
-    public void recover(String confirmCode, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
-
+    public void recover(String recoverCode, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
+        UserRepository userRepository = userRepository();
+        UserEntity userEntity = userRepository.findByRecoverCode(recoverCode);
+        if (userEntity == null) {
+            throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByRecoverCode.message"));
+        } else {
+            userEntity.setPassword(passwordEncoder.encode(passwordHolderDTO.getNewPassword()));
+            userEntity.setRecoverCode(null);
+            userRepository.save(userEntity);
+        }
     }
 
 
@@ -202,28 +217,28 @@ public class AuthService extends AbstractSecurityService {
      * @param confirmCode   the confirm code.
      * @throws MessagingException if could not sent email.
      */
-    private void sendUserConfirmationEmail(
+    private void sendConfirmationEmail(
             String emailAddress, String confirmOrigin, String confirmCode
     ) throws MessagingException {
-        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.USER_CONFIRMATION);
+        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.CONFIRMATION);
     }
 
     /**
      * Password recovery email sending.
      *
      * @param emailAddress  the sending address.
-     * @param confirmOrigin the confirm host.
-     * @param confirmCode   the confirm code.
+     * @param recoverOrigin the recover host.
+     * @param recoverCode   the recover code.
      * @throws MessagingException if could not sent email.
      */
-    private void sendPasswordRecoveryEmail(
-            String emailAddress, String confirmOrigin, String confirmCode
+    private void sendRecoveryEmail(
+            String emailAddress, String recoverOrigin, String recoverCode
     ) throws MessagingException {
-        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.PASSWORD_RECOVERY);
+        sendEmail(emailAddress, recoverOrigin, recoverCode, EmailConfirmationType.RECOVERY);
     }
 
     private void sendEmail(
-            String emailAddress, String confirmOrigin, String confirmCode, EmailConfirmationType confirmationType
+            String emailAddress, String linkOrigin, String linkToken, EmailConfirmationType confirmationType
     ) throws MessagingException {
         mailService.sender()
                 .setTo(emailAddress)
@@ -236,7 +251,7 @@ public class AuthService extends AbstractSecurityService {
                                         confirmationType.getTextEnv(),
                                         String.format(
                                                 "<a href=\"%s\">%s</a>",
-                                                String.format(confirmPath, confirmOrigin, confirmCode),
+                                                String.format(confirmPath, linkOrigin, linkToken),
                                                 msg(confirmationType.getTextLink())
                                         )
                                 )
@@ -249,7 +264,7 @@ public class AuthService extends AbstractSecurityService {
     @RequiredArgsConstructor
     private enum EmailConfirmationType {
 
-        USER_CONFIRMATION(
+        CONFIRMATION(
                 "sportsportal.email.confirm.from",
                 "sportsportal.email.confirm.personal",
                 "sportsportal.email.confirm.subject",
@@ -257,7 +272,7 @@ public class AuthService extends AbstractSecurityService {
                 "sportsportal.email.confirm.text.link"
         ),
 
-        PASSWORD_RECOVERY(
+        RECOVERY(
                 "sportsportal.email.recover.from",
                 "sportsportal.email.recover.personal",
                 "sportsportal.email.recover.subject",

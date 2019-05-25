@@ -45,6 +45,7 @@ public abstract class UserMapper extends AbstractOverallRightsBasedMapper<UserEn
         acceptor.setAddress(donor.getAddress());
         acceptor.setPhone(donor.getPhone());
         acceptor.setConfirmCode(donor.getConfirmCode());
+        acceptor.setRecoverCode(donor.getRecoverCode());
         acceptor.setAvatar(donor.getAvatar());
         return acceptor;
     }

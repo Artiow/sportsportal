@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
-import ru.vldf.sportsportal.dto.sectional.common.specialized.PasswordHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
+import ru.vldf.sportsportal.dto.security.PasswordHolderDTO;
 import ru.vldf.sportsportal.service.AuthService;
 import ru.vldf.sportsportal.service.general.throwable.ResourceCannotCreateException;
 import ru.vldf.sportsportal.service.general.throwable.ResourceCannotUpdateException;
@@ -101,10 +101,10 @@ public class AuthController {
     }
 
     /**
-     * Initiate user password recovery and send confirmation email.
+     * Initiate user password recovery and send recovery email.
      *
      * @param id     the user identifier.
-     * @param origin the confirmation link origin.
+     * @param origin the recovery link origin.
      * @return no content.
      * @throws ResourceNotFoundException     if user could not found.
      * @throws ResourceCannotUpdateException if could not sent email.
@@ -121,10 +121,10 @@ public class AuthController {
     /**
      * Recover user password.
      *
-     * @param token             the user confirmation token.
+     * @param token             the user recovery token.
      * @param passwordHolderDTO the user new password holder.
      * @return no content.
-     * @throws ResourceNotFoundException if user not found by confirm code.
+     * @throws ResourceNotFoundException if user not found by recover code.
      */
     @PutMapping("/recover")
     @ApiOperation("восстановить пароль пользователя")
