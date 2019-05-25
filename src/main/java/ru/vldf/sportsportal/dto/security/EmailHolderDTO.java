@@ -2,7 +2,7 @@ package ru.vldf.sportsportal.dto.security;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.vldf.sportsportal.dto.validation.annotations.Password;
+import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
 import javax.validation.constraints.NotBlank;
@@ -13,11 +13,11 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class PasswordHolderDTO {
+public class EmailHolderDTO {
 
-    @Password
+    @Email
     @Trimmed
     @NotBlank
-    @Size(min = 4, max = 50)
-    private String password;
+    @Size(min = 5, max = 254)
+    private String email;
 }

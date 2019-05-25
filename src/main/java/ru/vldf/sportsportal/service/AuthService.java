@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.security.EmailHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.dto.security.PasswordHolderDTO;
 import ru.vldf.sportsportal.integration.mail.MailService;
@@ -104,7 +105,7 @@ public class AuthService extends AbstractSecurityService {
      *
      * @param userId        the user identifier.
      * @param confirmOrigin the confirmation link origin.
-     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
     @Transactional(
@@ -149,25 +150,27 @@ public class AuthService extends AbstractSecurityService {
         }
     }
 
+
     /**
-     * Init password recovery for user.
+     * Initiate user password recovery and send recovery email.
      *
-     * @param userId        the user identifier.
-     * @param recoverOrigin the recovery link origin.
-     * @throws ResourceNotFoundException     if user could not found.
+     * @param origin         the recovery link origin.
+     * @param emailHolderDTO the user email holder.
+     * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void initRecovery(int userId, String recoverOrigin) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        try {
-            String recoverCode = UuidGenerator.uniqueBase64();
-            UserEntity userEntity = findUserById(userId);
-            userEntity.setRecoverCode(recoverCode);
-            sendRecoveryEmail(userEntity.getEmail(), recoverOrigin, recoverCode);
+    public void recoveryInit(String origin, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
+        UserEntity userEntity;
+        if ((userEntity = userRepository().findByEmail(emailHolderDTO.getEmail())) == null) {
+            throw new ResourceNotFoundException(msg("sportsportal.mail.cannotSendEmail.message", emailHolderDTO.getEmail()));
+        } else try {
+            userEntity.setRecoverCode(UuidGenerator.uniqueBase64());
             userRepository().save(userEntity);
+            sendRecoveryEmail(userEntity.getEmail(), origin, userEntity.getRecoverCode());
         } catch (MessagingException e) {
             throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
@@ -176,19 +179,19 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Recover user password.
      *
-     * @param recoverCode the user's recovery code.
-     * @throws ResourceNotFoundException if user not found by recover code.
+     * @param token the user recovery code.
+     * @throws ResourceNotFoundException if user not found by recovery code.
      */
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class}
     )
-    public void recover(String recoverCode, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
+    public void recoveryAct(String token, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
         UserRepository userRepository = userRepository();
-        UserEntity userEntity = userRepository.findByRecoverCode(recoverCode);
+        UserEntity userEntity = userRepository.findByRecoverCode(token);
         if (userEntity == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByRecoverCode.message"));
         } else {
-            userEntity.setPassword(passwordEncoder.encode(passwordHolderDTO.getNewPassword()));
+            userEntity.setPassword(passwordEncoder.encode(passwordHolderDTO.getPassword()));
             userEntity.setRecoverCode(null);
             userRepository.save(userEntity);
         }

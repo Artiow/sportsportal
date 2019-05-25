@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
+import ru.vldf.sportsportal.dto.security.EmailHolderDTO;
 import ru.vldf.sportsportal.dto.security.JwtPairDTO;
 import ru.vldf.sportsportal.dto.security.PasswordHolderDTO;
 import ru.vldf.sportsportal.service.AuthService;
@@ -72,7 +73,7 @@ public class AuthController {
      * @param id     the user identifier.
      * @param origin the confirmation link origin.
      * @return no content.
-     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
     @PutMapping("/confirm/{id}")
@@ -100,21 +101,22 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
+
     /**
      * Initiate user password recovery and send recovery email.
      *
-     * @param id     the user identifier.
-     * @param origin the recovery link origin.
+     * @param origin         the recovery link origin.
+     * @param emailHolderDTO the user email holder.
      * @return no content.
-     * @throws ResourceNotFoundException     if user could not found.
+     * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
-    @PutMapping("/recover/{id}")
+    @PutMapping("/recovery-init")
     @ApiOperation("отправить письмо для восстановления пароля")
-    public ResponseEntity<Void> recover(
-            @PathVariable int id, @RequestParam String origin
+    public ResponseEntity<Void> recoveryInit(
+            @RequestParam String origin, @RequestBody @Validated EmailHolderDTO emailHolderDTO
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.initRecovery(id, origin);
+        authService.recoveryInit(origin, emailHolderDTO);
         return ResponseEntity.noContent().build();
     }
 
@@ -122,16 +124,16 @@ public class AuthController {
      * Recover user password.
      *
      * @param token             the user recovery token.
-     * @param passwordHolderDTO the user new password holder.
+     * @param passwordHolderDTO the user password holder.
      * @return no content.
-     * @throws ResourceNotFoundException if user not found by recover code.
+     * @throws ResourceNotFoundException if user not found by recovery code.
      */
-    @PutMapping("/recover")
+    @PutMapping("/recovery-act")
     @ApiOperation("восстановить пароль пользователя")
-    public ResponseEntity<Void> recover(
+    public ResponseEntity<Void> recoveryAct(
             @RequestParam String token, @RequestBody @Validated PasswordHolderDTO passwordHolderDTO
     ) throws ResourceNotFoundException {
-        authService.recover(token, passwordHolderDTO);
+        authService.recoveryAct(token, passwordHolderDTO);
         return ResponseEntity.noContent().build();
     }
 }
