@@ -1,5 +1,6 @@
 import React from 'react';
 import Authentication from '../../../connector/Authentication';
+import {env} from '../../constants';
 import './Message.css';
 
 export default class Message extends React.Component {
@@ -36,7 +37,7 @@ export default class Message extends React.Component {
 
     sendMessage(recipientId) {
         Authentication.initConfirmation(
-            recipientId, window.location.origin
+            recipientId, `${env.MAIN_HOST}/confirm`
         ).then(() => {
             console.debug('Message', 'sending', 'success');
             this.setState({stage: Message.STAGE.SUCCESS})

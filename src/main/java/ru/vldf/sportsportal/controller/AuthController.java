@@ -70,8 +70,8 @@ public class AuthController {
     /**
      * Initiate user confirmation and send confirmation email.
      *
-     * @param id     the user identifier.
-     * @param origin the confirmation link origin.
+     * @param id   the user identifier.
+     * @param href the confirmation href.
      * @return no content.
      * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
@@ -79,9 +79,9 @@ public class AuthController {
     @PutMapping("/confirm/{id}")
     @ApiOperation("отправить письмо для подтверждения электронной почты")
     public ResponseEntity<Void> confirm(
-            @PathVariable int id, @RequestParam String origin
+            @PathVariable int id, @RequestParam String href
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.confirmationInit(id, origin);
+        authService.confirmationInit(id, href);
         return ResponseEntity.noContent().build();
     }
 
@@ -105,7 +105,7 @@ public class AuthController {
     /**
      * Initiate user password recovery and send recovery email.
      *
-     * @param origin         the recovery link origin.
+     * @param href           the recovery href.
      * @param emailHolderDTO the user email holder.
      * @return no content.
      * @throws ResourceNotFoundException     if could not found user.
@@ -114,9 +114,9 @@ public class AuthController {
     @PutMapping("/recovery-init")
     @ApiOperation("отправить письмо для восстановления пароля")
     public ResponseEntity<Void> recovery(
-            @RequestParam String origin, @RequestBody @Validated EmailHolderDTO emailHolderDTO
+            @RequestParam String href, @RequestBody @Validated EmailHolderDTO emailHolderDTO
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.recoveryInit(origin, emailHolderDTO);
+        authService.recoveryInit(href, emailHolderDTO);
         return ResponseEntity.noContent().build();
     }
 

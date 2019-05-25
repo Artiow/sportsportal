@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.vldf.sportsportal.domain.sectional.common.UserEntity;
 import ru.vldf.sportsportal.dto.sectional.common.UserDTO;
 import ru.vldf.sportsportal.dto.security.EmailHolderDTO;
@@ -37,9 +37,6 @@ public class AuthService extends AbstractSecurityService {
     private final SecurityProvider securityProvider;
     private final MailService mailService;
     private final UserMapper userMapper;
-
-    @Value("${api.path.auth.confirm}")
-    private String confirmPath;
 
 
     @Autowired
@@ -104,7 +101,7 @@ public class AuthService extends AbstractSecurityService {
      * Initiate user email confirmation and send confirmation email.
      *
      * @param userId the user identifier.
-     * @param origin the confirmation link origin.
+     * @param href   the confirmation href.
      * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
@@ -112,14 +109,14 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void confirmationInit(Integer userId, String origin) throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public void confirmationInit(Integer userId, String href) throws ResourceNotFoundException, ResourceCannotUpdateException {
         UserEntity userEntity = findUserById(userId);
         if (!userEntity.getRoles().isEmpty()) {
             throw new ResourceCannotUpdateException(msg("sportsportal.common.User.alreadyConfirmed.message"));
         } else try {
             userEntity.setConfirmCode(UuidGenerator.uniqueBase64());
             userRepository().save(userEntity);
-            sendConfirmationEmail(userEntity.getEmail(), origin, userEntity.getConfirmCode());
+            sendConfirmationEmail(userEntity.getEmail(), href, userEntity.getConfirmCode());
         } catch (MessagingException e) {
             throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
@@ -150,7 +147,7 @@ public class AuthService extends AbstractSecurityService {
     /**
      * Initiate user password recovery and send recovery email.
      *
-     * @param origin         the recovery link origin.
+     * @param href           the recovery href.
      * @param emailHolderDTO the user email holder.
      * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
@@ -159,14 +156,14 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void recoveryInit(String origin, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public void recoveryInit(String href, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
         UserEntity userEntity;
         if ((userEntity = userRepository().findByEmail(emailHolderDTO.getEmail())) == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByEmail.message", emailHolderDTO.getEmail()));
         } else try {
             userEntity.setRecoverCode(UuidGenerator.uniqueBase64());
             userRepository().save(userEntity);
-            sendRecoveryEmail(userEntity.getEmail(), origin, userEntity.getRecoverCode());
+            sendRecoveryEmail(userEntity.getEmail(), href, userEntity.getRecoverCode());
         } catch (MessagingException e) {
             throw new ResourceCannotUpdateException(msg("sportsportal.mail.cannotSendEmail.message"), e);
         }
@@ -210,33 +207,33 @@ public class AuthService extends AbstractSecurityService {
     /**
      * User confirmation email sending.
      *
-     * @param emailAddress  the sending address.
-     * @param confirmOrigin the confirm host.
-     * @param confirmCode   the confirm code.
+     * @param emailAddress the sending address.
+     * @param confirmHref  the confirm href.
+     * @param confirmToken the confirm code.
      * @throws MessagingException if could not sent email.
      */
     private void sendConfirmationEmail(
-            String emailAddress, String confirmOrigin, String confirmCode
+            String emailAddress, String confirmHref, String confirmToken
     ) throws MessagingException {
-        sendEmail(emailAddress, confirmOrigin, confirmCode, EmailConfirmationType.CONFIRMATION);
+        sendEmail(emailAddress, confirmHref, confirmToken, EmailConfirmationType.CONFIRMATION);
     }
 
     /**
      * Password recovery email sending.
      *
-     * @param emailAddress  the sending address.
-     * @param recoverOrigin the recover host.
-     * @param recoverCode   the recover code.
+     * @param emailAddress the sending address.
+     * @param recoverHref  the recover href.
+     * @param recoverToken the recover code.
      * @throws MessagingException if could not sent email.
      */
     private void sendRecoveryEmail(
-            String emailAddress, String recoverOrigin, String recoverCode
+            String emailAddress, String recoverHref, String recoverToken
     ) throws MessagingException {
-        sendEmail(emailAddress, recoverOrigin, recoverCode, EmailConfirmationType.RECOVERY);
+        sendEmail(emailAddress, recoverHref, recoverToken, EmailConfirmationType.RECOVERY);
     }
 
     private void sendEmail(
-            String emailAddress, String linkOrigin, String linkToken, EmailConfirmationType confirmationType
+            String emailAddress, String linkHref, String linkToken, EmailConfirmationType confirmationType
     ) throws MessagingException {
         mailService.sender()
                 .setTo(emailAddress)
@@ -249,7 +246,7 @@ public class AuthService extends AbstractSecurityService {
                                         confirmationType.getTextEnv(),
                                         String.format(
                                                 "<a href=\"%s\">%s</a>",
-                                                String.format(confirmPath, linkOrigin, linkToken),
+                                                UriComponentsBuilder.fromUriString(linkHref).queryParam("token", linkToken).toUriString(),
                                                 msg(confirmationType.getTextLink())
                                         )
                                 )

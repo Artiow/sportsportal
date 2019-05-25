@@ -22,12 +22,12 @@ export default class Authentication {
         });
     }
 
-    static initConfirmation(id, origin) {
+    static initConfirmation(id, href) {
         return new Promise((resolve, reject) => {
             axios
                 .put(API.url(`/auth/confirm/${id}`), '', {
                     paramsSerializer: ParamsSerializer.stringify(),
-                    params: {origin: origin}
+                    params: {href: href}
                 })
                 .then(response => {
                     console.debug('Authentication', 'initConfirmation', response);
@@ -60,14 +60,14 @@ export default class Authentication {
         });
     }
 
-    static initRecovery(origin, email) {
+    static initRecovery(href, email) {
         return new Promise((resolve, reject) => {
             axios
                 .put(API.url(`/auth/recovery-init`), {
                     email: email
                 }, {
                     paramsSerializer: ParamsSerializer.stringify(),
-                    params: {origin: origin}
+                    params: {href: href}
                 })
                 .then(response => {
                     console.debug('Authentication', 'initRecovery', response);
