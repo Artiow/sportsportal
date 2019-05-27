@@ -51,7 +51,7 @@ export default withApplicationContext(withRouter(
         }
 
         login() {
-            this.loginForm.activate('hide', env.ANIMATION_TIMEOUT);
+            this.loginModal.activate('hide', env.ANIMATION_TIMEOUT);
             this.props.application.login();
         }
 
@@ -73,15 +73,23 @@ export default withApplicationContext(withRouter(
 
         showLoginModal(event) {
             if (event != null) event.preventDefault();
-            this.loginForm.activate();
+            this.loginModal.activate();
         }
 
-        reShowLoginModal() {
-            MainFrame.switch(this.registrationForm, this.loginForm);
+        reShowLoginModalFromRegistrationModal() {
+            MainFrame.switch(this.registrationModal, this.loginModal);
+        }
+
+        reShowLoginModalFromRecoveryModal() {
+            MainFrame.switch(this.recoveryModal, this.loginModal);
         }
 
         reShowRegistrationModal() {
-            MainFrame.switch(this.loginForm, this.registrationForm);
+            MainFrame.switch(this.loginModal, this.registrationModal);
+        }
+
+        reShowRecoveryModal() {
+            MainFrame.switch(this.loginModal, this.recoveryModal);
         }
 
         render() {
@@ -97,13 +105,16 @@ export default withApplicationContext(withRouter(
                             {this.props.children}
                         </MainContainer>
                         <Footer {...this.props.footer}/>
-                        <LoginModal ref={modal => this.loginForm = modal}
+                        <LoginModal ref={modal => this.loginModal = modal}
                                     onRegistrationClick={this.reShowRegistrationModal.bind(this)}
-                                    onRecoveryClick={this.reShowRegistrationModal.bind(this)}
+                                    onRecoveryClick={this.reShowRecoveryModal.bind(this)}
                                     onSuccess={this.login.bind(this)}/>
-                        <RegistrationModal ref={modal => this.registrationForm = modal}
-                                           onLogClick={this.reShowLoginModal.bind(this)}
+                        <RegistrationModal ref={modal => this.registrationModal = modal}
+                                           onLogClick={this.reShowLoginModalFromRegistrationModal.bind(this)}
                                            onSuccess={undefined}/>
+                        <RecoveryModal ref={modal => this.recoveryModal = modal}
+                                       onLogClick={this.reShowLoginModalFromRecoveryModal.bind(this)}
+                                       onSuccess={undefined}/>
                     </div>
                 </MainFrameContext.Provider>
             )
@@ -220,6 +231,88 @@ class RegistrationModal extends React.Component {
                                                           onSuccess={this.sendMessage.bind(this)}/>
                                         );
                                     case RegistrationModal.STAGE.MESSAGE:
+                                        return (
+                                            <Message onSuccess={this.props.onSuccess}
+                                                     recipientEmail={this.state.userEmail}
+                                                     recipientId={this.state.userId}/>
+                                        );
+                                    default:
+                                        return null;
+                                }
+                            })()}
+                        </div>
+                    </div>
+                </div>
+            </ModalFade>
+        );
+    }
+}
+
+class RecoveryModal extends React.Component {
+
+    static STAGE = Object.freeze({RECOVERY: 1, MESSAGE: 2});
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            stage: RecoveryModal.STAGE.RECOVERY,
+            userEmail: null,
+            userId: null
+        }
+    }
+
+    activate(options, timeout) {
+        this.setState({
+            stage: RecoveryModal.STAGE.RECOVERY,
+            userEmail: null,
+            userId: null
+        });
+        this.modal.activate(options);
+        if (options) this.reset(timeout);
+    }
+
+    reset(timeout) {
+        if (this.body) setTimeout(() => {
+            this.body.reset()
+        }, timeout ? timeout : 0)
+    }
+
+    sendMessage(userId, userEmail) {
+        this.setState({
+            stage: RecoveryModal.STAGE.MESSAGE,
+            userEmail: userEmail,
+            userId: userId
+        });
+    }
+
+    render() {
+        return (
+            <ModalFade ref={modal => this.modal = modal}>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">
+                                Регистрация
+                            </h5>
+                            <button type="button"
+                                    className="close"
+                                    data-dismiss="modal"
+                                    onClick={event => {
+                                        this.reset(env.ANIMATION_TIMEOUT)
+                                    }}>
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {(() => {
+                                switch (this.state.stage) {
+                                    case RecoveryModal.STAGE.RECOVERY:
+                                        return (
+                                            <Registration ref={body => this.body = body}
+                                                          onLogClick={this.props.onLogClick}
+                                                          onSuccess={this.sendMessage.bind(this)}/>
+                                        );
+                                    case RecoveryModal.STAGE.MESSAGE:
                                         return (
                                             <Message onSuccess={this.props.onSuccess}
                                                      recipientEmail={this.state.userEmail}
