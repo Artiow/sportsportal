@@ -8,8 +8,10 @@ import MainContainer from "./sections/MainContainer";
 import Login from "./modal/Login";
 import Message from "./modal/Message";
 import Registration from "./modal/Registration";
+import Recovery from "./modal/Recovery";
 import Header from "./sections/Header";
 import Footer from "./sections/Footer";
+import "./MainFrame.css";
 
 const MainFrameContext = React.createContext(null);
 
@@ -137,7 +139,7 @@ class LoginModal extends React.Component {
 
     render() {
         return (
-            <ModalFade ref={modal => this.modal = modal}>
+            <ModalFade className="ModalFade" ref={modal => this.modal = modal}>
                 <div className="modal-dialog modal-sm">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -174,7 +176,6 @@ class RegistrationModal extends React.Component {
         super(props);
         this.state = {
             stage: RegistrationModal.STAGE.REGISTRATION,
-            userEmail: null,
             userId: null
         }
     }
@@ -182,7 +183,6 @@ class RegistrationModal extends React.Component {
     activate(options, timeout) {
         this.setState({
             stage: RegistrationModal.STAGE.REGISTRATION,
-            userEmail: null,
             userId: null
         });
         this.modal.activate(options);
@@ -195,17 +195,16 @@ class RegistrationModal extends React.Component {
         }, timeout ? timeout : 0)
     }
 
-    sendMessage(userId, userEmail) {
+    sendMessage(userId) {
         this.setState({
             stage: RegistrationModal.STAGE.MESSAGE,
-            userEmail: userEmail,
             userId: userId
         });
     }
 
     render() {
         return (
-            <ModalFade ref={modal => this.modal = modal}>
+            <ModalFade className="ModalFade" ref={modal => this.modal = modal}>
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -233,7 +232,6 @@ class RegistrationModal extends React.Component {
                                     case RegistrationModal.STAGE.MESSAGE:
                                         return (
                                             <Message onSuccess={this.props.onSuccess}
-                                                     recipientEmail={this.state.userEmail}
                                                      recipientId={this.state.userId}/>
                                         );
                                     default:
@@ -256,16 +254,14 @@ class RecoveryModal extends React.Component {
         super(props);
         this.state = {
             stage: RecoveryModal.STAGE.RECOVERY,
-            userEmail: null,
-            userId: null
+            userEmail: null
         }
     }
 
     activate(options, timeout) {
         this.setState({
             stage: RecoveryModal.STAGE.RECOVERY,
-            userEmail: null,
-            userId: null
+            userEmail: null
         });
         this.modal.activate(options);
         if (options) this.reset(timeout);
@@ -277,22 +273,21 @@ class RecoveryModal extends React.Component {
         }, timeout ? timeout : 0)
     }
 
-    sendMessage(userId, userEmail) {
+    sendMessage(userEmail) {
         this.setState({
             stage: RecoveryModal.STAGE.MESSAGE,
-            userEmail: userEmail,
-            userId: userId
+            userEmail: userEmail
         });
     }
 
     render() {
         return (
-            <ModalFade ref={modal => this.modal = modal}>
+            <ModalFade className="ModalFade" ref={modal => this.modal = modal}>
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">
-                                Регистрация
+                                Восстановление пароля
                             </h5>
                             <button type="button"
                                     className="close"
@@ -308,15 +303,14 @@ class RecoveryModal extends React.Component {
                                 switch (this.state.stage) {
                                     case RecoveryModal.STAGE.RECOVERY:
                                         return (
-                                            <Registration ref={body => this.body = body}
-                                                          onLogClick={this.props.onLogClick}
-                                                          onSuccess={this.sendMessage.bind(this)}/>
+                                            <Recovery ref={body => this.body = body}
+                                                      onLogClick={this.props.onLogClick}
+                                                      onSuccess={this.sendMessage.bind(this)}/>
                                         );
                                     case RecoveryModal.STAGE.MESSAGE:
                                         return (
                                             <Message onSuccess={this.props.onSuccess}
-                                                     recipientEmail={this.state.userEmail}
-                                                     recipientId={this.state.userId}/>
+                                                     recipientEmail={this.state.userEmail}/>
                                         );
                                     default:
                                         return null;

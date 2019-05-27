@@ -1,11 +1,12 @@
-import React from 'react';
-import InputMask from 'react-input-mask';
-import Authentication from '../../../connector/Authentication';
-import {Link} from 'react-router-dom';
-import './Registration.css';
+import React from "react";
+import InputMask from "react-input-mask";
+import Authentication from "../../../connector/Authentication";
+import {Link} from "react-router-dom";
+import "./Registration.css";
 
 export default class Registration extends React.Component {
 
+    static DEFAULT_MESSAGE = 'Пожалуйста, заполните регистрационные данные';
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
 
     constructor(props) {
@@ -36,7 +37,7 @@ export default class Registration extends React.Component {
             .then(bodyId => {
                 console.debug('Registration', 'query', 'success');
                 const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(bodyId, body.email);
+                if (typeof onSuccess === 'function') onSuccess(bodyId);
             })
             .catch(error => {
                 if (error) {
@@ -138,13 +139,13 @@ class RegistrationForm extends React.Component {
     }
 
     render() {
+        const error = !(this.state.errorMessage == null);
         return (
             <form className="RegistrationForm"
                   onSubmit={this.handleSubmit.bind(this)}
                   ref={form => this.submitForm = form}>
-                <div style={(this.state.errorMessage == null) ? {display: 'none'} : {display: 'block'}}
-                     className="alert alert-warning">
-                    {this.state.errorMessage}
+                <div className={`alert alert-${error ? 'warning' : 'light'}`}>
+                    {error ? this.state.errorMessage : Registration.DEFAULT_MESSAGE}
                 </div>
                 <div className="form-row-main-container">
                     <div className="form-row-container">
@@ -183,7 +184,7 @@ class RegistrationForm extends React.Component {
                         <button className="btn btn-primary btn-lg btn-block"
                                 disabled={this.props.inProcess} type="submit">
                             {(!this.props.inProcess) ? (
-                                <span>Регистрация</span>
+                                <span>Зарегестрироваться</span>
                             ) : (
                                 <i className="fa fa-refresh fa-spin fa-fw"/>
                             )}

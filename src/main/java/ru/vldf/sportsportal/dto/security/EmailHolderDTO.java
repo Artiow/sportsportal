@@ -2,6 +2,7 @@ package ru.vldf.sportsportal.dto.security;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.vldf.sportsportal.dto.general.root.DataTransferObject;
 import ru.vldf.sportsportal.dto.validation.annotations.Email;
 import ru.vldf.sportsportal.dto.validation.annotations.Trimmed;
 
@@ -13,7 +14,7 @@ import javax.validation.constraints.Size;
  */
 @Getter
 @Setter
-public class EmailHolderDTO {
+public class EmailHolderDTO implements DataTransferObject {
 
     @Email
     @Trimmed

@@ -1,7 +1,7 @@
-import React from 'react';
-import Authentication from '../../../connector/Authentication';
-import {env} from '../../constants';
-import './Message.css';
+import React from "react";
+import Authentication from "../../../connector/Authentication";
+import {env} from "../../constants";
+import "./Message.css";
 
 export default class Message extends React.Component {
 
@@ -18,7 +18,6 @@ export default class Message extends React.Component {
     componentDidMount() {
         this.setState({
             stage: Message.STAGE.SENDING,
-            email: this.props.recipientEmail
         });
         this.sendMessage(
             this.props.recipientId
@@ -27,8 +26,7 @@ export default class Message extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            stage: Message.STAGE.SENDING,
-            email: nextProps.recipientEmail
+            stage: Message.STAGE.SENDING
         });
         this.sendMessage(
             nextProps.recipientId
@@ -65,9 +63,8 @@ export default class Message extends React.Component {
                     return (
                         <div className="Message alert alert-success">
                             <h4 className="alert-heading">Подтвердите вашу учетную запись!</h4>
-                            <p>Мы отправили на указанный вами почтовый ящик <code>{this.state.email}</code> письмо с
-                                ссылкой для
-                                подтверждения вашей учетной записи.</p>
+                            <p>Мы отправили на указанный вами почтовый ящик письмо с ссылкой для подтверждения вашей
+                                учетной записи.</p>
                             <hr/>
                             <p>Пожалуйста, перейдите по ссылке, указанной в нем.</p>
                         </div>
@@ -76,9 +73,8 @@ export default class Message extends React.Component {
                     return (
                         <div className="Message alert alert-danger">
                             <h4 className="alert-heading">Не удалось подтвердить вашу учетную запись!</h4>
-                            <p>Не удалось отправить на указанный вами почтовый
-                                ящик <code>{this.state.email}</code> письмо с ссылкой
-                                для подтверждения вашей учетной записи.</p>
+                            <p>Не удалось отправить на указанный вами почтовый письмо ящик с ссылкой для подтверждения
+                                вашей учетной записи.</p>
                             <hr/>
                             <p className="alert-footer">Пожалуйста, проверьте правильность ввода данных.</p>
                         </div>

@@ -1,0 +1,50 @@
+.Recovery .RecoveryForm .alert {
+    text-align: center;
+    padding: 5px;
+}
+
+.Recovery .RecoveryForm .form-row,
+.Recovery .RecoveryForm .form-row-container {
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.Recovery .RecoveryForm .form-row:first-child,
+.Recovery .RecoveryForm .form-row-container:first-child {
+    margin-top: 0;
+}
+
+.Recovery .RecoveryForm .form-row:last-child,
+.Recovery .RecoveryForm .form-row-container:last-child {
+    margin-bottom: 0;
+}
+
+.Recovery .RecoveryForm .form-row .col-sm-3 {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.Recovery .RecoveryForm .row {
+    margin-top: 3.5%;
+}
+
+.Recovery .RecoveryForm .login {
+    margin-top: 10px;
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.Recovery .RecoveryForm .login a {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.Recovery .RecoveryForm .btn.btn-primary {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f0ad4e;
+    border-color: #d99a4a;
+}
