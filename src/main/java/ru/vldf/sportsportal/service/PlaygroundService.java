@@ -354,8 +354,10 @@ public class PlaygroundService extends AbstractSecurityService implements CRUDSe
             playgroundRepository.saveAndFlush(playgroundEntity);
 
             // old avatar deleting
-            if (oldPictureEntity != null) {
+            if (oldPictureEntity != null) try {
                 pictureService.delete(oldPictureEntity.getId());
+            } catch (Exception e) {
+                pictureService.delete(newPictureEntity.getId());
             }
 
             return newPictureEntity.getId();
