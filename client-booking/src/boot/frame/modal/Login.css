@@ -42,7 +42,16 @@
 .Login .forgot a {
     color: #777777;
     font-size: 14px;
+    display: block;
     text-decoration: underline;
+}
+
+.Login .forgot a:first-child {
+    margin-bottom: 8px;
+}
+
+.Login .forgot a:last-child {
+    margin-top: 8px;
 }
 
 .Login .btn.btn-primary {

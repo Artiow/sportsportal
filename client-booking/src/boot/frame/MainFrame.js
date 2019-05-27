@@ -6,7 +6,8 @@ import {env} from "../constants";
 import ModalFade from "../../util/components/ModalFade";
 import MainContainer from "./sections/MainContainer";
 import Login from "./modal/Login";
-import Message from "./modal/Message";
+import MessageRegistration from "./modal/MessageRegistration";
+import MessageRecover from "./modal/MessageRecover";
 import Registration from "./modal/Registration";
 import Recovery from "./modal/Recovery";
 import Header from "./sections/Header";
@@ -231,8 +232,8 @@ class RegistrationModal extends React.Component {
                                         );
                                     case RegistrationModal.STAGE.MESSAGE:
                                         return (
-                                            <Message onSuccess={this.props.onSuccess}
-                                                     recipientId={this.state.userId}/>
+                                            <MessageRegistration onSuccess={this.props.onSuccess}
+                                                                 recipientId={this.state.userId}/>
                                         );
                                     default:
                                         return null;
@@ -309,8 +310,8 @@ class RecoveryModal extends React.Component {
                                         );
                                     case RecoveryModal.STAGE.MESSAGE:
                                         return (
-                                            <Message onSuccess={this.props.onSuccess}
-                                                     recipientEmail={this.state.userEmail}/>
+                                            <MessageRecover onSuccess={this.props.onSuccess}
+                                                            recipientEmail={this.state.userEmail}/>
                                         );
                                     default:
                                         return null;

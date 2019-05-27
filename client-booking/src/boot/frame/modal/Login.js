@@ -95,7 +95,6 @@ export default class Login extends React.Component {
                             <Link to="/registration" onClick={this.handleRegistrationClick.bind(this)}>
                                 Нет аккаунта?
                             </Link>
-                            <br/>
                             <Link to="/recovery" onClick={this.handleRecoveryClick.bind(this)}>
                                 Забыли пароль?
                             </Link>
