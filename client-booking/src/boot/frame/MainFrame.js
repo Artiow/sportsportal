@@ -1,15 +1,15 @@
-import React from 'react';
-import {withRouter} from 'react-router-dom';
-import Authentication from '../../connector/Authentication';
-import {withApplicationContext} from '../Application';
-import {env} from '../constants';
-import ModalFade from '../../util/components/ModalFade';
-import MainContainer from './sections/MainContainer';
-import Login from './modal/Login';
-import Message from './modal/Message';
-import Registration from './modal/Registration'
-import Header from './sections/Header';
-import Footer from './sections/Footer';
+import React from "react";
+import {withRouter} from "react-router-dom";
+import Authentication from "../../connector/Authentication";
+import {withApplicationContext} from "../Application";
+import {env} from "../constants";
+import ModalFade from "../../util/components/ModalFade";
+import MainContainer from "./sections/MainContainer";
+import Login from "./modal/Login";
+import Message from "./modal/Message";
+import Registration from "./modal/Registration";
+import Header from "./sections/Header";
+import Footer from "./sections/Footer";
 
 const MainFrameContext = React.createContext(null);
 
@@ -98,7 +98,8 @@ export default withApplicationContext(withRouter(
                         </MainContainer>
                         <Footer {...this.props.footer}/>
                         <LoginModal ref={modal => this.loginForm = modal}
-                                    onRegClick={this.reShowRegistrationModal.bind(this)}
+                                    onRegistrationClick={this.reShowRegistrationModal.bind(this)}
+                                    onRecoveryClick={this.reShowRegistrationModal.bind(this)}
                                     onSuccess={this.login.bind(this)}/>
                         <RegistrationModal ref={modal => this.registrationForm = modal}
                                            onLogClick={this.reShowLoginModal.bind(this)}
@@ -132,7 +133,9 @@ class LoginModal extends React.Component {
                             <h5 className="modal-title">
                                 Авторизация
                             </h5>
-                            <button type="button" className="close" data-dismiss="modal"
+                            <button type="button"
+                                    className="close"
+                                    data-dismiss="modal"
                                     onClick={event => {
                                         this.reset(env.ANIMATION_TIMEOUT)
                                     }}>
@@ -141,7 +144,8 @@ class LoginModal extends React.Component {
                         </div>
                         <div className="modal-body">
                             <Login ref={body => this.body = body}
-                                   onRegClick={this.props.onRegClick}
+                                   onRegistrationClick={this.props.onRegistrationClick}
+                                   onRecoveryClick={this.props.onRecoveryClick}
                                    onSuccess={this.props.onSuccess}/>
                         </div>
                     </div>
@@ -197,7 +201,9 @@ class RegistrationModal extends React.Component {
                             <h5 className="modal-title">
                                 Регистрация
                             </h5>
-                            <button type="button" className="close" data-dismiss="modal"
+                            <button type="button"
+                                    className="close"
+                                    data-dismiss="modal"
                                     onClick={event => {
                                         this.reset(env.ANIMATION_TIMEOUT)
                                     }}>

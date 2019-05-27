@@ -189,8 +189,8 @@ class RegistrationForm extends React.Component {
                             )}
                         </button>
                         <div className="login">
-                            <Link onClick={this.handleLogClick.bind(this)}
-                                  to="/registration">
+                            <Link to="/login"
+                                  onClick={this.handleLogClick.bind(this)}>
                                 Авторизация
                             </Link>
                         </div>

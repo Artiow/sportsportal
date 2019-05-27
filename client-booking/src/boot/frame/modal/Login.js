@@ -1,7 +1,7 @@
-import React from 'react';
-import Authentication from '../../../connector/Authentication';
-import {Link} from 'react-router-dom';
-import './Login.css';
+import React from "react";
+import {Link} from "react-router-dom";
+import Authentication from "../../../connector/Authentication";
+import "./Login.css";
 
 export default class Login extends React.Component {
 
@@ -56,10 +56,16 @@ export default class Login extends React.Component {
         this.setState({[target.name]: target.value});
     }
 
-    handleRegClick(event) {
+    handleRegistrationClick(event) {
         event.preventDefault();
-        const onRegClick = !this.state.inProcess ? this.props.onRegClick : null;
-        if (typeof onRegClick === 'function') onRegClick(event);
+        const onRegistrationClick = !this.state.inProcess ? this.props.onRegistrationClick : null;
+        if (typeof onRegistrationClick === 'function') onRegistrationClick(event);
+    }
+
+    handleRecoveryClick(event) {
+        event.preventDefault();
+        const onRecoveryClick = !this.state.inProcess ? this.props.onRecoveryClick : null;
+        if (typeof onRecoveryClick === 'function') onRecoveryClick(event);
     }
 
     render() {
@@ -86,9 +92,12 @@ export default class Login extends React.Component {
                     </div>
                     <div>
                         <div className="forgot">
-                            <Link to="/registration"
-                                  onClick={this.handleRegClick.bind(this)}>
+                            <Link to="/registration" onClick={this.handleRegistrationClick.bind(this)}>
                                 Нет аккаунта?
+                            </Link>
+                            <br/>
+                            <Link to="/recovery" onClick={this.handleRecoveryClick.bind(this)}>
+                                Забыли пароль?
                             </Link>
                         </div>
                         <button className="btn btn-primary btn-lg btn-block"
