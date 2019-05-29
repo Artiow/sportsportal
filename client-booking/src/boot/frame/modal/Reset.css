@@ -1,0 +1,50 @@
+.Reset .ResetForm .alert {
+    text-align: center;
+    padding: 5px;
+}
+
+.Reset .ResetForm .form-row,
+.Reset .ResetForm .form-row-container {
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.Reset .ResetForm .form-row:first-child,
+.Reset .ResetForm .form-row-container:first-child {
+    margin-top: 0;
+}
+
+.Reset .ResetForm .form-row:last-child,
+.Reset .ResetForm .form-row-container:last-child {
+    margin-bottom: 0;
+}
+
+.Reset .ResetForm .form-row .col-sm-3 {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.Reset .ResetForm .row {
+    margin-top: 3.5%;
+}
+
+.Reset .ResetForm .login {
+    margin-top: 10px;
+    margin-bottom: 2px;
+    text-align: center;
+}
+
+.Reset .ResetForm .login a {
+    color: #777777;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.Reset .ResetForm .btn.btn-primary {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f0ad4e;
+    border-color: #d99a4a;
+}

@@ -112,7 +112,7 @@ public class AuthController {
      * @throws ResourceCannotUpdateException if could not sent email.
      */
     @PutMapping("/recovery-init")
-    @ApiOperation("отправить письмо для восстановления пароля")
+    @ApiOperation("отправить письмо для восстановления доступа")
     public ResponseEntity<Void> recovery(
             @RequestParam String href, @RequestBody @Validated EmailHolderDTO emailHolderDTO
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {

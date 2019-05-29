@@ -1,12 +1,10 @@
 import React from "react";
-import InputMask from "react-input-mask";
 import Authentication from "../../../connector/Authentication";
-import {Link} from "react-router-dom";
-import "./Registration.css";
+import "./Reset.css";
 
-export default class Registration extends React.Component {
+export default class Reset extends React.Component {
 
-    static DEFAULT_MESSAGE = 'Пожалуйста, заполните регистрационные данные';
+    static DEFAULT_MESSAGE = 'Пожалуйста, введите новый пароль';
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
 
     constructor(props) {
@@ -27,32 +25,32 @@ export default class Registration extends React.Component {
         });
     }
 
-    queryRegistration(body) {
+    queryReset(body) {
         this.setState({
             errorMessage: null,
             errorMessages: {},
             inProcess: true
         });
-        Authentication.register(body)
-            .then(bodyId => {
-                console.debug('Registration', 'query', 'success');
+        Authentication.doRecovery(this.props.token, body.password)
+            .then(() => {
+                console.debug('Reset', 'query', 'success');
                 const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess(bodyId);
+                if (typeof onSuccess === 'function') onSuccess();
             })
             .catch(error => {
                 if (error) {
                     const message = error.message;
                     const errors = error.errors;
-                    console.warn('Registration', 'query', errors ? 'invalid form data' : 'failed');
+                    console.warn('Reset', 'query', errors ? 'invalid form data' : 'failed');
                     this.setState({
                         errorMessage: message,
                         errorMessages: errors,
                         inProcess: false
                     });
                 } else {
-                    console.error('Registration', 'query', 'failed');
+                    console.error('Reset', 'query', 'failed');
                     this.setState({
-                        errorMessage: Registration.UNEXPECTED_ERROR_MESSAGE,
+                        errorMessage: Reset.UNEXPECTED_ERROR_MESSAGE,
                         inProcess: false
                     });
                 }
@@ -61,27 +59,22 @@ export default class Registration extends React.Component {
 
     render() {
         return (
-            <div className="Registration">
-                <RegistrationForm inProcess={this.state.inProcess}
-                                  ref={form => this.submitForm = form}
-                                  errorMessage={this.state.errorMessage}
-                                  errorMessages={this.state.errorMessages}
-                                  onSubmit={this.queryRegistration.bind(this)}
-                                  onLogClick={this.props.onLogClick}/>
+            <div className="Reset">
+                <ResetForm inProcess={this.state.inProcess}
+                           ref={form => this.submitForm = form}
+                           errorMessage={this.state.errorMessage}
+                           errorMessages={this.state.errorMessages}
+                           onSubmit={this.queryReset.bind(this)}/>
             </div>
         );
     }
 }
 
-class RegistrationForm extends React.Component {
+class ResetForm extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            surname: '',
-            email: '',
-            phone: '',
             password: '',
             confirm: '',
             errorMessage: ((props.errorMessage != null) ? props.errorMessage : null),
@@ -92,10 +85,6 @@ class RegistrationForm extends React.Component {
     reset() {
         this.submitForm.reset();
         this.setState({
-            name: '',
-            surname: '',
-            email: '',
-            phone: '',
             password: '',
             confirm: '',
             errorMessage: ((this.props.errorMessage != null) ? this.props.errorMessage : null),
@@ -116,10 +105,6 @@ class RegistrationForm extends React.Component {
         if (this.state.password === this.state.confirm) {
             const onSubmit = this.props.onSubmit;
             if (typeof onSubmit === 'function') onSubmit({
-                name: this.state.name,
-                surname: this.state.surname,
-                email: this.state.email,
-                phone: this.state.phone,
                 password: this.state.password
             });
         } else {
@@ -132,47 +117,16 @@ class RegistrationForm extends React.Component {
         this.setState({[target.name]: target.value});
     }
 
-    handleLogClick(event) {
-        event.preventDefault();
-        const onLogClick = !this.props.inProcess ? this.props.onLogClick : null;
-        if (typeof onLogClick === 'function') onLogClick(event);
-    }
-
     render() {
         const error = !(this.state.errorMessage == null);
         return (
-            <form className="RegistrationForm"
+            <form className="ResetForm"
                   onSubmit={this.handleSubmit.bind(this)}
                   ref={form => this.submitForm = form}>
                 <div className={`alert alert-${error ? 'warning' : 'light'}`}>
-                    {error ? this.state.errorMessage : Registration.DEFAULT_MESSAGE}
+                    {error ? this.state.errorMessage : Reset.DEFAULT_MESSAGE}
                 </div>
                 <div className="form-row-main-container">
-                    <div className="form-row-container">
-                        <InputField identifier={'name'} placeholder={'Имя'}
-                                    errorMessage={this.state.errorMessages.name}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    value={this.state.name}
-                                    required={'required'}/>
-                        <InputField identifier={'surname'} placeholder={'Фамилия'}
-                                    errorMessage={this.state.errorMessages.surname}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    value={this.state.surname}
-                                    required={'required'}/>
-                        <InputField identifier={'email'} placeholder={'Email'}
-                                    type={'email'} autoComplete={'email'}
-                                    errorMessage={this.state.errorMessages.email}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    value={this.state.email}
-                                    required={'required'}/>
-                        <InputField identifier={'phone'} placeholder={'Телефон'}
-                                    type={'text'} autoComplete={'phone'}
-                                    errorMessage={this.state.errorMessages.phone}
-                                    onChange={this.handleInputChange.bind(this)}
-                                    mask={'+7(999)999-99-99'}
-                                    value={this.state.phone}
-                                    required={'required'}/>
-                    </div>
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
                                         secondIdentifier={'confirm'} secondPlaceholder={'Подтвердите пароль'}
                                         errorMessage={this.state.errorMessages.password}
@@ -184,50 +138,16 @@ class RegistrationForm extends React.Component {
                         <button className="btn btn-primary btn-lg btn-block"
                                 disabled={this.props.inProcess} type="submit">
                             {(!this.props.inProcess) ? (
-                                <span>Зарегестрироваться</span>
+                                <span>Сохранить</span>
                             ) : (
                                 <i className="fa fa-refresh fa-spin fa-fw"/>
                             )}
                         </button>
-                        <div className="login">
-                            <Link to="/login"
-                                  onClick={this.handleLogClick.bind(this)}>
-                                Авторизация
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </form>
         )
     }
-}
-
-function InputField(props) {
-    const errorMessage = Array.isArray(props.errorMessage) ? props.errorMessage[0] : null;
-    const error = ((errorMessage != null) && (errorMessage !== ''));
-    return (
-        <div className="form-row">
-            <label htmlFor={props.identifier} className="col-sm-3 col-form-label">
-                {props.placeholder}
-            </label>
-            <div className="col-sm-9">
-                <InputMask id={`reg_form_${props.identifier}`}
-                           type={(props.type != null) ? props.type : 'text'}
-                           name={props.identifier}
-                           placeholder={props.placeholder}
-                           className={(!error) ? 'form-control' : 'form-control is-invalid'}
-                           mask={props.mask}
-                           value={props.value}
-                           autoComplete={props.autoComplete}
-                           onChange={props.onChange}
-                           required={props.required}/>
-                <div style={(!error) ? {display: 'none'} : {display: 'block'}}
-                     className="invalid-feedback">
-                    {errorMessage}
-                </div>
-            </div>
-        </div>
-    );
 }
 
 function PasswordInputField(props) {
