@@ -34,7 +34,7 @@ export default class MessageRecover extends React.Component {
 
     sendMessage(recipientEmail) {
         Authentication.initRecovery(
-            `${env.MAIN_HOST}/recover`, recipientEmail
+            `${env.MAIN_HOST}/reset`, recipientEmail
         ).then(() => {
             console.debug('Message', 'sending', 'success');
             this.setState({stage: MessageRecover.STAGE.SUCCESS})

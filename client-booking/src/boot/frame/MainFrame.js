@@ -30,6 +30,13 @@ export function withMainFrameContext(Component) {
 export default withApplicationContext(withRouter(
     class MainFrame extends React.Component {
 
+        static MODAL = Object.freeze({
+            LOGIN: "LOGIN",
+            RECOVERY: "RECOVERY",
+            REGISTRATION: "REGISTRATION",
+            RESET: "RESET"
+        });
+
         constructor(props) {
             super(props);
             this.state = {

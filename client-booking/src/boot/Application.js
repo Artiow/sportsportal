@@ -1,20 +1,20 @@
-import React from 'react';
-import {Switch, withRouter} from 'react-router-dom';
-import Authentication from '../connector/Authentication';
-import User from '../connector/User';
-import '../../node_modules/jquery/dist/jquery.min';
-import '../../node_modules/popper.js/dist/umd/popper';
-import '../../node_modules/bootstrap/dist/js/bootstrap.min';
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../../node_modules/font-awesome/css/font-awesome.min.css';
-import ScrollRoute from '../util/components/ScrollRoute';
-import Confirmation from './auth/Confirmation';
-import MainFrame from './frame/MainFrame';
-import NoMatch from './mismatch/NoMatch';
-import PlaygroundSearcher from '../main/index/PlaygroundSearcher';
-import PlaygroundPage from '../main/playground/PlaygroundPage';
-import OrderPage from '../main/order/OrderPage';
-import HomePage from '../main/home/HomePage';
+import React from "react";
+import {Switch, withRouter} from "react-router-dom";
+import Authentication from "../connector/Authentication";
+import User from "../connector/User";
+import "../../node_modules/jquery/dist/jquery.min";
+import "../../node_modules/popper.js/dist/umd/popper";
+import "../../node_modules/bootstrap/dist/js/bootstrap.min";
+import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "../../node_modules/font-awesome/css/font-awesome.min.css";
+import ScrollRoute from "../util/components/ScrollRoute";
+import Confirmation from "./auth/Confirmation";
+import MainFrame from "./frame/MainFrame";
+import NoMatch from "./mismatch/NoMatch";
+import PlaygroundSearcher from "../main/index/PlaygroundSearcher";
+import PlaygroundPage from "../main/playground/PlaygroundPage";
+import OrderPage from "../main/order/OrderPage";
+import HomePage from "../main/home/HomePage";
 
 const ApplicationContext = React.createContext(null);
 
