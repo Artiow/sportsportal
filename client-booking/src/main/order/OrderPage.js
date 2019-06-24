@@ -12,8 +12,6 @@ import './OrderPage.css';
 
 export default withMainFrameContext(class OrderPage extends React.Component {
 
-    static UUID_LENGTH = 10;
-
     constructor(props) {
         super(props);
         this.id = props.identifier;
@@ -36,8 +34,8 @@ export default withMainFrameContext(class OrderPage extends React.Component {
 
     render() {
         const orderStatusComponent = (paid, owner, freed) => {
-            let text = 'ошибка';
-            let styleClass = 'danger';
+            let text;
+            let styleClass;
             if (owner && paid) {
                 text = 'зарезервировано';
                 styleClass = 'primary';

@@ -1,0 +1,17 @@
+.HomePage .ContentRow a {
+    cursor: pointer !important;
+    text-decoration: none;
+    text-align: left;
+    font-weight: 500;
+    color: #343a40;
+    width: 100%;
+}
+
+.HomePage .ContentRow a:hover {
+    color: black;
+}
+
+.HomePage .ContentRow a i.fa {
+    text-align: center;
+    min-width: 32px;
+}
