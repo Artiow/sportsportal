@@ -9,8 +9,9 @@ import PlacedImg from '../../util/components/PlacedImg';
 import StarRate from '../../util/components/StarRate';
 import Timer from '../../util/components/Timer';
 import './OrderPage.css';
+import {withRouter} from "react-router-dom";
 
-export default withMainFrameContext(class OrderPage extends React.Component {
+export default withMainFrameContext(withRouter(class OrderPage extends React.Component {
 
     constructor(props) {
         super(props);
@@ -29,6 +30,19 @@ export default withMainFrameContext(class OrderPage extends React.Component {
             })
             .catch(error => {
                 console.error('OrderPage', 'query', 'failed');
+            });
+    }
+
+    delete(e) {
+        console.info("", "", e);
+        Order.delete(this.id)
+            .then(data => {
+                console.info('OrderPage', 'delete', 'success');
+                this.props.history.push('/home');
+            })
+            .catch(error => {
+                console.error('OrderPage', 'delete', 'failed');
+                this.props.history.push('/home');
             });
     }
 
@@ -151,7 +165,7 @@ export default withMainFrameContext(class OrderPage extends React.Component {
                 <ContentRow>
                     <div className="col-12">
                         <div className="btn-group">
-                            <button className="btn btn-danger disabled" disabled={true}>
+                            <button className="btn btn-danger" onClick={this.delete.bind(this)}>
                                 Отменить {order.isOwned ? 'резервирование' : 'бронирование'}
                             </button>
                             {!order.isPaid && link ? (
@@ -168,4 +182,4 @@ export default withMainFrameContext(class OrderPage extends React.Component {
             </ContentContainer>
         ) : (null);
     }
-})
+}))
