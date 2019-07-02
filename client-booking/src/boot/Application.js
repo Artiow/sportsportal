@@ -9,6 +9,7 @@ import "../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../../node_modules/font-awesome/css/font-awesome.min.css";
 import ScrollRoute from "../util/components/ScrollRoute";
 import Confirmation from "./auth/Confirmation";
+import Reset from "./auth/Reset";
 import MainFrame from "./frame/MainFrame";
 import NoMatch from "./mismatch/NoMatch";
 import PlaygroundSearcher from "../main/index/PlaygroundSearcher";
@@ -85,6 +86,7 @@ export default withRouter(class Application extends React.Component {
                     <ScrollRoute exact path='/' component={IndexFrame}/>
                     <ScrollRoute exact path='/home' component={HomeFrame}/>
                     <ScrollRoute exact path='/confirm' component={Confirmation}/>
+                    <ScrollRoute exact path='/reset' component={Reset}/>
                     <ScrollRoute exact path='/order/id:identifier' component={OrderFrame}/>
                     <ScrollRoute exact path='/playground/id:identifier' component={PlaygroundFrame}/>
                     <ScrollRoute component={NoMatch}/>

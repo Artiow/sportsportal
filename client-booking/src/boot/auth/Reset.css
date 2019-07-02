@@ -1,6 +1,11 @@
+.Reset {
+    margin-top: 25px;
+}
+
 .Reset .ResetForm .alert {
     text-align: center;
     padding: 5px;
+    margin-bottom: 25px;
 }
 
 .Reset .ResetForm .form-row,

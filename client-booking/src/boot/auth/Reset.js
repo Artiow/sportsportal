@@ -1,19 +1,30 @@
 import React from "react";
-import Authentication from "../../../connector/Authentication";
+import {withApplicationContext} from "../Application";
+import Authentication from "../../connector/Authentication";
 import "./Reset.css";
+import qs from "qs";
+import {Link} from "react-router-dom";
 
-export default class Reset extends React.Component {
+export default withApplicationContext(class Reset extends React.Component {
 
-    static DEFAULT_MESSAGE = 'Пожалуйста, введите новый пароль';
     static UNEXPECTED_ERROR_MESSAGE = 'Непредвиденная ошибка';
+    static STAGE = Object.freeze({PROCESSED: 1, SUCCESS: 2, FAILED: 3});
 
     constructor(props) {
         super(props);
         this.state = {
+            token: null,
+            stage: null,
             errorMessage: null,
             errorMessages: {},
             inProcess: false
         }
+    }
+
+    componentDidMount() {
+        this.setState({
+            token: qs.parse(this.props.location.search, {ignoreQueryPrefix: true}).token
+        });
     }
 
     reset() {
@@ -31,11 +42,11 @@ export default class Reset extends React.Component {
             errorMessages: {},
             inProcess: true
         });
-        Authentication.doRecovery(this.props.token, body.password)
-            .then(() => {
-                console.debug('Reset', 'query', 'success');
-                const onSuccess = this.props.onSuccess;
-                if (typeof onSuccess === 'function') onSuccess();
+        Authentication.doRecovery(this.state.token, body.password)
+            .then(response => {
+                this.setState({
+                    stage: Reset.STAGE.SUCCESS
+                });
             })
             .catch(error => {
                 if (error) {
@@ -60,17 +71,52 @@ export default class Reset extends React.Component {
     render() {
         return (
             <div className="Reset">
-                <ResetForm inProcess={this.state.inProcess}
-                           ref={form => this.submitForm = form}
-                           errorMessage={this.state.errorMessage}
-                           errorMessages={this.state.errorMessages}
-                           onSubmit={this.queryReset.bind(this)}/>
+                <div className="container">
+                    {(this.state.stage == null) ? (
+                        <ResetForm inProcess={this.state.inProcess}
+                                   ref={form => this.submitForm = form}
+                                   errorMessage={this.state.errorMessage}
+                                   errorMessages={this.state.errorMessages}
+                                   onSubmit={this.queryReset.bind(this)}/>
+                    ) : (() => {
+                        switch (this.state.stage) {
+                            case Reset.STAGE.PROCESSED:
+                                return (
+                                    <div className="stage stage-processed">
+                                        <div className="progress">
+                                            <div className="progress-bar progress-bar-striped progress-bar-animated"
+                                                 aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                                                 style={{width: '100%'}}/>
+                                        </div>
+                                    </div>
+                                );
+                            case Reset.STAGE.SUCCESS:
+                                this.props.application.preLogin();
+                                return (null);
+                            case Reset.STAGE.FAILED:
+                                return (
+                                    <div className="stage stage-failed alert alert-danger">
+                                        <h4 className="alert-heading">Не удалось подтвердить вашу учетную запись!</h4>
+                                        <p>Произошла ошибка при подтверждении вашей учетной записи.</p>
+                                        <hr/>
+                                        <p>{this.state.errorMessage}!</p>
+                                        <p><Link to={'/'} className="alert-link">Вернуться на главную страницу</Link>.
+                                        </p>
+                                    </div>
+                                );
+                            default:
+                                return (null);
+                        }
+                    })()}
+                </div>
             </div>
         );
     }
-}
+})
 
 class ResetForm extends React.Component {
+
+    static DEFAULT_MESSAGE = 'Введите новый пароль';
 
     constructor(props) {
         super(props);
@@ -124,7 +170,7 @@ class ResetForm extends React.Component {
                   onSubmit={this.handleSubmit.bind(this)}
                   ref={form => this.submitForm = form}>
                 <div className={`alert alert-${error ? 'warning' : 'light'}`}>
-                    {error ? this.state.errorMessage : Reset.DEFAULT_MESSAGE}
+                    {error ? this.state.errorMessage : ResetForm.DEFAULT_MESSAGE}
                 </div>
                 <div className="form-row-main-container">
                     <PasswordInputField firstIdentifier={'password'} firstPlaceholder={'Пароль'}
@@ -134,7 +180,7 @@ class ResetForm extends React.Component {
                                         required={'required'}/>
                 </div>
                 <div className="row">
-                    <div className="col-sm-6 offset-sm-3">
+                    <div className="offset-sm-3 offset-md-4 col-sm-6 col-md-4">
                         <button className="btn btn-primary btn-lg btn-block"
                                 disabled={this.props.inProcess} type="submit">
                             {(!this.props.inProcess) ? (
@@ -156,10 +202,7 @@ function PasswordInputField(props) {
     return (
         <div className="form-row-container">
             <div className="form-row">
-                <label htmlFor={props.firstIdentifier} className="col-sm-3 col-form-label">
-                    {props.firstPlaceholder}
-                </label>
-                <div className="col-sm-9">
+                <div className="offset-sm-3 offset-md-4 col-sm-6 col-md-4">
                     <input id={`reg_form_${props.firstIdentifier}`}
                            type="password" autoComplete="new-password"
                            name={props.firstIdentifier} placeholder={props.firstPlaceholder}
@@ -169,8 +212,7 @@ function PasswordInputField(props) {
                 </div>
             </div>
             <div className="form-row">
-                <label htmlFor={props.secondIdentifier} className="col-sm-3 col-form-label"/>
-                <div className="col-sm-9">
+                <div className="offset-sm-3 offset-md-4 col-sm-6 col-md-4">
                     <input id={`reg_form_${props.secondIdentifier}`}
                            type="password" autoComplete="new-password"
                            name={props.secondIdentifier} placeholder={props.secondPlaceholder}

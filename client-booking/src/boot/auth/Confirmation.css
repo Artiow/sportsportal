@@ -6,3 +6,7 @@
     max-width: 630px;
     margin: 25px auto;
 }
+
+.Confirmation .stage.stage-failed p {
+    margin-bottom: 5px;
+}

@@ -57,9 +57,8 @@ export default withApplicationContext(class Confirmation extends React.Component
                                     <h4 className="alert-heading">Не удалось подтвердить вашу учетную запись!</h4>
                                     <p>Произошла ошибка при подтверждении вашей учетной записи.</p>
                                     <hr/>
-                                    <p>{this.state.errorMessage}! <Link to={'/'} className="alert-link">Вернуться на
-                                        главную
-                                        страницу</Link>.</p>
+                                    <p>{this.state.errorMessage}!</p>
+                                    <p><Link to={'/'} className="alert-link">Вернуться на главную страницу</Link>.</p>
                                 </div>
                             );
                         default:

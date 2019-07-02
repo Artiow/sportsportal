@@ -10,7 +10,6 @@ import MessageRegistration from "./modal/MessageRegistration";
 import MessageRecover from "./modal/MessageRecover";
 import Registration from "./modal/Registration";
 import Recovery from "./modal/Recovery";
-import Reset from "./modal/Reset";
 import Header from "./sections/Header";
 import Footer from "./sections/Footer";
 import "./MainFrame.css";
@@ -325,52 +324,6 @@ class RecoveryModal extends React.Component {
                                         return null;
                                 }
                             })()}
-                        </div>
-                    </div>
-                </div>
-            </ModalFade>
-        );
-    }
-}
-
-class ResetModal extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    activate(options, timeout) {
-        this.modal.activate(options);
-        if (options) this.reset(timeout);
-    }
-
-    reset(timeout) {
-        if (this.body) {
-            setTimeout(() => this.body.reset(), timeout ? timeout : 0)
-        }
-    }
-
-    render() {
-        return (
-            <ModalFade className="ModalFade" ref={modal => this.modal = modal}>
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">
-                                Восстановление доступа
-                            </h5>
-                            <button type="button"
-                                    className="close"
-                                    data-dismiss="modal"
-                                    onClick={event => {
-                                        this.reset(env.ANIMATION_TIMEOUT)
-                                    }}>
-                                <span>&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <Reset ref={body => this.body = body}
-                                   onSuccess={this.props.onSuccess}/>
                         </div>
                     </div>
                 </div>
