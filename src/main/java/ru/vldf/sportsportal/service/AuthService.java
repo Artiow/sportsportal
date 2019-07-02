@@ -145,7 +145,7 @@ public class AuthService extends AbstractSecurityService {
 
 
     /**
-     * Initiate user password recovery and send recovery email.
+     * Initiate user password reset and send recovery email.
      *
      * @param href           the recovery href.
      * @param emailHolderDTO the user email holder.
@@ -156,7 +156,7 @@ public class AuthService extends AbstractSecurityService {
             rollbackFor = {ResourceNotFoundException.class, ResourceCannotUpdateException.class},
             noRollbackFor = {MessagingException.class}
     )
-    public void recoveryInit(String href, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
+    public void recovery(String href, EmailHolderDTO emailHolderDTO) throws ResourceNotFoundException, ResourceCannotUpdateException {
         UserEntity userEntity;
         if ((userEntity = userRepository().findByEmail(emailHolderDTO.getEmail())) == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByEmail.message", emailHolderDTO.getEmail()));
@@ -170,7 +170,7 @@ public class AuthService extends AbstractSecurityService {
     }
 
     /**
-     * Recover user password.
+     * Reset user password.
      *
      * @param token the user recovery code.
      * @throws ResourceNotFoundException if user not found by recovery code.
@@ -178,7 +178,7 @@ public class AuthService extends AbstractSecurityService {
     @Transactional(
             rollbackFor = {ResourceNotFoundException.class}
     )
-    public void recoveryAct(String token, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
+    public void reset(String token, PasswordHolderDTO passwordHolderDTO) throws ResourceNotFoundException {
         UserEntity userEntity;
         if ((userEntity = userRepository().findByRecoverCode(token)) == null) {
             throw new ResourceNotFoundException(msg("sportsportal.common.User.notExistByRecoverCode.message"));

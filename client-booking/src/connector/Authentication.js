@@ -63,7 +63,7 @@ export default class Authentication {
     static initRecovery(href, email) {
         return new Promise((resolve, reject) => {
             axios
-                .put(API.url(`/auth/recovery-init`), {
+                .put(API.url(`/auth/recovery`), {
                     email: email
                 }, {
                     paramsSerializer: ParamsSerializer.stringify(),
@@ -84,7 +84,7 @@ export default class Authentication {
     static doRecovery(token, password) {
         return new Promise((resolve, reject) => {
             axios
-                .put(API.url('/auth/recovery-act'), {
+                .put(API.url('/auth/reset'), {
                     password: password
                 }, {
                     paramsSerializer: ParamsSerializer.stringify(),

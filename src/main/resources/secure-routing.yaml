@@ -21,9 +21,9 @@ publicRoutes:
   httpMethod: PUT
 - pattern: /auth/confirm
   httpMethod: PUT
-- pattern: /auth/recovery-init
+- pattern: /auth/recovery
   httpMethod: PUT
-- pattern: /auth/recovery-act
+- pattern: /auth/reset
   httpMethod: PUT
 - pattern: /payment/anonymous
   httpMethod: POST

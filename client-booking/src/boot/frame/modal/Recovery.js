@@ -32,7 +32,7 @@ export default class Recovery extends React.Component {
             errorMessages: {},
             inProcess: true
         });
-        // todo: put recovery-init method call here!
+        // todo: put recovery method call here!
         console.debug('Recovery', 'query', 'success');
         const onSuccess = this.props.onSuccess;
         if (typeof onSuccess === 'function') onSuccess(body.email);

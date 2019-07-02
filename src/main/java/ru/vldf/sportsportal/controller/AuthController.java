@@ -111,12 +111,12 @@ public class AuthController {
      * @throws ResourceNotFoundException     if could not found user.
      * @throws ResourceCannotUpdateException if could not sent email.
      */
-    @PutMapping("/recovery-init")
+    @PutMapping("/recovery")
     @ApiOperation("отправить письмо для восстановления доступа")
     public ResponseEntity<Void> recovery(
             @RequestParam String href, @RequestBody @Validated EmailHolderDTO emailHolderDTO
     ) throws ResourceNotFoundException, ResourceCannotUpdateException {
-        authService.recoveryInit(href, emailHolderDTO);
+        authService.recovery(href, emailHolderDTO);
         return ResponseEntity.noContent().build();
     }
 
@@ -128,12 +128,12 @@ public class AuthController {
      * @return no content.
      * @throws ResourceNotFoundException if user not found by recovery code.
      */
-    @PutMapping("/recovery-act")
+    @PutMapping("/reset")
     @ApiOperation("восстановить пароль пользователя")
     public ResponseEntity<Void> recovery(
             @RequestParam String token, @RequestBody @Validated PasswordHolderDTO passwordHolderDTO
     ) throws ResourceNotFoundException {
-        authService.recoveryAct(token, passwordHolderDTO);
+        authService.reset(token, passwordHolderDTO);
         return ResponseEntity.noContent().build();
     }
 }
