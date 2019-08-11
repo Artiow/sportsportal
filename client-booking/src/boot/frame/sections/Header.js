@@ -62,6 +62,7 @@ function MainBreadcrumb(props) {
 }
 
 class AuthBlock extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
